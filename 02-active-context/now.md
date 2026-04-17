@@ -5,17 +5,17 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    devops-toolkit — implementacja FinOps sanitizer (stub → działający kod)
+Zadanie:    devops-toolkit — cost normalization (następny dług techniczny)
 Projekt:    devops-toolkit (~/projekty/devops/devops-toolkit)
-Status:     [x] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
+Status:     [ ] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  git cleanup — wszystkie zmiany wypchnięte, main czysty
-Następny krok: implementacja sanitizers/sanitize-finops-findings.py (stub → kod)
-Plik / zasób:  sanitizers/sanitize-finops-findings.py (linia 3: print("TODO sanitize findings"))
+Ostatni krok:  PR #51 fix/finops-sanitizer-stub — zmerge do main (commit a65fd89)
+Następny krok: normalizers/cost/normalize-cost.py:10 — stub z TODO
+Plik / zasób:  ~/projekty/devops/devops-toolkit/normalizers/cost/normalize-cost.py
 ```
 
 ## Kontekst środowiska

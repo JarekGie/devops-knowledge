@@ -24,6 +24,39 @@
             }
           },
           {
+            "id": "c6f8dbca0c2d58cc",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
+                  "focus": false,
+                  "profile": {
+                    "followTheme": true,
+                    "name": "",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "developerConsole"
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: Developer console"
+            }
+          },
+          {
             "id": "8a59675305e34efd",
             "type": "leaf",
             "state": {
@@ -213,7 +246,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "8a59675305e34efd",
+  "active": "c6f8dbca0c2d58cc",
   "lastOpenFiles": [
     "10-areas/obsidian-git-setup.md",
     "20-projects/internal/devops-toolkit/session-log.md",

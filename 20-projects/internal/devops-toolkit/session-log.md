@@ -44,6 +44,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-17 — Implementacja FinOps sanitizer
+
+**Co zrobiono:**
+- Branch: `fix/finops-sanitizer-stub`
+- Zaimplementowano `sanitizers/sanitize-finops-findings.py` (stub → pełna implementacja)
+- Auto-detekcja dwóch schematów wejściowych: `idle-storage.json` i `cost-summary.json`
+- 22 testy jednostkowe (`tests/unit/test_sanitize_finops_findings.py`) — 22/22 pass
+- `make contract-check` — czysty
+- Zaktualizowano `ARCHITECTURE.md` (sekcja sanitizers/registry.yaml)
+- Commit: `f9d278b`, branch wypchnięty do origin
+
+**Stan na koniec:**
+- PR do stworzenia: `fix/finops-sanitizer-stub` → main
+- Pozostałe długi: cost normalization (`normalizers/cost/normalize-cost.py:10`), ALB scaffold fix
+
+**Następna sesja:**
+- Stworzyć PR dla `fix/finops-sanitizer-stub`
+- Rozważyć: cost normalization jako następny dług techniczny
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]
