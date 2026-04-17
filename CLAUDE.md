@@ -1,59 +1,83 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Ten plik zawiera instrukcje dla Claude Code (claude.ai/code) podczas pracy z tym repozytorium.
 
-## What this repo is
+## Czym jest to repo
 
-An Obsidian-based operational knowledge vault for a senior DevOps/SRE engineer (Jarosław Gołąb). Not a wiki — a work tool. Designed for interruption-heavy technical work and fast re-entry after context loss.
+Operacyjny vault wiedzy oparty na Obsidian dla starszego inżyniera DevOps/SRE (Jarosław Gołąb). Nie wiki — narzędzie pracy. Zaprojektowany pod pracę z częstymi przerwaniami i szybki powrót do kontekstu po przerwie.
 
-## Vault contract (non-negotiable)
+## Kontrakt vaultu (non-negotiable)
 
-- **Language:** note content in Polish; code, commands, filenames may be English
-- **Structure per note:** symptom/problem → context → solution/actions → notes. Never long theoretical intros.
-- **Every note must work standalone** — no "read section 1 before section 3" dependencies
-- **No empty files** — every file must contain real operational value or a ready-to-use template
-- **File naming:** kebab-case, short, no `final`/`v2`/`new`/`copy` suffixes
-- **Links:** use `[[wiki-links]]` for cross-note navigation; don't repeat content across notes
+- **Język:** cała treść notatek po polsku; kod, komendy, nazwy plików mogą być po angielsku
+- **Struktura notatki:** objaw/problem → kontekst → rozwiązanie/działania → uwagi. Nigdy długich teoretycznych wstępów.
+- **Każda notatka musi działać standalone** — zero zależności "przeczytaj sekcję 1 przed sekcją 3"
+- **Brak pustych plików** — każdy plik musi zawierać realną wartość operacyjną lub gotowy do użycia szablon
+- **Nazwy plików:** kebab-case, krótkie, bez sufiksów `final`/`v2`/`new`/`copy`
+- **Linki:** używaj `[[wiki-links]]` do nawigacji między notatkami; nie powtarzaj treści w wielu miejscach
 
-## Folder priority (highest to lowest)
+## Zachowanie Claude podczas rozmowy
 
-1. `02-active-context/` — daily operational state (now.md, current-focus.md, open-loops.md, waiting-for.md)
-2. `40-runbooks/` — incident and operational procedures
-3. `20-projects/` — internal and client project notes
-4. `30-standards/` — tagging, IaC, CI/CD, naming conventions
-5. `50-patterns/` — debugging, migration, FinOps review patterns
-6. `90-reference/` — commands, snippets, glossary
+**Każdy wątek rozmowy, który generuje wiedzę operacyjną, musi być natychmiast zapisany do vault.**
 
-## Vault structure
+Zasady zapisu:
+- Nie czekaj na koniec rozmowy — zapisuj w trakcie, gdy tylko pojawi się wartościowa treść
+- Wybierz właściwy katalog zgodnie z priorytetem folderów (patrz niżej)
+- Nazwa pliku: kebab-case, opisowa, bez dat w nazwie (data trafia do frontmatter jeśli potrzebna)
+- Format: zgodny z kontraktem vaultu (objaw → kontekst → rozwiązanie → uwagi)
+- Nie pytaj "czy mam zapisać?" — zapisz i poinformuj gdzie
+
+Mapowanie typów rozmów na katalogi:
+
+| Temat rozmowy | Gdzie zapisać |
+|---------------|---------------|
+| Problem z projektem / decyzja projektowa | `20-projects/internal/<projekt>/` lub `20-projects/client/<klient>/` |
+| Incydent, awaria, diagnoza | `40-runbooks/` lub `02-active-context/` |
+| Nowa komenda / snippet / wzorzec | `90-reference/` lub `50-patterns/` |
+| Standard lub konwencja | `30-standards/` |
+| Kontekst bieżącej pracy | `02-active-context/now.md` |
+| Wiedza dziedzinowa (AWS, Terraform itd.) | `10-areas/<domena>/` |
+| Decyzja architektoniczna | `80-architecture/decision-log.md` |
+| Coś niejasnego / do sortowania | `01-inbox/` (tymczasowo) |
+
+## Priorytety folderów (od najwyższego)
+
+1. `02-active-context/` — bieżący stan operacyjny (now.md, current-focus.md, open-loops.md, waiting-for.md)
+2. `40-runbooks/` — procedury incydentowe i operacyjne
+3. `20-projects/` — notatki projektów wewnętrznych i klienckich
+4. `30-standards/` — tagi, IaC, CI/CD, konwencje nazewnictwa
+5. `50-patterns/` — wzorce debugowania, migracji, przeglądu FinOps
+6. `90-reference/` — komendy, snippety, słowniczek
+
+## Struktura vault
 
 ```
-00-start-here/       ← vault usage rules, persona
-01-inbox/            ← temporary capture (not an archive)
-02-active-context/   ← live operational dashboard
+00-start-here/       ← zasady użycia vault, persona
+01-inbox/            ← tymczasowe przechwytywanie (nie archiwum)
+02-active-context/   ← żywy dashboard operacyjny
 10-areas/            ← aws/, terraform/, cicd/, observability/, cloud-support/, business/
 20-projects/         ← internal/, client/, reference/
 30-standards/        ← aws-tagging, iac, cicd, naming, documentation
 40-runbooks/         ← aws/, ecs/, kubernetes/, terraform/, networking/, incidents/
 50-patterns/         ← debugging, migration, incident-analysis, finops, reusable-prompts
-60-toolkit/          ← devops-toolkit CLI project (architecture, contracts, commands, audits)
-70-finops/           ← cost reviews, optimization, savings
-80-architecture/     ← ADR (decision-log), system maps, platform principles
+60-toolkit/          ← projekt CLI devops-toolkit (architektura, kontrakty, komendy, audyty)
+70-finops/           ← przeglądy kosztów, optymalizacja, oszczędności
+80-architecture/     ← ADR (decision-log), mapy systemów, zasady platformy
 90-reference/        ← commands/, snippets/, glossary/, vendors/
-templates/           ← copy before use, never edit originals
+templates/           ← kopiuj przed użyciem, nigdy nie edytuj oryginałów
 ```
 
-## devops-toolkit architecture
+## Architektura devops-toolkit
 
-`60-toolkit/` tracks a stateless CLI (`toolkit <command> [options]`) with a plugin/command-router architecture. Key concepts:
+`60-toolkit/` śledzi stateless CLI (`toolkit <komenda> [opcje]`) z architekturą plugin/command-router. Kluczowe koncepcje:
 
-- Every command is defined by a **contract** (input/output schema) in `60-toolkit/contracts/` — contracts are source of truth, implementation is secondary
-- Commands compose via JSON piping: `toolkit audit iam --output json | toolkit report generate --format markdown`
-- Layers: CLI Entry → Command Router → Command/Plugin → AWS SDK → Output Layer (JSON/MD/CSV)
-- See [[architecture-overview]], [[contracts-index]], [[command-catalog]]
+- Każda komenda jest zdefiniowana przez **kontrakt** (schemat wejścia/wyjścia) w `60-toolkit/contracts/` — kontrakty są source of truth, implementacja jest wtórna
+- Komendy komponują się przez JSON piping: `toolkit audit iam --output json | toolkit report generate --format markdown`
+- Warstwy: CLI Entry → Command Router → Command/Plugin → AWS SDK → Output Layer (JSON/MD/CSV)
+- Zobacz [[architecture-overview]], [[contracts-index]], [[command-catalog]]
 
-## Runbook design pattern
+## Wzorzec runbooka
 
-Runbooks must follow this section order:
+Runbooki muszą zachowywać kolejność sekcji:
 1. Objaw / symptom
 2. Zakres / scope
 3. Szybkie komendy
@@ -61,16 +85,16 @@ Runbooks must follow this section order:
 5. Rollback / safety
 6. Findings / notes
 
-Template: `templates/runbook-template.md`
+Szablon: `templates/runbook-template.md`
 
-## inbox policy
+## Polityka inbox
 
-`01-inbox/` is temporary. Items older than 1 week are backlog, not archive. Move or delete — don't accumulate.
+`01-inbox/` jest tymczasowy. Elementy starsze niż 1 tydzień to backlog, nie archiwum. Przenoś lub usuwaj — nie akumuluj.
 
-## Tagging conventions (notes)
+## Konwencje tagowania notatek
 
-Use `#aws`, `#terraform`, `#incident`, `#finops`, `#todo`, `#decision` for cross-vault search.
+Używaj `#aws`, `#terraform`, `#incident`, `#finops`, `#todo`, `#decision` do wyszukiwania cross-vault.
 
-## Persona context
+## Kontekst persony
 
-User: experienced DevOps/SRE, AWS-primary (also GCP/Azure), ADHD. System must reduce memory burden. Fast-access modular notes work well; linear checklists and long sequential docs do not. See [[persona]] for full profile.
+Użytkownik: doświadczony DevOps/SRE, AWS-primary (też GCP/Azure), ADHD. System musi redukować obciążenie pamięci. Modularne notatki z szybkim dostępem działają dobrze; linearne checklisty i długie sekwencyjne dokumenty — nie. Zobacz [[persona]] dla pełnego profilu.

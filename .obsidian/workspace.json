@@ -11,14 +11,10 @@
             "id": "03fccb0c0a0bfb4e",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "00-start-here/Kontrakt komunikacji — v1.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Kontrakt komunikacji — v1"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Podgląd grafu"
             }
           }
         ]
@@ -94,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "00-start-here/Kontrakt komunikacji — v1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +99,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Linki zwrotne do Kontrakt komunikacji — v1"
+              "title": "Linki zwrotne"
             }
           },
           {
@@ -169,8 +164,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -183,11 +177,14 @@
       "bases:Stwórz nową bazę danych": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "fbdfde7e52199413",
   "lastOpenFiles": [
+    "10-areas/obsidian-git-setup.md",
+    "20-projects/internal/devops-toolkit/session-log.md",
+    "Bez nazwy.canvas",
     "CLAUDE.md",
-    "Bez nazwy.md",
     "00-start-here/Kontrakt komunikacji — v1.md",
+    "Bez nazwy.md",
     "60-toolkit/architecture-overview.md",
     "README.md",
     "templates",
@@ -218,8 +215,6 @@
     "80-architecture/decision-log.md",
     "80-architecture/README.md",
     "80-architecture",
-    "70-finops/reference-projects.md",
-    "70-finops/savings-ideas.md",
     "70-finops"
   ]
 }
