@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "10-areas/obsidian/plugin-terminal.md",
+                "file": "20-projects/internal/devops-toolkit/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "plugin-terminal"
+              "title": "README"
             }
           }
         ],
@@ -239,13 +239,17 @@
   },
   "active": "1561345bb06664a8",
   "lastOpenFiles": [
+    "60-toolkit/README.md",
+    "60-toolkit/reports/README.md",
+    "60-toolkit/finops-reporting.md",
+    "60-toolkit/minikurs-finops.md",
+    "10-areas/business/README.md",
+    "10-areas/obsidian/plugin-terminal.md",
     "10-areas/obsidian/index.md",
     "10-areas/obsidian/git-sync.md",
-    "10-areas/obsidian/plugin-terminal.md",
     "10-areas/obsidian",
     "60-toolkit/minikurs-self-test.md",
     "60-toolkit/minikurs-shuttle-audit.md",
-    "60-toolkit/minikurs-finops.md",
     "60-toolkit/minikurs-operator.md",
     "10-areas/obsidian-git-setup.md",
     "20-projects/internal/devops-toolkit/session-log.md",
@@ -265,12 +269,8 @@
     "templates/audit-template.md",
     "templates/architecture-note-template.md",
     "templates/incident-template.md",
-    "templates/runbook-template.md",
-    "templates/project-note-template.md",
     "templates",
-    "90-reference/vendors/README.md",
     "90-reference/vendors",
-    "90-reference/glossary/README.md",
     "90-reference/glossary",
     "90-reference/snippets",
     "90-reference/commands",
