@@ -66,6 +66,22 @@ Mapowanie typów rozmów na katalogi:
 templates/           ← kopiuj przed użyciem, nigdy nie edytuj oryginałów
 ```
 
+## Praca z zewnętrznymi repozytoriami projektów
+
+Każda notatka projektu w `20-projects/` może zawierać sekcję z lokalną ścieżką do repozytorium kodu:
+
+```markdown
+## Repozytorium kodu
+- lokalna ścieżka: `~/projekty/client/<nazwa>/`
+- remote: https://github.com/org/repo
+```
+
+Zasady dla Claude:
+- Na początku rozmowy o projekcie — czytaj notatkę projektu i ustal lokalną ścieżkę repo
+- Mając ścieżkę lokalną, możesz czytać i edytować pliki tamtego repo bezpośrednio
+- Sama URL do GitHuba nie wystarczy — repo musi być sklonowane lokalnie
+- Jeśli ścieżki nie ma w notatce, zapytaj użytkownika zanim zaczniesz szukać
+
 ## Architektura devops-toolkit
 
 `60-toolkit/` śledzi stateless CLI (`toolkit <komenda> [opcje]`) z architekturą plugin/command-router. Kluczowe koncepcje:
