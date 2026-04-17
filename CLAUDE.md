@@ -26,6 +26,19 @@ Zasady zapisu:
 - Format: zgodny z kontraktem vaultu (objaw → kontekst → rozwiązanie → uwagi)
 - Nie pytaj "czy mam zapisać?" — zapisz i poinformuj gdzie
 
+**Obowiązkowe triggery zapisu — wykonaj natychmiast gdy wystąpi:**
+
+| Zdarzenie | Co zapisać | Gdzie |
+|-----------|-----------|-------|
+| Git cleanup / synchronizacja repo | co znaleziono, co zrobiono, branche, PR | `session-log.md` projektu |
+| Decyzja o priorytecie / co robimy dalej | wybór i uzasadnienie | `session-log.md` + `now.md` |
+| Zmiana aktywnego zadania | nowe zadanie, następny krok, plik | `02-active-context/now.md` |
+| Implementacja / zmiana kodu | co zmieniono, branch, testy | `session-log.md` projektu |
+| Nowa konwencja lub standard | treść konwencji | `30-standards/` lub `CLAUDE.md` |
+| Koniec sesji roboczej | stan, następny krok | `now.md` + `session-log.md` |
+
+**Zasada kontrolna:** po każdej odpowiedzi zawierającej decyzję, działanie lub wiedzę — sprawdź czy vault jest aktualny. Jeśli nie — zapisz przed następną odpowiedzią.
+
 Mapowanie typów rozmów na katalogi:
 
 | Temat rozmowy | Gdzie zapisać |
