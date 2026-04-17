@@ -18,6 +18,12 @@ Stateless by design — brak lokalnego state, brak bazy danych.
 - [[command-catalog]] — dostępne komendy
 - [[roadmap]] — roadmapa
 
+## Repozytorium kodu
+
+- lokalna ścieżka: `~/projekty/devops/devops-toolkit/`
+- CLAUDE.md repo: reguły pracy z kodem (feature branch zawsze, nie commituj do main)
+- CLAUDE_CONTEXT.md: kontekst architektoniczny i kontrakt wykonawczy
+
 ## Technologie
 
 | Warstwa | Tech |
