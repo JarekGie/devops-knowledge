@@ -248,6 +248,12 @@
   },
   "active": "c6f8dbca0c2d58cc",
   "lastOpenFiles": [
+    "10-areas/obsidian/git-sync.md",
+    "10-areas/obsidian",
+    "60-toolkit/minikurs-self-test.md",
+    "60-toolkit/minikurs-shuttle-audit.md",
+    "60-toolkit/minikurs-finops.md",
+    "60-toolkit/minikurs-operator.md",
     "10-areas/obsidian-git-setup.md",
     "20-projects/internal/devops-toolkit/session-log.md",
     "Bez nazwy.canvas",
@@ -278,12 +284,6 @@
     "90-reference/commands/README.md",
     "90-reference/commands",
     "90-reference",
-    "80-architecture/integration-notes.md",
-    "80-architecture/platform-principles.md",
-    "80-architecture/system-maps.md",
-    "80-architecture/decision-log.md",
-    "80-architecture/README.md",
-    "80-architecture",
-    "70-finops"
+    "80-architecture"
   ]
 }

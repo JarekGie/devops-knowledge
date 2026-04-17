@@ -5,15 +5,17 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    devops-toolkit — ALB scaffold fix lub weryfikacja UI sync
-Projekt:    devops-toolkit (~/projekty/devops/devops-toolkit)
-Status:     [ ] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
+Zadanie:    — (brak aktywnego)
+Projekt:    —
+Status:     —
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  PR #52 fix/cost-normalization-stub — zmerge do main (commit 6cc66d7)
+Ostatni krok:  devops-toolkit — zakończona sesja robocza 2026-04-17
+               PR #52 fix/cost-normalization-stub zmerge do main
+               ALB scaffold fix (test_init_project.py:1396) — odłożony na kolejną sesję
 Następny krok: ALB scaffold fix — test_init_project.py:1396 (znana regresja)
 Plik / zasób:  ~/projekty/devops/devops-toolkit/tests/unit/test_init_project.py:1396
 ```
@@ -41,4 +43,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-17*
+*Ostatnia aktualizacja: 2026-04-17 — koniec sesji devops-toolkit*
