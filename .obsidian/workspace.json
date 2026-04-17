@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "6051127e9f432d23",
+        "id": "bebd67cef9d4cd63",
         "type": "tabs",
         "children": [
           {
-            "id": "03fccb0c0a0bfb4e",
+            "id": "ae311ba9a4f38c0f",
             "type": "leaf",
             "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Podgląd grafu"
+              "icon": "lucide-file",
+              "title": "Nowa karta"
             }
           }
         ]
@@ -189,7 +189,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "fbdfde7e52199413",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
     "10-areas/obsidian-git-setup.md",
     "20-projects/internal/devops-toolkit/session-log.md",
