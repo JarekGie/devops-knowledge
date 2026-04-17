@@ -13,10 +13,9 @@ Status:     —
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  devops-toolkit — zakończona sesja robocza 2026-04-17
-               PR #52 fix/cost-normalization-stub zmerge do main
-               ALB scaffold fix (test_init_project.py:1396) — odłożony na kolejną sesję
-Następny krok: ALB scaffold fix — test_init_project.py:1396 (znana regresja)
+Ostatni krok:  Obsidian — konfiguracja terminala (zsh+oh-my-zsh, MesloLGS NF, newTab)
+               iOS sync — temat otwarty, opcje omówione (Working Copy / iCloud / Obsidian Sync)
+Następny krok: decyzja o iOS sync
 Plik / zasób:  ~/projekty/devops/devops-toolkit/tests/unit/test_init_project.py:1396
 ```
 
