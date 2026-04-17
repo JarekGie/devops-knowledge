@@ -9,7 +9,7 @@
   "interceptLogging": true,
   "language": "",
   "macOSOptionKeyPassthrough": true,
-  "newInstanceBehavior": "newHorizontalSplit",
+  "newInstanceBehavior": "newTab",
   "noticeTimeout": 5,
   "openChangelogOnUpdate": true,
   "pinNewInstance": true,
@@ -163,6 +163,7 @@
   },
   "defaultProfile": null,
   "terminalOptions": {
+    "fontFamily": "MesloLGS NF",
     "documentOverride": null
   }
 }
