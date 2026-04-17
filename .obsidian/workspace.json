@@ -159,8 +159,19 @@
               "icon": "lucide-list",
               "title": "Konspekt Kontrakt komunikacji — v1"
             }
+          },
+          {
+            "id": "72311c8d6337944b",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -174,7 +185,8 @@
       "daily-notes:Otwórz dzisiejszy dziennik": false,
       "templates:Wstaw szablon": false,
       "command-palette:Otwórz listę poleceń": false,
-      "bases:Stwórz nową bazę danych": false
+      "bases:Stwórz nową bazę danych": false,
+      "obsidian-git:Open Git source control": false
     }
   },
   "active": "fbdfde7e52199413",
