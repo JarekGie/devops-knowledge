@@ -248,6 +248,8 @@
   },
   "active": "c6f8dbca0c2d58cc",
   "lastOpenFiles": [
+    "10-areas/obsidian/plugin-terminal.md",
+    "10-areas/obsidian/index.md",
     "10-areas/obsidian/git-sync.md",
     "10-areas/obsidian",
     "60-toolkit/minikurs-self-test.md",
@@ -279,9 +281,7 @@
     "90-reference/vendors",
     "90-reference/glossary/README.md",
     "90-reference/glossary",
-    "90-reference/snippets/README.md",
     "90-reference/snippets",
-    "90-reference/commands/README.md",
     "90-reference/commands",
     "90-reference",
     "80-architecture"

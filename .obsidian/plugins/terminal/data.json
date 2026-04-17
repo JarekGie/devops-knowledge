@@ -19,7 +19,7 @@
       "args": [
         "\"$PWD\""
       ],
-      "executable": "/System/Applications/Utilities/Terminal.app/Contents/macOS/Terminal",
+      "executable": "/Applications/iTerm.app/Contents/MacOS/iTerm2",
       "followTheme": true,
       "name": "",
       "platforms": {
