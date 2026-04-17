@@ -5,7 +5,7 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    devops-toolkit — cost normalization (następny dług techniczny)
+Zadanie:    devops-toolkit — ALB scaffold fix lub weryfikacja UI sync
 Projekt:    devops-toolkit (~/projekty/devops/devops-toolkit)
 Status:     [ ] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
 ```
@@ -13,9 +13,9 @@ Status:     [ ] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  PR #51 fix/finops-sanitizer-stub — zmerge do main (commit a65fd89)
-Następny krok: normalizers/cost/normalize-cost.py:10 — stub z TODO
-Plik / zasób:  ~/projekty/devops/devops-toolkit/normalizers/cost/normalize-cost.py
+Ostatni krok:  PR #52 fix/cost-normalization-stub — zmerge do main (commit 6cc66d7)
+Następny krok: ALB scaffold fix — test_init_project.py:1396 (znana regresja)
+Plik / zasób:  ~/projekty/devops/devops-toolkit/tests/unit/test_init_project.py:1396
 ```
 
 ## Kontekst środowiska

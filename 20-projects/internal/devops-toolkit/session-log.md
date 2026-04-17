@@ -65,6 +65,29 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-17 — Cost normalization stub + vault contract
+
+**Co zrobiono:**
+- Branch: `fix/cost-normalization-stub`
+- Zaimplementowano `normalizers/cost/normalize-cost.py` (legacy, używany przez `aws_cost_hotspots`)
+- Sumowanie `BlendedCost` przez `ResultsByTime`, agregacja `Groups` → `top_services`
+- 14 testów jednostkowych — 14/14 pass
+- `make contract-check` — czysty
+- Zaktualizowano `ARCHITECTURE.md`
+- PR #52 zmerge, commit `6cc66d7`
+- Zaktualizowano kontrakt vaultu: mirror docs/minikursów obowiązkowy
+- Przepisano `60-toolkit/finops-reporting.md` (fikcyjne komendy → realne)
+- Przepisano `60-toolkit/command-catalog.md` (fikcyjne komendy → realne z cli-public-api.md)
+
+**Stan na koniec:**
+- Oba stuby FinOps naprawione i w main
+- Pozostały dług: ALB scaffold fix (`test_init_project.py:1396`)
+
+**Następna sesja:**
+- ALB scaffold fix lub weryfikacja devops-toolkit-ui sync
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]
