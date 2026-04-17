@@ -1,111 +1,124 @@
-# Katalog komend
+# Katalog komend — devops-toolkit
 
-Wszystkie komendy — toolkit i AWS CLI — w jednym miejscu.
+#toolkit #commands
 
-#toolkit #commands #aws
+Źródło prawdy: `~/projekty/devops/devops-toolkit/docs/cli-public-api.md`
+Poniżej skrót do codziennego użycia.
 
-## devops-toolkit
+---
 
-```bash
-# Audyt IAM
-toolkit audit iam --account ACCOUNT_ID
-
-# Audyt tagowania
-toolkit audit tagging --account ACCOUNT_ID --region eu-west-1
-
-# Raport FinOps
-toolkit finops report --month 2026-03 --output markdown
-
-# Audyt S3
-toolkit audit s3 --account ACCOUNT_ID
-```
-
-## AWS CLI — najczęstsze
+## CORE — codzienne użycie
 
 ```bash
-# Tożsamość
-aws sts get-caller-identity
-
-# Profil
-export AWS_PROFILE=nazwa
-
-# ECS
-aws ecs list-clusters
-aws ecs list-services --cluster CLUSTER
-aws ecs describe-services --cluster CLUSTER --services SERVICE
-aws ecs update-service --cluster CLUSTER --service SERVICE --force-new-deployment
-
-# ECR
-aws ecr describe-images --repository-name REPO --query 'sort_by(imageDetails,&imagePushedAt)[-5:]'
-
-# Logi
-aws logs tail /ecs/SERVICE --follow
-aws logs filter-log-events --log-group-name /ecs/SERVICE --filter-pattern "ERROR"
-
-# IAM
-aws sts get-caller-identity
-aws iam simulate-principal-policy --policy-source-arn ARN --action-names s3:GetObject --resource-arns ARN
-
-# Cost Explorer
-aws ce get-cost-and-usage \
-  --time-period Start=2026-03-01,End=2026-04-01 \
-  --granularity MONTHLY \
-  --metrics BlendedCost \
-  --group-by Type=TAG,Key=Project
-
-# Tagging
-aws resourcegroupstaggingapi get-resources --tag-filters Key=Environment,Values=prod
-
-# S3
-aws s3 ls s3://BUCKET --recursive --human-readable --summarize
-aws s3api get-bucket-policy --bucket BUCKET
-
-# RDS
-aws rds describe-db-instances --query 'DBInstances[*].{id:DBInstanceIdentifier,class:DBInstanceClass,status:DBInstanceStatus}'
-
-# Systems Manager (SSM Parameter Store)
-aws ssm get-parameter --name /projekt/env/klucz --with-decryption
-aws ssm get-parameters-by-path --path /projekt/ --recursive --with-decryption
+toolkit onboard [--client] [--profile] [--region] [--iac]   # onboarding repo
+toolkit here [--dir PATH]                                    # kontekst projektu (bare-repo)
+toolkit work [project]                                       # pełny kontekst operacyjny
+toolkit audit [project]                                      # pełny audit infrastruktury
+toolkit audit-pack <pack> [project]                          # konkretny audit pack
+toolkit apply-pack <pack> [project]                          # pack z audit-first enforce
+toolkit aws-login [project]                                  # aktywacja kontekstu AWS
+toolkit aws-logout                                           # usunięcie sesji AWS
+toolkit aws-context [project]                                # aktualny kontekst AWS
+toolkit doctor [project]                                     # preflight checks
+toolkit check [project]                                      # sanity check (dry-run)
+toolkit clients                                              # lista klientów w workspace
+toolkit projects <client>                                    # lista projektów klienta
+toolkit project validate [--project]                         # walidacja project.yaml
+toolkit contract check [--project-root]                      # walidacja kontraktów IaC
+toolkit contract show [--project-root]                       # wyświetl kontrakt projektu
+toolkit contract init [--project-root]                       # inicjalizuj contracts.yaml
+toolkit install                                              # jednorazowy installer
 ```
 
-## kubectl — najczęstsze
+---
+
+## ADVANCED — specjalistyczne
 
 ```bash
-# Context
-kubectl config get-contexts
-kubectl config use-context CONTEXT
+# Terraform
+toolkit terraform init-project --project-name X --envs dev,prod  # scaffold projektu TF
+toolkit terraform audit-module <path>                             # statyczny audit modułu
+toolkit terraform audit-modules --repo <path>                     # audit wielu modułów
+toolkit terraform check-modules --repo <path>                     # CI check modułów
 
-# Pody
-kubectl get pods -n NAMESPACE
-kubectl describe pod POD -n NAMESPACE
-kubectl logs POD -n NAMESPACE --previous
+# FinOps
+toolkit finops-report [project] --period mtd|last-full-month \
+  --group-by service|usage-type \
+  --audience executive|technical \
+  --env ENV --format md|json|both|confluence
 
-# Deployment
-kubectl rollout status deployment/DEPLOY -n NAMESPACE
-kubectl rollout undo deployment/DEPLOY -n NAMESPACE
-kubectl set image deployment/DEPLOY container=IMAGE:TAG -n NAMESPACE
-
-# Debug
-kubectl exec -it POD -n NAMESPACE -- /bin/sh
-kubectl port-forward POD 8080:8080 -n NAMESPACE
+# Inne
+toolkit estimate <project>                                   # estymacja architektoniczna + kosztowa
+toolkit drift [project]                                      # wykrywanie IaC drift
+toolkit discover-aws [project]                               # inwentaryzacja AWS (read-only)
+toolkit project refresh [--project-root]                     # odświeżenie project.yaml
+toolkit project init <client> <project>                      # inicjalizacja nowego projektu
+toolkit client add <name>                                    # tworzenie katalogu klienta
+toolkit ui [project]                                         # operator UI (FastAPI, port 8765)
+toolkit index [--force]                                      # rebuild indeksu workspace
+toolkit path <client/project>                                # ścieżka projektu (plumbing)
 ```
 
-## Terraform / Terragrunt
+---
+
+## UI operatorski (`toolkit ui`)
 
 ```bash
-terraform init
-terraform plan -out=tfplan
-terraform apply tfplan
-terraform state list
-terraform state show RESOURCE
-terraform import RESOURCE ID
-terraform force-unlock LOCK_ID
-terragrunt plan
-terragrunt apply
-terragrunt run-all plan
+toolkit ui rshop                   # otwórz http://localhost:8765
 ```
+
+- Renderuje raporty jako HTML (FinOps, tagging, audit)
+- **Kopiuj do Confluence** — rich text do schowka
+- Apply tagging per env z partial-safe rendering
+
+---
+
+## Audit packs — dostępne
+
+| Pack | Co robi |
+|------|---------|
+| `finops-basic` | idle storage, cost hotspots, tagging |
+| `tagging` | pełny audyt i plan tagowania |
+| `aws-logging` | konfiguracja logowania AWS |
+| `observability-ready` | observability check (decision layer) |
+| `ecs-delivery-competency` | dowody AWS ECS competency |
+| `terraform-standard` | zgodność TF ze standardem |
+| `cloudformation-audit` | tagging + CFN scan |
+| `llz-basic` | Landing Zone light check |
+
+---
+
+## finops-report — najczęstsze wywołania
+
+```bash
+# Executive MTD (domyślny)
+toolkit finops-report rshop --period mtd --group-by service
+
+# Techniczny z usage-type
+toolkit finops-report rshop --period mtd --group-by usage-type --audience technical
+
+# Poprzedni miesiąc
+toolkit finops-report rshop --period last-full-month --group-by service
+
+# Prod only + JSON
+toolkit finops-report rshop --period mtd --env prod --format both
+```
+
+---
+
+## DEPRECATED / LEGACY (nie używaj)
+
+```bash
+toolkit init-project   # → toolkit terraform init-project
+toolkit project boot   # → toolkit onboard
+toolkit reinit         # → toolkit project refresh
+toolkit service create # legacy ECS scaffold (pre-microservice)
+```
+
+---
 
 ## Powiązane
 
+- [[architecture-overview]]
 - [[contracts-index]]
-- [[debugging-patterns]]
+- `~/projekty/devops/devops-toolkit/docs/cli-public-api.md` — pełna klasyfikacja

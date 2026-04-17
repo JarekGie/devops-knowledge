@@ -14,6 +14,7 @@ Operacyjny vault wiedzy oparty na Obsidian dla starszego inżyniera DevOps/SRE (
 - **Brak pustych plików** — każdy plik musi zawierać realną wartość operacyjną lub gotowy do użycia szablon
 - **Nazwy plików:** kebab-case, krótkie, bez sufiksów `final`/`v2`/`new`/`copy`
 - **Linki:** używaj `[[wiki-links]]` do nawigacji między notatkami; nie powtarzaj treści w wielu miejscach
+- **Mirror dokumentacji i minikursów:** każda zmiana w `docs/` lub `docs/course/` w repo devops-toolkit musi być odzwierciedlona w vault (`60-toolkit/` lub dedykowanej notatce). Vault jest jedynym miejscem do którego użytkownik wraca — jeśli dokumentacja nie jest tam, jej nie ma.
 
 ## Zachowanie Claude podczas rozmowy
 
