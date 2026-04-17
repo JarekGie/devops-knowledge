@@ -1,0 +1,225 @@
+{
+  "main": {
+    "id": "86c8e9ace0d43818",
+    "type": "split",
+    "children": [
+      {
+        "id": "6051127e9f432d23",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "03fccb0c0a0bfb4e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "00-start-here/Kontrakt komunikacji — v1.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Kontrakt komunikacji — v1"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "e57c7251dd2c1893",
+    "type": "split",
+    "children": [
+      {
+        "id": "e80e1d3b7f37b9b4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d274c519bb3979f8",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Przeglądarka plików"
+            }
+          },
+          {
+            "id": "0ef0621b1aaf5393",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Wyszukiwarka"
+            }
+          },
+          {
+            "id": "381cfd9fc712b38f",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Ulubione"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "689956fbc2be7514",
+    "type": "split",
+    "children": [
+      {
+        "id": "dd33bd13f0b7a9c7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fbdfde7e52199413",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "00-start-here/Kontrakt komunikacji — v1.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Linki zwrotne do Kontrakt komunikacji — v1"
+            }
+          },
+          {
+            "id": "e01f0b626b647513",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "00-start-here/Kontrakt komunikacji — v1.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Łącza wychodzące od Kontrakt komunikacji — v1"
+            }
+          },
+          {
+            "id": "e91bd5ee36c9d167",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tagi"
+            }
+          },
+          {
+            "id": "bc1d7a305d2b6d51",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Wszystkie atrybuty"
+            }
+          },
+          {
+            "id": "69b0f711e6ba84bd",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "00-start-here/Kontrakt komunikacji — v1.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Konspekt Kontrakt komunikacji — v1"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Otwórz okno szybkiego wyboru": false,
+      "graph:Otwórz podgląd grafu": false,
+      "canvas:Stwórz nową tablicę": false,
+      "daily-notes:Otwórz dzisiejszy dziennik": false,
+      "templates:Wstaw szablon": false,
+      "command-palette:Otwórz listę poleceń": false,
+      "bases:Stwórz nową bazę danych": false
+    }
+  },
+  "active": "d274c519bb3979f8",
+  "lastOpenFiles": [
+    "CLAUDE.md",
+    "Bez nazwy.md",
+    "00-start-here/Kontrakt komunikacji — v1.md",
+    "60-toolkit/architecture-overview.md",
+    "README.md",
+    "templates",
+    "templates/meeting-note-template.md",
+    "inbox/first.md.md",
+    "assets",
+    "40-runbooks/ecs/ecs-deploy-stuck.md",
+    "40-runbooks/aws/s3-bucket-policy-lockout.md",
+    "templates/decision-template.md",
+    "templates/audit-template.md",
+    "templates/architecture-note-template.md",
+    "templates/incident-template.md",
+    "templates/runbook-template.md",
+    "templates/project-note-template.md",
+    "templates",
+    "90-reference/vendors/README.md",
+    "90-reference/vendors",
+    "90-reference/glossary/README.md",
+    "90-reference/glossary",
+    "90-reference/snippets/README.md",
+    "90-reference/snippets",
+    "90-reference/commands/README.md",
+    "90-reference/commands",
+    "90-reference",
+    "80-architecture/integration-notes.md",
+    "80-architecture/platform-principles.md",
+    "80-architecture/system-maps.md",
+    "80-architecture/decision-log.md",
+    "80-architecture/README.md",
+    "80-architecture",
+    "70-finops/reference-projects.md",
+    "70-finops/savings-ideas.md",
+    "70-finops"
+  ]
+}
