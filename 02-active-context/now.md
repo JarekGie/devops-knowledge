@@ -5,17 +5,17 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:
-Projekt:
-Status:     [ ] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
+Zadanie:    devops-toolkit — implementacja FinOps sanitizer (stub → działający kod)
+Projekt:    devops-toolkit (~/projekty/devops/devops-toolkit)
+Status:     [x] w toku  [ ] zablokowany  [ ] czeka na odpowiedź
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:
-Następny krok:
-Plik / zasób:
+Ostatni krok:  git cleanup — wszystkie zmiany wypchnięte, main czysty
+Następny krok: implementacja sanitizers/sanitize-finops-findings.py (stub → kod)
+Plik / zasób:  sanitizers/sanitize-finops-findings.py (linia 3: print("TODO sanitize findings"))
 ```
 
 ## Kontekst środowiska
@@ -41,4 +41,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: <!-- wpisz datę -->*
+*Ostatnia aktualizacja: 2026-04-17*
