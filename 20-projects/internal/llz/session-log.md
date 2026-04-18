@@ -47,6 +47,33 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — Org audit read-only: mapa kont i SCP/tag policies
+
+**Co zrobiono:**
+- Read-only audit org `o-5c4d5k6io1` z profilu `mako-dc`
+- Zmapowano pełne drzewo OU: 5 top-level OU, Workloads ma sub-OU Production/NonProduction
+- Zinwentaryzowano wszystkie konta: 11 ACTIVE (scope LLZ), 5 SUSPENDED/CLOSED
+- Audyt SCP: tylko Security OU ma custom SCP (2x Control Tower guardrails), reszta = FullAWSAccess
+- Audyt Tag Policies (4 polityki na Root): `klient`, `zespol`, `typ`, `projekt` — wszystkie STALE, brakuje aktywnych projektów
+- Zidentyfikowano kluczowe findingi (patrz `org-inventory.md`)
+
+**Kluczowe findingi:**
+- Production OU (6 kont!) bez żadnych custom SCPs — zero guardrails na prod
+- Quarantine bez deny-all SCP (wzorzec zły, nieistotne bo konta CLOSED)
+- Tag policies `klient` i `projekt` zawierają tylko stare wartości (renault, brewerseye, gabon) — brakuje rshop, dacia, planodkupow, cc, booking
+- Control Tower — partial deployment (guardrails tylko Security OU, nie Workloads)
+- CC account = INVITED (zewnętrzne konto klienta w org) — niestandardowy wzorzec
+
+**Zapisano:**
+- `org-inventory.md` — pełna mapa org: drzewo OU, konta, SCP, tag policies, findingi, implikacje dla LLZ
+
+**Następna sesja:**
+- Zdecydować które konto audytować pierwsze (najprawdopodobniej AssumeRole do każdego konta Prod)
+- Zaktualizować tag policies (`klient`, `projekt`, `zespol`)
+- Rozstrzygnąć pytania otwarte: kontekst Admin MakoLab, CC account
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
