@@ -88,6 +88,30 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — fix apply-pack tagging (PR #53)
+
+**Co zrobiono:**
+- Zidentyfikowano 3 bugi w `tools/finops_tagging/stack-tag-updater.py` podczas tagowania rshop dev
+- Branch: `fix/stack-tag-updater-safety-check`
+- Fix 1: `_inspect_changes()` — tag-only CFN propagation jest teraz safe (był blokowany)
+- Fix 2: `CAPABILITY_NAMED_IAM` dodane do `create_change_set` i `update_stack`
+- Fix 3: `Project` tag value z `project_cfg["project"]` zamiast nazwy katalogu
+- 8 nowych testów jednostkowych, 130/130 pass
+- Weryfikacja na rshop dev: 11/14 zgodnych (2 słusznie zablokowane — nested CFN stacks)
+- PR #53 otwarty: `fix/stack-tag-updater-safety-check` → main
+- Git cleanup: usunięto 4 zmergowane lokalne branche
+
+**Stan na koniec:**
+- main czysty, zsynchronizowany
+- PR #53 otwarty, czeka na merge
+- rshop dev: 11/14 stacków otagowanych — pozostałe 2 (nested stacks) nie wymagają tagowania
+
+**Następna sesja:**
+- Merge PR #53
+- Uruchomić apply-pack tagging mako/rshop --env prod po merge
+
+---
+
 ## 2026-04-18 — FinOps rshop → toolkit bugs
 
 **Co zrobiono:**
