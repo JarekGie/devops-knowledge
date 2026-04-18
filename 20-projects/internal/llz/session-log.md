@@ -120,8 +120,28 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 - Tag policies: aktualne dla wszystkich aktywnych projektów
 
 **Następna sesja:**
-- Commit + push aws-cloud-platform do gitlab (pierwszy commit z rzeczywistą zawartością)
-- Zweryfikować wartości tag policies przez: toolkit audit-pack tagging (per account AssumeRole)
+- Zdecydować o `modules/platform/` w terraform-aws-modules
+- Rozstrzygnąć CC i Admin MakoLab pytania otwarte
+- Wdrożyć LLZ tag standard (klient/projekt/typ) na projektach — teraz żadne konto go nie używa
+
+---
+
+## 2026-04-18 — weryfikacja tag values + commit do gitlab
+
+**Co zrobiono:**
+- Commit + push aws-cloud-platform (886364a, 3287f4c) do gitlab
+- Weryfikacja live tagów w kontach booking (profil `booking`) i dacia (profil `dacia`)
+- Finding: żadne konto nie używa tagów `klient`/`projekt` (lowercase) — używają `Project` (PascalCase)
+- Wniosek: tag policies są bezpieczne (nie psują istniejących zasobów), ale enforcement jest martwy dopóki LLZ standard nie zostanie wdrożony
+- Poprawione wartości: `booking-online` → `booking`, `dacia` → `dacia-asystent` (zweryfikowane z live tagów)
+- Brak profilu AWS dla CC — nie można zweryfikować; `cc` zostaje jako placeholder
+
+**Stan tag policies (zweryfikowany):**
+- `klient`: booking ✓, dacia-asystent ✓, rshop (niezweryfikowany — profil rshop istnieje)
+- `projekt`: booking ✓, dacia-asystent ✓
+
+**Następna sesja:**
+- Sprawdzić rshop: `aws resourcegroupstaggingapi get-resources --profile rshop` — jakie tagi?
 - Zdecydować o `modules/platform/` w terraform-aws-modules
 - Rozstrzygnąć CC i Admin MakoLab pytania otwarte
 

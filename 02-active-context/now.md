@@ -5,27 +5,28 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    Inicjalizacja projektu LLZ w vault + planowanie
+Zadanie:    LLZ governance — aws-cloud-platform IaC
 Projekt:    LLZ (Light Landing Zone) — MakoLab platform standard
-Status:     Vault gotowy, planowanie onboardingu w toku
+Status:     SCP + tag policies LIVE w AWS (2026-04-18), repo na gitlab
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  Vault LLZ zainicjalizowany:
-               20-projects/internal/llz/context.md
+Ostatni krok:  terraform apply + push do gitlab (886364a, 3287f4c)
+               SCP live: quarantine deny-all (p-wxsdn4cy), workloads baseline (p-flr98jkj)
+               Tag policies zaktualizowane + wartości zweryfikowane live
+
+Finding:       Żadne konto nie używa klient/projekt tagów (lowercase LLZ)
+               Używają Project/Environment (PascalCase). Enforcement martwy
+               dopóki LLZ standard nie wdrożony na projektach.
+
+Następny krok: Sprawdzić rshop tagi live (profil rshop dostępny)
+               Zdecydować o modules/platform/ w terraform-aws-modules
+               Rozstrzygnąć CC i Admin MakoLab
+
+Pliki:         ~/projekty/mako/aws-projects/aws-cloud-platform/organization/governance/
                20-projects/internal/llz/session-log.md
-               20-projects/internal/llz/progress-tracker.md
-               60-toolkit/llz-audit.md (mirror docs)
-
-Kontekst:      rshop tagging DONE (dev 11/14, prod 12/13 compliant)
-               ALB+CF logging: backlog, przemyślenie w toku
-               PR #53, #54, #55 zmergowane
-
-Następny krok: Inwentaryzacja projektów Terraform → uruchomić audit-pack llz-basic
-Plik / zasób:  20-projects/internal/llz/context.md
-               20-projects/clients/mako/finops-rshop.md (backlog logging)
 ```
 
 ## Kontekst środowiska
@@ -51,4 +52,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-18 12:15 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-18 12:25 — sesja aktywna*
