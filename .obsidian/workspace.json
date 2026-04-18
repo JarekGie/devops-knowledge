@@ -224,6 +224,8 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "40-runbooks/aws/iam-access-issue.md",
+    "40-runbooks/aws/cfn-alb-safe-tagging.md",
     "20-projects/internal/llz/context.md",
     "20-projects/internal/llz/ideas.md",
     "02-active-context/now.md",
@@ -253,9 +255,7 @@
     "10-areas/business/README.md",
     "10-areas/obsidian/plugin-terminal.md",
     "10-areas/obsidian/index.md",
-    "10-areas/obsidian/git-sync.md",
     "10-areas/obsidian",
-    "60-toolkit/minikurs-self-test.md",
     "Bez nazwy.canvas",
     "templates",
     "assets",
