@@ -127,7 +127,40 @@ Stacki ze zdefiniowanymi tagami explicite w szablonie (ECS child stacks) przesz�
 
 **Toolkit działa poprawnie** — PR #53 (changeset safety + CAPABILITY_NAMED_IAM) i PR #54 (ENV= forwarding) zmergowane.
 
-## Następne kroki
+## Backlog — observability gaps (toolkit audit-pack aws-logging, 2026-04-18)
+
+### Findings
+
+| ID | Zasób | Problem | Priorytet |
+|----|-------|---------|-----------|
+| LOG-001/002 | prod-ALB, dev-ALB | access_logs NOT_ENABLED | HIGH |
+| LOG-003–006 | 4× CloudFront dystrybucje | standard_logging NOT_ENABLED | HIGH |
+| LOG-007–009 | 3× VPC | flow_logs NOT_ENABLED | HIGH |
+
+### Wycena AWS (eu-central-1, orientacyjna)
+
+**ALB access logs → S3**
+- Delivery: **bezpłatne** (AWS nie pobiera za dostarczanie logów ALB do S3)
+- S3 storage: ~1–5 GB/dzień × 2 ALB = ~$1–4/miesiąc
+- **Łącznie: ~$1–4/mies.**
+
+**CloudFront standard logging → S3**
+- Delivery: **bezpłatne**
+- S3 storage: ~0.1–1 GB/dzień × 4 dystrybucje = <$1/miesiąc
+- **Łącznie: <$1/mies.**
+
+**VPC Flow Logs — zależy od celu:**
+- → CloudWatch Logs: $0.50/GB ingested — przy ruchu rshop (~1–3 GB/dzień/VPC) = **$45–135/mies. za 3 VPC** ⚠️
+- → S3: storage ~$0.023/GB/mies. — **~$2–8/mies. za 3 VPC** ✓ rekomendowane
+- Analiza: S3 + Athena zamiast CloudWatch Logs Insights
+
+### Rekomendacja implementacji
+
+1. **ALB + CloudFront** — włączyć natychmiast, koszt pomijalny, S3 bucket wspólny
+2. **VPC Flow Logs do S3** (nie CloudWatch) — $2–8/mies., bezpieczne, Athena do analizy
+3. Jeden S3 bucket `rshop-logs-<env>` dla wszystkich logów → lifecycle policy 90 dni
+
+### Następne kroki
 
 - [ ] Otagować root `dev` i `prod` przez IaC (dodać tagi `Project=rshop`, `Environment=<env>` w szablonie root stack)
 - [ ] Wyjaśnić różnicę w `root-dev.yml` — czy zmiana jest gotowa do deploy?
