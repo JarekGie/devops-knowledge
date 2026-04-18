@@ -203,6 +203,42 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — CFN tagging deployment na bbmt: incydent i RCA
+
+**Co zrobiono:**
+- Dodano LLZ Tags do ROOT.yml nested stacków (VPC, SG, S3, DB, Redis, ECS, RMQ, ALB) — bez CFStack
+- Wgrano ROOT.yml i REDIS.yml na S3 `planodkupow-cf` (bucket wersjonowany)
+- Deployment QA: Replace existing template → `https://planodkupow-cf.s3.eu-central-1.amazonaws.com/ROOT.yml`
+
+**Kluczowe odkrycia:**
+- "Use existing template" w konsoli AWS używa wersji przechowywanej w CFN, NIE pobiera z S3 — wymagane "Replace existing template"
+- "Replace existing template" triggeruje update WSZYSTKICH nested stacków, nie tylko zmodyfikowanych — strategia "pomijamy ALBStack" działa tylko gdy template nie jest podmieniony
+- ALBStack i CFStack zaktualizowały się mimo braku Tags w poprzednim deploy (Replace = wszystko)
+
+**Incydent — Redis EOL:**
+- RedisStack → `UPDATE_FAILED`: `Cannot find version 5.0.0 for redis — InvalidParameterCombination`
+- Redis 5.0.0 wycofany przez AWS (EOL), live klastry już na 5.0.6 (ręcznie zupgradowane, drift z template)
+- Fix: `REDIS.yml` → `EngineVersion: 5.0.6` (wyrównanie do live state, wgrane na S3)
+- DBStack → `UPDATE_FAILED` (anulowany, nie własna awaria)
+
+**Stan po incydencie:**
+- planodkupow-qa: `UPDATE_ROLLBACK_IN_PROGRESS` — zakleszczony na VPCStack rollback
+- VPCStack: `UPDATE_ROLLBACK_IN_PROGRESS` od 18:32:22 — zero eventów po tym, deadlock
+- `continue-update-rollback` niedostępne (działa tylko na `UPDATE_ROLLBACK_FAILED`)
+- Czekamy na timeout CFN (30-60 min) → przejście do `UPDATE_ROLLBACK_FAILED` → odblokowanie
+
+**Następny krok po odblokowaniu:**
+1. Sprawdzić status: `aws cloudformation describe-stacks --stack-name planodkupow-qa --profile plan --query 'Stacks[0].StackStatus' --output text`
+2. Jak `UPDATE_ROLLBACK_FAILED`: `aws cloudformation continue-update-rollback --stack-name planodkupow-qa --resources-to-skip VPCStack --profile plan --region eu-central-1`
+3. Jak `UPDATE_ROLLBACK_COMPLETE`: wgrać poprawiony ROOT.yml + REDIS.yml → deploy QA od nowa
+
+**Pliki zmienione lokalnie i na S3:**
+- `infra-bbmt/cloudformation/ROOT.yml` — Tags na 8 nested stackach (bez CFStack), wgrane na S3
+- `infra-bbmt/cloudformation/REDIS.yml` — EngineVersion: 5.0.6, wgrane na S3
+- Poprzednia wersja ROOT.yml na S3: `VersionId: Qn8EJ.mwtuYz43GF1JEl.JeV6t2OOsEQ` (2023-06-15)
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]

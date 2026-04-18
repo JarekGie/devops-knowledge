@@ -5,26 +5,33 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    LLZ — toolkit check na infra-bbmt
+Zadanie:    infra-bbmt CFN tagging — incydent QA, czekamy na rollback
 Projekt:    LLZ (Light Landing Zone) — MakoLab platform standard
-Status:     DONE na dziś (2026-04-18)
+Status:     BLOCKED — planodkupow-qa zakleszczony na rollback VPCStack
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  toolkit check na infra-bbmt — pełna analiza tagowania
-               104 zasoby: 92 mają Environment+Project, brakuje Owner/ManagedBy/CostCenter
-               12 zasobów: 0 tagów (SGs, route table, VPC endpoints)
-               CFN_TAG_003: ROOT.yml nested stacki bez LLZ tags (fix = tag-only update, bezpieczny)
-               project.yaml naprawiony: planodkupow dodane do project.values
+Ostatni krok:  Deployment QA z Tags na nested stackach + fix Redis 5.0.6
+               Padł na Redis EOL (5.0.0) — fixed REDIS.yml → 5.0.6 (wgrane na S3)
+               VPCStack rollback deadlock — czekamy na UPDATE_ROLLBACK_FAILED
 
-Następny krok: apply-pack tagging na infra-bbmt (104 zasoby, bezpieczne bez CFN)
-               CFN ROOT.yml tags — maintenance window z teamem
-               AWS Config org aggregator (~$3-5/mies. — decyzja)
+Następny krok: Sprawdzić status planodkupow-qa:
+               aws cloudformation describe-stacks --stack-name planodkupow-qa \
+                 --profile plan --query 'Stacks[0].StackStatus' --output text
 
-Pliki:         ~/projekty/mako/aws-projects/infra-bbmt/.devops-toolkit/project.yaml
-               ~/projekty/devops/devops-toolkit/toolkit/commands/doctor.py
+               Jak UPDATE_ROLLBACK_FAILED:
+               aws cloudformation continue-update-rollback \
+                 --stack-name planodkupow-qa --resources-to-skip VPCStack \
+                 --profile plan --region eu-central-1
+
+               Jak UPDATE_ROLLBACK_COMPLETE:
+               deploy QA od nowa z Replace template + ROOT.yml z S3
+
+Pliki:         ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/ROOT.yml (zmieniony)
+               ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/REDIS.yml (zmieniony, 5.0.6)
+               S3 poprzednia wersja ROOT.yml: VersionId Qn8EJ.mwtuYz43GF1JEl.JeV6t2OOsEQ
                20-projects/internal/llz/session-log.md
 ```
 
@@ -51,4 +58,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-18 20:58 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-18 21:07 — sesja aktywna*
