@@ -94,6 +94,19 @@ toolkit audit-pack tagging --project-root ~/projekty/mako/<infra-cfn>
 toolkit apply-pack tagging mako/<projekt> --env <env>
 ```
 
+**Standard tagowania LLZ (oparty na rzeczywistym użyciu, audit 2026-04-18):**
+
+| Tag key | Wymagane | Dozwolone wartości | Uwagi |
+|---------|----------|--------------------|-------|
+| `Project` | TAK | rshop, booking, dacia-asystent, planodkupow, cc, akcesoria2, platform, drp-tfs | +nowe projekty przy onboardingu |
+| `Environment` | TAK | dev, qa, uat, prod, test, poc | |
+| `ManagedBy` | zalecane | Terraform, cloudformation, manual | |
+| `Owner` | zalecane | DC-devops, DC/IT | |
+
+**Enforced przez AWS Tag Policies** (org-wide, Root):
+- `llz-project` (p-95oz353nfp) — waliduje wartości `Project`
+- `llz-environment` (p-9554uyl3h8) — waliduje wartości `Environment`
+
 CFN tagging contract (LLZ v1):
 - `CFN_TAG_001` ERROR: `Tags` na resource type bez CFN schema support
 - `CFN_TAG_002` ERROR: zmiana tagów na frozen resource
