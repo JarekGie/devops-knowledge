@@ -147,6 +147,31 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — Centralne logowanie i dashboardy (CW cross-account observability)
+
+**Co zrobiono:**
+- Zinwentaryzowano konta org: `makolab_monitoring` CLOSED (nie do reaktywacji), użyto `monitoring-nagios-bot` (814662658531)
+- Potwierdzono dostęp do `logArchive` (771354139056) i `monitoring-tbd` (814662658531)
+- Odkryto istniejący CloudTrail org trail (`org-baseline-cloudtrail`) → S3 w LogArchiveNew ✓
+- Odkryto istniejący OAM sink `observabilitySink` w monitoring-nagios-bot (ręcznie tworzony)
+- Stworzono stack Terraform: `aws-cloud-platform/platform/monitoring/`
+- Zaimportowano istniejące zasoby (sink, policy, linki rshop i booking)
+- Dodano brakujące linki: dacia (nowy), planodkupow (import + update)
+- Zaktualizowano wszystkie linki: Metric → Metric + Logs + XRay
+- Sink policy zmieniona z per-account ARN → org-wide `PrincipalOrgID`
+
+**Stan na koniec:**
+- CW cross-account observability: 4 konta (rshop, booking, planodkupow, dacia) → sink w monitoring-nagios-bot
+- Wszystko pod Terraformem, state w `864277686382-terraform-state-bucket`
+- Koszt: $0
+
+**Następna sesja:**
+- Stworzyć dashboardy CW w koncie monitoring
+- Opcjonalnie: AWS Config org aggregator (~$3-5/mies.)
+- Opcjonalnie: CW Logs → S3 eksport (audit trail logów)
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
