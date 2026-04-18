@@ -252,6 +252,12 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "60-toolkit/observability-ready.md",
+    "20-projects/internal/llz/wymagania-makolab/propozycja-wdrozenia.md",
+    "20-projects/internal/llz/wymagania-makolab/diagram.md",
+    "20-projects/internal/llz/wymagania-makolab/analiza-ryzyka.md",
+    "20-projects/internal/llz/wymagania-makolab/standaryzacja-przygotowania.md",
+    "20-projects/internal/llz/wymagania-makolab/standaryzacja-propozycje.md",
     "20-projects/internal/llz/wymagania-makolab",
     "60-toolkit/llz-audit.md",
     "20-projects/internal/llz/progress-tracker.md",
@@ -278,16 +284,10 @@
     "60-toolkit/minikurs-self-test.md",
     "60-toolkit/minikurs-shuttle-audit.md",
     "60-toolkit/minikurs-operator.md",
-    "10-areas/obsidian-git-setup.md",
-    "20-projects/internal/devops-toolkit/session-log.md",
     "Bez nazwy.canvas",
-    "CLAUDE.md",
-    "00-start-here/Kontrakt komunikacji — v1.md",
-    "Bez nazwy.md",
     "templates",
     "assets",
     "templates",
-    "90-reference/vendors",
-    "90-reference/glossary"
+    "90-reference/vendors"
   ]
 }
