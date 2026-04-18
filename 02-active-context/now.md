@@ -5,7 +5,7 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    LLZ — centralne logowanie + dashboardy CW
+Zadanie:    LLZ — toolkit check na infra-bbmt
 Projekt:    LLZ (Light Landing Zone) — MakoLab platform standard
 Status:     DONE na dziś (2026-04-18)
 ```
@@ -13,17 +13,18 @@ Status:     DONE na dziś (2026-04-18)
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  CloudWatch dashboardy LIVE w koncie monitoring-nagios-bot
-               5 dashboardów: llz-platform-overview, rshop-production,
-               booking-production, dacia-production, bbmt-environments
-               OAM sink + 4 linki (rshop, booking, planodkupow, dacia) — Terraform
-               Wszystkie repo spushed i czyste.
+Ostatni krok:  toolkit check na infra-bbmt — pełna analiza tagowania
+               104 zasoby: 92 mają Environment+Project, brakuje Owner/ManagedBy/CostCenter
+               12 zasobów: 0 tagów (SGs, route table, VPC endpoints)
+               CFN_TAG_003: ROOT.yml nested stacki bez LLZ tags (fix = tag-only update, bezpieczny)
+               project.yaml naprawiony: planodkupow dodane do project.values
 
-Następny krok: AWS Config org aggregator (Faza 1, ~$3-5/mies. — wymaga decyzji)
-               CW Logs → S3 eksport (audit trail)
-               LLZ onboarding projektów Terraform (llz-basic audit)
+Następny krok: apply-pack tagging na infra-bbmt (104 zasoby, bezpieczne bez CFN)
+               CFN ROOT.yml tags — maintenance window z teamem
+               AWS Config org aggregator (~$3-5/mies. — decyzja)
 
-Pliki:         ~/projekty/mako/aws-projects/aws-cloud-platform/platform/monitoring/
+Pliki:         ~/projekty/mako/aws-projects/infra-bbmt/.devops-toolkit/project.yaml
+               ~/projekty/devops/devops-toolkit/toolkit/commands/doctor.py
                20-projects/internal/llz/session-log.md
 ```
 
@@ -50,4 +51,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-18 19:09 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-18 19:33 — sesja aktywna*

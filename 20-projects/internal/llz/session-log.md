@@ -172,6 +172,37 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — toolkit check na infra-bbmt: analiza tagowania
+
+**Co zrobiono:**
+- Uruchomiono `toolkit check` na infra-bbmt (konto planodkupow, 333320664022)
+- Dodano `check_cfn_deployment_contexts()` do `toolkit doctor` — weryfikuje obecność `deployment_contexts` w project.yaml
+- Naprawiono project.yaml: `stack_prefixes: [planodkupow]`, `root_template: ROOT.yml`, `deployment_contexts` (qa/uat/dev), `finops` tiers (bez prod)
+- Zidentyfikowano i przeanalizowano 104 zasoby flagowane przez audit tagowania
+
+**Wyniki analizy 104 zasobów:**
+- 92 zasoby: mają `Environment`+`Project: planodkupow` — brakuje `Owner`, `ManagedBy`, `CostCenter`
+- 12 zasobów: 0 tagów — SGs (6x), route table (1x), VPC endpoints (5x)
+- Żaden zasób NIE używa starych kluczy (Client/Team/Provisioner) — te są TYLKO na CFN stackach, nie propagują się do zasobów
+- Wszystkie 104 zasoby można otagować przez API bez dotykania CFN
+
+**CFN_TAG_003 (10 warnings):**
+- bbmt ROOT.yml nested stacki nie mają explicit Tags (w przeciwieństwie do infra-rshop gdzie każdy nested stack ma pełne LLZ tags)
+- Tagi w bbmt przychodzą przez Jenkins pipeline ze starymi kluczami (Client/Team/Provisioner/Environment/Project)
+- Fix: dodanie Tags do nested stacków w ROOT.yml — to tag-only update (nie replace), bezpieczne dla ALB i CloudFront
+- Wymaga koordynacji z teamem przed wdrożeniem
+
+**Poprawki w project.yaml (lokalne, gitignore):**
+- `tag_semantics.project.values`: dodano `planodkupow` (bo zasoby mają `Project: planodkupow`, nie `bbmt`)
+
+**Następna sesja:**
+- Zdecydować czy/kiedy dodać LLZ tags do ROOT.yml nested stacków (maintenance window)
+- Uruchomić `toolkit apply-pack tagging --dry-run` → review → apply (bezpieczne, bez CFN)
+- Sprawdzić rshop live tags (pending z poprzedniej sesji)
+- AWS Config org aggregator (~$3-5/mies.) — decyzja
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
