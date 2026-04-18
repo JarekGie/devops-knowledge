@@ -51,4 +51,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-17 — koniec sesji devops-toolkit*
+*Ostatnia aktualizacja: 2026-04-18 12:09 — sesja aktywna*
