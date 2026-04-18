@@ -5,18 +5,19 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    — (brak aktywnego)
-Projekt:    —
-Status:     —
+Zadanie:    Naprawa toolkit — changeset safety check + CAPABILITY_NAMED_IAM
+Projekt:    devops-toolkit
+Status:     do rozpoczęcia
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  Obsidian — konfiguracja terminala (zsh+oh-my-zsh, MesloLGS NF, newTab)
-               iOS sync — temat otwarty, opcje omówione (Working Copy / iCloud / Obsidian Sync)
-Następny krok: decyzja o iOS sync
-Plik / zasób:  ~/projekty/devops/devops-toolkit/tests/unit/test_init_project.py:1396
+Ostatni krok:  apply-pack tagging mako/rshop --env dev → 10/10 stacków zablokowanych
+               Zidentyfikowano 2 bugi w stack-tag-updater.py
+Następny krok: 1. validate_tag_only_changeset — tag-only detection
+               2. create_change_set — dodać Capabilities: CAPABILITY_NAMED_IAM
+Plik / zasób:  ~/projekty/devops/devops-toolkit/tools/finops_tagging/stack-tag-updater.py
 ```
 
 ## Kontekst środowiska

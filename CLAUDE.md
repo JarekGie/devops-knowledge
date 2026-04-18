@@ -45,7 +45,7 @@ Mapowanie typów rozmów na katalogi:
 
 | Temat rozmowy | Gdzie zapisać |
 |---------------|---------------|
-| Problem z projektem / decyzja projektowa | `20-projects/internal/<projekt>/` lub `20-projects/client/<klient>/` |
+| Problem z projektem / decyzja projektowa | `20-projects/internal/<projekt>/` lub `20-projects/clients/<klient>/` |
 | Incydent, awaria, diagnoza | `40-runbooks/` lub `02-active-context/` |
 | Nowa komenda / snippet / wzorzec | `90-reference/` lub `50-patterns/` |
 | Standard lub konwencja | `30-standards/` |
@@ -70,7 +70,7 @@ Mapowanie typów rozmów na katalogi:
 01-inbox/            ← tymczasowe przechwytywanie (nie archiwum)
 02-active-context/   ← żywy dashboard operacyjny
 10-areas/            ← aws/, terraform/, cicd/, observability/, cloud-support/, business/
-20-projects/         ← internal/, client/, reference/
+20-projects/         ← internal/, clients/, reference/
 30-standards/        ← aws-tagging, iac, cicd, naming, documentation
 40-runbooks/         ← aws/, ecs/, kubernetes/, terraform/, networking/, incidents/
 50-patterns/         ← debugging, migration, incident-analysis, finops, reusable-prompts

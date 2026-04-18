@@ -99,9 +99,27 @@ Zmiana wygląda jak celowe złagodzenie walidacji parametrów DB (obsługa puste
 - `dev/migration/` na S3 zawiera dwa pliki z 2026-04-06 19:38 (późniejsze niż reszta) — artefakty ręcznego importu `dev-alb-ownership`
 - Cost Explorer dla tego konta działa na linked account — brak dostępu do `ListCostAllocationTags` (AccessDeniedException)
 
+## Wynik apply-pack tagging (2026-04-18)
+
+apply-pack zablokował **10/10 stacków** — żadne zmiany nie zostały wprowadzone (środowisko bezpieczne).
+
+**Przyczyna blokad:**
+
+| Problem | Stacki | Opis |
+|---------|--------|------|
+| `BLOCKED_RESOURCE_CHANGE` | 9 stacków | CFN propaguje tagi stack-level do wszystkich zasobów → changeset shows resource modifications — toolkit blokuje |
+| `BLOCKED_CAPABILITY_REQUIRED` | `dev-IAMStack` | `create_change_set` nie przekazuje `CAPABILITY_NAMED_IAM` — bug w toolkicie |
+
+Stacki ze zdefiniowanymi tagami explicite w szablonie (ECS child stacks) przeszły jako `already compliant`. Wszystkie pozostałe zablokowane przez propagację.
+
+**Root cause:** safety check w toolkicie (`validate_tag_only_changeset`) blokuje każdą modyfikację zasobu, włącznie z dodaniem tagu. Nie odróżnia tag-only change od zmiany konfiguracji.
+
+→ Wymaga poprawki w toolkicie (`tools/finops_tagging/stack-tag-updater.py`) — temat przeniesiony do devops-toolkit.
+
 ## Następne kroki
 
 - [ ] Wyjaśnić różnicę w `root-dev.yml` — czy zmiana jest gotowa do deploy?
-- [ ] Uruchomić `toolkit apply-pack tagging mako/rshop --env dev` (po weryfikacji root-dev)
-- [ ] Uruchomić to samo dla `--env prod`
+- [ ] **Zablokowane:** `toolkit apply-pack tagging mako/rshop --env dev` — wymaga najpierw naprawy toolkitu (changeset check + CAPABILITY_NAMED_IAM)
+- [ ] Po naprawie toolkitu: ponowić apply-pack dev, potem prod
+- [ ] ECS PropagateTags — osobna zmiana szablonów, po tagowaniu stacków
 - [ ] Rozważyć deployment `root-dev.yml` na S3 jeśli zmiana potwierdzona

@@ -88,6 +88,28 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — FinOps rshop → toolkit bugs
+
+**Co zrobiono:**
+- Sesja FinOps rshop: raport MTD ($584.83, +30.1%), audit tagging runtime (11/27 stacków bez tagów)
+- Znaleziono i naprawiono bug: `stack-tag-updater.py:115` — `Project = infra-rshop` zamiast `rshop` (fix: `project_cfg.get("project") or project`)
+- Uruchomiono apply-pack tagging dev → 10/10 stacków zablokowanych przez safety check
+
+**Zidentyfikowane bugi do naprawy:**
+1. `validate_tag_only_changeset` zbyt konserwatywny — blokuje tag-only propagation (resource change w changesecie). Wymaga inspekcji `ChangeSource` / `Details` i przepuszczenia zmian gdzie jedyną zmianą są tagi
+2. `create_change_set` nie przekazuje `Capabilities: [CAPABILITY_NAMED_IAM]` → IAM stacki zawsze blokowane
+
+**Stan na koniec:**
+- `tools/finops_tagging/stack-tag-updater.py` — fix Project tag value (w main? do sprawdzenia)
+- Tagowanie rshop dev zablokowane do czasu naprawy toolkitu
+
+**Następna sesja:**
+- Naprawić `validate_tag_only_changeset` — tag-only changeset detection
+- Naprawić `CAPABILITY_NAMED_IAM` w create_change_set
+- Ponowić apply-pack tagging mako/rshop --env dev po naprawie
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]
