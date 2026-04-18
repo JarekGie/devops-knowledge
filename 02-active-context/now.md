@@ -5,23 +5,27 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    rshop tagging — ZAKOŃCZONE
-Projekt:    devops-toolkit / mako rshop
-Status:     DONE (z jednym wyjątkiem — patrz niżej)
+Zadanie:    Inicjalizacja projektu LLZ w vault + planowanie
+Projekt:    LLZ (Light Landing Zone) — MakoLab platform standard
+Status:     Vault gotowy, planowanie onboardingu w toku
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  apply-pack tagging mako/rshop --env prod wykonany
-               dev:  11/14 compliant (3 nested-stack roots — blocked słusznie)
-               prod: 12/13 compliant (root "prod" stack — 0 tagów, blocked)
+Ostatni krok:  Vault LLZ zainicjalizowany:
+               20-projects/internal/llz/context.md
+               20-projects/internal/llz/session-log.md
+               20-projects/internal/llz/progress-tracker.md
+               60-toolkit/llz-audit.md (mirror docs)
 
-Pozostałe:     root "prod" + root "dev" mają 0 tagów — wymagają tagu w IaC
-               (toolkit nie może otagować root nested-stack przez safety check)
+Kontekst:      rshop tagging DONE (dev 11/14, prod 12/13 compliant)
+               ALB+CF logging: backlog, przemyślenie w toku
+               PR #53, #54, #55 zmergowane
 
-Następny krok: zdecydować co dalej (ALB scaffold? devops-toolkit-ui sync? inna praca)
-Plik / zasób:  20-projects/clients/mako/finops-rshop.md
+Następny krok: Inwentaryzacja projektów Terraform → uruchomić audit-pack llz-basic
+Plik / zasób:  20-projects/internal/llz/context.md
+               20-projects/clients/mako/finops-rshop.md (backlog logging)
 ```
 
 ## Kontekst środowiska
