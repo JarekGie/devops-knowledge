@@ -5,20 +5,23 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    Merge PR #54 + apply-pack tagging prod rshop
+Zadanie:    rshop tagging — ZAKOŃCZONE
 Projekt:    devops-toolkit / mako rshop
-Status:     PR #54 otwarty, czeka na merge
+Status:     DONE (z jednym wyjątkiem — patrz niżej)
 ```
 
 ## Gdzie skończyłem
 
 ```
-Ostatni krok:  PR #54 otwarty (fix ENV= not passed to make)
-               PR #53 już zmergowany (stack-tag-updater safety + CAPABILITY fix)
-               rshop dev: 11/14 stacków otagowanych (3 nested CFN — blocked słusznie)
-Następny krok: 1. Merge PR #54
-               2. toolkit apply-pack tagging mako/rshop --env prod
-Plik / zasób:  https://github.com/JarekGie/devops-toolkit/pull/54
+Ostatni krok:  apply-pack tagging mako/rshop --env prod wykonany
+               dev:  11/14 compliant (3 nested-stack roots — blocked słusznie)
+               prod: 12/13 compliant (root "prod" stack — 0 tagów, blocked)
+
+Pozostałe:     root "prod" + root "dev" mają 0 tagów — wymagają tagu w IaC
+               (toolkit nie może otagować root nested-stack przez safety check)
+
+Następny krok: zdecydować co dalej (ALB scaffold? devops-toolkit-ui sync? inna praca)
+Plik / zasób:  20-projects/clients/mako/finops-rshop.md
 ```
 
 ## Kontekst środowiska

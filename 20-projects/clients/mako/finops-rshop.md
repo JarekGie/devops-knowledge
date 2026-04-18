@@ -116,10 +116,20 @@ Stacki ze zdefiniowanymi tagami explicite w szablonie (ECS child stacks) przesz�
 
 → Wymaga poprawki w toolkicie (`tools/finops_tagging/stack-tag-updater.py`) — temat przeniesiony do devops-toolkit.
 
+## Stan taggowania (2026-04-18, po wszystkich fixach)
+
+| Env  | Stacks compliant | Blocked | Uwagi |
+|------|-----------------|---------|-------|
+| dev  | 11/14           | 3       | 2× nested ECSStack, 1× root `dev` (0 tagów) |
+| prod | 12/13           | 1       | root `prod` (0 tagów) |
+
+**Root stacki (`dev`, `prod`) zablokowane** — mają 0 tagów, ale próba dodania kaskaduje na wszystkie nested stacki (safety check słusznie blokuje). Wymagają tagowania przez IaC (w szablonie deployującym root stack).
+
+**Toolkit działa poprawnie** — PR #53 (changeset safety + CAPABILITY_NAMED_IAM) i PR #54 (ENV= forwarding) zmergowane.
+
 ## Następne kroki
 
+- [ ] Otagować root `dev` i `prod` przez IaC (dodać tagi `Project=rshop`, `Environment=<env>` w szablonie root stack)
 - [ ] Wyjaśnić różnicę w `root-dev.yml` — czy zmiana jest gotowa do deploy?
-- [ ] **Zablokowane:** `toolkit apply-pack tagging mako/rshop --env dev` — wymaga najpierw naprawy toolkitu (changeset check + CAPABILITY_NAMED_IAM)
-- [ ] Po naprawie toolkitu: ponowić apply-pack dev, potem prod
-- [ ] ECS PropagateTags — osobna zmiana szablonów, po tagowaniu stacków
+- [ ] ECS PropagateTags — osobna zmiana szablonów (Fargate cost attribution wymaga `PropagateTags: SERVICE`)
 - [ ] Rozważyć deployment `root-dev.yml` na S3 jeśli zmiana potwierdzona

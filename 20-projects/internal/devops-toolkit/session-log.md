@@ -134,6 +134,25 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — apply-pack tagging mako/rshop prod (finalizacja)
+
+**Co zrobiono:**
+- PR #54 zmergowany (`fix/tagging-env-not-passed-to-make`)
+- Uruchomiono `toolkit apply-pack tagging mako/rshop --env prod`
+- Wynik: 12/13 stacków already compliant, 1 blocked (root `prod` — nested stacks)
+- Root `prod` stack: 0 tagów, changeset cascaduje do ALBStack/CFStack/DBStack/ECSStack/IAMStack/S3Stack/SGStack/VPCStack → safety check słusznie blokuje
+- Root stack wymaga tagowania przez IaC (nie możliwe przez toolkit ze względu na nested-stack propagation)
+
+**Stan końcowy rshop tagging:**
+- dev: 11/14 compliant (3 nested-stack roots blocked)
+- prod: 12/13 compliant (root `prod` blocked)
+- Toolkit działa poprawnie — ograniczenie to architektura CFN nested stacks
+
+**Następna sesja:**
+- Zdecydować kolejne zadanie: ALB scaffold, devops-toolkit-ui sync, lub inne
+
+---
+
 ## 2026-04-18 — fix tagging ENV not passed to make (PR #54)
 
 **Co zrobiono:**
