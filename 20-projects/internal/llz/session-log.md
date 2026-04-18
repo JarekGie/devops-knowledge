@@ -96,9 +96,33 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 - `tag_zespol` — zaktualizuj po zebraniu aktualnych nazw zespołów
 
 **Następna sesja:**
-- `terraform init && terraform plan` — zobaczyć co Terraform importuje vs tworzy
 - Zweryfikować wartości tag policies przez: toolkit audit-pack tagging (per account AssumeRole)
 - Zdecydować o dodaniu `modules/platform/` do terraform-aws-modules (pattern dla org projects)
+- Rozstrzygnąć CC i Admin MakoLab pytania otwarte
+- Commit + push aws-cloud-platform do gitlab
+
+---
+
+## 2026-04-18 — terraform apply: SCP + tag policies LIVE
+
+**Co zrobiono:**
+- `terraform apply` na `organization/governance/` — sukces, 0 błędów
+- Zaaplikowane: 8 import, 4 add, 4 change, 0 destroy
+- SCP `llz-quarantine-deny-all` (p-wxsdn4cy) → Quarantine OU
+- SCP `llz-workloads-baseline` (p-flr98jkj) → Workloads OU (Production + NonProduction dziedziczą)
+- Tag policies zaimportowane do state + zaktualizowane: klient (+6 wartości), projekt (+7 wartości)
+- Koszt: $0/mies. (Organizations SCP i tag policies są free)
+- Infracost skonfigurowany w workflow (tfplan)
+
+**Stan AWS po apply:**
+- Production OU: ma teraz guardrails (CloudTrail/Config nie można wyłączyć, S3 public access zablokowany)
+- Quarantine OU: deny-all SCP (wzorzec na przyszłość)
+- Tag policies: aktualne dla wszystkich aktywnych projektów
+
+**Następna sesja:**
+- Commit + push aws-cloud-platform do gitlab (pierwszy commit z rzeczywistą zawartością)
+- Zweryfikować wartości tag policies przez: toolkit audit-pack tagging (per account AssumeRole)
+- Zdecydować o `modules/platform/` w terraform-aws-modules
 - Rozstrzygnąć CC i Admin MakoLab pytania otwarte
 
 ---
