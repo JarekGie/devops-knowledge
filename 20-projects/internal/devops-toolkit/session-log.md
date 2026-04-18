@@ -134,6 +134,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-18 — fix tagging ENV not passed to make (PR #54)
+
+**Co zrobiono:**
+- Bug: `run_dry_run` / `run_apply` w `toolkit/executors/tagging.py` używały `env` do wykrywania stacków, ale nie przekazywały `ENV=<value>` do komendy `make` → `stack-tag-updater.py` zawsze tagował z `Environment=dev`
+- Branch: `fix/tagging-env-not-passed-to-make`
+- Fix: dodano `cmd.append(f"ENV={env}")` w `run_dry_run` i `run_apply` gdy `env` jest ustawiony
+- 2 testy regresyjne: `test_dry_run_passes_env_to_make`, `test_apply_passes_env_to_make`
+- 132/132 testów pass
+- PR #54 otwarty
+
+**Stan na koniec:**
+- main zsynchronizowany (PR #53 zmergowany przed tą sesją)
+- PR #54 otwarty, czeka na merge
+- Po merge: uruchomić `toolkit apply-pack tagging mako/rshop --env prod`
+
+**Następna sesja:**
+- Merge PR #54
+- `toolkit apply-pack tagging mako/rshop --env prod`
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]
