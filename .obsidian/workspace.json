@@ -252,6 +252,8 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "20-projects/client/mako/finops-rshop.md",
+    "20-projects/client/mako",
     "02-active-context/now.md",
     "20-projects/internal/devops-toolkit/README.md",
     "60-toolkit/README.md",
@@ -281,13 +283,11 @@
     "40-runbooks/ecs/ecs-deploy-stuck.md",
     "40-runbooks/aws/s3-bucket-policy-lockout.md",
     "templates/decision-template.md",
-    "templates/audit-template.md",
     "templates",
     "90-reference/vendors",
     "90-reference/glossary",
     "90-reference/snippets",
     "90-reference/commands",
-    "90-reference",
-    "80-architecture"
+    "90-reference"
   ]
 }
