@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Fix CFN rescue in planodkupow project"
+              "title": "Terminal: ✳ Fix CFN rescue in planodkupow project"
             }
           },
           {
@@ -252,6 +252,8 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "20-projects/internal/aws-cloudops-exam/index.md",
+    "20-projects/internal/aws-cloudops-exam",
     "02-active-context/now.md",
     "02-active-context/current-focus.md",
     "02-active-context/open-loops.md",
@@ -280,14 +282,12 @@
     "20-projects/internal/llz/wymagania-makolab/standaryzacja-przygotowania.md",
     "20-projects/internal/llz/wymagania-makolab/standaryzacja-propozycje.md",
     "20-projects/internal/llz/wymagania-makolab",
-    "60-toolkit/llz-audit.md",
     "20-projects/internal/llz",
     "20-projects/clients/mako",
     "20-projects/clients",
     "20-projects/client/mako",
     "10-areas/obsidian",
     "Bez nazwy.canvas",
-    "templates",
-    "assets"
+    "templates"
   ]
 }
