@@ -76,6 +76,20 @@
               "icon": "lucide-file",
               "title": "planodkupow-qa-cfn-rebuild"
             }
+          },
+          {
+            "id": "c83243b5c3a3bff1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "CLAUDE.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "CLAUDE"
+            }
           }
         ]
       }
@@ -252,6 +266,7 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "CLAUDE.md",
     "40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md",
     "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "20-projects/clients/mako/maspex/troubleshooting.md",
@@ -284,7 +299,6 @@
     "60-toolkit/README.md",
     "60-toolkit/reports/README.md",
     "60-toolkit/finops-reporting.md",
-    "60-toolkit/minikurs-finops.md",
     "10-areas/obsidian",
     "Bez nazwy.canvas",
     "templates",
