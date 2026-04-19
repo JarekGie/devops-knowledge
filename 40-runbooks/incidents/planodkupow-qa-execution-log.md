@@ -231,7 +231,41 @@ aws cloudformation delete-stack \
 
 **Odkrycie podczas fix 2:** SG `bastionhost` (sg-0c2ca2c65177931bc) w VPC — manualna, brak ENI (orphan). Zapisana w backup.
 
-### Oczekiwany Fail 3: VPCStack
+### Fail 3: SecGroupStack — TaskSG (10:31)
+
+```
+TaskSG DELETE_FAILED: "resource sg-02fc97a94aa3a036a has a dependent object"
+```
+
+**Przyczyna:** 4 manualne VPC Endpoints używają TaskSG — niewidoczne podczas audytu (brak tagów CFN):
+
+| Endpoint | Serwis | Tag |
+|---|---|---|
+| vpce-0f06338f894336448 | ECR API | qa-ecr-api |
+| vpce-0066f4327e86d8687 | ECR DKR | qa-ecr-dkr |
+| vpce-0dcfc106af654bae6 | Secrets Manager | qa-ecr-secret-manager |
+| vpce-093fc974c5ae750f4 | CloudWatch Logs | (brak) |
+
+Backup: `~/planodkupow-qa-backup-20260419/vpc-endpoints.json`
+
+**Fix 3:** retry z retain TaskSG + DatabaseSG:
+
+```bash
+aws cloudformation delete-stack \
+  --stack-name planodkupow-qa-SecGroupStack-1DFRR36S6WWNM \
+  --retain-resources DatabaseSG TaskSG \
+  --profile plan --region eu-central-1
+```
+
+**Wniosek dla UAT/PROD:** przed delete sprawdź czy nie ma manualnych VPC Endpoints w VPC:
+```bash
+aws ec2 describe-vpc-endpoints \
+  --filters "Name=vpc-id,Values=<VPC_ID>" \
+  --profile <profile> --region eu-central-1 \
+  --query 'VpcEndpoints[].{ID:VpcEndpointId,Service:ServiceName,Tags:Tags}'
+```
+
+### Oczekiwany Fail 4: VPCStack
 
 Po usunięciu SecGroupStack → retry root stacka → **VPCStack się wysypie** bo:
 - RDS `planodkupowqadb` nadal w VPC (subnet group `SiecDB` retainowany)
