@@ -415,8 +415,19 @@ S3Stack: S3Bucket (planodkupow-qa) i S3FileBucket (planodkupow-qa-pliki) już is
 
 **Przyczyna:** S3.yml próbuje stworzyć buckety z hardcoded nazwami, ale te buckety już istnieją (retainowaliśmy je z danymi).
 
-**Fix:** usunąć retainowane buckety LUB zaimportować je do S3Stack.
-Decyzja: **import S3 buckets** do nowego S3Stack (dane zachowane).
+**Fix:** backup danych → usunięcie bucketów → create-stack → restore danych.
+Decyzja: **backup + delete + restore** (dane zachowane, buckety odtworzone przez CFN).
+
+### Następne kroki (do wykonania po restarcie tokenów)
+
+1. Skopiuj dane z `planodkupow-qa` i `planodkupow-qa-pliki` do tymczasowych bucketów backup
+2. Usuń oba buckety (puste → CFN może je stworzyć)
+3. Usuń rollback-failed stack `planodkupow-qa` (ROLLBACK_COMPLETE)
+4. create-stack `planodkupow-qa` z tymi samymi parametrami
+5. Po CREATE_COMPLETE: skopiuj dane z backup z powrotem do nowych bucketów
+6. Usuń tymczasowe buckety backup
+
+Szczegółowy runbook: sekcja poniżej w execution logu lub [[planodkupow-qa-cfn-rebuild]] FAZA 4.
 
 ### Obrazy z ostatnich działających jobów (build .1244)
 
@@ -438,5 +449,106 @@ FrontImg:        planodkupow-qa:front.609
 ```
 
 ---
+
+## FAZA 4 — Plan odtworzenia S3 i redeploy (DO WYKONANIA)
+
+### Krok 1: Backup S3 do tymczasowych bucketów
+
+```bash
+aws s3api create-bucket \
+  --bucket planodkupow-qa-backup-main \
+  --create-bucket-configuration LocationConstraint=eu-central-1 \
+  --profile plan --region eu-central-1
+
+aws s3api create-bucket \
+  --bucket planodkupow-qa-backup-pliki \
+  --create-bucket-configuration LocationConstraint=eu-central-1 \
+  --profile plan --region eu-central-1
+
+aws s3 sync s3://planodkupow-qa s3://planodkupow-qa-backup-main \
+  --profile plan --region eu-central-1
+
+aws s3 sync s3://planodkupow-qa-pliki s3://planodkupow-qa-backup-pliki \
+  --profile plan --region eu-central-1
+
+# Weryfikacja — oczekiwane: 297 obj / 1302 obj
+aws s3 ls s3://planodkupow-qa --recursive --summarize --profile plan --region eu-central-1 | tail -2
+aws s3 ls s3://planodkupow-qa-backup-main --recursive --summarize --profile plan --region eu-central-1 | tail -2
+```
+
+### Krok 2: Opróżnij i usuń oryginalne buckety
+
+```bash
+aws s3 rm s3://planodkupow-qa --recursive --profile plan --region eu-central-1
+aws s3 rm s3://planodkupow-qa-pliki --recursive --profile plan --region eu-central-1
+aws s3api delete-bucket --bucket planodkupow-qa --profile plan --region eu-central-1
+aws s3api delete-bucket --bucket planodkupow-qa-pliki --profile plan --region eu-central-1
+```
+
+### Krok 3: Usuń ROLLBACK_COMPLETE stack
+
+```bash
+aws cloudformation delete-stack --stack-name planodkupow-qa \
+  --profile plan --region eu-central-1
+# Poczekaj na DELETE_COMPLETE (szybkie)
+```
+
+### Krok 4: create-stack
+
+```bash
+aws cloudformation create-stack \
+  --stack-name planodkupow-qa \
+  --template-url https://planodkupow-cf.s3.eu-central-1.amazonaws.com/ROOT.yml \
+  --parameters \
+    ParameterKey=Srodowisko,ParameterValue=qa \
+    ParameterKey=Domena,ParameterValue=planodkupow-qa.makotest.pl \
+    ParameterKey=Certyfikat,ParameterValue=arn:aws:acm:us-east-1:333320664022:certificate/7cac4e30-0aa1-4a5e-92ac-eec445ee6601 \
+    ParameterKey=GatewayImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:gateway.1244 \
+    ParameterKey=AuthImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:auth.1244 \
+    ParameterKey=InteropImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:interop.1244 \
+    ParameterKey=MessageImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:message.1244 \
+    ParameterKey=VehicleImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:vehicle.1244 \
+    ParameterKey=InspectionImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:inspection.1244 \
+    ParameterKey=ExpertiseImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:expertise.1244 \
+    ParameterKey=InsuranceImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:insurance.1244 \
+    ParameterKey=StorageImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:storage.1244 \
+    ParameterKey=RegistrationImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:registration.1244 \
+    ParameterKey=ReportImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:report.1244 \
+    ParameterKey=OfferImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:offer.1244 \
+    ParameterKey=FinanceImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:finance.1244 \
+    ParameterKey=FrontImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:front.609 \
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+  --profile plan --region eu-central-1
+```
+
+### Krok 5: Restore S3 po CREATE_COMPLETE
+
+```bash
+aws s3 sync s3://planodkupow-qa-backup-main s3://planodkupow-qa \
+  --profile plan --region eu-central-1
+
+aws s3 sync s3://planodkupow-qa-backup-pliki s3://planodkupow-qa-pliki \
+  --profile plan --region eu-central-1
+
+# Weryfikacja
+aws s3 ls s3://planodkupow-qa --recursive --summarize --profile plan --region eu-central-1 | tail -2
+aws s3 ls s3://planodkupow-qa-pliki --recursive --summarize --profile plan --region eu-central-1 | tail -2
+
+# Cleanup backup
+aws s3 rm s3://planodkupow-qa-backup-main --recursive --profile plan --region eu-central-1
+aws s3 rm s3://planodkupow-qa-backup-pliki --recursive --profile plan --region eu-central-1
+aws s3api delete-bucket --bucket planodkupow-qa-backup-main --profile plan --region eu-central-1
+aws s3api delete-bucket --bucket planodkupow-qa-backup-pliki --profile plan --region eu-central-1
+```
+
+### Stan na moment zapisu (11:30)
+
+```
+planodkupow-qa stack: ROLLBACK_COMPLETE (do usunięcia przed kolejnym create)
+S3 planodkupow-qa: 297 obj, 33MB — dane zachowane, bucket istnieje
+S3 planodkupow-qa-pliki: 1302 obj, 162MB — dane zachowane, bucket istnieje
+RDS planodkupowqadb: USUNIĘTY (snapshot: planodkupow-qa-pre-rebuild-20260419-0849)
+VPC vpc-02f804baee8a3f048: istnieje (orphan — nowy stack stworzy nową VPC)
+```
 
 *Log aktualizowany na bieżąco podczas sesji 2026-04-19*
