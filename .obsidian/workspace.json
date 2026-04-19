@@ -48,8 +48,23 @@
               "icon": "terminal",
               "title": "Terminal: ⠐ Fix CFN rescue in planodkupow project"
             }
+          },
+          {
+            "id": "93c1ecd3f9a1741c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "02-active-context/now.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "now"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -222,8 +237,12 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "38481d6ad7c132f9",
+  "active": "93c1ecd3f9a1741c",
   "lastOpenFiles": [
+    "02-active-context/open-loops.md",
+    "50-patterns/finops-review-patterns.md",
+    "50-patterns/debugging-patterns.md",
+    "80-architecture/decision-log.md",
     "40-runbooks/incidents/planodkupow-qa-postmortem.md",
     "40-runbooks/incidents/planodkupow-qa-execution-log.md",
     "CLAUDE.md",
@@ -250,13 +269,9 @@
     "60-toolkit/llz-audit.md",
     "20-projects/internal/llz/progress-tracker.md",
     "20-projects/internal/llz",
-    "20-projects/clients/mako/finops-rshop.md",
     "20-projects/clients/mako",
-    "20-projects/clients/README.md",
     "20-projects/clients",
-    "20-projects/client/mako/finops-rshop.md",
     "20-projects/client/mako",
-    "60-toolkit/README.md",
     "10-areas/obsidian",
     "Bez nazwy.canvas",
     "templates",

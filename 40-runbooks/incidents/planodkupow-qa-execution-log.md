@@ -627,4 +627,69 @@ aws cloudformation create-stack \
   --profile plan --region eu-central-1
 ```
 
-*Log aktualizowany na bieżąco podczas sesji 2026-04-19*
+---
+
+## FAZA 4 — Attempt 5 (2026-04-19 ~20:28)
+
+### Zmiany w szablonach przed Attempt 5
+
+| Plik | Zmiana | Powód |
+|---|---|---|
+| `ECS.yml` | `LogGroup` → `DeletionPolicy: Retain`, `RetentionInDays: 7` | Logi przeżywają rollback |
+| `ROOT.yml` | `HealthCheckGracePeriodSeconds`: `120` → `300` | Więcej czasu na start |
+| `ROOT.yml` | `HealthCheckPath`: `/signin` → `/health` | (nieużyte — fix bezpośrednio na TG) |
+
+### Attempt 5 — przebieg
+
+```
+20:28  create-stack z --disable-rollback
+18:45  KlasterStack CREATE_IN_PROGRESS
+18:47  Wszystkie serwisy (Auth, Interop, Vehicle...) CREATE_COMPLETE
+       Tylko GatewaySerwis wciąż w progress
+```
+
+### RCA GatewaySerwis — potwierdzone z logów
+
+Gateway = **Ocelot** (ASP.NET Core API Gateway), NIE nginx.
+
+```
+Ocelot.DownstreamRouteFinder: Failed to match Route configuration 
+for upstream path: /signin, verb: GET
+→ HTTP 404 → ALB health check FAIL (wymaga 200)
+```
+
+**Przyczyna:** między build ~320 (UAT, działa) a build ~1199+ (QA, nie działa)
+dev team usunął trasę `/signin` z konfiguracji Ocelot.
+ALB HealthCheckPath `/signin` nigdy nie był zaktualizowany.
+
+**To bug dev teamu** — do zgłoszenia: Ocelot nie ma trasy `/signin`.
+
+### Tymczasowy fix (poza CFN)
+
+1. Zmieniono TG health check path: `/signin` → `/api/health` (direct AWS)
+2. Zmieniono ECS service: `gateway.1244` → `gateway.1199` (direct AWS, potem cofnięto bo 1199 też nie ma `/signin`)
+3. Finalne rozwiązanie: TG health check `/api/health` działa z każdym dostępnym buildem gateway
+
+```bash
+aws elbv2 modify-target-group \
+  --target-group-arn <ALBTG_ARN> \
+  --health-check-path /api/health \
+  --profile plan --region eu-central-1
+```
+
+### Wynik
+
+```
+22:18  planodkupow-qa CREATE_COMPLETE ✓
+22:18  S3 restore: 297 obj + 1293 obj ✓
+22:20  Backup buckety usunięte ✓
+```
+
+### Drift po Attempt 5
+
+Stack ma drift — CFN myśli `/signin`, faktycznie działa `/api/health`.
+Fix: `update-stack` z `HealthCheckPath=/api/health` po potwierdzeniu z dev teamem.
+
+Dev team musi potwierdzić: **jaki jest prawidłowy health check endpoint dla Ocelot gateway?**
+
+*Log zaktualizowany 2026-04-19 22:20*

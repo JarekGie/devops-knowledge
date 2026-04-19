@@ -54,6 +54,16 @@ Podczas odtwarzania odkryto kaskadę dodatkowych problemów EOL: RabbitMQ wersja
 - Restore S3 z backup bucketów
 - DNS zaktualizowany: `planodkupow-qa.makotest.pl → d1a1zpep5vqor0.cloudfront.net`
 
+### 2026-04-19 wieczór — Sesja 2: GatewaySerwis NotStabilized
+
+Po CREATE_COMPLETE odkryto że stack był w rzeczywistości `ROLLBACK_FAILED` — GatewaySerwis nie stabilizował się (NotStabilized). Po analizie i kolejnych próbach potwierdzono root cause z logów (patrz sekcja 3.5).
+
+| Próba | Czas | Bloker |
+|---|---|---|
+| Attempt 4 | ~16:27 | GatewaySerwis NotStabilized → ROLLBACK_FAILED (orphan RDS blokuje DatabaseSG) |
+| Attempt 5 | ~20:28 | GatewaySerwis NotStabilized (--disable-rollback) → zdiagnozowano z logów → fix TG health check w locie |
+| **Attempt 5 zakończony** | **22:18** | **CREATE_COMPLETE ✓** |
+
 ---
 
 ## 3. Root cause analysis
@@ -72,6 +82,33 @@ Podczas odtwarzania odkryto kaskadę dodatkowych problemów EOL: RabbitMQ wersja
 
 4. **Zewnętrzny rekord DNS dla CloudFront** — po usunięciu oryginalnej dystrybucji CloudFront `E30ZEJ5EBK0T8D` (podczas delete root stacka), zewnętrzny DNS (nie Route53) nadal miał CNAME `planodkupow-qa.makotest.pl → de42p9qai5kj4.cloudfront.net`. CloudFront odmawia stworzenia nowej dystrybucji z aliasem wskazującym na usuniętą/inną dystrybucję. Rekord DNS był w zewnętrznym systemie poza kontrolą Route53 — wymagał ręcznego usunięcia przez właściciela domeny.
 
+### 3.5 GatewaySerwis NotStabilized — przyczyna (zdiagnozowana z logów 2026-04-19)
+
+**Gateway = Ocelot** (ASP.NET Core API Gateway), NIE nginx jak zakładano.
+
+ALB health check wysyłał `GET /signin` bezpośrednio na kontener. Ocelot nie ma trasy dla `/signin` → zwraca HTTP 404. ALB akceptuje tylko 200 → target unhealthy → ECS nie stabilizuje się → CFN timeout (NotStabilized).
+
+```
+Ocelot log: Failed to match Route configuration for upstream path: /signin, verb: GET
+ALB target health: Health checks failed with these codes: [404]
+```
+
+**Dlaczego wcześniej działało:** Ostatnie działające QA było na buildzie ~988 (gateway), który miał trasę `/signin` w konfiguracji Ocelot. Buildy 1199–1244 (dostępne w ECR) NIE mają tej trasy — dev team usunął `/signin` z Ocelot przy refactoringu (frontend przejął tę trasę), ale nie zaktualizował `HealthCheckPath` w CFN.
+
+**Fix zastosowany:** Zmiana path health check na `/api/health` bezpośrednio na ALB TG (poza CFN):
+```bash
+aws elbv2 modify-target-group \
+  --target-group-arn <ALBTG_ARN> \
+  --health-check-path /api/health \
+  --profile plan --region eu-central-1
+```
+
+**Drift:** Stack CFN nadal ma `HealthCheckPath: /signin` w parametrach. Wymaga `update-stack` z `HealthCheckPath=/api/health` po potwierdzeniu z dev teamem prawidłowego endpointu.
+
+**Do zrobienia z dev teamem:**
+- Potwierdzić czy `/api/health` jest prawidłowym health check endpointem dla Ocelot gateway
+- Zaktualizować `ROOT.yml` (domyślna wartość `HealthCheckPath`) i zrobić `update-stack`
+
 ### Dlaczego te problemy nie były wykryte wcześniej
 
 - Wersje EOL nie mają deprecation warning w CFN — po prostu fail przy próbie stworzenia
@@ -81,7 +118,7 @@ Podczas odtwarzania odkryto kaskadę dodatkowych problemów EOL: RabbitMQ wersja
 
 ---
 
-## 4. Kompletna lista naprawek w szablonach
+## 4. Kompletna lista naprawek w szablonach (sesje 1+2)
 
 | Plik | Co zmieniono | Powód |
 |---|---|---|
@@ -92,6 +129,9 @@ Podczas odtwarzania odkryto kaskadę dodatkowych problemów EOL: RabbitMQ wersja
 | `MSSQL.yml` | Dodano `DeletionPolicy: Retain` na `SiecDB` | SiecDB nie może być usunięty gdy SQLDatabase istnieje |
 | `MSSQL.yml` | Dodano parametr `DBSnapshotIdentifier` z condition `HasSnapshot` | Restore ze snapshotu zamiast pustej bazy |
 | `ROOT.yml` | Dodano parametr `DBSnapshotIdentifier`, przekazywany do DBStack | Jw. |
+| `ECS.yml` | `LogGroup`: dodano `DeletionPolicy: Retain`, `RetentionInDays: 1` → `7` | Logi przeżywają rollback — krytyczne do diagnozy |
+| `ROOT.yml` | `HealthCheckGracePeriodSeconds`: `120` → `300` | Więcej czasu na cold start fresh VPC |
+| ALB TG (AWS, poza CFN) | `HealthCheckPath`: `/signin` → `/api/health` | Gateway Ocelot nie ma trasy `/signin` od buildu ~1199+ |
 
 ---
 
@@ -286,6 +326,14 @@ Wtedy: deploy bez aliasu → środowisko działa pod domeną `*.cloudfront.net` 
 
 8. **mq.t3.micro = tylko ActiveMQ, nie RabbitMQ.** Minimalna instancja dla RabbitMQ: `mq.m5.large`.
 
+9. **Użyj `--disable-rollback` przy create-stack gdy diagnozujesz.** Bez tego stack rollbackuje i usuwa logi. Z `--disable-rollback` stack zostaje w CREATE_FAILED — infrastruktura żyje, CloudWatch logi dostępne, można debugować. Po diagnozie: `delete-stack` + `create-stack` z fixem.
+
+10. **ECS LogGroup musi mieć `DeletionPolicy: Retain`.** Domyślnie CFN usuwa LogGroup przy rollbacku — logi giną bezpowrotnie. Bez logów diagnoza NotStabilized jest niemożliwa.
+
+11. **Sprawdź jaki framework jest za kontenerem gateway.** "nginx" w nazwie nie znaczy nginx — może być Ocelot, Envoy, Kong. Health check path musi istnieć w konfiguracji routingu gatewaya.
+
+12. **Health check path w ALB musi być zsynchronizowany z wersją obrazu.** Jeśli dev team zmienia routing w gateway, musi też zaktualizować `HealthCheckPath` w CFN. Ten coupling jest niewidoczny i powoduje silent failure przy świeżym create-stack.
+
 ---
 
 ## 8. Szybkie komendy na przyszłość
@@ -321,4 +369,27 @@ aws mq describe-broker-engine-types \
 
 ---
 
-*Post-mortem napisany: 2026-04-19 | Incydent: planodkupow-qa CFN UPDATE_ROLLBACK_FAILED*
+```bash
+# Sprawdź health check path TG (wykrycie drift)
+aws elbv2 describe-target-groups \
+  --region eu-central-1 --profile plan \
+  --query 'TargetGroups[?contains(TargetGroupName,`planodkupow`)].{Name:TargetGroupName,Path:HealthCheckPath}' \
+  --output table
+
+# Zmień health check path bez modyfikacji CFN (emergency fix)
+aws elbv2 modify-target-group \
+  --target-group-arn <ARN> \
+  --health-check-path /api/health \
+  --region eu-central-1 --profile plan
+
+# Sprawdź logi ECS z działającego kontenera gateway
+aws logs get-log-events \
+  --log-group-name /ecs/planodkupow-qa \
+  --log-stream-name <stream> \
+  --region eu-central-1 --profile plan \
+  --query 'events[*].message' --output text
+```
+
+---
+
+*Post-mortem napisany: 2026-04-19 | Zaktualizowany: 2026-04-19 22:30 | Incydent: planodkupow-qa CFN UPDATE_ROLLBACK_FAILED + GatewaySerwis NotStabilized*
