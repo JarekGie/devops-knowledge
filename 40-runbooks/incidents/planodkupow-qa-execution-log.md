@@ -265,30 +265,41 @@ aws ec2 describe-vpc-endpoints \
   --query 'VpcEndpoints[].{ID:VpcEndpointId,Service:ServiceName,Tags:Tags}'
 ```
 
-### Oczekiwany Fail 4: VPCStack
+### Fail 4: VPCStack (10:26+)
 
-Po usunięciu SecGroupStack → retry root stacka → **VPCStack się wysypie** bo:
-- RDS `planodkupowqadb` nadal w VPC (subnet group `SiecDB` retainowany)
-- `bastionhost` SG (manualna) w VPC
-- `DatabaseSG` (retainowana) w VPC
+**Inicjacja:** root stack retry → VPCStack DELETE_IN_PROGRESS od ~10:26.
 
-**Plan:** delete VPCStack z retain-resources WSZYSTKICH zasobów:
+**Odkrycie blokerów w podsieciach** (audit ENI podczas oczekiwania):
+
+Publiczne (PodsPub1 `subnet-049522191fe108784`, PodsPub2 `subnet-0f3ba588e935c435a`):
+- `eni-0e9dd0667e09a945c` — GlobalAccelerator managed ENI (PodsPub1)
+- `eni-06643b0b748d523f4` — NAT Gateway `nat-08adf3e0a226779a7` (PodsPub1)
+- `eni-0bc3e7b87b93ce431` — GlobalAccelerator managed ENI (PodsPub2)
+
+Prywatne (PodsPrv1 `subnet-09ab9fdda1c1d2dea`, PodsPrv2 `subnet-044777a4a035cb0ab`):
+- 4x VPC Endpoint Interface ENI (vpce-0066f4327e86d8687, vpce-093fc974c5ae750f4, vpce-0dcfc106af654bae6, vpce-0f06338f894336448)
+- `eni-0db3561a10a8d55e8` — RDSNetworkInterface (PodsPrv2)
+
+**Wniosek:** GlobalAccelerator i NAT Gateway są manualne — niewidoczne w CFN. VPCStack osiągnie DELETE_FAILED.
+
+**Już usunięte przez CFN podczas DELETE_IN_PROGRESS:**
+- `ServiceDiscoveryNamespace` (ns-xiknwgpztou4hjcj) — DELETE_COMPLETE ⚠️ namespace `planodkupow.qa.` usunięty, trzeba odtworzyć przy redeploy
+- `LocalRoutTable`, `PubTabRout`, route table associations, `PubRouteToInternet` — DELETE_COMPLETE
+
+**Fix 4:** gdy VPCStack osiągnie DELETE_FAILED — retain wszystkich pozostałych:
 
 ```bash
 aws cloudformation delete-stack \
   --stack-name planodkupow-qa-VPCStack-1OHNJ84RQI8K2 \
   --retain-resources \
-    VPC PodsPrv1 PodsPrv2 PodsPub1 PodsPub2 \
-    LocalRoutTable PubTabRout \
-    Brama BramaToVPC \
-    LocRoutTabAss1 LocRoutTabAss2 \
-    PubRoutTabAss1 PubRoutTabAss2 \
-    PubRouteToInternet \
-    ServiceDiscoveryNamespace \
+    VPC Brama BramaToVPC \
+    PodsPrv1 PodsPrv2 PodsPub1 PodsPub2 \
   --profile plan --region eu-central-1
 ```
 
-**Decyzja:** Opcja A — retain VPC (cała sieć zostaje). Redeploy zaimportuje istniejącą VPC/subnety. RDS zostaje w tych samych podsieciach bez zmian sieciowych.
+(LocalRoutTable, PubTabRout, route associations, ServiceDiscoveryNamespace — już DELETE_COMPLETE, nie można ich retain)
+
+**Decyzja:** Opcja A — retain VPC (cała sieć zostaje). Redeploy odtworzy route tables i Service Discovery namespace od nowa. RDS zostaje w tych samych podsieciach.
 
 ---
 
@@ -302,8 +313,8 @@ aws cloudformation delete-stack \
 | S3 S3FileBucket | planodkupow-qa-pliki | 1302 obiekty, 162MB |
 | SG DatabaseSG | sg-031c0cd61c5d8ef88 | Używana przez RDS |
 | VPC + subnety | vpc-02f804baee8a3f048 | RDS w VPC |
-| IGW, route tables | igw-0862c2814f8c0265b + rtb-* | Infrastruktura VPC |
-| Service Discovery NS | ns-xiknwgpztou4hjcj | Namespace planodkupow.qa. |
+| IGW | igw-0862c2814f8c0265b | Infrastruktura VPC (route tables już usunięte przez CFN) |
+| ~~Service Discovery NS~~ | ~~ns-xiknwgpztou4hjcj~~ | ~~Namespace planodkupow.qa.~~ DELETE_COMPLETE — trzeba odtworzyć |
 
 ---
 
@@ -317,20 +328,26 @@ aws cloudformation delete-stack \
 4. **VPC retain** — jeśli RDS ma zostać, VPC musi zostać. Zaplanuj to od początku.
 5. **Ręczne SG** — sprawdź czy nie ma manualnych SG w VPC przed delete (mogą blokować).
 6. **bastionhost wzorzec** — w starych projektach Tribecloud może być SG bastionhost z dostępem do DB. Udokumentuj IPs przed delete.
+7. **GlobalAccelerator** — sprawdź PRZED delete czy jest w projekcie. Managed ENI blokuje subnet; nie można usunąć bez disassociation. Komenda: `aws globalaccelerator list-accelerators --region us-east-1`
+8. **NAT Gateway** — jeśli manualne (poza CFN), sprawdź przed delete. Blokuje subnet, ale można usunąć bezpiecznie jeśli środowisko offline. Komenda: `aws ec2 describe-nat-gateways --filter "Name=vpc-id,Values=<VPC_ID>"`
+9. **VPC Endpoints (Interface)** — blokują prywatne subnety przez ENI. Sprawdź: `aws ec2 describe-vpc-endpoints --filters "Name=vpc-id,Values=<VPC_ID>"` — uwzględnij w retain-resources lub usuń przed delete.
+10. **ServiceDiscoveryNamespace** — przy retain VPC zostanie usunięty przez CFN (nie można retain). Trzeba odtworzyć przy redeploy: `aws servicediscovery create-private-dns-namespace --name planodkupow.qa. --vpc <VPC_ID>`
 
 ### Kolejność retain-resources (bezpieczna sekwencja)
 
 ```
 1. RDS DeletionProtection ON
 2. RDS Snapshot
-3. delete root stack → fail na DBStack (DeletionProtection)
-4. delete DBStack --retain-resources SQLDatabase SiecDB
-5. delete S3Stack --retain-resources S3Bucket S3FileBucket
-6. retry root → fail na SecGroupStack (DatabaseSG dep.)
-7. delete SecGroupStack --retain-resources DatabaseSG
-8. retry root → fail na VPCStack (RDS w VPC)
-9. delete VPCStack --retain-resources <wszystkie>
-10. retry root → DELETE_COMPLETE
+3. Audyt manualnych zasobów: SG, VPC Endpoints, NAT GW, GlobalAccelerator
+4. delete root stack → fail na DBStack (DeletionProtection)
+5. delete DBStack --retain-resources SQLDatabase SiecDB
+6. delete S3Stack --retain-resources S3Bucket S3FileBucket
+7. retry root → fail na SecGroupStack (DatabaseSG dep.)
+8. delete SecGroupStack --retain-resources DatabaseSG TaskSG (TaskSG jeśli VPC Endpoints istnieją)
+9. retry root → fail na VPCStack
+10. delete VPCStack --retain-resources VPC Brama BramaToVPC PodsPrv1 PodsPrv2 PodsPub1 PodsPub2
+    UWAGA: ServiceDiscoveryNamespace zostanie usunięty — odtwórz przy redeploy
+11. retry root → DELETE_COMPLETE
 ```
 
 ### Parametry stacka (do redeploy)
@@ -358,7 +375,12 @@ Domena:        planodkupow-qa.makotest.pl
 09:51  retry root stack
 10:09  DELETE_FAILED — SecGroupStack (DatabaseSG dep.)
 10:13  SecGroupStack retain DatabaseSG — DELETE_IN_PROGRESS
-10:26  [W TOKU — czekamy na SecGroupStack]
+10:31  DELETE_FAILED — SecGroupStack (TaskSG dep., VPC Endpoints)
+10:3x  SecGroupStack retain DatabaseSG TaskSG — DELETE_IN_PROGRESS
+10:3x  SecGroupStack — DELETE_COMPLETE
+10:3x  retry root stack
+10:3x  VPCStack — DELETE_IN_PROGRESS
+10:47  VPCStack — DELETE_IN_PROGRESS (czekamy — blokery: GlobalAccelerator ENI, NAT GW, VPC Endpoints, RDS ENI)
 ```
 
 ---
