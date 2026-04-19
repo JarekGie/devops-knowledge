@@ -5,34 +5,35 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    infra-bbmt CFN tagging — QA w UPDATE_ROLLBACK_FAILED
+Zadanie:    infra-bbmt CFN tagging — QA controlled rebuild
 Projekt:    LLZ (Light Landing Zone) — MakoLab platform standard
-Status:     BLOCKED — zostawione do poniedziałku, nic nie kasujemy
+Status:     AKTYWNE — strategia: delete + redeploy (rollback porzucony)
 ```
 
 ## Gdzie skończyłem
 
 ```
 Stan:          planodkupow-qa = UPDATE_ROLLBACK_FAILED
-               VPCStack: Internal Failure
-               RabbitMQStack/BasicBroker: Lambda "This account is suspended"
-               CFN nie pozwala skipować nested stacków → pętla bez wyjścia
+               Diagnoza kompletna (2026-04-19):
+               - RabbitMQStack: UPDATE_ROLLBACK_FAILED / BasicBroker (Lambda 403)
+               - DBStack: UPDATE_ROLLBACK_FAILED / SQLDatabase (cancelled)
+               - RedisStack: rollback zakończony sukcesem
+               - Root stack failuje na RedisStack: "Stack does not exist"
+               continue-update-rollback: PORZUCONE
 
-Następny krok (poniedziałek):
-               1. Sprawdzić status:
-                  aws cloudformation describe-stacks --stack-name planodkupow-qa \
-                    --profile plan --region eu-central-1 \
-                    --query 'Stacks[0].StackStatus' --output text
+Strategia:     DELETE + REDEPLOY (controlled rebuild)
+Runbook:       40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md
 
-               2. Jeśli dalej FAILED: zdecydować AWS Support vs delete+redeploy QA
+Następny krok:
+               FAZA 0: Freeze Jenkins pipeline
+               FAZA 1: Snapshot RDS (obowiązkowy)
+               FAZA 3: delete-stack planodkupow-qa
+               FAZA 4: Cleanup orphan resources
+               FAZA 5: Redeploy
 
-               3. Po przywróceniu: deploy z Replace template + ROOT.yml z S3
-                  (tagi na 8 stackach + REDIS 5.0.6)
-
-Pliki:         ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/ROOT.yml (zmieniony)
+Pliki:         ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/ROOT.yml (LLZ tags)
                ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/REDIS.yml (5.0.6)
-               S3 rollback: VersionId Qn8EJ.mwtuYz43GF1JEl.JeV6t2OOsEQ (ROOT.yml pre-zmian)
-               20-projects/internal/llz/session-log.md
+               S3 rollback: VersionId Qn8EJ.mwtuYz43GF1JEl.JeV6t2OOsEQ
 ```
 
 ## Kontekst środowiska
@@ -58,4 +59,4 @@ Profil CLI:
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-19 08:32 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-19 08:43 — sesja aktywna*

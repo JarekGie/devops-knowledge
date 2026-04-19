@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Plan purchase returns context reminder"
+              "title": "Terminal: ⠐ Plan purchase returns context reminder"
             }
           }
         ]
@@ -224,6 +224,7 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md",
     "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "20-projects/clients/mako/maspex/troubleshooting.md",
     "20-projects/clients/mako/puzzler-b2b",
@@ -256,7 +257,6 @@
     "60-toolkit/reports/README.md",
     "60-toolkit/finops-reporting.md",
     "60-toolkit/minikurs-finops.md",
-    "10-areas/business/README.md",
     "10-areas/obsidian",
     "Bez nazwy.canvas",
     "templates",
