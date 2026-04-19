@@ -391,4 +391,52 @@ Domena:        planodkupow-qa.makotest.pl
 
 ---
 
+## FAZA 4 — Redeploy (2026-04-19 ~11:25)
+
+### Próba 1: create-stack (11:25)
+
+```bash
+aws cloudformation create-stack \
+  --stack-name planodkupow-qa \
+  --template-url https://planodkupow-cf.s3.eu-central-1.amazonaws.com/ROOT.yml \
+  --parameters \
+    ParameterKey=Srodowisko,ParameterValue=qa \
+    ParameterKey=Domena,ParameterValue=planodkupow-qa.makotest.pl \
+    ParameterKey=Certyfikat,ParameterValue=arn:aws:acm:us-east-1:333320664022:certificate/7cac4e30-0aa1-4a5e-92ac-eec445ee6601 \
+    [obrazy .1244 + front.609] \
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+  --profile plan --region eu-central-1
+```
+
+**ROLLBACK_COMPLETE (11:25):**
+```
+S3Stack: S3Bucket (planodkupow-qa) i S3FileBucket (planodkupow-qa-pliki) już istnieją — retainowane
+```
+
+**Przyczyna:** S3.yml próbuje stworzyć buckety z hardcoded nazwami, ale te buckety już istnieją (retainowaliśmy je z danymi).
+
+**Fix:** usunąć retainowane buckety LUB zaimportować je do S3Stack.
+Decyzja: **import S3 buckets** do nowego S3Stack (dane zachowane).
+
+### Obrazy z ostatnich działających jobów (build .1244)
+
+```
+GatewayImg:      planodkupow-qa:gateway.1244
+AuthImg:         planodkupow-qa:auth.1244
+InteropImg:      planodkupow-qa:interop.1244
+MessageImg:      planodkupow-qa:message.1244
+VehicleImg:      planodkupow-qa:vehicle.1244
+InspectionImg:   planodkupow-qa:inspection.1244
+ExpertiseImg:    planodkupow-qa:expertise.1244
+InsuranceImg:    planodkupow-qa:insurance.1244
+StorageImg:      planodkupow-qa:storage.1244
+RegistrationImg: planodkupow-qa:registration.1244
+ReportImg:       planodkupow-qa:report.1244
+OfferImg:        planodkupow-qa:offer.1244
+FinanceImg:      planodkupow-qa:finance.1244
+FrontImg:        planodkupow-qa:front.609
+```
+
+---
+
 *Log aktualizowany na bieżąco podczas sesji 2026-04-19*
