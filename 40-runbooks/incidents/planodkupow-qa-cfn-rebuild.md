@@ -38,6 +38,66 @@
 
 ---
 
+## Audyt zasobów — wykonany 2026-04-19
+
+### Zasoby RĘCZNE — nie dotykać przy delete-stack
+
+| Zasób | Typ | Uwaga |
+|---|---|---|
+| `planodkupow-cf` | S3 bucket | `Provisioner: manual` — bucket z szablonami CFN, stworzony poza stackiem |
+| `planodkupow-s3-logi` | S3 bucket | `Provisioner: manual` — bucket logów |
+
+Oba mają tag `Provisioner: manual` (Tribecloud). Nie są częścią żadnego nested stacka — CFN ich nie usunie.
+
+### Mapa CFN ownership (zweryfikowane)
+
+| Stack | Zasoby fizyczne |
+|---|---|
+| VPCStack | VPC `vpc-02f804baee8a3f048`, 4 subnety, IGW, route tables, SD namespace `planodkupow.qa` |
+| SecGroupStack | 6 security groups (wszystkie z tagiem CFN) |
+| S3Stack | `planodkupow-qa`, `planodkupow-qa-pliki` |
+| DBStack | RDS `planodkupowqadb` (`SQLDatabase`), DB subnet group |
+| RedisStack | ElastiCache `planodkupow-qa-redisinst` (`RedisCache`), subnet group |
+| RabbitMQStack | Broker `b-81d3e96e-7e64-450d-970d-ec457c74a15e` (`BasicBroker`) — UPDATE_FAILED, ale RUNNING |
+| KlasterStack | ECS cluster, 14 services, 14 task defs, IAM roles, 13 Service Discovery services |
+| ALBStack | ALB `planodkupow-qa-ALB`, 2 TG, listener, 2 listener rules |
+| CFStack | CloudFront `E30ZEJ5EBK0T8D`, OAI, S3 bucket policy |
+
+> Uwaga: ALB, ElastiCache i inne zasoby **nie mają automatycznego tagu `aws:cloudformation:stack-name`** mimo że są CFN managed — zweryfikowane przez `describe-stack-resources`, nie przez tagi.
+
+### Service Discovery namespace — specjalne traktowanie
+
+`planodkupow.qa.` private Route53 hosted zone (`Z09608113U2Z8FHEFIB7C`) jest tworzona przez VPCStack jako `AWS::ServiceDiscovery::PrivateDnsNamespace`. Przy delete VPCStack:
+- namespace `ns-xiknwgpztou4hjcj` zostanie usunięty
+- hosted zone zostanie usunięta automatycznie
+- 13 rekordów A (adresy ECS tasków) znikną
+
+To jest **oczekiwane zachowanie** — przy redeploy VPCStack odtworzy namespace i nową hosted zone. ECS Service Discovery rejestruje rekordy dynamicznie przy starcie tasków. Backup rekordów w `~/planodkupow-qa-backup-20260419/route53-planodkupow-qa-zone.json`.
+
+### RabbitMQ — brak Lambda custom resource w koncie
+
+`AWS::AmazonMQ::Broker` to natywny typ CFN — brak Lambda custom resource w koncie 333320664022. Błąd `UnrecognizedClientException` (Lambda 403 "account suspended") pochodzi z wewnętrznego wywołania AmazonMQ service podczas rollbacku. **Przy redeploy ten sam błąd może wystąpić.** Jeśli tak:
+- Opcja A: stwórz brokera ręcznie + CFN import
+- Opcja B: AWS Support ticket
+
+### Backup wykonany 2026-04-19
+
+| Zasób | Co zapisano |
+|---|---|
+| RDS | Snapshot `planodkupow-qa-pre-rebuild-20260419-0849` (status: available) |
+| RDS | DeletionProtection włączone (`True`) |
+| ALB | Konfiguracja, listenery, reguły, x-sec-token: `3E4yBmL1sERAvKwT` |
+| CloudFront | Pełna konfiguracja (ID: `E30ZEJ5EBK0T8D`, ETag: `E18COAQRK5Y6C8`) |
+| DNS | Wszystkie rekordy `planodkupow.qa.` (13 rekordów A) |
+| VPC | CIDR, 4 subnety, routing |
+| ECS | 14 serwisów + task definitions (wszystkie running przed delete) |
+| RabbitMQ | Konfiguracja brokera (endpoint, engine, typ) |
+| Redis | Konfiguracja klastra (5.0.6, endpoint) |
+
+**Backup dir:** `~/planodkupow-qa-backup-20260419/` (plik główny: `BACKUP-SUMMARY.md`)
+
+---
+
 ## BEZPIECZEŃSTWO — przeczytaj przed rozpoczęciem
 
 ### NIE rób:
