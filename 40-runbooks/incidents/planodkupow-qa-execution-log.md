@@ -418,14 +418,18 @@ S3Stack: S3Bucket (planodkupow-qa) i S3FileBucket (planodkupow-qa-pliki) już is
 **Fix:** backup danych → usunięcie bucketów → create-stack → restore danych.
 Decyzja: **backup + delete + restore** (dane zachowane, buckety odtworzone przez CFN).
 
-### Następne kroki (do wykonania po restarcie tokenów)
+### Następne kroki — ZAKTUALIZOWANE (~11:40)
 
-1. Skopiuj dane z `planodkupow-qa` i `planodkupow-qa-pliki` do tymczasowych bucketów backup
-2. Usuń oba buckety (puste → CFN może je stworzyć)
-3. Usuń rollback-failed stack `planodkupow-qa` (ROLLBACK_COMPLETE)
-4. create-stack `planodkupow-qa` z tymi samymi parametrami
-5. Po CREATE_COMPLETE: skopiuj dane z backup z powrotem do nowych bucketów
-6. Usuń tymczasowe buckety backup
+**Dodatkowy problem:** RDS USUNIĘTY — pusty RDS niedopuszczalny. Fix: MSSQL.yml i ROOT.yml zmodyfikowane — dodano `DBSnapshotIdentifier` z warunkiem (`HasSnapshot`). Gdy parametr podany: `MasterUsername`/`MasterUserPassword` pomijane (wymóg AWS), instancja odtworzona ze snapshotu.
+
+Zmodyfikowane pliki w repo: `infra-bbmt/cloudformation/MSSQL.yml` i `ROOT.yml` — wymagają wgrania na S3 przed create-stack.
+
+1. Wgraj MSSQL.yml i ROOT.yml na S3 (`planodkupow-cf`)
+2. Skopiuj dane S3 do temp bucketów backup
+3. Opróżnij i usuń oryginalne buckety
+4. Usuń ROLLBACK_COMPLETE stack
+5. create-stack z `DBSnapshotIdentifier=planodkupow-qa-pre-rebuild-20260419-0849`
+6. Po CREATE_COMPLETE: restore S3 + cleanup temp bucketów
 
 Szczegółowy runbook: sekcja poniżej w execution logu lub [[planodkupow-qa-cfn-rebuild]] FAZA 4.
 
