@@ -6,7 +6,7 @@
 **Operator:** Jarosław Gołąb + Claude  
 **Cel:** Delete + redeploy planodkupow-qa po UPDATE_ROLLBACK_FAILED  
 **Runbook:** [[planodkupow-qa-cfn-rebuild]]  
-**Status:** W TOKU
+**Status:** FAZA DELETE — COMPLETE | FAZA REDEPLOY — DO WYKONANIA
 
 ---
 
@@ -380,8 +380,14 @@ Domena:        planodkupow-qa.makotest.pl
 10:3x  SecGroupStack — DELETE_COMPLETE
 10:3x  retry root stack
 10:3x  VPCStack — DELETE_IN_PROGRESS
-10:47  VPCStack — DELETE_IN_PROGRESS (czekamy — blokery: GlobalAccelerator ENI, NAT GW, VPC Endpoints, RDS ENI)
+10:48  VPCStack — DELETE_FAILED (blokery: GlobalAccelerator ENI, NAT GW, VPC Endpoints, RDS ENI)
+10:51  VPCStack retain VPC Brama BramaToVPC PodsPrv1 PodsPrv2 PodsPub1 PodsPub2 — DELETE_IN_PROGRESS
+10:52  VPCStack — DELETE_COMPLETE ✓
+10:52  retry root stack planodkupow-qa
+10:52  planodkupow-qa — DELETE_COMPLETE ✓ (stack nie istnieje)
 ```
+
+**FAZA 3 ZAKOŃCZONA — wszystkie stacks usunięte.**
 
 ---
 
