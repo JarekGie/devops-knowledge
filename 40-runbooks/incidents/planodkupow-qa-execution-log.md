@@ -555,4 +555,76 @@ RDS planodkupowqadb: USUNIĘTY (snapshot: planodkupow-qa-pre-rebuild-20260419-08
 VPC vpc-02f804baee8a3f048: istnieje (orphan — nowy stack stworzy nową VPC)
 ```
 
+---
+
+## FAZA 4 — Próby redeploy (~11:30–13:00) — HISTORIA BŁĘDÓW
+
+### Naprawione problemy (kaskada wersji EOL)
+
+| Zasób | Problem | Fix |
+|---|---|---|
+| Redis | `5.0.0` EOL | `REDIS.yml`: `5.0.6` |
+| RabbitMQ | `3.8.6` EOL | `RMQ.yml`: `3.13` |
+| RabbitMQ | `mq.t3.micro` not supported for RabbitMQ | `RMQ.yml`: `mq.m5.large` |
+| RDS rollback | Snapshot error podczas rollbacku (RDS w stanie `restoring`) | `MSSQL.yml`: `DeletionPolicy: Retain` na `SQLDatabase` i `SiecDB` |
+| RDS restore | Pusty RDS niedopuszczalny | `MSSQL.yml` + `ROOT.yml`: parametr `DBSnapshotIdentifier` z warunkiem `HasSnapshot` |
+
+### Aktualny bloker: CloudFront DNS conflict
+
+**Błąd:** `One or more aliases specified for the distribution includes an incorrectly configured DNS record that points to another CloudFront distribution.`
+
+**Przyczyna:** DNS zewnętrzny (nie Route53) nadal ma rekord:
+```
+planodkupow-qa.makotest.pl  CNAME  de42p9qai5kj4.cloudfront.net
+```
+`de42p9qai5kj4.cloudfront.net` = stary usunięty CloudFront distribution. CloudFront odmawia stworzenia nowej dystrybucji z tym aliasem.
+
+**Wymagana akcja:** Usunąć/zaktualizować rekord `planodkupow-qa.makotest.pl` w zewnętrznym DNS (nie Route53 — Route53 strefa `planodkupow.makotest.pl` nie ma tego rekordu).
+
+Weryfikacja: `dig planodkupow-qa.makotest.pl` powinno zwrócić NXDOMAIN lub nowy CF domain.
+
+### Stan po sprzątaniu (~13:00)
+
+```
+planodkupow-qa stack: DELETED
+S3 planodkupow-qa: DELETED (dane w planodkupow-qa-backup-main: 297 obj)
+S3 planodkupow-qa-pliki: DELETED (dane w planodkupow-qa-backup-pliki: 1293 obj)
+RDS planodkupowqadb: DELETED
+VPC vpc-02f804baee8a3f048: orphan (nadal istnieje)
+Snapshoty: planodkupow-qa-pre-rebuild-20260419-0849 (oryginał, do restore)
+```
+
+### Następny krok — po usunięciu DNS record
+
+```bash
+# Weryfikacja DNS przed create-stack:
+dig planodkupow-qa.makotest.pl  # powinno: NXDOMAIN lub brak odpowiedzi
+
+# create-stack próba 5 (wszystkie poprawki w szablonach):
+aws cloudformation create-stack \
+  --stack-name planodkupow-qa \
+  --template-url https://planodkupow-cf.s3.eu-central-1.amazonaws.com/ROOT.yml \
+  --parameters \
+    ParameterKey=Srodowisko,ParameterValue=qa \
+    ParameterKey=Domena,ParameterValue=planodkupow-qa.makotest.pl \
+    ParameterKey=Certyfikat,ParameterValue=arn:aws:acm:us-east-1:333320664022:certificate/7cac4e30-0aa1-4a5e-92ac-eec445ee6601 \
+    ParameterKey=DBSnapshotIdentifier,ParameterValue=planodkupow-qa-pre-rebuild-20260419-0849 \
+    ParameterKey=GatewayImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:gateway.1244 \
+    ParameterKey=AuthImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:auth.1244 \
+    ParameterKey=InteropImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:interop.1244 \
+    ParameterKey=MessageImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:message.1244 \
+    ParameterKey=VehicleImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:vehicle.1244 \
+    ParameterKey=InspectionImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:inspection.1244 \
+    ParameterKey=ExpertiseImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:expertise.1244 \
+    ParameterKey=InsuranceImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:insurance.1244 \
+    ParameterKey=StorageImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:storage.1244 \
+    ParameterKey=RegistrationImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:registration.1244 \
+    ParameterKey=ReportImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:report.1244 \
+    ParameterKey=OfferImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:offer.1244 \
+    ParameterKey=FinanceImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:finance.1244 \
+    ParameterKey=FrontImg,ParameterValue=333320664022.dkr.ecr.eu-central-1.amazonaws.com/planodkupow-qa:front.609 \
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+  --profile plan --region eu-central-1
+```
+
 *Log aktualizowany na bieżąco podczas sesji 2026-04-19*
