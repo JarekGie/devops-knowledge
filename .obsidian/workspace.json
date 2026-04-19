@@ -250,10 +250,20 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "38481d6ad7c132f9",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "20-projects/internal/udemy-transcript-tool/README.md",
+    "20-projects/internal/udemy-transcript-tool/pyproject.toml",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/__main__.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/__init__.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/cli.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/manifest.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/writer.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/renderer.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/normalization.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/extraction.py",
+    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/discovery.py",
     "20-projects/internal/aws-cloudops-exam/index.md",
-    "20-projects/internal/aws-cloudops-exam",
     "02-active-context/now.md",
     "02-active-context/current-focus.md",
     "02-active-context/open-loops.md",
@@ -266,8 +276,6 @@
     "40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md",
     "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "20-projects/clients/mako/maspex/troubleshooting.md",
-    "20-projects/clients/mako/puzzler-b2b",
-    "20-projects/clients/mako/maspex",
     "40-runbooks/aws/iam-access-issue.md",
     "40-runbooks/aws/cfn-alb-safe-tagging.md",
     "20-projects/internal/llz/context.md",
@@ -280,14 +288,6 @@
     "20-projects/internal/llz/wymagania-makolab/diagram.md",
     "20-projects/internal/llz/wymagania-makolab/analiza-ryzyka.md",
     "20-projects/internal/llz/wymagania-makolab/standaryzacja-przygotowania.md",
-    "20-projects/internal/llz/wymagania-makolab/standaryzacja-propozycje.md",
-    "20-projects/internal/llz/wymagania-makolab",
-    "20-projects/internal/llz",
-    "20-projects/clients/mako",
-    "20-projects/clients",
-    "20-projects/client/mako",
-    "10-areas/obsidian",
-    "Bez nazwy.canvas",
-    "templates"
+    "Bez nazwy.canvas"
   ]
 }
