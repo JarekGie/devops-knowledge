@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Fix CFN rescue in planodkupow project"
+              "title": "Terminal: ✳ Fix CFN rescue in planodkupow project"
             }
           },
           {
@@ -63,8 +63,7 @@
               "title": "now"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -237,8 +236,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "93c1ecd3f9a1741c",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "02-active-context/now.md",
     "02-active-context/open-loops.md",
     "50-patterns/finops-review-patterns.md",
     "50-patterns/debugging-patterns.md",
@@ -255,7 +255,6 @@
     "40-runbooks/aws/cfn-alb-safe-tagging.md",
     "20-projects/internal/llz/context.md",
     "20-projects/internal/llz/ideas.md",
-    "02-active-context/now.md",
     "20-projects/internal/devops-toolkit/README.md",
     "20-projects/internal/llz/session-log.md",
     "20-projects/internal/llz/org-inventory.md",
