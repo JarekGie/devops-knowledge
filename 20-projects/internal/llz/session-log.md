@@ -227,10 +227,16 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 - `continue-update-rollback` niedostępne (działa tylko na `UPDATE_ROLLBACK_FAILED`)
 - Czekamy na timeout CFN (30-60 min) → przejście do `UPDATE_ROLLBACK_FAILED` → odblokowanie
 
-**Następny krok po odblokowaniu:**
-1. Sprawdzić status: `aws cloudformation describe-stacks --stack-name planodkupow-qa --profile plan --query 'Stacks[0].StackStatus' --output text`
-2. Jak `UPDATE_ROLLBACK_FAILED`: `aws cloudformation continue-update-rollback --stack-name planodkupow-qa --resources-to-skip VPCStack --profile plan --region eu-central-1`
-3. Jak `UPDATE_ROLLBACK_COMPLETE`: wgrać poprawiony ROOT.yml + REDIS.yml → deploy QA od nowa
+**Stan rollbacku (sobota wieczór — zostawione do poniedziałku):**
+- `planodkupow-qa`: `UPDATE_ROLLBACK_FAILED` — nie kasujemy, nie deployujemy
+- Kolejne błędy rollbacku: VPCStack (Internal Failure), RabbitMQStack/BasicBroker (Lambda: "This account is suspended")
+- CFN nie pozwala skipować nested stacków z root stacka → pętla bez wyjścia przez API
+- QA niedostępne do poniedziałku
+
+**Do zbadania w poniedziałek:**
+- Dlaczego Lambda "account suspended" dla AmazonMQ custom resource?
+- Opcja A: AWS Support ticket o custom resource Lambda issue
+- Opcja B: delete planodkupow-qa + redeploy (~30-60 min, utrata stanu QA)
 
 **Pliki zmienione lokalnie i na S3:**
 - `infra-bbmt/cloudformation/ROOT.yml` — Tags na 8 nested stackach (bez CFStack), wgrane na S3
