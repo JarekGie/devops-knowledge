@@ -40,14 +40,23 @@
 
 ## Audyt zasobów — wykonany 2026-04-19
 
-### Zasoby RĘCZNE — nie dotykać przy delete-stack
+### Zasoby RĘCZNE i NIEZALEŻNE STACKI — nie dotykać przy delete-stack
 
 | Zasób | Typ | Uwaga |
 |---|---|---|
 | `planodkupow-cf` | S3 bucket | `Provisioner: manual` — bucket z szablonami CFN, stworzony poza stackiem |
 | `planodkupow-s3-logi` | S3 bucket | `Provisioner: manual` — bucket logów |
+| Stack `sftp` | CFN top-level stack | AWS Transfer Family — osobny stack, zero powiązań z QA |
 
-Oba mają tag `Provisioner: manual` (Tribecloud). Nie są częścią żadnego nested stacka — CFN ich nie usunie.
+`planodkupow-cf` i `planodkupow-s3-logi` mają tag `Provisioner: manual` (Tribecloud). Nie są częścią żadnego nested stacka — CFN ich nie usunie.
+
+**Stack `sftp`** (konto 333320664022, eu-central-1):
+- `SFTPServer`: `AWS::Transfer::Server` (`s-24d39bfb417047f6b`)
+- `SFTPServerDNSRecord`: `sftpdev.planodkupow.makotest.pl` (strefa `planodkupow.makotest.pl`)
+- `SFTPUserRole`: IAM Role
+- `TestUser`: `AWS::Transfer::User`
+
+Delete `planodkupow-qa` nie dotknie tego stacka. DNS record jest w oddzielnej strefie publicznej — nie koliduje z rebuild QA.
 
 ### Mapa CFN ownership (zweryfikowane)
 

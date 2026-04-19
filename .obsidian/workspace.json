@@ -77,8 +77,7 @@
               "title": "planodkupow-qa-cfn-rebuild"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -251,7 +250,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "a1560e7aafaff39c",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
     "40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md",
     "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
