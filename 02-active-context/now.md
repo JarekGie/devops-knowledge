@@ -15,9 +15,18 @@ Notatka:    20-projects/internal/llz/session-log.md (2026-04-20 patch)
 ## Aktywne zadanie
 
 ```
-Zadanie:    planodkupow UAT — zakleszczony deployment
+Zadanie:    planodkupow UAT — RabbitMQ UPDATE_ROLLBACK_FAILED
 Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
-Status:     CZEKA NA ODPOWIEDŹ DEVA — zablokowane na RabbitMQ
+Status:     PLAN GOTOWY — czeka na wykonanie (zgoda operatora)
+
+Root cause: Drift CFN (template: 3.8.6) vs rzeczywistość (broker: 3.13.7 via AutoMinorVersionUpgrade)
+            Rollback próbuje "przywrócić" 3.8.6 → AWS odrzuca (EOL)
+            Broker RUNNING 3.13.7, dane bezpieczne, broker nie był dotknięty przez deploy
+
+Fix:        continue-update-rollback NA ROOT STACKU z:
+            --resources-to-skip "planodkupow-uat-RabbitMQStack-1XMB1IYDKWTXU.BasicBroker"
+
+Runbook:    40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed.md
 ```
 
 ## Zamknięte: LLZ context pack + AGENTS kontrakt ✓
@@ -190,4 +199,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 22:21 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 22:24 — sesja aktywna*

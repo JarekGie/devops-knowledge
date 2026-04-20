@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Read context about LLZ"
+              "title": "Terminal: ⠹ devops-knowledge"
             }
           },
           {
@@ -308,6 +308,7 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "CODEX.md",
     "40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed.md",
     "CLAUDE.md",
     "40-runbooks/LLM_CONTEXT.md",
@@ -334,7 +335,6 @@
     "_chatgpt/templates/context-pack-template.md",
     "_chatgpt/templates/conversation-note-template.md",
     "_chatgpt/INDEX.md",
-    "_chatgpt/README.md",
     "scripts",
     "_chatgpt/templates",
     "_chatgpt/conversations",
