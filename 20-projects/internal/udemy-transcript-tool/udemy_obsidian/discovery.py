@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
 import re
 from typing import Any, Optional
 
-from playwright.async_api import Page
+from playwright.async_api import Page, Response
 
 from .browser import UdemyBrowser
 from .config import API_BASE
@@ -12,50 +14,12 @@ from .models import CaptionTrack, Course, Lecture, Section
 
 logger = logging.getLogger(__name__)
 
-# ADAPTER: parametry pól API — jeśli Udemy zmieni schemat, edytuj tutaj
-_CURRICULUM_FIELDS = (
-    "?page_size=1400"
-    "&fields[lecture]=id,title,asset"
-    "&fields[asset]=captions"
-    "&fields[chapter]=id,title,sort_order"
-)
-
 
 def extract_slug(course_url: str) -> str:
     match = re.search(r"/course/([^/?#]+)", course_url)
     if not match:
         raise ValueError(f"Nie można wyodrębnić sluga kursu z URL: {course_url}")
     return match.group(1)
-
-
-async def _get_course_id_from_network(page: Page, course_url: str) -> tuple[int, str]:
-    """
-    Przechwytuje network requests podczas ładowania strony kursu.
-    Udemy's JS robi API calls z course ID w URL — wyciągamy go stamtąd.
-    # ADAPTER: wzorzec URL API może się zmienić
-    """
-    course_info: dict = {"id": None, "title": ""}
-
-    def on_response(response: Any) -> None:
-        url = response.url
-        m = re.search(r"/api-2\.0/courses/(\d+)/", url)
-        if m and course_info["id"] is None:
-            course_info["id"] = int(m.group(1))
-            logger.debug("course_id z network: %s (url=%s)", course_info["id"], url)
-
-    page.on("response", on_response)
-    try:
-        await page.goto(course_url, wait_until="networkidle", timeout=30000)
-    finally:
-        page.remove_listener("response", on_response)
-
-    if course_info["id"]:
-        return course_info["id"], course_info["title"]
-
-    raise RuntimeError(
-        "Nie można znaleźć course_id w ruchu sieciowym. "
-        "Upewnij się, że jesteś zalogowany i masz dostęp do kursu."
-    )
 
 
 async def discover_course(
@@ -68,13 +32,66 @@ async def discover_course(
     slug = extract_slug(course_url)
     logger.info("Odkrywanie kursu: %s", slug)
 
-    course_id, course_title = await _get_course_id_from_network(page, course_url)
-    if not course_title:
-        course_title = slug
-    logger.info("Kurs: %s (id=%s)", course_title, course_id)
+    # Przechwyć course_id i curriculum bezpośrednio z ruchu sieciowego
+    # Udemy's własny JS robi te API calls — nie musimy ich powielać
+    # # ADAPTER: wzorce URL API mogą się zmienić
+    course_id_holder: list[int] = []
+    curriculum_holder: list[dict] = []
 
-    curriculum_url = f"{API_BASE}/courses/{course_id}/subscriber-curriculum-items/{_CURRICULUM_FIELDS}"
-    curriculum = await browser.fetch_json(page, curriculum_url)
+    async def on_response(response: Response) -> None:
+        url = response.url
+
+        # Wyciągnij course_id z dowolnego API call
+        if not course_id_holder:
+            m = re.search(r"/api-2\.0/courses/(\d+)/", url)
+            if m:
+                course_id_holder.append(int(m.group(1)))
+                logger.debug("course_id z network: %s", course_id_holder[0])
+
+        # Przechwyć curriculum
+        if not curriculum_holder and "subscriber-curriculum-items" in url:
+            try:
+                body = await response.body()
+                data = json.loads(body)
+                if data.get("results"):
+                    curriculum_holder.append(data)
+                    logger.debug("Curriculum przechwycony: %d items", len(data["results"]))
+            except Exception as exc:
+                logger.debug("Błąd parsowania curriculum response: %s", exc)
+
+    page.on("response", on_response)
+    try:
+        await page.goto(course_url, wait_until="networkidle", timeout=60000)
+    finally:
+        page.remove_listener("response", on_response)
+
+    if not course_id_holder:
+        raise RuntimeError(
+            "Nie można znaleźć course_id w ruchu sieciowym. "
+            "Upewnij się, że jesteś zalogowany i masz dostęp do kursu."
+        )
+
+    course_id = course_id_holder[0]
+    logger.info("Kurs: %s (id=%s)", slug, course_id)
+
+    # Jeśli curriculum nie został przechwycony (strona była z cache),
+    # nawiguj do pierwszego wykładu żeby wymusić API call
+    if not curriculum_holder:
+        logger.info("Curriculum nie przechwycony — wymuszam reload strony kursu")
+        page.on("response", on_response)
+        try:
+            base_url = re.sub(r"/learn/.*", "", course_url)
+            await page.goto(base_url, wait_until="networkidle", timeout=60000)
+        finally:
+            page.remove_listener("response", on_response)
+
+    if not curriculum_holder:
+        raise RuntimeError(
+            f"Nie udało się przechwycić listy wykładów dla kursu {course_id}. "
+            "Spróbuj otworzyć kurs w przeglądarce i uruchomić eksport ponownie."
+        )
+
+    curriculum = curriculum_holder[0]
 
     sections: list[Section] = []
     current_section: Optional[Section] = None
@@ -136,7 +153,7 @@ async def discover_course(
 
     return Course(
         id=course_id,
-        title=course_title,
+        title=slug,
         slug=slug,
         url=course_url,
         sections=sections,
