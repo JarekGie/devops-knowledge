@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠼ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -238,6 +238,10 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "log-part-4.md",
+    "log-part-3.md",
+    "log-part-2.md",
+    "log-part-1.md",
     "20-projects/internal/devops-toolkit/Zmiany w toolkit.md",
     "CODEX.md",
     "40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed.md",
@@ -260,11 +264,7 @@
     "60-toolkit/LLM_CONTEXT.md",
     "50-patterns/LLM_CONTEXT.md",
     "30-standards/LLM_CONTEXT.md",
-    "10-areas/LLM_CONTEXT.md",
-    "02-active-context/LLM_CONTEXT.md",
     "scripts/new-chatgpt-context.sh",
-    "_chatgpt/templates/context-pack-template.md",
-    "_chatgpt/templates/conversation-note-template.md",
     "scripts",
     "_chatgpt/templates",
     "_chatgpt/conversations",
