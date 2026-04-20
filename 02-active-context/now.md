@@ -10,26 +10,19 @@ Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
 Status:     CZEKA NA ODPOWIEDŹ DEVA — zablokowane na RabbitMQ
 ```
 
-## Zamknięte: LLZ health-notifications ✓ (kod gotowy, nie wdrożony)
+## Zamknięte: LLZ health-notifications ✓ WDROŻONE
 
 ```
-Stan:       Terraform napisany, NIE uruchamiać apply bez decyzji
+Stan:       APPLY COMPLETE (2026-04-20) — działa, email potwierdzony
 Repo:       ~/projekty/mako/aws-projects/aws-cloud-platform/platform/health-notifications/
-Architektura:
-  - 11 member accounts (us-east-1): EventBridge rule → management health-aggregation bus
-  - Management (us-east-1): bus health-aggregation + rule → Lambda health-notify
-  - Lambda (Python 3.12, us-east-1): DescribeAccount → formatuje email → SNS eu-central-1
-  - SNS: istniejący topic org-central-alarms (864277686382, eu-central-1) + email sub
+Architektura (finalna):
+  - 11 member accounts (us-east-1): IAM role health-eventbridge-forward + EventBridge rule → monitoring bus
+  - monitoring-nagios-bot (us-east-1): bus health-aggregation + rule → Lambda health-notify
+  - Lambda (Python 3.12, us-east-1): nazwy kont z env var → formatuje email → SNS eu-central-1
+  - SNS: nowy topic health-notifications na monitoring-nagios-bot + subskrypcja email potwierdzona
+  - Filtr: tylko statusCode=open, category=issue|investigation
 
-Koszt:      ~$0.00/miesiąc (rozliczane per-event, Health eventów jest śladowo mało)
-
-Żeby wdrożyć:
-  cd ~/projekty/mako/aws-projects/aws-cloud-platform/platform/health-notifications
-  terraform init
-  terraform plan -var="notification_email=jaroslaw.golab@makolab.com" -out=tfplan
-  terraform apply tfplan
-  # Po apply: kliknąć link potwierdzający subskrypcję SNS w emailu
-
+Koszt:      ~$0.00/miesiąc
 Notatka:    20-projects/internal/llz/session-log.md
 ```
 
@@ -169,4 +162,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 19:25 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 19:35 — sesja aktywna*

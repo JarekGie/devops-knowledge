@@ -50,15 +50,19 @@ platform/health-notifications/
 - Forwarding bez IAM role w source accounts — resource policy (OrgPutEvents) wystarczy dla same-region cross-account
 - Bez Business Support: AWS Health organizational view niedostępne → rozwiązanie per-account EventBridge rules
 
-**Stan na koniec:** kod gotowy, NIE wdrażać bez decyzji
+**Stan na koniec:** APPLY COMPLETE (2026-04-20) — działa, email subskrypcji potwierdzony
 
-**Wdrożenie gdy gotowi:**
+**Problemy napotkane podczas wdrożenia (2026-04-20):**
+- Pierwsze apply poszło na konto management zamiast monitoring (brak synchronizacji)
+- Backend S3 ignoruje `profile` gdy awsume ustawi env vars → zawsze `AWS_PROFILE=mako-dc terraform ...`
+- Cross-account EventBridge targets wymagają `role_arn` w source account — resource policy na busie nie wystarczy do `PutTargets`
+- Same-account forwarding (nagios_bot → monitoring bus) też wymaga `role_arn`
+- Rozwiązanie: IAM role `health-eventbridge-forward` w każdym z 11 kont źródłowych
+
+**Uruchamianie:**
 ```bash
-cd ~/projekty/mako/aws-projects/aws-cloud-platform/platform/health-notifications
-terraform init
-terraform plan -var="notification_email=jaroslaw.golab@makolab.com" -out=tfplan
-terraform apply tfplan
-# Po apply: kliknąć link potwierdzający subskrypcję SNS email
+AWS_PROFILE=mako-dc terraform plan -var="notification_email=<email>" -out=tfplan
+AWS_PROFILE=mako-dc terraform apply tfplan
 ```
 
 ---
