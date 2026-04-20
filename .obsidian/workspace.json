@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Fix CFN rescue in planodkupow project"
+              "title": "Terminal: ✳ Fix CFN rescue in planodkupow project"
             }
           },
           {
@@ -252,6 +252,7 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "20-projects/internal/llz/waf-checklist.md",
     "02-active-context/now.md",
     "20-projects/clients/mako/maspex/troubleshooting.md",
     "40-runbooks/incidents/rshop-tag-policy-remediation.md",
@@ -287,7 +288,6 @@
     "20-projects/internal/llz/context.md",
     "20-projects/internal/llz/ideas.md",
     "20-projects/internal/devops-toolkit/README.md",
-    "20-projects/internal/llz/session-log.md",
     "Bez nazwy.canvas"
   ]
 }
