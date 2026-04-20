@@ -2,6 +2,16 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Zamknięte: LLZ audit-pack llz-waf-readonly patch ✓
+
+```
+Stan:       DONE (2026-04-20)
+Co:         6 bugów naprawionych w 6 pluginach (cloudtrail/observability/tagging/scp + region fallback)
+Testy:      129/129 PASS (było 121 — dodano 8 behavioral tests)
+Kluczowe:   llz.required_tags + llz.monitoring_account_id + llz.workloads_ou_name wymagane w project.yaml
+Notatka:    20-projects/internal/llz/session-log.md (2026-04-20 patch)
+```
+
 ## Aktywne zadanie
 
 ```
@@ -180,4 +190,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 21:51 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 21:57 — sesja aktywna*
