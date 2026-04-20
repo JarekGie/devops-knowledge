@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠼ devops-knowledge"
+              "title": "Terminal: ⠏ devops-knowledge"
             }
           },
           {
@@ -236,7 +236,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
     "20-projects/internal/devops-toolkit/Zmiany w toolkit.md",
     "CODEX.md",
