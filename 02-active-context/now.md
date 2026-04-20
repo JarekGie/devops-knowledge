@@ -5,8 +5,19 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    —
-Status:     Brak aktywnego zadania
+Zadanie:    planodkupow UAT/PROD — zakleszczony deployment
+Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
+Status:     INCYDENT W TOKU
+```
+
+## Zawieszone: maspex preprod
+
+```
+Stan:       networking.tf dodane, terraform validate OK, czeka na apply
+Następny krok:
+            awsume maspex-cli && terraform plan -out=tfplan && terraform apply tfplan
+            Po apply: elasticache_endpoint → Secrets Manager maspex/preprod/api
+Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
 ```
 
 ## Zawieszone: udemy-transcript-tool
@@ -96,4 +107,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 11:41 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 11:56 — sesja aktywna*
