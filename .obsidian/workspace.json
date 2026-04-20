@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Fix CFN rescue in planodkupow project"
+              "title": "Terminal: ✳ Fix CFN rescue in planodkupow project"
             }
           },
           {
@@ -252,6 +252,9 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "40-runbooks/incidents/prompts/rshop-prod-503-triage.md",
+    "40-runbooks/incidents/prompts",
+    "40-runbooks/incidents/rshop-prod-503-2026-04-20.md",
     "20-projects/internal/udemy-transcript-tool/run.sh",
     "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/top_level.txt",
     "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/requires.txt",
@@ -262,8 +265,6 @@
     "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info",
     "20-projects/internal/udemy-transcript-tool/README.md",
     "20-projects/internal/udemy-transcript-tool/pyproject.toml",
-    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/__main__.py",
-    "20-projects/internal/udemy-transcript-tool/udemy_obsidian/__init__.py",
     "20-projects/internal/aws-cloudops-exam/index.md",
     "02-active-context/now.md",
     "02-active-context/current-focus.md",
@@ -287,7 +288,6 @@
     "60-toolkit/observability-ready.md",
     "20-projects/internal/llz/wymagania-makolab/propozycja-wdrozenia.md",
     "20-projects/internal/llz/wymagania-makolab/diagram.md",
-    "20-projects/internal/llz/wymagania-makolab/analiza-ryzyka.md",
     "Bez nazwy.canvas"
   ]
 }
