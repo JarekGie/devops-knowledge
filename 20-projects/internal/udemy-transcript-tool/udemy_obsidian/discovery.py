@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Optional
+from typing import Any, Optional
 
 from playwright.async_api import Page
 
@@ -28,74 +28,33 @@ def extract_slug(course_url: str) -> str:
     return match.group(1)
 
 
-async def _get_course_id_from_page(page: Page) -> tuple[int, str]:
+async def _get_course_id_from_network(page: Page, course_url: str) -> tuple[int, str]:
     """
-    Wyciąga course_id ze strony kursu (DOM / window variables).
-    # ADAPTER: Udemy może zmienić strukturę window variables lub atrybutów DOM
+    Przechwytuje network requests podczas ładowania strony kursu.
+    Udemy's JS robi API calls z course ID w URL — wyciągamy go stamtąd.
+    # ADAPTER: wzorzec URL API może się zmienić
     """
-    debug = await page.evaluate("""
-        () => ({
-            hasUD: typeof window.UD !== 'undefined',
-            UDkeys: typeof window.UD !== 'undefined' ? Object.keys(window.UD) : [],
-            hasInitialState: typeof window.__INITIAL_STATE__ !== 'undefined',
-            bodyAttrs: Array.from(document.body.attributes).map(a => a.name + '=' + a.value.slice(0, 40)),
-            metaCourseid: (document.querySelector('meta[name="courseid"]') || {}).content || null,
-        })
-    """)
-    logger.debug("Page debug: %s", debug)
+    course_info: dict = {"id": None, "title": ""}
 
-    result = await page.evaluate("""
-        () => {
-            // Metoda 1: window.UD.serverSideProps
-            try {
-                const c = window.UD.serverSideProps.course;
-                if (c && c.id) return {id: c.id, title: c.title || ''};
-            } catch(e) {}
+    def on_response(response: Any) -> None:
+        url = response.url
+        m = re.search(r"/api-2\.0/courses/(\d+)/", url)
+        if m and course_info["id"] is None:
+            course_info["id"] = int(m.group(1))
+            logger.debug("course_id z network: %s (url=%s)", course_info["id"], url)
 
-            // Metoda 2: window.UD.meReporter lub podobne
-            try {
-                const id = window.UD.courseId || window.UD.course_id;
-                if (id) return {id: parseInt(id), title: ''};
-            } catch(e) {}
+    page.on("response", on_response)
+    try:
+        await page.goto(course_url, wait_until="networkidle", timeout=30000)
+    finally:
+        page.remove_listener("response", on_response)
 
-            // Metoda 3: data-clp-course-id na body lub dowolnym elemencie
-            for (const attr of ['data-clp-course-id', 'data-course-id']) {
-                const el = document.querySelector('[' + attr + ']');
-                if (el) return {id: parseInt(el.getAttribute(attr)), title: document.title};
-            }
-
-            // Metoda 4: meta tag
-            const meta = document.querySelector('meta[name="courseid"]');
-            if (meta && meta.content) return {id: parseInt(meta.content), title: document.title};
-
-            // Metoda 5: szukaj "courseId": w skryptach
-            for (const s of document.scripts) {
-                const m = s.text.match(/"courseId"\\s*:\\s*(\\d+)/);
-                if (m) return {id: parseInt(m[1]), title: ''};
-                const m2 = s.text.match(/"course_id"\\s*:\\s*(\\d+)/);
-                if (m2) return {id: parseInt(m2[1]), title: ''};
-            }
-
-            // Metoda 6: URL /learn/lecture/ — course ID nieznany, ale spróbuj z __INITIAL_STATE__
-            try {
-                const state = window.__INITIAL_STATE__;
-                if (state) {
-                    const json = JSON.stringify(state);
-                    const m = json.match(/"id":(\\d+),"title"/);
-                    if (m) return {id: parseInt(m[1]), title: ''};
-                }
-            } catch(e) {}
-
-            return null;
-        }
-    """)
-
-    if result and result.get("id"):
-        return int(result["id"]), result.get("title", "")
+    if course_info["id"]:
+        return course_info["id"], course_info["title"]
 
     raise RuntimeError(
-        "Nie można znaleźć course_id na stronie kursu. "
-        "Sprawdź logi DEBUG żeby zobaczyć dostępne window variables."
+        "Nie można znaleźć course_id w ruchu sieciowym. "
+        "Upewnij się, że jesteś zalogowany i masz dostęp do kursu."
     )
 
 
@@ -109,12 +68,7 @@ async def discover_course(
     slug = extract_slug(course_url)
     logger.info("Odkrywanie kursu: %s", slug)
 
-    await page.goto(course_url, wait_until="networkidle", timeout=30000)
-    actual_url = page.url
-    page_title = await page.title()
-    logger.debug("Strona po goto: url=%s title=%s", actual_url, page_title)
-
-    course_id, course_title = await _get_course_id_from_page(page)
+    course_id, course_title = await _get_course_id_from_network(page, course_url)
     if not course_title:
         course_title = slug
     logger.info("Kurs: %s (id=%s)", course_title, course_id)
