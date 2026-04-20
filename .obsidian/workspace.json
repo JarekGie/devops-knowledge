@@ -46,81 +46,11 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Read context about LLZ"
+              "title": "Terminal: ⠐ Read context about LLZ"
             }
           },
           {
-            "id": "fdc1b995058a046b",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/maspex/troubleshooting.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "troubleshooting"
-            }
-          },
-          {
-            "id": "f488bd4d57ffde80",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "02-active-context/now.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "now"
-            }
-          },
-          {
-            "id": "15490c00038e0964",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/LLM_CONTEXT.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "LLM_CONTEXT"
-            }
-          },
-          {
-            "id": "37e759c8dc7e4200",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "_chatgpt/context-packs/llz.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "llz"
-            }
-          },
-          {
-            "id": "a73bff43ca7568ff",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/internal/devops-business/README.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "README"
-            }
-          },
-          {
-            "id": "ba48496167a73eec",
+            "id": "161ce179b8aa810f",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -132,23 +62,8 @@
               "icon": "lucide-file",
               "title": "waf-checklist"
             }
-          },
-          {
-            "id": "2b15ca9c2c00736d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "_chatgpt/context-packs/llz.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "llz"
-            }
           }
-        ],
-        "currentTab": 7
+        ]
       }
     ],
     "direction": "vertical"
@@ -321,7 +236,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "2b15ca9c2c00736d",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
     "20-projects/internal/llz/waf-checklist.md",
     "_chatgpt/context-packs/llz.md",
