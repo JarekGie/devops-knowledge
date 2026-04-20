@@ -67,3 +67,42 @@
 - Nie rób force-push na main bez potwierdzenia
 - Nie usuwaj zasobów AWS bez potwierdzenia
 - Nie uruchamiaj `terraform apply` bez wyraźnego "tak" od użytkownika
+
+---
+
+## Kontrakt dla dokumentów kontekstowych (LLM_CONTEXT)
+
+### Obowiązkowe sekcje
+
+Każdy dokument kontekstowy (`_chatgpt/context-packs/*.md`) MUSI zawierać:
+
+1. **Kim jestem** — rola, środowisko, kontekst użytkownika
+2. **Opis systemu** — czym jest projekt/platforma, zakres
+3. **Zakres (scope boundaries)** — co obejmuje, czego NIE obejmuje
+4. **Źródła prawdy** — gdzie jest stan runtime (IaC, AWS), ostrzeżenie że vault = dokumentacja
+5. **Stan obecny** — co wdrożone, co działa
+6. **Plan / roadmapa** — co planowane, priorytety
+7. **Aktualny fokus** — 3-5 priorytetów bieżącego okresu
+8. **Ryzyka / HRI** — High Risk Issues, nie ogólniki
+9. **Decyzje architektoniczne** — podjęte decyzje z uzasadnieniem
+10. **Pytania otwarte** — nierozstrzygnięte kwestie
+11. **Jak używać** — instrukcja użycia z LLM
+
+### Wymagania jakościowe
+
+Dokument MUSI być:
+- **konkretny** — realne dane (ARNy, account IDs, ścieżki), brak ogólników
+- **aktualny** — odzwierciedla rzeczywisty stan AWS i IaC
+- **standalone** — używalny bez dodatkowego kontekstu
+
+Dokument NIE może:
+- zawierać marketingowego języka ("platforma klasy enterprise", "best-in-class")
+- być generowany bez analizy rzeczywistego stanu (nie na podstawie wyobrażeń)
+- być oderwany od IaC — każde twierdzenie o stanie musi mieć pokrycie w Terraform/CFN/AWS
+
+### Zasady aktualizacji
+
+Każda aktualizacja dokumentu MUSI:
+- zaktualizować pole `**Zaktualizowano:**` w nagłówku
+- zaktualizować sekcję "Aktualny fokus" jeśli zmienia się priorytet
+- NIE usuwać istniejących sekcji — tylko rozszerzać lub korygować

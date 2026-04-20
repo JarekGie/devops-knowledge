@@ -3,10 +3,18 @@
 > Wklej na początku sesji dotyczącej LLZ. Standalone — nie wymaga dodatkowych plików.
 > Aktualizuj po każdej sesji implementacyjnej.
 
+## Jak używać tego kontekstu z LLM
+
+- Wklej ten plik na początku rozmowy jako kontekst bazowy
+- Dodaj konkretny problem lub pytanie (np. "jak wdrożyć GuardDuty org-wide")
+- Jeśli temat dotyczy konkretnego projektu (rshop, planodkupow) — dołącz jego kontekst z `20-projects/`
+- Nie wklejaj całego vault — tylko potrzebne fragmenty
+- Przy pytaniach o stan — zweryfikuj w IaC, nie polegaj wyłącznie na tym dokumencie
+
 ---
 
 **Projekt:** LLZ — Light Landing Zone (MakoLab platforma AWS)
-**Zaktualizowano:** 2026-04-20
+**Zaktualizowano:** 2026-04-20 (dodano: scope boundaries, źródła prawdy, aktualny fokus, profil mapping; poprawiono: planodkupow status A/B/C)
 **Repozytoria:** `~/projekty/mako/aws-projects/aws-cloud-platform/` (Terraform IaC)
 
 ---
@@ -28,6 +36,36 @@ Senior DevOps/SRE, AWS-primary. Właściciel platformy AWS dla MakoLab — firmy
 | **Tagging governance** | CFN + Terraform | tagi `Project`/`Environment`/`ManagedBy`/`Owner`, AWS Tag Policies |
 
 Narzędzie: `devops-toolkit` — CLI (`toolkit audit-pack llz-basic`, `toolkit audit-pack aws-logging`, `toolkit audit-pack tagging`).
+
+---
+
+## Zakres LLZ (scope boundaries)
+
+LLZ obejmuje:
+- governance (SCP, Tag Policies, AWS Organizations)
+- observability (CloudWatch, logi, alerty)
+- baseline security (GuardDuty, Config, CloudTrail)
+- standardy operacyjne (scaffold, tagging, health notifications)
+
+LLZ NIE obejmuje:
+- architektury aplikacyjnej (baza danych, kolejki, API design)
+- implementacji CI/CD dla aplikacji klientów
+- logiki aplikacyjnej ani konfiguracji runtime
+
+Rekomendacje poza tym zakresem traktuj jako out-of-scope.
+
+---
+
+## Źródła prawdy (Source of Truth)
+
+| Co | Gdzie |
+|----|-------|
+| Infrastruktura platformowa | Terraform (`aws-cloud-platform/`) |
+| Projekty klientów | CloudFormation (`infra-bbmt/`, `infra-rshop/` itd.) |
+| SCP, Tag Policies, OU | AWS Organizations (stan w Terraform state) |
+| Audyty i conformance | `devops-toolkit` (artefakty w `.devops-toolkit/runs/`) |
+
+**Vault jest warstwą dokumentacyjną — nie jest źródłem prawdy runtime.** Przy rozbieżności między vault a stanem AWS → zaufaj AWS.
 
 ---
 
@@ -112,6 +150,19 @@ Projekty CFN tagowane przez `toolkit apply-pack tagging`.
 
 ---
 
+## Aktualny fokus (2026-04)
+
+Priorytety na bieżący kwartał — zgodnie z HRI i Fazą B:
+
+1. **GuardDuty org-wide** — HRI SEC 4, brak detekcji zagrożeń w całej org
+2. **SCP Faza B** — HRI SEC 1, brak preventive controls poza `llz-workloads-baseline`
+3. **AWS Config org aggregator** — widoczność compliance cross-account (brak teraz)
+4. **Inwentaryzacja projektów Terraform** — tagowanie i scaffold dla kont spoza CFN
+
+Rekomendacje powinny być zgodne z tymi priorytetami. Jeśli sugerujesz nowe działanie — zaznacz czy wpisuje się w jeden z tych 4 punktów.
+
+---
+
 ## WAF stan (aktualizacja 2026-04-20)
 
 Overall: **~30% WAF-ready**.
@@ -143,13 +194,16 @@ Overall: **~30% WAF-ready**.
 | Projekt | IaC | Tagging |
 |---------|-----|---------|
 | rshop | CloudFormation | dev 11/14, prod 12/13 compliant |
-| planodkupow (bbmt) | CloudFormation | 104 zasoby zaudytowane, fix w toku po incydencie QA |
+| planodkupow (bbmt) | CloudFormation | 104 zasoby zaudytowane, **BLOCKED** — czeka na deva |
 | Terraform projekty | Terraform | niezbadane — wymaga inwentaryzacji |
 
 **Incydent planodkupow-qa (2026-04-18):**
 - ROOT.yml update triggered VPCStack deadlock → `UPDATE_ROLLBACK_FAILED`
 - RabbitMQ custom resource Lambda zwracał "account suspended" — blokował rollback
-- Stan: QA niedostępne, wymaga decyzji A (AWS Support) lub B (delete+redeploy)
+- Opcja A: AWS Support ticket (custom resource Lambda issue)
+- Opcja B: delete planodkupow-qa + redeploy (~30-60 min, utrata stanu QA)
+- Opcja C: rollback RabbitMQ template do wersji sprzed zmiany
+- Stan: **BLOCKED** — czeka na decyzję dev team; RabbitMQ 3.8.6 deprecated, prosty rollback niemożliwy
 
 ---
 
@@ -179,13 +233,20 @@ Overall: **~30% WAF-ready**.
 # Management account (Terraform state, Organizations API)
 AWS_PROFILE=mako-dc terraform plan/apply
 
-# Monitoring account (bezpośrednio)
-aws ... --profile monitoring-tbd
+# Monitoring account — bezpośredni dostęp (nie przez assume_role)
+aws ... --profile monitoring-tbd    # monitoring-tbd = profil dla monitoring-nagios-bot (814662658531)
 
 # Inne konta przez assume_role z mako-dc (OrganizationAccountAccessRole)
+aws sts assume-role --role-arn arn:aws:iam::<ACCOUNT_ID>:role/OrganizationAccountAccessRole \
+  --role-session-name llz-audit --profile mako-dc
 ```
 
 **UWAGA:** awsume ustawia env vars które nadpisują `profile` w Terraform backend. Zawsze używaj `AWS_PROFILE=mako-dc terraform ...` (nie awsume przed terraform).
+
+| Profil | Konto | Zastosowanie |
+|--------|-------|--------------|
+| `mako-dc` | 864277686382 (management) | Terraform state, Organizations API, aws-cloud-platform |
+| `monitoring-tbd` | 814662658531 (monitoring-nagios-bot) | bezpośredni dostęp CLI do konta monitoring |
 
 ---
 
