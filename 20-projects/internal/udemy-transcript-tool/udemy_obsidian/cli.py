@@ -55,12 +55,13 @@ def login(storage_state: str, verbose: bool) -> None:
 
 
 async def _login(storage_state_path: Path) -> None:
-    click.echo("Otwieranie przeglądarki — zaloguj się do Udemy, a następnie zamknij okno.")
+    click.echo("Otwieranie przeglądarki — zaloguj się do Udemy.")
     async with UdemyBrowser(storage_state_path, headless=False) as browser:
         page = await browser.new_page()
         await page.goto("https://www.udemy.com/join/login-popup/")
-        click.echo("Czekam na zamknięcie okna przeglądarki…")
-        await page.wait_for_event("close", timeout=0)
+        await asyncio.get_event_loop().run_in_executor(
+            None, input, "\nNaciśnij Enter po zakończeniu logowania…\n"
+        )
         await browser.save_state()
     click.echo(f"Sesja zapisana: {storage_state_path}")
 
