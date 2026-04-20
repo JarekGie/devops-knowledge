@@ -25,6 +25,19 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-20 — WAF checklist: wszystkie 57 pytań zmapowane na LLZ
+
+**Co zrobiono:**
+- Utworzono `waf-checklist.md` — 57 pytań WAF (6 pillars) zmapowanych na kontekst MakoLab org
+- Oceniono aktualny stan: ~30% WAF-ready
+- Zidentyfikowano 4 High Risk Issues: GuardDuty wyłączony (SEC 4), brak SCP (SEC 1), brak IR plan (SEC 10), brak DR plan (REL 13)
+- Zmapowano Faza B epiki do konkretnych WAF checks
+- Decyzja: dokumentacja LLZ przygotowywana od razu pod WAFR review — nie przepisywać
+
+**Stan na koniec:** checklista gotowa, aktualizować przy każdej sesji LLZ
+
+---
+
 ## 2026-04-20 — health-notifications: Terraform napisany, czeka na wdrożenie
 
 **Co zrobiono:**

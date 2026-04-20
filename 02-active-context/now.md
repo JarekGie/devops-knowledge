@@ -10,6 +10,15 @@ Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
 Status:     CZEKA NA ODPOWIEDŹ DEVA — zablokowane na RabbitMQ
 ```
 
+## Zamknięte: LLZ WAF checklist ✓
+
+```
+Stan:       Gotowe (2026-04-20)
+Plik:       20-projects/internal/llz/waf-checklist.md
+Wynik:      ~30% WAF-ready, 4 HRI, quick wins zidentyfikowane
+HRI:        GuardDuty (SEC 4), SCP (SEC 1), IR plan (SEC 10), DR plan (REL 13)
+```
+
 ## Zamknięte: LLZ health-notifications ✓ WDROŻONE
 
 ```
@@ -162,4 +171,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 19:40 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 19:55 — sesja aktywna*
