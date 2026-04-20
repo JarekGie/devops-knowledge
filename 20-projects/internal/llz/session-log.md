@@ -318,6 +318,40 @@ AWS_PROFILE=mako-dc terraform apply tfplan
 
 ---
 
+## 2026-04-20 — audit-pack llz-waf-readonly: implementacja
+
+**Co zrobiono:**
+- Zaprojektowano i zaimplementowano nowy audit pack `llz-waf-readonly` w devops-toolkit
+- Pack YAML: `packs/llz-waf-readonly/pack.yaml` (istniał, uzupełniony)
+- 6 pluginów (pełna implementacja, 121 testów — wszystkie PASS):
+  - `llz-guardduty` — detektor, delegated admin, auto-enable
+  - `llz-scp` — custom SCPs, baseline guardrail, Workloads OU attachment
+  - `llz-cloudtrail` — org trail, multi-region, LogArchive S3 pattern
+  - `llz-config` — recorder status, org aggregator
+  - `llz-tagging` — Tag Policies dla Project/Environment (fallback: Tag API)
+  - `llz-observability` — OAM sink, linked accounts, ALB+VPC logging
+- Każdy finding: `details` = JSON z `status` (PASS/FAIL/PARTIAL) + `evidence` (structured)
+- Graceful degradation: brak uprawnień → PARTIAL finding zamiast wyjątku
+- Testy: `tests/unit/test_llz_waf_readonly_pack.py` — 121 testów (pack YAML, import, contract, finding model, graceful degradation, pack discovery)
+
+**Uruchomienie:**
+```bash
+toolkit audit-pack llz-waf-readonly --project-root ~/projekty/mako/<projekt>
+```
+
+**Stan na koniec:**
+- Pack gotowy do pierwszego uruchomienia na żywo (wymaga konta z org-level read access)
+- Pokrycie: 13 checks, 6 pluginów, oba WAF pillars (Security + Operational Excellence)
+- Znane HRI z waf-checklist powinny być wykryte przez: llz-guardduty (SEC 4), llz-scp (SEC 1)
+
+**Następna sesja:**
+- Uruchomić pack na żywo z profilu `mako-dc` (Management account)
+- Sprawdzić czy `llz-scp` wykrywa `llz-workloads-baseline` (p-flr98jkj) jako PASS
+- Sprawdzić czy `llz-cloudtrail` wykrywa `org-baseline-cloudtrail` jako PASS
+- Sprawdzić czy `llz-observability` wykrywa OAM sink `observabilitySink` jako PASS
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
