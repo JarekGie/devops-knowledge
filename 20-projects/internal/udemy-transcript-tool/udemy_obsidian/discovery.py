@@ -75,7 +75,10 @@ async def discover_course(
     slug = extract_slug(course_url)
     logger.info("Odkrywanie kursu: %s", slug)
 
-    await page.goto(course_url, wait_until="domcontentloaded")
+    await page.goto(course_url, wait_until="networkidle", timeout=30000)
+    actual_url = page.url
+    page_title = await page.title()
+    logger.debug("Strona po goto: url=%s title=%s", actual_url, page_title)
 
     course_id, course_title = await _get_course_id_from_page(page)
     if not course_title:
