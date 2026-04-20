@@ -8,7 +8,7 @@
 
 | Plik | Temat | Data | Opis |
 |------|-------|------|------|
-| — | — | — | Brak paczek |
+| `context-packs/llz.md` | LLZ platform | 2026-04-20 | Stan Fazy A, org inventory, WAF checklist, decyzje arch., profil AWS |
 
 ## Podsumowania rozmów (`conversations/`)
 
