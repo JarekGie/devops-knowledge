@@ -109,6 +109,7 @@ AWS Account:  333320664022 (planodkupow)
 Region:       eu-central-1
 Profil CLI:   plan
 Stack:        planodkupow-qa (CREATE_COMPLETE)
+              planodkupow-uat (UPDATE_ROLLBACK_FAILED — RabbitMQStack)
 ```
 
 ## Kluczowe pliki
@@ -137,4 +138,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 12:15 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 13:00 — sesja aktywna*
