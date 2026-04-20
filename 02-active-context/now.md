@@ -17,6 +17,7 @@ Notatka:    20-projects/internal/llz/session-log.md (2026-04-20 patch)
 ```
 Zadanie:    planodkupow UAT — RabbitMQ UPDATE_ROLLBACK_FAILED
 Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
+Repo:       ~/projekty/mako/aws-projects/infra-bbmt
 Status:     PLAN GOTOWY — czeka na wykonanie (zgoda operatora)
 
 Root cause: Drift CFN (template: 3.8.6) vs rzeczywistość (broker: 3.13.7 via AutoMinorVersionUpgrade)
@@ -176,10 +177,25 @@ Stack:        planodkupow-qa (CREATE_COMPLETE)
 ## Kluczowe pliki
 
 ```
+Repo root:    ~/projekty/mako/aws-projects/infra-bbmt
 ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/ROOT.yml
 ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/ECS.yml  (LogGroup DeletionPolicy: Retain)
 ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/MSSQL.yml (DeletionPolicy: Retain, HasSnapshot)
 ~/projekty/mako/aws-projects/infra-bbmt/cloudformation/RMQ.yml  (3.13, mq.m5.large)
+```
+
+## Stan repo
+
+```bash
+Branch: main
+Dirty:  cloudformation/ECS.yml
+        cloudformation/MSSQL.yml
+        cloudformation/REDIS.yml
+        cloudformation/RMQ.yml
+        cloudformation/ROOT.yml
+        cloudformation/ROOT_CLEANED_DEV.yml
+        .gitignore (untracked)
+        .DS_Store
 ```
 
 ## Dokumentacja
