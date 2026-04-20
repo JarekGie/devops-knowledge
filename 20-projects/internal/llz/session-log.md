@@ -25,6 +25,44 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-20 — health-notifications: Terraform napisany, czeka na wdrożenie
+
+**Co zrobiono:**
+- Zaprojektowano architekturę: EventBridge cross-account (us-east-1) → Lambda → SNS email
+- Napisano kompletny moduł Terraform w `platform/health-notifications/`
+- Lambda (Python 3.12) pobiera nazwy kont przez Organizations API, formatuje czytelny email
+- Koszt: ~$0.00/miesiąc (rozliczane per-event)
+
+**Pliki:**
+```
+platform/health-notifications/
+├── versions.tf, backend.tf, providers.tf, variables.tf, locals.tf
+├── main.tf        — bus health-aggregation + OrgPutEvents policy + rule → Lambda + SNS sub
+├── lambda.tf      — Lambda us-east-1 + IAM (DescribeAccount + SNS publish + CWLogs)
+├── forwarding.tf  — 11x EventBridge rule+target (per konto, us-east-1 → management bus)
+├── outputs.tf
+└── lambda/main.py — Python handler
+```
+
+**Decyzje architektoniczne:**
+- Lambda w us-east-1 (nie eu-central-1) — EventBridge us-east-1 nie może wywoływać Lambda cross-region
+- SNS publish z jawnym `region_name="eu-central-1"` — Lambda domyślnie używa regionu deploymentu
+- Forwarding bez IAM role w source accounts — resource policy (OrgPutEvents) wystarczy dla same-region cross-account
+- Bez Business Support: AWS Health organizational view niedostępne → rozwiązanie per-account EventBridge rules
+
+**Stan na koniec:** kod gotowy, NIE wdrażać bez decyzji
+
+**Wdrożenie gdy gotowi:**
+```bash
+cd ~/projekty/mako/aws-projects/aws-cloud-platform/platform/health-notifications
+terraform init
+terraform plan -var="notification_email=jaroslaw.golab@makolab.com" -out=tfplan
+terraform apply tfplan
+# Po apply: kliknąć link potwierdzający subskrypcję SNS email
+```
+
+---
+
 ## 2026-04-18 — Architektura LLZ: idee i backlog
 
 **Co omówiono:**
