@@ -300,6 +300,24 @@ AWS_PROFILE=mako-dc terraform apply tfplan
 
 ---
 
+## 2026-04-20 — LLZ context pack + AGENTS kontrakt
+
+**Co zrobiono:**
+- Utworzono `_chatgpt/context-packs/llz.md` — standalone kontekst LLZ dla LLM (11 wymaganych sekcji)
+- Dodano do kontekstu: scope boundaries, źródła prawdy, aktualny fokus, instrukcja użycia
+- Zaktualizowano `_system/AGENTS.md` o sekcję `Kontrakt dla dokumentów kontekstowych (LLM_CONTEXT)` — definiuje 11 obowiązkowych sekcji dla każdego context pack
+- Poprawki w kontekście: planodkupow opcja C, status BLOCKED, tabela profil→konto
+
+**Stan na koniec:**
+- `_chatgpt/context-packs/llz.md` gotowy do użycia z ChatGPT/Claude
+- AGENTS.md = źródło prawdy dla struktury context packów
+
+**Następna sesja:**
+- Faza B: GuardDuty org-wide (EPIC 4, HRI)
+- Ewentualnie: AWS Config org aggregator (EPIC 5)
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]

@@ -125,16 +125,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_chatgpt/context-packs/llz.md",
+                "file": "20-projects/internal/llz/waf-checklist.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "llz"
+              "title": "waf-checklist"
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "vertical"
@@ -307,13 +306,14 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ba48496167a73eec",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "20-projects/internal/llz/waf-checklist.md",
+    "_chatgpt/context-packs/llz.md",
     "20-projects/internal/devops-business/README.md",
     "20-projects/internal/devops-business/next-steps.md",
     "20-projects/internal/devops-business/links.md",
     "20-projects/internal/devops-business/context.md",
-    "_chatgpt/context-packs/llz.md",
     "20-projects/LLM_CONTEXT.md",
     "01-inbox/LLM_CONTEXT.md",
     "00-start-here/LLM_CONTEXT.md",
@@ -335,7 +335,6 @@
     "_system/TEMPLATES/folder-context-template.md",
     "_system/TEMPLATES/chatgpt-context-template.md",
     "_system/CHATGPT_WORKFLOW.md",
-    "_system/LLM_CONTEXT_GLOBAL.md",
     "scripts",
     "_chatgpt/templates",
     "_chatgpt/conversations",

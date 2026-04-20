@@ -10,6 +10,15 @@ Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
 Status:     CZEKA NA ODPOWIEDŹ DEVA — zablokowane na RabbitMQ
 ```
 
+## Zamknięte: LLZ context pack + AGENTS kontrakt ✓
+
+```
+Stan:       DONE (2026-04-20)
+Co:         _chatgpt/context-packs/llz.md — pełny kontekst LLZ dla LLM (11 sekcji)
+            _system/AGENTS.md — kontrakt dla dokumentów kontekstowych
+Następne:   Faza B — GuardDuty org-wide (HRI, EPIC 4)
+```
+
 ## Zamknięte: LLZ WAF checklist ✓
 
 ```
@@ -171,4 +180,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 20:18 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 20:48 — sesja aktywna*
