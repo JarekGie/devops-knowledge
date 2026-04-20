@@ -180,4 +180,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 20:48 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 20:56 — sesja aktywna*
