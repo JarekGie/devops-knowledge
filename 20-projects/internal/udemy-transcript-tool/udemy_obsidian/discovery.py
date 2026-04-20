@@ -59,11 +59,23 @@ async def discover_course(
             except Exception as exc:
                 logger.debug("Błąd parsowania curriculum response: %s", exc)
 
-    page.on("response", on_response)
+    curriculum_future: asyncio.Future = asyncio.get_event_loop().create_future()
+
+    async def on_response_with_future(response: Response) -> None:
+        await on_response(response)
+        if curriculum_holder and not curriculum_future.done():
+            curriculum_future.set_result(True)
+
+    page.on("response", on_response_with_future)
     try:
-        await page.goto(course_url, wait_until="networkidle", timeout=60000)
+        await page.goto(course_url, wait_until="load", timeout=60000)
+        # Poczekaj na curriculum (max 30s po load)
+        try:
+            await asyncio.wait_for(asyncio.shield(curriculum_future), timeout=30)
+        except asyncio.TimeoutError:
+            logger.debug("Curriculum nie przechwycony w ciągu 30s po load")
     finally:
-        page.remove_listener("response", on_response)
+        page.remove_listener("response", on_response_with_future)
 
     if not course_id_holder:
         raise RuntimeError(
@@ -74,16 +86,26 @@ async def discover_course(
     course_id = course_id_holder[0]
     logger.info("Kurs: %s (id=%s)", slug, course_id)
 
-    # Jeśli curriculum nie został przechwycony (strona była z cache),
-    # nawiguj do pierwszego wykładu żeby wymusić API call
+    # Jeśli curriculum nie został przechwycony, nawiguj do landing page
     if not curriculum_holder:
-        logger.info("Curriculum nie przechwycony — wymuszam reload strony kursu")
-        page.on("response", on_response)
+        logger.info("Curriculum nie przechwycony — próbuję landing page kursu")
+        curriculum_future2: asyncio.Future = asyncio.get_event_loop().create_future()
+
+        async def on_response2(response: Response) -> None:
+            await on_response(response)
+            if curriculum_holder and not curriculum_future2.done():
+                curriculum_future2.set_result(True)
+
+        page.on("response", on_response2)
         try:
             base_url = re.sub(r"/learn/.*", "", course_url)
-            await page.goto(base_url, wait_until="networkidle", timeout=60000)
+            await page.goto(base_url, wait_until="load", timeout=60000)
+            try:
+                await asyncio.wait_for(asyncio.shield(curriculum_future2), timeout=30)
+            except asyncio.TimeoutError:
+                logger.debug("Curriculum nie przechwycony po reload")
         finally:
-            page.remove_listener("response", on_response)
+            page.remove_listener("response", on_response2)
 
     if not curriculum_holder:
         raise RuntimeError(
