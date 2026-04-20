@@ -79,31 +79,33 @@ class UdemyBrowser:
             return False
 
     async def fetch_json(self, page: Page, url: str) -> Any:
-        """Pobiera JSON przez sesję przeglądarki (ciasteczka dołączane automatycznie)."""
-        result = await page.evaluate(
-            """async (url) => {
-                const r = await fetch(url, {
-                    credentials: "include",
-                    headers: {
-                        "Accept": "application/json, text/plain, */*",
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                });
-                if (!r.ok) throw new Error("HTTP " + r.status + " " + url);
-                return r.json();
-            }""",
-            url,
-        )
-        return result
+        """Pobiera JSON przez page.request (cookies z kontekstu dołączane automatycznie)."""
+        assert self._context is not None
+        cookies = await self._context.cookies("https://www.udemy.com")
+        access_token = next((c["value"] for c in cookies if c["name"] == "access_token"), None)
+        csrf_token = next((c["value"] for c in cookies if c["name"] == "csrftoken"), None)
+
+        headers: dict[str, str] = {
+            "Accept": "application/json, text/plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "Referer": "https://www.udemy.com/",
+        }
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+        if csrf_token:
+            headers["X-Csrftoken"] = csrf_token
+
+        logger.debug("fetch_json cookies: access_token=%s csrf=%s", bool(access_token), bool(csrf_token))
+
+        response = await self._context.request.get(url, headers=headers)
+        if not response.ok:
+            raise RuntimeError(f"HTTP {response.status} {url}")
+        return await response.json()
 
     async def fetch_text(self, page: Page, url: str) -> str:
-        """Pobiera tekst (np. VTT) przez sesję przeglądarki."""
-        result = await page.evaluate(
-            """async (url) => {
-                const r = await fetch(url, {credentials: "include"});
-                if (!r.ok) throw new Error("HTTP " + r.status + " " + url);
-                return r.text();
-            }""",
-            url,
-        )
-        return result
+        """Pobiera tekst (np. VTT) przez page.request."""
+        assert self._context is not None
+        response = await self._context.request.get(url)
+        if not response.ok:
+            raise RuntimeError(f"HTTP {response.status} {url}")
+        return await response.text()

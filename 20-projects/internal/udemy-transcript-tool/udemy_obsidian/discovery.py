@@ -28,17 +28,41 @@ def extract_slug(course_url: str) -> str:
     return match.group(1)
 
 
-async def _get_course_id(browser: UdemyBrowser, page: Page, slug: str) -> tuple[int, str]:
-    # ADAPTER: endpoint wyszukiwania kursu po slugu
-    url = f"{API_BASE}/courses/?url_comonent={slug}&fields[course]=id,title"
-    data = await browser.fetch_json(page, url)
-    results = data.get("results", [])
-    if not results:
-        raise RuntimeError(
-            f"Kurs '{slug}' nie znaleziony lub brak dostępu. "
-            "Upewnij się, że jesteś zalogowany i masz wykupiony kurs."
-        )
-    return results[0]["id"], results[0].get("title", slug)
+async def _get_course_id_from_page(page: Page) -> tuple[int, str]:
+    """
+    Wyciąga course_id ze strony kursu (DOM / window variables).
+    Nie wymaga dodatkowego API call.
+    # ADAPTER: Udemy może zmienić strukturę window variables lub atrybutów DOM
+    """
+    result = await page.evaluate("""
+        () => {
+            // Metoda 1: window.UD.serverSideProps (najczęstsza)
+            try {
+                const c = window.UD.serverSideProps.course;
+                if (c && c.id) return {id: c.id, title: c.title || ''};
+            } catch(e) {}
+
+            // Metoda 2: data-clp-course-id na body
+            const bodyId = document.body.getAttribute('data-clp-course-id');
+            if (bodyId) return {id: parseInt(bodyId), title: document.title};
+
+            // Metoda 3: szukaj w tagach script (JSON embedded)
+            for (const s of document.scripts) {
+                const m = s.text.match(/"courseId"\\s*:\\s*(\\d+)/);
+                if (m) return {id: parseInt(m[1]), title: ''};
+            }
+
+            return null;
+        }
+    """)
+
+    if result and result.get("id"):
+        return int(result["id"]), result.get("title", "")
+
+    raise RuntimeError(
+        "Nie można znaleźć course_id na stronie kursu. "
+        "Upewnij się, że jesteś zalogowany i masz dostęp do kursu."
+    )
 
 
 async def discover_course(
@@ -53,7 +77,9 @@ async def discover_course(
 
     await page.goto(course_url, wait_until="domcontentloaded")
 
-    course_id, course_title = await _get_course_id(browser, page, slug)
+    course_id, course_title = await _get_course_id_from_page(page)
+    if not course_title:
+        course_title = slug
     logger.info("Kurs: %s (id=%s)", course_title, course_id)
 
     curriculum_url = f"{API_BASE}/courses/{course_id}/subscriber-curriculum-items/{_CURRICULUM_FIELDS}"
