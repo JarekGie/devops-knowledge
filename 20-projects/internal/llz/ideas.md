@@ -1,6 +1,6 @@
 ---
 type: ideas-backlog
-updated: 2026-04-18
+updated: 2026-04-20
 tags: [llz, architecture, toolkit, org-audit, plugin-api, observability]
 ---
 
@@ -8,6 +8,20 @@ tags: [llz, architecture, toolkit, org-audit, plugin-api, observability]
 
 > Surowy materiał do przyszłych sesji implementacyjnych. Zapisuj tu pomysły zanim trafią do kodu.
 > Format: problem → idea → dlaczego warto → ryzyko → status.
+
+## Dokumentacja LLZ — zrobić raz, pod AWS review
+
+**Decyzja (2026-04-20):** Dokumentacja LLZ ma być przygotowana od razu z myślą o AWS Competencies i Well-Architected Framework review — nie jako dokumentacja wewnętrzna do późniejszego przepisania.
+
+**Dlaczego:** Jeśli kiedykolwiek będzie review z AWS SA (Partner Program, WAFR), przepisywanie od zera to podwójna robota i ryzyko niespójności.
+
+**Co oznacza w praktyce:**
+- Struktura zgodna z Well-Architected pillars (Operational Excellence, Security, Reliability, Performance, Cost, Sustainability)
+- Każda decyzja architektoniczna udokumentowana jako ADR z uzasadnieniem
+- Dowody wdrożenia (screenshots, terraform outputs, policy ARNs) jako artefakty
+- Gap analysis z mapowaniem do konkretnych WAF best practices
+
+**Status:** Backlog — zaczynamy gdy LLZ Faza B ruszy lub będzie konkretna data review.
 
 ---
 
