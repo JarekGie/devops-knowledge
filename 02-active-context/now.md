@@ -33,8 +33,9 @@ Pliki:      udemy_obsidian/browser.py — tryb CDP w __aenter__
 ```
 Stan:       RESOLVED — wszystkie 3 serwisy running=1 (2026-04-20)
 Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md
-TODO:       Przed ponownym wdrożeniem Tag Policies — otagować ECS serwisy
-            (Environment=prod, Project=rshop)
+Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
+TODO:       Fix CFN (PropagateTags: SERVICE) na dev + akcesoria2 przed
+            ponownym wdrożeniem Tag Policies przez Terraform
 ```
 
 ## Gdzie skończyłem
@@ -95,4 +96,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 11:24 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 11:37 — sesja aktywna*
