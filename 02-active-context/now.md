@@ -5,9 +5,27 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    udemy-transcript-tool — dokończenie discovery
+Zadanie:    —
+Status:     Brak aktywnego zadania
+```
+
+## Zawieszone: udemy-transcript-tool
+
+```
+Stan:       CDP zaimplementowane, czeka na test
+Blokada:    Chrome musi być uruchomiony z --remote-debugging-port=9222
+Następny krok:
+            1. Zamknąć Chrome (Cmd+Q)
+            2. Uruchomić z flagą:
+               /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+                 --remote-debugging-port=9222 \
+                 --user-data-dir="$HOME/Library/Application Support/Google/Chrome" &
+            3. Sprawdzić: curl -s http://localhost:9222/json/version | python3 -m json.tool
+            4. bash run.sh (dry-run --verbose)
 Projekt:    20-projects/internal/udemy-transcript-tool
-Status:     W TOKU
+Pliki:      udemy_obsidian/browser.py — tryb CDP w __aenter__
+            udemy_obsidian/cli.py    — flaga --cdp-url
+            run.sh                   — gotowe komendy
 ```
 
 ## Zawieszone: rshop-prod-503
@@ -76,4 +94,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 10:43 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 10:51 — sesja aktywna*
