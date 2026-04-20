@@ -48,6 +48,10 @@ async def discover_course(
                 course_id_holder.append(int(m.group(1)))
                 logger.debug("course_id z network: %s", course_id_holder[0])
 
+        # Loguj wszystkie api-2.0 calls (debug)
+        if "/api-2.0/" in url:
+            logger.debug("API call: %s", url[:120])
+
         # Przechwyć curriculum
         if not curriculum_holder and "subscriber-curriculum-items" in url:
             try:

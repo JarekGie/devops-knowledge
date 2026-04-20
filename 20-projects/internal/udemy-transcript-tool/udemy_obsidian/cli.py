@@ -132,6 +132,7 @@ async def _login(storage_state_path: Path) -> None:
 @click.option("--save-raw", is_flag=True, help="Zapisz surowe pliki VTT w podkatalogu raw/.")
 @click.option("--only-section", type=int, default=None, help="Eksportuj tylko wskazaną sekcję (numer).")
 @click.option("--only-lecture", type=int, default=None, help="Eksportuj tylko wskazany wykład (numer globalny).")
+@click.option("--cdp-url", default=None, help="Adres CDP istniejącego Chrome (np. http://localhost:9222).")
 @click.option("--verbose", is_flag=True)
 def export(
     course_url: str,
@@ -146,6 +147,7 @@ def export(
     save_raw: bool,
     only_section: Optional[int],
     only_lecture: Optional[int],
+    cdp_url: Optional[str],
     verbose: bool,
 ) -> None:
     """Eksportuje transkrypty kursu Udemy do vault Obsidian."""
@@ -163,6 +165,7 @@ def export(
         storage_state=Path(storage_state),
         only_section=only_section,
         only_lecture=only_lecture,
+        cdp_url=cdp_url,
         verbose=verbose,
     )
 
@@ -172,7 +175,7 @@ def export(
 async def _export(course_url: str, config: Config) -> None:
     storage_path = config.storage_state if config.reuse_session else Path("/dev/null")
 
-    async with UdemyBrowser(storage_path, headless=config.headless) as browser:
+    async with UdemyBrowser(storage_path, headless=config.headless, cdp_url=config.cdp_url) as browser:
         page = await browser.new_page()
 
         if not await browser.is_logged_in(page):

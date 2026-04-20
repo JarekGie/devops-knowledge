@@ -25,6 +25,7 @@ class Config:
     storage_state: Path = field(default_factory=lambda: DEFAULT_STORAGE_STATE)
     only_section: Optional[int] = None
     only_lecture: Optional[int] = None
+    cdp_url: Optional[str] = None
 
     @property
     def output_root(self) -> Path:
