@@ -31,26 +31,60 @@ def extract_slug(course_url: str) -> str:
 async def _get_course_id_from_page(page: Page) -> tuple[int, str]:
     """
     Wyciąga course_id ze strony kursu (DOM / window variables).
-    Nie wymaga dodatkowego API call.
     # ADAPTER: Udemy może zmienić strukturę window variables lub atrybutów DOM
     """
+    debug = await page.evaluate("""
+        () => ({
+            hasUD: typeof window.UD !== 'undefined',
+            UDkeys: typeof window.UD !== 'undefined' ? Object.keys(window.UD) : [],
+            hasInitialState: typeof window.__INITIAL_STATE__ !== 'undefined',
+            bodyAttrs: Array.from(document.body.attributes).map(a => a.name + '=' + a.value.slice(0, 40)),
+            metaCourseid: (document.querySelector('meta[name="courseid"]') || {}).content || null,
+        })
+    """)
+    logger.debug("Page debug: %s", debug)
+
     result = await page.evaluate("""
         () => {
-            // Metoda 1: window.UD.serverSideProps (najczęstsza)
+            // Metoda 1: window.UD.serverSideProps
             try {
                 const c = window.UD.serverSideProps.course;
                 if (c && c.id) return {id: c.id, title: c.title || ''};
             } catch(e) {}
 
-            // Metoda 2: data-clp-course-id na body
-            const bodyId = document.body.getAttribute('data-clp-course-id');
-            if (bodyId) return {id: parseInt(bodyId), title: document.title};
+            // Metoda 2: window.UD.meReporter lub podobne
+            try {
+                const id = window.UD.courseId || window.UD.course_id;
+                if (id) return {id: parseInt(id), title: ''};
+            } catch(e) {}
 
-            // Metoda 3: szukaj w tagach script (JSON embedded)
+            // Metoda 3: data-clp-course-id na body lub dowolnym elemencie
+            for (const attr of ['data-clp-course-id', 'data-course-id']) {
+                const el = document.querySelector('[' + attr + ']');
+                if (el) return {id: parseInt(el.getAttribute(attr)), title: document.title};
+            }
+
+            // Metoda 4: meta tag
+            const meta = document.querySelector('meta[name="courseid"]');
+            if (meta && meta.content) return {id: parseInt(meta.content), title: document.title};
+
+            // Metoda 5: szukaj "courseId": w skryptach
             for (const s of document.scripts) {
                 const m = s.text.match(/"courseId"\\s*:\\s*(\\d+)/);
                 if (m) return {id: parseInt(m[1]), title: ''};
+                const m2 = s.text.match(/"course_id"\\s*:\\s*(\\d+)/);
+                if (m2) return {id: parseInt(m2[1]), title: ''};
             }
+
+            // Metoda 6: URL /learn/lecture/ — course ID nieznany, ale spróbuj z __INITIAL_STATE__
+            try {
+                const state = window.__INITIAL_STATE__;
+                if (state) {
+                    const json = JSON.stringify(state);
+                    const m = json.match(/"id":(\\d+),"title"/);
+                    if (m) return {id: parseInt(m[1]), title: ''};
+                }
+            } catch(e) {}
 
             return null;
         }
@@ -61,7 +95,7 @@ async def _get_course_id_from_page(page: Page) -> tuple[int, str]:
 
     raise RuntimeError(
         "Nie można znaleźć course_id na stronie kursu. "
-        "Upewnij się, że jesteś zalogowany i masz dostęp do kursu."
+        "Sprawdź logi DEBUG żeby zobaczyć dostępne window variables."
     )
 
 
