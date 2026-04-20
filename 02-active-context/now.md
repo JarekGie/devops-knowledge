@@ -28,12 +28,13 @@ Pliki:      udemy_obsidian/browser.py — tryb CDP w __aenter__
             run.sh                   — gotowe komendy
 ```
 
-## Zawieszone: rshop-prod-503
+## Zamknięte: rshop-prod-503 ✓
 
 ```
-Stan:       terraform destroy wykonany, policies usunięte, propagacja w toku
-            ECS powinien sam odblokować się po ~13 min retry
+Stan:       RESOLVED — wszystkie 3 serwisy running=1 (2026-04-20)
 Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md
+TODO:       Przed ponownym wdrożeniem Tag Policies — otagować ECS serwisy
+            (Environment=prod, Project=rshop)
 ```
 
 ## Gdzie skończyłem
@@ -94,4 +95,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 10:59 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 11:04 — sesja aktywna*
