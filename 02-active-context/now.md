@@ -40,13 +40,21 @@ Opcje (czekamy na decyzję deva):
      przez change set bez ruszania brokera (ryzykowne)
 ```
 
-## Zawieszone: maspex preprod
+## Zamknięte: maspex preprod ✓
 
 ```
-Stan:       networking.tf dodane, terraform validate OK, czeka na apply
-Następny krok:
-            awsume maspex-cli && terraform plan -out=tfplan && terraform apply tfplan
-            Po apply: elasticache_endpoint → Secrets Manager maspex/preprod/api
+Stan:       APPLY COMPLETE (2026-04-20)
+            ALB: maspex-preprod-1322298306.eu-west-1.elb.amazonaws.com
+            Redis: maspex-preprod.zwowz5.0001.euw1.cache.amazonaws.com:6379
+
+TODO:       Wpisać do Secrets Manager maspex/preprod/api:
+            aws secretsmanager put-secret-value \
+              --secret-id arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/preprod/api-STbBy3 \
+              --secret-string '{"ConnectionStrings__Redis":"redis://maspex-preprod.zwowz5.0001.euw1.cache.amazonaws.com:6379"}' \
+              --profile maspex-cli --region eu-west-1
+
+            Gdy klient dostarczy certyfikaty/domenę:
+            → terraform.tfvars: cloudfront_enabled=true + cert ARNs + domeny → plan + apply
 Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
 ```
 
@@ -138,4 +146,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 13:22 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 13:36 — sesja aktywna*
