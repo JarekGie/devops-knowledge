@@ -32,7 +32,12 @@ class UdemyBrowser:
 
     async def __aenter__(self) -> "UdemyBrowser":
         self._playwright = await async_playwright().start()
-        self._browser = await self._playwright.chromium.launch(headless=self.headless)
+        # channel="chrome" używa zainstalowanego Google Chrome zamiast Chromium
+        # — omija Cloudflare bot detection
+        self._browser = await self._playwright.chromium.launch(
+            headless=self.headless,
+            channel="chrome",
+        )
 
         storage_state: Optional[str] = None
         if self.storage_state_path.exists():
