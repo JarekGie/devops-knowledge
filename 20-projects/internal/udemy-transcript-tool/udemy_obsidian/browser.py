@@ -71,9 +71,10 @@ class UdemyBrowser:
 
     async def is_logged_in(self, page: Page) -> bool:
         await page.goto("https://www.udemy.com/", wait_until="domcontentloaded")
+        # Daj użytkownikowi czas na rozwiązanie Cloudflare captcha jeśli się pojawi
         try:
-            # ADAPTER: selektor nagłówka po zalogowaniu
-            await page.wait_for_selector('[data-purpose="user-dropdown"]', timeout=6000)
+            await page.wait_for_selector('[data-purpose="user-dropdown"]', timeout=60000)
+            await self.save_state()
             return True
         except Exception:
             return False

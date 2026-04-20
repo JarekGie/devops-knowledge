@@ -5,16 +5,17 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    infra-rshop — incydent PROD
-Projekt:    infra-rshop
-Status:     W TOKU — właśnie przełączono
+Zadanie:    udemy-transcript-tool — dokończenie discovery
+Projekt:    20-projects/internal/udemy-transcript-tool
+Status:     W TOKU
 ```
 
-## Poprzednie zadanie (planodkupow-qa) — zawieszone
+## Zawieszone: rshop-prod-503
 
 ```
-Stan:       CREATE_COMPLETE ✓, drift ALB TG health check path do naprawienia
-Następny:   rozmowa z dev teamem → update-stack HealthCheckPath=/api/health
+Stan:       terraform destroy wykonany, policies usunięte, propagacja w toku
+            ECS powinien sam odblokować się po ~13 min retry
+Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md
 ```
 
 ## Gdzie skończyłem
@@ -75,4 +76,4 @@ VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 10:26 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-20 10:31 — sesja aktywna*
