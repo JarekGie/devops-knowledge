@@ -352,6 +352,44 @@ toolkit audit-pack llz-waf-readonly --project-root ~/projekty/mako/<projekt>
 
 ---
 
+## 2026-04-20 — audit-pack llz-waf-readonly: patch bezpieczeństwa (6 bugów)
+
+**Co zrobiono:**
+- Przeprowadzono architektoniczny audit 6 pluginów → zidentyfikowano 5 krytycznych błędów + 1 problem testowy
+- Zaaplikowano minimalny corrective patch (bez refaktoryzacji):
+
+**Poprawki pluginów:**
+1. `llz_cloudtrail` — false PASS bug: `is_logging=None` (gdy `GetTrailStatus` rzuca wyjątek) teraz produkuje PARTIAL zamiast PASS
+2. `llz_observability` — false FAIL bug: gdy `llz.monitoring_account_id` ≠ bieżące konto → PARTIAL zamiast FAIL (OAM sink jest w koncie monitoring-nagios-bot)
+3. `llz_tagging` — usunięto hardcoded `_REQUIRED_TAGS = ["Project", "Environment"]` → tagi muszą być w `project.yaml` pod `llz.required_tags`; brak konfiguracji = explicit PARTIAL finding (WAF-OPS-TAG-000)
+4. `llz_scp` — usunięto hardcoded OU name "workloads" → czyta `llz.workloads_ou_name` z project.yaml (domyślnie "Workloads"); BFS traverse pełne drzewo OU (nie tylko 1 poziom); `list_policies_for_target` obejmuje SCPs dziedziczone z Root (naprawia false positive dla org z SCP na Root)
+5. Wszystkie 6 pluginów — usunięto `or "eu-central-1"` fallback z `_build_session` → brak regionu = explicit `ValueError` (nie cicha pułapka)
+
+**Poprawki testów:**
+- `_PROJECT_CONFIG` uzupełnione o `llz.required_tags` i `llz.workloads_ou_name`
+- `_mock_session()` uzupełnione o `sts.get_caller_identity` (STS mock)
+- Dodano 8 behavioral tests (CT-001 None→PARTIAL, CT-001 False→FAIL, CT-001 True→PASS, OBS cross-account→PARTIAL, OBS explicit ARN→PASS, TAG missing config→PARTIAL, TAG custom tags→correct IDs, SCP Root-inherited→PASS)
+- Wynik: **129 testów, 0 FAILED**
+
+**Konfiguracja wymagana w project.yaml dla pełnego audytu:**
+```yaml
+llz:
+  required_tags: [Project, Environment]        # wymagane tagi do sprawdzenia
+  workloads_ou_name: Workloads                  # nazwa OU (domyślnie "Workloads")
+  monitoring_account_id: "814662658531"         # konto monitoring-nagios-bot (OAM sink)
+  # oam_sink_arn: arn:aws:...                   # alternatywa — jawny ARN sink
+```
+
+**Stan na koniec:**
+- 6 bugów naprawionych, pack gotowy do uruchomienia na żywo
+- Wymagany project.yaml z sekcją `llz:` przed uruchomieniem na produkcji
+
+**Następna sesja:**
+- Dodać sekcję `llz:` do project.yaml mako-dc (lub per-projekt)
+- Uruchomić pack live: `toolkit audit-pack llz-waf-readonly --project-root ~/projekty/mako/<projekt>`
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
