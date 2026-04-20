@@ -5,9 +5,39 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    planodkupow UAT/PROD — zakleszczony deployment
+Zadanie:    planodkupow UAT — zakleszczony deployment
 Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
-Status:     INCYDENT W TOKU
+Status:     CZEKA NA ODPOWIEDŹ DEVA — zablokowane na RabbitMQ
+```
+
+## Stan UAT po sesji 2026-04-20
+
+```
+Co zrobiono:
+  - Dodano managed policy planodkupow-auto-CFN-Describe-Fix do planodkupow-auto
+    (mq:DescribeBroker + rds:DescribeDBInstances)
+  - DBStack:        UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS → powinien sam dojść
+  - RedisStack:     UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS → powinien sam dojść
+  - RabbitMQStack:  UPDATE_ROLLBACK_FAILED — zablokowane (patrz niżej)
+
+Prawdziwy problem RabbitMQ:
+  Deployment próbował: 3.8.6/t3.micro → 3.13/m5.large (broker replacement)
+  Rollback próbuje wrócić do: 3.8.6 — AWS wycofał tę wersję z API
+  Błąd: "Broker engine version [3.8.6] is invalid. Valid values: [4.2, 3.13]"
+  Broker jest RUNNING (t3.micro, RUNNING) — dane bezpieczne
+
+Wszystkie warianty --resources-to-skip zawiodły:
+  BasicBroker                   → "does not belong to stack planodkupow-uat"
+  RabbitMQStack                 → "Nested stacks could not be skipped"
+  RabbitMQStack.BasicBroker     → "Stack [RabbitMQStack] does not exist"
+  Bezpośrednio na nested stack  → "cannot be invoked on child stacks"
+
+Opcje (czekamy na decyzję deva):
+  A. AWS Support — ręczny reset stanu nested stack, 0 ryzyka, wolno
+  B. Change set naprzód — deploy od nowa z naprawionym IAM, broker replacement
+     (t3.micro/3.8.6 → m5.large/3.13), wymaga okna serwisowego
+  C. Minimalne change set — dodać DeletionPolicy: Retain w S3 i odblokować
+     przez change set bez ruszania brokera (ryzykowne)
 ```
 
 ## Zawieszone: maspex preprod
