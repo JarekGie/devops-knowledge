@@ -5,9 +5,16 @@
 ## Aktywne zadanie
 
 ```
-Zadanie:    planodkupow-qa — środowisko odtworzone, drift do naprawienia
-Projekt:    infra-bbmt (planodkupow)
-Status:     GOTOWE — środowisko działa, jest jeden drift do wyeliminowania
+Zadanie:    infra-rshop — incydent PROD
+Projekt:    infra-rshop
+Status:     W TOKU — właśnie przełączono
+```
+
+## Poprzednie zadanie (planodkupow-qa) — zawieszone
+
+```
+Stan:       CREATE_COMPLETE ✓, drift ALB TG health check path do naprawienia
+Następny:   rozmowa z dev teamem → update-stack HealthCheckPath=/api/health
 ```
 
 ## Gdzie skończyłem
