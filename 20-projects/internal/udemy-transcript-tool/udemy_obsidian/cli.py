@@ -37,6 +37,55 @@ def cli() -> None:
 
 
 # ---------------------------------------------------------------------------
+# import-cookies
+# ---------------------------------------------------------------------------
+
+@cli.command("import-cookies")
+@click.option(
+    "--storage-state",
+    default=str(DEFAULT_STORAGE_STATE),
+    show_default=True,
+)
+@click.option("--verbose", is_flag=True)
+def import_cookies(storage_state: str, verbose: bool) -> None:
+    """Importuje ciasteczka Udemy z zainstalowanego Chrome (bez logowania)."""
+    import json
+    import browser_cookie3
+
+    _setup_logging(verbose)
+    state_path = Path(storage_state)
+
+    click.echo("Czytam ciasteczka Udemy z Chrome…")
+    try:
+        jar = browser_cookie3.chrome(domain_name="udemy.com")
+    except Exception as exc:
+        click.echo(f"BŁĄD: nie można odczytać ciasteczek Chrome: {exc}", err=True)
+        sys.exit(1)
+
+    cookies = []
+    for c in jar:
+        cookies.append({
+            "name": c.name,
+            "value": c.value,
+            "domain": c.domain if c.domain.startswith(".") else f".{c.domain}",
+            "path": c.path or "/",
+            "expires": int(c.expires) if c.expires else -1,
+            "httpOnly": bool(getattr(c, "_rest", {}).get("HttpOnly", False)),
+            "secure": bool(c.secure),
+            "sameSite": "None",
+        })
+
+    if not cookies:
+        click.echo("BŁĄD: nie znaleziono ciasteczek Udemy. Upewnij się, że jesteś zalogowany w Chrome.", err=True)
+        sys.exit(1)
+
+    state = {"cookies": cookies, "origins": []}
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    state_path.write_text(json.dumps(state, indent=2, ensure_ascii=False))
+    click.echo(f"Zapisano {len(cookies)} ciasteczek → {state_path}")
+
+
+# ---------------------------------------------------------------------------
 # login
 # ---------------------------------------------------------------------------
 
