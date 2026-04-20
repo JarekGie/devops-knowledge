@@ -29,9 +29,15 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-**Po apply:**
-- Outputy `elasticache_endpoint` + `elasticache_connection_string` → wpisać do Secrets Manager `maspex/preprod/api`
-- Gdy klient dostarczy domenę + certyfikaty → odkomentować zmienne w `terraform.tfvars`, `cloudfront_enabled = true`
+**Po apply — DONE ✓:**
+- ALB DNS: `maspex-preprod-1322298306.eu-west-1.elb.amazonaws.com`
+- Redis: `maspex-preprod.zwowz5.0001.euw1.cache.amazonaws.com:6379`
+- TODO: wpisać Redis do Secrets Manager `maspex/preprod/api` (klucz `ConnectionStrings__Redis`)
+
+**DNS dla klienta:**
+- Tymczasowo: CNAME subdomeny na ALB DNS (nie apex domeny)
+- Docelowo: CloudFront + własna domena (klient dostarcza domenę + certyfikaty ACM)
+- Gdy klient dostarczy → odkomentować zmienne w `terraform.tfvars`, `cloudfront_enabled = true` → plan + apply
 
 **Architektura preprod:**
 - VPC: 10.45.0.0/16 (własne, UAT ma 10.44.0.0/16)
