@@ -252,6 +252,12 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "40-runbooks/incidents/rshop-prod-503-policy-patch/patched-llz-project.json",
+    "40-runbooks/incidents/rshop-prod-503-policy-patch/patched-llz-environment.json",
+    "40-runbooks/incidents/rshop-prod-503-policy-patch/original-llz-project.json",
+    "40-runbooks/incidents/rshop-prod-503-policy-patch/original-llz-environment.json",
+    "40-runbooks/incidents/rshop-prod-503-policy-patch",
+    "40-runbooks/incidents/prompts/rshop-prod-503-disable-tag-policy-eni.md",
     "40-runbooks/incidents/prompts/rshop-prod-503-triage.md",
     "40-runbooks/incidents/prompts",
     "40-runbooks/incidents/rshop-prod-503-2026-04-20.md",
@@ -260,11 +266,7 @@
     "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/requires.txt",
     "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/entry_points.txt",
     "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/dependency_links.txt",
-    "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/SOURCES.txt",
-    "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info/PKG-INFO",
-    "20-projects/internal/udemy-transcript-tool/udemy_obsidian.egg-info",
     "20-projects/internal/udemy-transcript-tool/README.md",
-    "20-projects/internal/udemy-transcript-tool/pyproject.toml",
     "20-projects/internal/aws-cloudops-exam/index.md",
     "02-active-context/now.md",
     "02-active-context/current-focus.md",
@@ -286,8 +288,6 @@
     "20-projects/internal/llz/session-log.md",
     "20-projects/internal/llz/org-inventory.md",
     "60-toolkit/observability-ready.md",
-    "20-projects/internal/llz/wymagania-makolab/propozycja-wdrozenia.md",
-    "20-projects/internal/llz/wymagania-makolab/diagram.md",
     "Bez nazwy.canvas"
   ]
 }
