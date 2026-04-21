@@ -4,7 +4,7 @@
 
 **Data:** 2026-04-20
 **Środowisko:** UAT (`planodkupow-uat`, konto `333320664022`, `eu-central-1`)
-**Status:** PLAN GOTOWY — czeka na wykonanie
+**Status:** ZAMKNIĘTE OPERACYJNIE — rollback odblokowany, child stack drift zsynchronizowany
 
 ---
 
@@ -19,13 +19,15 @@ Broker:     RUNNING (3.13.7, mq.t3.micro) — dane bezpieczne
 
 ---
 
-## 2. Stan stacków
+## 2. Stan końcowy
 
-| Nested stack | Stan |
+| Zasób | Stan końcowy |
 |---|---|
-| RabbitMQStack | `UPDATE_ROLLBACK_FAILED` — `BasicBroker` w `UPDATE_FAILED` |
-| DBStack | `UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS` → zakończy sam |
-| Pozostałe 7 | `UPDATE_COMPLETE` — OK |
+| Root `planodkupow-uat` | `UPDATE_ROLLBACK_COMPLETE` |
+| `RabbitMQStack` | `UPDATE_COMPLETE` |
+| `RedisStack` | `UPDATE_COMPLETE` |
+| `DBStack` | `UPDATE_COMPLETE` |
+| Pozostałe nested stacki | stabilne |
 
 **Fizyczne identyfikatory:**
 - Root stack: `planodkupow-uat`
@@ -76,19 +78,7 @@ Pominięcie rollbacku = zostawienie brokera w pre-update state = prawidłowe zac
 
 ---
 
-## 4. Plan odblokowania (gotowy do wykonania)
-
-### Warunek wstępny
-
-Poczekaj na zakończenie DBStack cleanup:
-
-```bash
-aws cloudformation describe-stacks \
-  --stack-name "planodkupow-uat-DBStack-1XG4EQK2F3VWE" \
-  --profile plan --region eu-central-1 \
-  --query 'Stacks[0].StackStatus' --output text
-# Oczekiwane: UPDATE_ROLLBACK_COMPLETE
-```
+## 4. Wykonane odblokowanie
 
 ### Krok 1 — continue-update-rollback na ROOT stacku z pominięciem BasicBroker
 
@@ -99,90 +89,132 @@ aws cloudformation continue-update-rollback \
   --profile plan --region eu-central-1
 ```
 
-**Krytyczna uwaga:** `continue-update-rollback` wywołujemy TYLKO na root stacku.
-Format skip dla zasobów w nested stackach: `<runtime-nested-stack-name>.<LogicalResourceId>`.
-Nie używać samego `BasicBroker` (należy do nested stacka, nie root) ani `RabbitMQStack.BasicBroker`
-(to logical ID, nie runtime name).
+Wynik:
+- root `planodkupow-uat` wrócił do `UPDATE_ROLLBACK_COMPLETE`
+- broker pozostał niezmieniony: `RUNNING`, `3.13.7`, `mq.t3.micro`
 
-### Krok 2 — weryfikacja (~60 sekund po kroku 1)
+### Krok 2 — minimalny sync child stacków
+
+Po recovery wykonano dwa osobne change sety bez użycia root stacka.
+
+#### RabbitMQ child stack
+
+Stack:
+- `planodkupow-uat-RabbitMQStack-1XMB1IYDKWTXU`
+
+Zmiana:
+
+```yaml
+EngineVersion: "3.8.6" -> "3.13"
+```
+
+Wynik:
+- tylko `BasicBroker`
+- `Action = Modify`
+- `Replacement = False`
+- child stack `UPDATE_COMPLETE`
+- broker po operacji: `RUNNING`, `3.13.7`, `mq.t3.micro`
+
+#### Redis child stack
+
+Stack:
+- `planodkupow-uat-RedisStack-1DTSACMNM3U2T`
+
+Zmiana:
+
+```yaml
+EngineVersion: 5.0.0 -> 5.0.6
+```
+
+Wynik:
+- tylko `RedisCache`
+- `Action = Modify`
+- `Replacement = False`
+- child stack `UPDATE_COMPLETE`
+- Redis po operacji: `EngineVersion = 5.0.6`, `NodeType = cache.t3.micro`, `Status = available`
+
+### Krok 3 — IAM baseline dla deployment identity
+
+Uzupełniono managed policy:
+- `arn:aws:iam::333320664022:policy/planodkupow-auto-CFN-Describe-Fix`
+
+Aktywna wersja:
+- `v3`
+
+Najważniejsze dodane akcje:
+- `cloudformation:Describe*`
+- `cloudformation:List*`
+- `cloudformation:GetTemplate`
+- `cloudformation:GetTemplateSummary`
+- `cloudformation:ValidateTemplate`
+- `cloudformation:CreateChangeSet`
+- `cloudformation:DescribeChangeSet`
+- `cloudformation:ExecuteChangeSet`
+- `elasticache:DescribeCacheClusters`
+- `mq:DescribeBroker`
+- `rds:DescribeDBInstances`
+- `ec2:DescribeSubnets`
+- `ec2:DescribeSecurityGroups`
+- `ec2:DescribeVpcs`
+- `logs:DescribeLogGroups`
+- `logs:ListTagsForResource`
+
+Walidacja profilem `planodkupow-auto`:
+- `sts get-caller-identity` — OK
+- `validate-template` — OK
+- `create-change-set` — OK
+- `describe-change-set` — OK
+- ElastiCache / MQ / RDS / EC2 describe — OK
+
+### Krok 4 — status końcowy
 
 ```bash
-# Root stack
 aws cloudformation describe-stacks \
   --stack-name planodkupow-uat \
   --profile plan --region eu-central-1 \
-  --query 'Stacks[0].{Status:StackStatus,Reason:StackStatusReason}' --output table
-
-# RabbitMQStack
-aws cloudformation describe-stacks \
-  --stack-name "planodkupow-uat-RabbitMQStack-1XMB1IYDKWTXU" \
-  --profile plan --region eu-central-1 \
-  --query 'Stacks[0].{Status:StackStatus,Reason:StackStatusReason}' --output table
-
-# Broker — upewnij się że niezmieniony
-aws mq describe-broker \
-  --broker-id "b-2d26b881-79f2-4c3c-8b77-06c1a0fb0b29" \
-  --profile plan --region eu-central-1 \
-  --query '{State:BrokerState,Version:EngineVersion}' --output table
+  --query 'Stacks[0].[StackStatus,StackStatusReason]' --output table
 ```
 
-**Oczekiwane wyniki:**
-
-| Zasób | Oczekiwany stan |
-|---|---|
-| `planodkupow-uat` | `UPDATE_ROLLBACK_COMPLETE` |
-| `planodkupow-uat-RabbitMQStack-1XMB1IYDKWTXU` | `UPDATE_ROLLBACK_COMPLETE` |
-| Broker `BrokerState` | `RUNNING` |
-| Broker `EngineVersion` | `3.13.7` (niezmieniony) |
-
-### Warunki zatrzymania (STOP — nie ponawiaj)
-
-```
-UPDATE_ROLLBACK_FAILED z NOWYM komunikatem → zapisz StatusReason, nie ponawiaj, eskaluj
-UPDATE_ROLLBACK_FAILED z TYM SAMYM komunikatem → format nie zadziałał → AWS Support
-BrokerState = REBOOT_IN_PROGRESS lub UPDATING → czekaj, nic nie rób
-BrokerState = EngineVersion zmieniony z 3.13.7 → STOP, raportuj natychmiast
-```
+Aktualny wynik:
+- `planodkupow-uat` → `UPDATE_ROLLBACK_COMPLETE`
 
 ---
 
-## 5. Ryzyko
+## 5. Co pokazała analiza root scope
 
-| Co | CFN | AWS | Dane | Przyszłe deploy |
-|---|---|---|---|---|
-| BasicBroker pominięty w rollbacku | Oznaczony jako skipped, stack → `UPDATE_ROLLBACK_COMPLETE` | Broker 3.13.7 RUNNING, bez zmian | Bezpieczne | ⚠ Kolejny deploy dotykający RabbitMQStack spróbuje ustawić 3.8.6 → fail |
-| DBStack | Zakończony cleanup | Bez zmian | Bezpieczne | OK |
-| Root stack | `UPDATE_ROLLBACK_COMPLETE` | Operacyjny | Bezpieczne | OK |
+Analiza eventów ostatniego udanego root deployu pokazała:
+- root stack formalnie przepuszcza `UPDATE_*` przez wszystkie nested stacki
+- ale realne resource-level zmiany dotyczyły tylko `KlasterStack`
+- `VPCStack`, `S3Stack`, `SecGroupStack`, `ALBStack`, `DBStack`, `RedisStack`, `RabbitMQStack`, `CFStack` były wtedy tylko pass-through
 
 ---
 
-## 6. Wymagane działanie po odblokowaniu
+## 6. Status na rano
 
-Przed kolejnym deployem zaktualizować `RMQ.yml`:
+### App-only deploy na root stacku
 
-```yaml
-# było:
-EngineVersion: "3.8.6"
-HostInstanceType: mq.t3.micro
+Preflight na `2026-04-21`:
+- root stack w stabilnym stanie końcowym
+- brak aktywnej operacji
+- Jenkins deploy typu `aws cloudformation update-stack --use-previous-template` ma status `GO`
 
-# powinno być:
-EngineVersion: "3.13"
-HostInstanceType: mq.m5.large   # t3.micro nie jest wspierany dla RabbitMQ
-```
+### Root deploy z aktualnym `ROOT.yml`
 
-Bez tej zmiany każdy następny deploy UAT ponownie zakończy się tym samym błędem.
-(Na QA ta zmiana już jest — `RMQ.yml` w `infra-bbmt/cloudformation/` jest naprawiony.)
+To nadal **nie jest bezpieczne** jako minimalny sync:
+- poprawne parametry UAT są już rozwiązane
+- IAM jest już poprawne
+- ale root change set na aktualnym `ROOT.yml` nadal formalnie dotyka 9 nested stacków
 
 ---
 
 ## 7. Czego NIE robić
 
 - NIE uruchamiać `continue-update-rollback` na child stacku jako `--stack-name`
-- NIE używać `--resources-to-skip BasicBroker` (zasób jest w nested stacku, nie w root)
-- NIE używać `--resources-to-skip RabbitMQStack` (CFN nie pozwala skipować całych nested stacków)
-- NIE robić delete + redeploy (brak potrzeby, UAT ma dane)
-- NIE robić change setu naprzód (zbędne, broker działa)
+- NIE używać root change setu z szerokim scope jako „minimalnej synchronizacji”
+- NIE traktować root `UPDATE_*` na nested stackach jako dowodu realnej zmiany zasobów
+- NIE robić aplikacyjnego deployu bez poprawnych runtime parametrów / `UsePreviousValue=true`
+- NIE wracać do `EngineVersion: "3.8.6"` dla RabbitMQ
 
 ---
 
-*Utworzono: 2026-04-20 | Status: PLAN GOTOWY*
+*Utworzono: 2026-04-20 | Zaktualizowano: 2026-04-21 | Status: operacyjnie zamknięte, gotowe pod app-only deploy*

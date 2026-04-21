@@ -20,12 +20,23 @@ Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
 Repo:       ~/projekty/mako/aws-projects/infra-bbmt
 Status:     PLAN GOTOWY — czeka na wykonanie (zgoda operatora)
 
-Root cause: Drift CFN (template: 3.8.6) vs rzeczywistość (broker: 3.13.7 via AutoMinorVersionUpgrade)
-            Rollback próbuje "przywrócić" 3.8.6 → AWS odrzuca (EOL)
-            Broker RUNNING 3.13.7, dane bezpieczne, broker nie był dotknięty przez deploy
+Status:     DONE OPERACYJNIE (2026-04-21)
 
-Fix:        continue-update-rollback NA ROOT STACKU z:
-            --resources-to-skip "planodkupow-uat-RabbitMQStack-1XMB1IYDKWTXU.BasicBroker"
+Wykonane:
+  - root stack odblokowany: continue-update-rollback z skip:
+    planodkupow-uat-RabbitMQStack-1XMB1IYDKWTXU.BasicBroker
+  - root planodkupow-uat: UPDATE_ROLLBACK_COMPLETE
+  - RabbitMQ child stack: minimalny sync EngineVersion 3.8.6 -> 3.13, UPDATE_COMPLETE
+  - Redis child stack: minimalny sync EngineVersion 5.0.0 -> 5.0.6, UPDATE_COMPLETE
+  - IAM dla planodkupow-auto: baseline CFN read + ValidateTemplate/CreateChangeSet/DescribeChangeSet/ExecuteChangeSet
+
+Ważny wniosek:
+  - root CFN formalnie rusza wszystkie nested stacki w eventach
+  - realne resource-level zmiany przy app deployu z --use-previous-template dotyczą tylko KlasterStack (ECS)
+
+Preflight:
+  - app-only deploy na root stacku z --use-previous-template: GO
+  - root deploy z aktualnym ROOT.yml jako szeroki change set: nadal NOT SAFE
 
 Runbook:    40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed.md
 ```
@@ -64,34 +75,33 @@ Koszt:      ~$0.00/miesiąc
 Notatka:    20-projects/internal/llz/session-log.md
 ```
 
-## Stan UAT po sesji 2026-04-20
+## Stan UAT po sesji 2026-04-21
 
 ```
-Co zrobiono:
-  - Dodano managed policy planodkupow-auto-CFN-Describe-Fix do planodkupow-auto
-    (mq:DescribeBroker + rds:DescribeDBInstances)
-  - DBStack:        UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS → powinien sam dojść
-  - RedisStack:     UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS → powinien sam dojść
-  - RabbitMQStack:  UPDATE_ROLLBACK_FAILED — zablokowane (patrz niżej)
+Stan końcowy:
+  - root planodkupow-uat: UPDATE_ROLLBACK_COMPLETE
+  - RabbitMQStack: UPDATE_COMPLETE
+  - RedisStack:    UPDATE_COMPLETE
+  - DBStack:       UPDATE_COMPLETE
 
-Prawdziwy problem RabbitMQ:
-  Deployment próbował: 3.8.6/t3.micro → 3.13/m5.large (broker replacement)
-  Rollback próbuje wrócić do: 3.8.6 — AWS wycofał tę wersję z API
-  Błąd: "Broker engine version [3.8.6] is invalid. Valid values: [4.2, 3.13]"
-  Broker jest RUNNING (t3.micro, RUNNING) — dane bezpieczne
+RabbitMQ:
+  Broker: b-2d26b881-79f2-4c3c-8b77-06c1a0fb0b29
+  State:  RUNNING
+  Ver:    3.13.7
+  Type:   mq.t3.micro
 
-Wszystkie warianty --resources-to-skip zawiodły:
-  BasicBroker                   → "does not belong to stack planodkupow-uat"
-  RabbitMQStack                 → "Nested stacks could not be skipped"
-  RabbitMQStack.BasicBroker     → "Stack [RabbitMQStack] does not exist"
-  Bezpośrednio na nested stack  → "cannot be invoked on child stacks"
+Redis:
+  EngineVersion: 5.0.6
+  NodeType:      cache.t3.micro
+  Status:        available
 
-Opcje (czekamy na decyzję deva):
-  A. AWS Support — ręczny reset stanu nested stack, 0 ryzyka, wolno
-  B. Change set naprzód — deploy od nowa z naprawionym IAM, broker replacement
-     (t3.micro/3.8.6 → m5.large/3.13), wymaga okna serwisowego
-  C. Minimalne change set — dodać DeletionPolicy: Retain w S3 i odblokować
-     przez change set bez ruszania brokera (ryzykowne)
+IAM:
+  planodkupow-auto-CFN-Describe-Fix -> default v3
+  validate-template / create-change-set / describe-change-set działają profilem planodkupow-auto
+
+Deploy pattern:
+  ostatni udany root app deploy formalnie rusza 9 nested stacków,
+  ale realne resource-level zmiany występują tylko w KlasterStack (ECS services + task definitions)
 ```
 
 ## Zamknięte: maspex preprod ✓
@@ -171,7 +181,7 @@ AWS Account:  333320664022 (planodkupow)
 Region:       eu-central-1
 Profil CLI:   plan
 Stack:        planodkupow-qa (CREATE_COMPLETE)
-              planodkupow-uat (UPDATE_ROLLBACK_FAILED — RabbitMQStack)
+              planodkupow-uat (UPDATE_ROLLBACK_COMPLETE)
 ```
 
 ## Kluczowe pliki
@@ -203,16 +213,16 @@ Dirty:  cloudformation/ECS.yml
 - [[planodkupow-qa-postmortem]] — pełne RCA z sesji 1+2
 - [[planodkupow-qa-execution-log]] — szczegółowy log operacyjny
 
-## UAT — czerwone flagi (z audytu 2026-04-19)
+## UAT — czerwone flagi / otwarte kwestie
 
 ```
-RabbitMQ: mq.t3.micro — ten sam bug co QA. Jeśli UAT zostanie odbudowany,
-          potrzebuje mq.m5.large (już naprawione w RMQ.yml).
+Root safe-minimal:
+  root change set z aktualnym ROOT.yml nadal formalnie dotyka 9 nested stacków — nie używać jako "minimalnego" syncu
 S3 planodkupow-uat: 0 obiektów — podejrzane, sprawdzić z dev teamem.
 RDS: DeletionProtection: False — włączyć prewencyjnie.
-VPC Endpoint: 1x Interface — zablokuje subnet delete przy ewentualnym rebuild.
+RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3.8.6.
 ```
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-20 22:24 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 — sesja aktywna*
