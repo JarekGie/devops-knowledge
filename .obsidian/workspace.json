@@ -238,6 +238,7 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "40-runbooks/planodkupow-tagging-finops.md",
     "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
     "10-areas/aws/amazonmq-rabbitmq.md",
     "40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md",
@@ -263,7 +264,6 @@
     "00-start-here/LLM_CONTEXT.md",
     "90-reference/LLM_CONTEXT.md",
     "80-architecture/LLM_CONTEXT.md",
-    "70-finops/LLM_CONTEXT.md",
     "scripts/new-chatgpt-context.sh",
     "scripts",
     "_chatgpt/templates",
