@@ -138,21 +138,40 @@ Deploy pattern:
   ale realne resource-level zmiany występują tylko w KlasterStack (ECS services + task definitions)
 ```
 
-## Zamknięte: maspex preprod ✓
+## Zamknięte: maspex preprod + CloudFront ✓
 
 ```
-Stan:       APPLY COMPLETE (2026-04-20)
+Stan:       DONE (2026-04-21)
             ALB: maspex-preprod-1322298306.eu-west-1.elb.amazonaws.com
             Redis: maspex-preprod.zwowz5.0001.euw1.cache.amazonaws.com:6379
+            CloudFront: E17VHHQJ29MVAB → d1epwako2iigq8.cloudfront.net
+            Domena: twojkapsel.pl + www.twojkapsel.pl
+            HTTP→HTTPS redirect: aktywny
+            Static caching: /_next/static/* + /static/* (min_ttl=86400)
 
-TODO:       Wpisać do Secrets Manager maspex/preprod/api:
-            aws secretsmanager put-secret-value \
-              --secret-id arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/preprod/api-STbBy3 \
-              --secret-string '{"ConnectionStrings__Redis":"redis://maspex-preprod.zwowz5.0001.euw1.cache.amazonaws.com:6379"}' \
-              --profile maspex-cli --region eu-west-1
+TODO:       - Wpisać Redis do Secrets Manager maspex/preprod/api
+            - DNS wysłany klientowi (CNAME → d1epwako2iigq8.cloudfront.net)
+            - Warning w modules/alb/main.tf:65 (niekrytyczny)
 
-            Gdy klient dostarczy certyfikaty/domenę:
-            → terraform.tfvars: cloudfront_enabled=true + cert ARNs + domeny → plan + apply
+Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
+```
+
+## Zamknięte: maspex UAT — CloudFront static caching ✓
+
+```
+Stan:       DONE (2026-04-21)
+Problem:    Cache-Control: public, max-age=0 na statykach → CloudFront nie cachował (Miss from cloudfront)
+Root cause: Domyślna polityka Managed-CachingDisabled + app nie ustawia poprawnych nagłówków
+
+Fix:        Nowy aws_cloudfront_cache_policy (min_ttl=86400) + ordered_cache_behavior
+            dla /_next/static/* i /static/* na dystrybucji admin panel (E3R9U1TWNUJZ11)
+
+Efekt:      Statyczne assety cachowane przez CloudFront 24h
+            Dynamiczne requesty: nadal CachingDisabled (bez zmian)
+
+Drift ECS:  plan pokazał task_definition v31→v24 na service_api (CI/CD drift)
+            NIE naprawiony — wymaga decyzji czy TF zarządza wersjami image
+
 Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
 ```
 
@@ -259,4 +278,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 15:30 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 15:37 — sesja aktywna*
