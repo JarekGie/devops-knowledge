@@ -42,9 +42,26 @@ Stan końcowy:
 
 OTWARTE:
   - cloudformation:ContinueUpdateRollback na planodkupow-auto (opcjonalnie, breakglass)
-  - RabbitMQStack template nadal ma stare BrokerId — drift pozostał (niskoryzykowny)
+  - RabbitMQStack nadal w root stack → plan migracji gotowy (patrz niżej)
 
 Runbook:    40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md
+```
+
+## Aktywne: planodkupow QA — CFN refaktor (RabbitMQ poza root stack)
+
+```
+Stan:       PLAN GOTOWY (2026-04-21) — do wdrożenia
+Cel:        Usunąć RabbitMQStack z root stack; MQCS przez SSM Parameter Store
+
+Następne kroki:
+  1. aws ssm put-parameter /planodkupow/qa/rabbitmq/mqcs (profil plan)
+  2. Zmodyfikuj ROOT.yml (linia 568 + 581-601)
+  3. Upload ROOT.yml → s3://planodkupow-cf/ROOT.yml
+  4. Change set: tylko DELETE RabbitMQStack + MODIFY KlasterStack
+  5. Execute + walidacja ECS
+
+Plan:       40-runbooks/planodkupow-rabbitmq-cfn-refactor.md
+Repo:       ~/projekty/mako/aws-projects/infra-bbmt
 ```
 
 ## Zamknięte: planodkupow UAT — RabbitMQ UPDATE_ROLLBACK_FAILED ✓
@@ -280,4 +297,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 18:47 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 18:51 — sesja aktywna*
