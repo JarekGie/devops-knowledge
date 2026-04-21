@@ -12,19 +12,33 @@ Kluczowe:   llz.required_tags + llz.monitoring_account_id + llz.workloads_ou_nam
 Notatka:    20-projects/internal/llz/session-log.md (2026-04-20 patch)
 ```
 
-## Zamknięte: planodkupow QA — RabbitMQ UPDATE_ROLLBACK_FAILED ✓
+## Zamknięte: planodkupow QA — RabbitMQ UPDATE_ROLLBACK_FAILED ✓ (x3)
 
 ```
-Stan:       DONE OPERACYJNIE (2026-04-21)
-Root cause: planodkupow-auto brak mq:UpdateBroker → CFN deploy uderzył AccessDenied
-            rollback też był zablokowany tym samym błędem
-Naprawa:    continue-update-rollback z skip planodkupow-qa-RabbitMQStack-PN8W0DD6SK1U.BasicBroker
-            recovery przez profil plan (planodkupow-auto nie ma cloudformation:ContinueUpdateRollback)
+Stan:       STABILNY (2026-04-21 12:57 UTC+2)
+Root cause: planodkupow-auto brak mq:UpdateBroker + mq:RebootBroker → AccessDenied na update + rollback
+            Po każdym recovery: kolejny deploy robił skip z drift → nowy UPDATE_ROLLBACK_FAILED
+
+Incydent 1 (09:09): mq:UpdateBroker AccessDenied → naprawa: dodano mq:UpdateBroker ręcznie
+Incydent 2 (10:02): mq:RebootBroker AccessDenied na rollback → naprawa: dodano mq:RebootBroker (policy v5)
+Recovery:   continue-update-rollback x3 z skip PN8W0DD6SK1U.BasicBroker (profil plan)
+
 Stan końcowy:
-  - root planodkupow-qa: UPDATE_ROLLBACK_COMPLETE
-  - wszystkie 9 nested stacków: UPDATE_COMPLETE
+  - root planodkupow-qa:           UPDATE_ROLLBACK_COMPLETE ✓
+  - planodkupow-qa-RabbitMQStack:  UPDATE_ROLLBACK_COMPLETE ✓
   - Broker QA: RUNNING, 3.13.7, mq.m5.large
-IAM fix:    mq:UpdateBroker dodany ręcznie do planodkupow-auto-CFN-Describe-Fix ✓
+
+IAM policy planodkupow-auto-CFN-Describe-Fix:
+  v3: baseline CFN + mq:DescribeBroker
+  v4: + mq:UpdateBroker (dodane ręcznie)
+  v5: + mq:RebootBroker (dodane przez Claude Code 2026-04-21)
+
+DRIFT OTWARTY:
+  CFN wewnętrzny stan: mq.t3.micro (frozen po skip)
+  Template + real broker: mq.m5.large
+  Efekt: każdy deploy próbuje UpdateBroker → potential failure
+  Decyzja pending: IMPORT vs RECREATE/DOWNGRADE do t3.micro
+
 TODO:       cloudformation:ContinueUpdateRollback (opcjonalnie, do breakglass)
 Runbook:    40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md
 ```
@@ -241,4 +255,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 12:55 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 12:59 — sesja aktywna*
