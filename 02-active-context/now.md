@@ -12,13 +12,29 @@ Kluczowe:   llz.required_tags + llz.monitoring_account_id + llz.workloads_ou_nam
 Notatka:    20-projects/internal/llz/session-log.md (2026-04-20 patch)
 ```
 
-## Aktywne zadanie
+## Zamknięte: planodkupow QA — RabbitMQ UPDATE_ROLLBACK_FAILED ✓
+
+```
+Stan:       DONE OPERACYJNIE (2026-04-21)
+Root cause: planodkupow-auto brak mq:UpdateBroker → CFN deploy uderzył AccessDenied
+            rollback też był zablokowany tym samym błędem
+Naprawa:    continue-update-rollback z skip planodkupow-qa-RabbitMQStack-PN8W0DD6SK1U.BasicBroker
+            recovery przez profil plan (planodkupow-auto nie ma cloudformation:ContinueUpdateRollback)
+Stan końcowy:
+  - root planodkupow-qa: UPDATE_ROLLBACK_COMPLETE
+  - wszystkie 9 nested stacków: UPDATE_COMPLETE
+  - Broker QA: RUNNING, 3.13.7, mq.m5.large
+TODO:       dodać mq:UpdateBroker do planodkupow-auto-CFN-Describe-Fix policy
+            + cloudformation:ContinueUpdateRollback (opcjonalnie, do breakglass)
+Runbook:    40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md
+```
+
+## Zamknięte: planodkupow UAT — RabbitMQ UPDATE_ROLLBACK_FAILED ✓
 
 ```
 Zadanie:    planodkupow UAT — RabbitMQ UPDATE_ROLLBACK_FAILED
 Projekt:    planodkupow (333320664022), eu-central-1, profil: plan
 Repo:       ~/projekty/mako/aws-projects/infra-bbmt
-Status:     PLAN GOTOWY — czeka na wykonanie (zgoda operatora)
 
 Status:     DONE OPERACYJNIE (2026-04-21)
 
@@ -225,4 +241,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 11:26 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 11:31 — sesja aktywna*
