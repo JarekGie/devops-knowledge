@@ -189,12 +189,76 @@ Minimalny baseline per projekt:
 
 ---
 
+## 8a. ECS — wymagania dodatkowe (AWS Competency)
+
+Dla projektów opartych na Amazon ECS, oprócz baseline z sekcji 5–8, obowiązkowe są:
+
+### Tagging ECS (ECS-004)
+
+```yaml
+# CloudFormation — każdy AWS::ECS::Service
+EnableECSManagedTags: true
+PropagateTags: SERVICE
+```
+
+```hcl
+# Terraform — każdy aws_ecs_service
+enable_ecs_managed_tags = true
+propagate_tags          = "SERVICE"
+```
+
+Bez tego tagi nie propagują się do tasków → Cost Explorer nie widzi kosztów per serwis.
+
+### Capacity Providers (ECS-007)
+
+Każdy klaster ECS musi mieć zdefiniowaną strategię Capacity Provider — nawet jeśli używamy wyłącznie Fargate:
+
+```hcl
+capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+
+default_capacity_provider_strategy {
+  capacity_provider = "FARGATE"
+  weight            = 1
+}
+```
+
+Klaster bez Capacity Provider strategy = niezgodny z ECS Competency.
+
+### Observability ECS (ECS-018)
+
+Wymagane dla każdego klastra:
+
+- **Container Insights** włączone (`setting { name = "containerInsights", value = "enabled" }`)
+- log driver `awslogs` na **wszystkich** task definitions (brak = niezgodny)
+- alarmy CloudWatch: CPU > 80%, pamięć > 80%, running tasks < desired
+- ALB access logs włączone (bucket S3)
+
+### Ingress — CloudFront przed ALB (ECS-015)
+
+Dla projektów z ruchem publicznym (internet-facing):
+
+```
+Internet → CloudFront → ALB → ECS
+```
+
+Bezpośrednia ekspozycja ALB na internet = niezgodna z ECS Competency.
+Wyjątek wymaga dokumentacji uzasadnienia.
+
+### Runtime security (ECS-011)
+
+Po wdrożeniu GuardDuty org-wide (LLZ EPIC 4):
+
+- GuardDuty Runtime Monitoring dla ECS/Fargate — obowiązkowe
+- ECR image scanning (basic lub Enhanced z Inspector) — obowiązkowe
+
+---
+
 ## 9. Bezpieczeństwo (baseline)
 
 - brak publicznych zasobów (domyślnie private)
-- szyfrowanie danych at rest i in transit
+- szyfrowanie danych at rest i in transit (formalna polityka — dokument)
 - CloudTrail ON (org-level — już wdrożone)
-- GuardDuty (w trakcie wdrożenia — **HRI**)
+- GuardDuty Runtime Monitoring (w trakcie wdrożenia — **HRI**, LLZ EPIC 4)
 
 ---
 

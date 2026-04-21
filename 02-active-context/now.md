@@ -89,6 +89,29 @@ Decyzja wymagana przed Fazą 3:
 Runbook:    40-runbooks/planodkupow-tagging-finops.md
 ```
 
+## Zamknięte: standard IaC + ECS Competency mapping ✓
+
+```
+Stan:       DONE (2026-04-21)
+
+Pliki:
+  - 20-projects/clients/mako/wdrozenie-standardow-organizacji/standard-iac-tagging-naming.md
+    Dodana sekcja 8a: ECS patterns (PropagateTags, Capacity Providers, Container Insights,
+    CloudFront ingress, GuardDuty Runtime Monitoring)
+  - 20-projects/clients/mako/wdrozenie-standardow-organizacji/ecs-competency-llz-mapping.md
+    Mapa: LLZ kontrola → ECS-XXX requirement ID, backlog remediacji, WAFR skrót
+  - 20-projects/clients/mako/wdrozenie-standardow-organizacji/aws-competency-certyfikaty-bloker.md
+    Twardy bloker: 0/3 Pro/Specialty, brakuje 4/8 wymaganych certyfikatów
+  - _chatgpt/context-packs/llz.md — zaktualizowany (cfn_messaging_audit, planodkupow status)
+
+Kluczowe wnioski:
+  - ECS-011 (runtime security) + LLZ EPIC 4 GuardDuty = ten sam backlog item
+  - ECS-018 (observability) blokuje oba projekty — priorytet #1 do naprawy
+  - WAFR zero-HRI = automatyczne spełnienie Common Requirements (shortcut)
+  - Certyfikaty: brak Pro/Specialty = formalny bloker aplikacji Competency
+    Rekomendacja: DevOps Engineer Pro + Security Specialty (Jarosław)
+```
+
 ## Aktywne: planodkupow UAT — CFN refaktor (RabbitMQ poza root stack)
 
 ```
@@ -341,4 +364,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 23:48 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 23:52 — sesja aktywna*
