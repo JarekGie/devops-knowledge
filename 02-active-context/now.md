@@ -341,4 +341,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 23:34 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 23:41 — sesja aktywna*

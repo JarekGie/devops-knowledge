@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Review Codex contracts and validations"
+              "title": "Terminal: ⠂ Review Codex contracts and validations"
             }
           },
           {
@@ -119,8 +119,7 @@
               "title": "standard-iac-tagging-naming"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -293,7 +292,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "f48355ce7dcb4291",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
     "20-projects/clients/mako/wdrozenie-standardow-organizacji/standard-iac-tagging-naming.md",
     "20-projects/clients/mako/wdrozenie-standardow-organizacji",
