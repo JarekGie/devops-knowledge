@@ -14,7 +14,7 @@
 ---
 
 **Projekt:** LLZ — Light Landing Zone (MakoLab platforma AWS)
-**Zaktualizowano:** 2026-04-20 (dodano: scope boundaries, źródła prawdy, aktualny fokus, profil mapping; poprawiono: planodkupow status A/B/C)
+**Zaktualizowano:** 2026-04-21
 **Repozytoria:** `~/projekty/mako/aws-projects/aws-cloud-platform/` (Terraform IaC)
 
 ---
@@ -34,8 +34,9 @@ Senior DevOps/SRE, AWS-primary. Właściciel platformy AWS dla MakoLab — firmy
 | **Scaffold conformance** | Terraform | struktura `envs/`, `backend.tf`, `versions.tf`, `project.yaml` |
 | **Observability readiness** | AWS API | ECS logi, ALB access logs, VPC Flow Logs, CloudFront logging, ElastiCache |
 | **Tagging governance** | CFN + Terraform | tagi `Project`/`Environment`/`ManagedBy`/`Owner`, AWS Tag Policies |
+| **Architecture audit** | CFN static analysis | messaging (AmazonMQ/MSK) w root stack, inne wzorce architektoniczne |
 
-Narzędzie: `devops-toolkit` — CLI (`toolkit audit-pack llz-basic`, `toolkit audit-pack aws-logging`, `toolkit audit-pack tagging`).
+Narzędzie: `devops-toolkit` — CLI (`toolkit audit-pack llz-basic`, `toolkit audit-pack aws-logging`, `toolkit audit-pack tagging`, `toolkit audit-pack cfn-messaging`).
 
 ---
 
@@ -46,6 +47,7 @@ LLZ obejmuje:
 - observability (CloudWatch, logi, alerty)
 - baseline security (GuardDuty, Config, CloudTrail)
 - standardy operacyjne (scaffold, tagging, health notifications)
+- architecture guardrails (CFN static analysis)
 
 LLZ NIE obejmuje:
 - architektury aplikacyjnej (baza danych, kolejki, API design)
@@ -119,12 +121,12 @@ Terraform state: S3 `864277686382-terraform-state-bucket` + DynamoDB `terraform-
 - Sink policy: org-wide (`PrincipalOrgID`), metryki + logi + X-Ray
 - CloudTrail org trail `org-baseline-cloudtrail` → S3 w LogArchiveNew ✅
 
-### 3. AWS Health notifications (IaC: `aws-cloud-platform/platform/health-notifications/`)
+### 3. AWS Health notifications ✅ WDROŻONE (IaC: `aws-cloud-platform/platform/health-notifications/`)
 
 - EventBridge rules (us-east-1) w każdym z 11 kont → bus `health-aggregation` (monitoring-nagios-bot)
 - Lambda (Python 3.12, us-east-1) → SNS topic (eu-central-1) → email
 - Filtr: tylko `statusCode=open` + `eventTypeCategory=issue|investigation`
-- Kluczowa lekcja: cross-account EventBridge target zawsze wymaga `role_arn` w source account
+- Kluczowa lekcja: cross-account EventBridge target zawsze wymaga `role_arn` w source account (IAM role `health-eventbridge-forward` w każdym z 11 kont)
 
 ### 4. Tagging standard (LLZ v1)
 
@@ -134,7 +136,19 @@ Zalecane: ManagedBy, Owner
 Enforce przez AWS Tag Policies (org Root)
 ```
 
-Projekty CFN tagowane przez `toolkit apply-pack tagging`.
+### 5. devops-toolkit — audyt CFN messaging (WAF-ARCH-MQ-001) ✅
+
+Plugin `cfn_messaging_audit` (statyczny, bez boto3):
+- Wykrywa `AWS::AmazonMQ::Broker` i `AWS::MSK::Cluster` w root i nested stackach CFN
+- Zwraca `iac.messaging_in_root: true/false` w normalized_artifacts
+- Finding WAF-ARCH-MQ-001: messaging w root stack = duży blast radius przy rollbackach
+- 20/20 testów, PARTIAL status gdy nested stack jest na S3 URL (nie lokalny)
+
+### 6. devops-toolkit — audit-pack llz-waf-readonly (6 bugów naprawione, 2026-04-20)
+
+- `llz.required_tags`, `llz.monitoring_account_id`, `llz.workloads_ou_name` — wymagane pola w `project.yaml`
+- Region fallback dla cloudtrail/observability gdy brak konfiguracji
+- 129/129 testów PASS
 
 ---
 
@@ -163,7 +177,7 @@ Rekomendacje powinny być zgodne z tymi priorytetami. Jeśli sugerujesz nowe dzi
 
 ---
 
-## WAF stan (aktualizacja 2026-04-20)
+## WAF stan (2026-04-20)
 
 Overall: **~30% WAF-ready**.
 
@@ -189,21 +203,58 @@ Overall: **~30% WAF-ready**.
 
 ---
 
-## Tagging governance — stan projektów
+## Tagging governance — stan projektów (2026-04-21)
 
-| Projekt | IaC | Tagging |
-|---------|-----|---------|
-| rshop | CloudFormation | dev 11/14, prod 12/13 compliant |
-| planodkupow (bbmt) | CloudFormation | 104 zasoby zaudytowane, **BLOCKED** — czeka na deva |
-| Terraform projekty | Terraform | niezbadane — wymaga inwentaryzacji |
+| Projekt | IaC | Tagging | Status |
+|---------|-----|---------|--------|
+| rshop | CloudFormation | dev 11/14, prod 12/13 compliant | ⚠️ partial |
+| planodkupow (bbmt) | CloudFormation | Faza 1 audyt DONE — patrz niżej | ⚠️ in progress |
+| Terraform projekty | Terraform | niezbadane — wymaga inwentaryzacji | ❌ not audited |
 
-**Incydent planodkupow-qa (2026-04-18):**
-- ROOT.yml update triggered VPCStack deadlock → `UPDATE_ROLLBACK_FAILED`
-- RabbitMQ custom resource Lambda zwracał "account suspended" — blokował rollback
-- Opcja A: AWS Support ticket (custom resource Lambda issue)
-- Opcja B: delete planodkupow-qa + redeploy (~30-60 min, utrata stanu QA)
-- Opcja C: rollback RabbitMQ template do wersji sprzed zmiany
-- Stan: **BLOCKED** — czeka na decyzję dev team; RabbitMQ 3.8.6 deprecated, prosty rollback niemożliwy
+### planodkupow tagging — wyniki audytu Fazy 1 (2026-04-21)
+
+Dwa równoległe schematy tagów:
+
+**QA (nowy stack):** `Project`, `Environment`, `Owner=DC-devops`, `ManagedBy=cloudformation`, `CostCenter=DC`
+
+**UAT (stary stack):** `Project`, `Environment`, `Maintainer=3rd party - Tribecloud`, `Provisioner=cloudformation`, `Team=DataCenter`, `Client=Reno/Dacia`, `typ=uat`
+
+Brakujące w UAT: `Owner`, `ManagedBy`, `CostCenter`
+
+Mapowanie: `Maintainer→Owner` (wartość się zmienia!), `Provisioner→ManagedBy` (1:1), `CostCenter` bez poprzednika.
+
+**Strategia:** addytywna — dodaj nowe klucze, stare usuń w drugiej fali. Mapowanie logiczne niewystarczające — AWS działa na realnych kluczach.
+
+**DO NOT TOUCH:** wszystkie 4 CloudFront distributions (3x UAT, 1x QA — ten bez tagów).
+
+**SAFE pierwsza fala:** S3, VPC/SG bezpośrednio przez API (nie CFN). RDS przez `rds add-tags-to-resource` (NIE przez CFN — ryzyko SQLDatabase replacement).
+
+---
+
+## Kluczowe wzorce i lekcje CFN (planodkupow)
+
+### Tag drift = DBStack failure
+
+Tag drift między deployed template a template uploadowanym do S3 powoduje `Static/DirectModification` na DBStack → CFN próbuje update RDS → `custom-named resource requires replacing` → rollback.
+
+**Fix:** zawsze patchuj deployed template pobrany przez `aws cloudformation get-template`, nie wersję z repo.
+
+### ssm-secure nie działa dla nested stack parameters
+
+`{{resolve:ssm-secure:...}}` nie jest wspierany dla `AWS::CloudFormation::Stack/Properties/Parameters`.
+**Fix:** SSM parameter jako typ `String` + `{{resolve:ssm:...}}`.
+
+### RabbitMQ poza root stack (QA DONE 2026-04-21)
+
+- RabbitMQ usunięty z lifecycle root stack planodkupow-qa
+- MQCS przez `{{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}`
+- UAT: do wdrożenia (stack: UPDATE_ROLLBACK_COMPLETE, broker b-2d26b881 RUNNING)
+
+### continue-update-rollback — dwa kroki
+
+UPDATE_ROLLBACK_FAILED wymaga dwóch kroków:
+1. Nested stack: `--resources-to-skip BasicBroker`
+2. Root stack: `--resources-to-skip "planodkupow-<env>-RabbitMQStack-<ID>.BasicBroker"`
 
 ---
 
@@ -214,6 +265,7 @@ Overall: **~30% WAF-ready**.
 3. **Health notifications: per-account EventBridge** (bez Business Support = bez org-wide Health view)
 4. **Dokumentacja LLZ pod AWS review od razu** — nie przepisywać do WAF format później
 5. **CC account (INVITED)** — konto klienta zewnętrznego w org, wyjaśnienie kontekstu otwarte
+6. **cfn_messaging_audit** — statyczny, bez boto3, local file analysis only (wzorzec dla kolejnych CFN audit pluginów)
 
 ---
 
@@ -224,6 +276,7 @@ Overall: **~30% WAF-ready**.
 - [ ] `zespol` tag policy — jakie są obecne nazwy zespołów? (wymaga HR)
 - [ ] rshop: zostać na CFN czy migrować do Terraform?
 - [ ] DRP-TFS w NonProduction OU — czy nie powinno być w Platform?
+- [ ] planodkupow UAT tagging: czy `Owner=DC-devops` właściwy? (historycznie `Maintainer=3rd party - Tribecloud`)
 
 ---
 
@@ -247,7 +300,8 @@ aws sts assume-role --role-arn arn:aws:iam::<ACCOUNT_ID>:role/OrganizationAccoun
 |--------|-------|--------------|
 | `mako-dc` | 864277686382 (management) | Terraform state, Organizations API, aws-cloud-platform |
 | `monitoring-tbd` | 814662658531 (monitoring-nagios-bot) | bezpośredni dostęp CLI do konta monitoring |
+| `plan` | 333320664022 (planodkupow) | CloudFormation, RDS, ECS, MQ |
 
 ---
 
-*Vault: `20-projects/internal/llz/` — session-log.md, context.md, org-inventory.md, waf-checklist.md, ideas.md*
+*Vault: `20-projects/internal/llz/` — session-log.md, context.md, org-inventory.md, waf-checklist.md, ideas.md, progress-tracker.md*

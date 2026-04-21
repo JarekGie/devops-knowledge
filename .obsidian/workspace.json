@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Review Codex contracts and validations"
+              "title": "Terminal: ✳ Review Codex contracts and validations"
             }
           },
           {
@@ -76,9 +76,37 @@
               "icon": "lucide-file",
               "title": "aws-tagging-standard"
             }
+          },
+          {
+            "id": "62641062d06ebef0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "_chatgpt/context-packs/llz.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "llz"
+            }
+          },
+          {
+            "id": "1e8affb127918b63",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "_chatgpt/context-packs/llz.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "llz"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -251,8 +279,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "1e8affb127918b63",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/llz.md",
+    "30-standards/aws-tagging-standard.md",
     "30-standards/iac-standard.md",
     "40-runbooks/planodkupow-tagging-finops.md",
     "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
@@ -270,7 +300,6 @@
     "40-runbooks/incidents/planodkupow-qa-postmortem.md",
     "02-active-context/now.md",
     "20-projects/internal/llz/waf-checklist.md",
-    "_chatgpt/context-packs/llz.md",
     "20-projects/internal/devops-business/README.md",
     "20-projects/internal/devops-business/next-steps.md",
     "20-projects/internal/devops-business/links.md",
@@ -278,7 +307,6 @@
     "20-projects/LLM_CONTEXT.md",
     "01-inbox/LLM_CONTEXT.md",
     "00-start-here/LLM_CONTEXT.md",
-    "90-reference/LLM_CONTEXT.md",
     "scripts/new-chatgpt-context.sh",
     "scripts",
     "_chatgpt/templates",
