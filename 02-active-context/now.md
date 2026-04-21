@@ -69,6 +69,26 @@ Kluczowe lekcje:
 Runbook:    40-runbooks/planodkupow-rabbitmq-cfn-refactor.md
 ```
 
+## Zamknięte: planodkupow — audyt tagów FinOps (Faza 1) ✓
+
+```
+Stan:       DONE (2026-04-21)
+
+Wyniki:
+  - QA: nowy schemat (Project/Environment/Owner/ManagedBy/CostCenter) — kompletny
+  - UAT: stary schemat (Maintainer/Provisioner/Team/Client/typ) — brakuje Owner/ManagedBy/CostCenter
+  - CloudFront QA (EORCEYNXGKU9K): BRAK TAGÓW — DO NOT TOUCH
+  - CloudFront UAT (x3): stary schemat — DO NOT TOUCH
+  - RDS UAT: tagować bezpośrednio przez rds add-tags-to-resource (NIE przez CFN)
+  - CostCenter nie ma odpowiednika w starym schemacie → konieczna addytywna zmiana
+
+Decyzja wymagana przed Fazą 3:
+  - Czy Owner=DC-devops właściwy dla UAT (był Maintainer=3rd party - Tribecloud)?
+  - Potwierdzenie CostCenter=DC dla UAT
+
+Runbook:    40-runbooks/planodkupow-tagging-finops.md
+```
+
 ## Aktywne: planodkupow UAT — CFN refaktor (RabbitMQ poza root stack)
 
 ```
@@ -321,4 +341,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 23:13 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 23:21 — sesja aktywna*
