@@ -12,34 +12,38 @@ Kluczowe:   llz.required_tags + llz.monitoring_account_id + llz.workloads_ou_nam
 Notatka:    20-projects/internal/llz/session-log.md (2026-04-20 patch)
 ```
 
-## Zamknięte: planodkupow QA — RabbitMQ UPDATE_ROLLBACK_FAILED ✓ (x3)
+## Zamknięte: planodkupow QA — RabbitMQ UPDATE_ROLLBACK_FAILED + RECREATE + CUTOVER ✓
 
 ```
-Stan:       STABILNY (2026-04-21 12:57 UTC+2)
+Stan:       DONE (2026-04-21 ~13:50 UTC+2)
+
 Root cause: planodkupow-auto brak mq:UpdateBroker + mq:RebootBroker → AccessDenied na update + rollback
-            Po każdym recovery: kolejny deploy robił skip z drift → nowy UPDATE_ROLLBACK_FAILED
+            CFN drift (frozen mq.t3.micro vs real mq.m5.large) → każdy deploy próbował UpdateBroker
 
-Incydent 1 (09:09): mq:UpdateBroker AccessDenied → naprawa: dodano mq:UpdateBroker ręcznie
-Incydent 2 (10:02): mq:RebootBroker AccessDenied na rollback → naprawa: dodano mq:RebootBroker (policy v5)
-Recovery:   continue-update-rollback x3 z skip PN8W0DD6SK1U.BasicBroker (profil plan)
+Incydent 1 (09:09): mq:UpdateBroker AccessDenied → naprawa: dodano ręcznie
+Incydent 2 (10:02): mq:RebootBroker AccessDenied na rollback → naprawa: policy v5
+Recovery x3: continue-update-rollback z skip PN8W0DD6SK1U.BasicBroker (profil plan)
 
-Stan końcowy:
-  - root planodkupow-qa:           UPDATE_ROLLBACK_COMPLETE ✓
-  - planodkupow-qa-RabbitMQStack:  UPDATE_ROLLBACK_COMPLETE ✓
-  - Broker QA: RUNNING, 3.13.7, mq.m5.large
+Drift fix (zamiast IMPORT): RECREATE + CUTOVER
+  Nowy broker: b-f231815d, planodkupow-qa-rabbitmq-cheap, mq.m7g.medium (~$66/mies. vs $197 m5.large)
+  Cutover: change set mqcs-cutover-to-new-broker na KlasterStack-1F8B7693FIMIX
+           UPDATE_COMPLETE, 14/14 ECS serwisów healthy
+  Stary broker: b-5cb3fcb4 — DELETION_IN_PROGRESS (usunięty 2026-04-21 profilem plan)
 
 IAM policy planodkupow-auto-CFN-Describe-Fix:
-  v3: baseline CFN + mq:DescribeBroker
-  v4: + mq:UpdateBroker (dodane ręcznie)
-  v5: + mq:RebootBroker (dodane przez Claude Code 2026-04-21)
+  v5: + mq:RebootBroker
+  v6: + mq:CreateBroker, mq:DeleteBroker
 
-DRIFT OTWARTY:
-  CFN wewnętrzny stan: mq.t3.micro (frozen po skip)
-  Template + real broker: mq.m5.large
-  Efekt: każdy deploy próbuje UpdateBroker → potential failure
-  Decyzja pending: IMPORT vs RECREATE/DOWNGRADE do t3.micro
+Stan końcowy:
+  - root planodkupow-qa:              UPDATE_ROLLBACK_COMPLETE
+  - planodkupow-qa-KlasterStack:      UPDATE_COMPLETE ✓
+  - Broker QA aktywny: b-f231815d, mq.m7g.medium, RUNNING
+  - Stary broker b-5cb3fcb4:          DELETION_IN_PROGRESS
 
-TODO:       cloudformation:ContinueUpdateRollback (opcjonalnie, do breakglass)
+OTWARTE:
+  - cloudformation:ContinueUpdateRollback na planodkupow-auto (opcjonalnie, breakglass)
+  - RabbitMQStack template nadal ma stare BrokerId — drift pozostał (niskoryzykowny)
+
 Runbook:    40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md
 ```
 
@@ -255,4 +259,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 13:50 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 13:52 — sesja aktywna*
