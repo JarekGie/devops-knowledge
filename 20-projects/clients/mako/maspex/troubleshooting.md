@@ -8,6 +8,39 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-21 — lukasz.fuchs: dostęp SSM + CloudShell (UAT)
+
+**Wykonane:**
+- Utworzono policy `maspex-uat-redis-ssm-access` (v2) i przypisano do `lukasz.fuchs@makolab.com`
+- v1: ECS Exec + SSM na cluster maspex-uat
+- v2: + `cloudshell:*` (potrzebne do otwarcia CloudShell w konsoli AWS)
+
+**Uprawnienia:**
+- `ecs:ExecuteCommand` / `ecs:Describe*/List*` — cluster + taski maspex-uat
+- `ssm:StartSession/TerminateSession/ResumeSession/DescribeSessions/GetConnectionStatus`
+- `cloudshell:*`
+
+**Jak połączyć się z Redis przez CloudShell (eu-west-1):**
+```bash
+# W CloudShell (lub lokalnie po awsume maspex-cli):
+aws ecs list-tasks --cluster maspex-uat --region eu-west-1
+
+aws ecs execute-command \
+  --cluster maspex-uat \
+  --task <TASK_ID> \
+  --container api \
+  --command "/bin/sh" \
+  --interactive \
+  --region eu-west-1
+
+# Wewnątrz kontenera:
+redis-cli -h maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com -p 6379
+```
+
+**Uwaga:** MFA wymagane — Łukasz musi mieć skonfigurowane MFA w IAM.
+
+---
+
 ## Otwarte: ECS task definition drift (UAT)
 
 **Wykryte:** 2026-04-21 podczas `terraform plan`

@@ -156,21 +156,23 @@ TODO:       - Wpisać Redis do Secrets Manager maspex/preprod/api
 Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
 ```
 
-## Zamknięte: maspex UAT — CloudFront static caching ✓
+## Zamknięte: maspex UAT — CloudFront static caching + lukasz.fuchs SSM ✓
 
 ```
 Stan:       DONE (2026-04-21)
-Problem:    Cache-Control: public, max-age=0 na statykach → CloudFront nie cachował (Miss from cloudfront)
-Root cause: Domyślna polityka Managed-CachingDisabled + app nie ustawia poprawnych nagłówków
 
-Fix:        Nowy aws_cloudfront_cache_policy (min_ttl=86400) + ordered_cache_behavior
-            dla /_next/static/* i /static/* na dystrybucji admin panel (E3R9U1TWNUJZ11)
+CloudFront static caching:
+  Problem:  Cache-Control: max-age=0 → CloudFront nie cachował (Miss from cloudfront)
+  Fix:      aws_cloudfront_cache_policy (min_ttl=86400) + ordered_cache_behavior
+            /_next/static/* + /static/* na dystrybucji E3R9U1TWNUJZ11
+  Efekt:    Statyki cachowane 24h; dynamiczne requesty bez zmian
 
-Efekt:      Statyczne assety cachowane przez CloudFront 24h
-            Dynamiczne requesty: nadal CachingDisabled (bez zmian)
+lukasz.fuchs SSM:
+  Policy:   maspex-uat-redis-ssm-access (v2) — ECS Exec + SSM + cloudshell:*
+  Redis:    maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379
+  Dostęp:   CloudShell → ecs execute-command → redis-cli
 
-Drift ECS:  plan pokazał task_definition v31→v24 na service_api (CI/CD drift)
-            NIE naprawiony — wymaga decyzji czy TF zarządza wersjami image
+Drift ECS:  task_definition v31→v24 na service_api — NIE naprawiony (decyzja CI/CD vs TF)
 
 Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
 ```
@@ -278,4 +280,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 18:40 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 18:47 — sesja aktywna*
