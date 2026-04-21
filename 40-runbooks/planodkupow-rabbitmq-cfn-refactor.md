@@ -1,114 +1,60 @@
-# planodkupow — RabbitMQ: wyjście z root stack CFN
+# planodkupow — RabbitMQ: wyjście z ROOT stack CFN
 
-#aws #cloudformation #rabbitmq #planodkupow #architecture
+#aws #cloudformation #rabbitmq #planodkupow #architecture #runbook
 
 **Data:** 2026-04-21
-**Dotyczy:** planodkupow-qa (wzorzec do replikacji na UAT)
-**Status:** PLAN GOTOWY — do wdrożenia
+**Status QA:** DONE ✅ (2026-04-21 22:42)
+**Status UAT:** DO WDROŻENIA
+**Status PROD:** DO WDROŻENIA (po UAT)
 
 ---
 
-## 1. Decyzja architektoniczna
+## Kontekst
 
-**Wybór: Opcja A — osobny stack CFN `planodkupow-qa-rabbitmq`**
-z SSM Parameter Store jako kontraktem między brokerem a aplikacją.
+### Problem w starym modelu
 
-### Opcja A: Dedykowany stack CFN (wybrana)
+- ROOT update dotykał wszystkich nested stacków
+- Nawet zmiana aplikacyjna mogła wywołać update DBStack / Redis / ALB
+- RabbitMQ w tym samym lifecycle → rollback przy unrelated zasobach
+- Duży blast radius, niestabilne deploye, trudne recovery
 
-```
-planodkupow-qa-rabbitmq
-  └── AWS::AmazonMQ::Broker (BasicBroker)
+### Rozwiązanie
 
-planodkupow-qa (root)
-  └── KlasterStack
-        └── MQCS: {{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}
-```
-
-**Za:**
-- Broker nadal w IaC — historia zmian, change sety, audyt
-- Lifecycle całkowicie oddzielony od deployów aplikacji
-- Zmiana brokera nie wymaga dotykania root stacka
-- SSM jako luźne sprzężenie — brak hard dependency przez `!GetAtt`
-
-**Przeciw:**
-- CFN nadal zarządza AmazonMQ (te same ograniczenia API)
-- Wymaga dyscypliny: **nigdy nie updateować brokera przez CI/CD**
-
-### Opcja B: Poza CFN (alternatywa)
-
-Broker zarządzany manualnie lub skryptem. SSM jako jedyne źródło prawdy.
-
-**Za:** Całkowite wyjście z problematycznej kombinacji CFN + AmazonMQ
-
-**Przeciw:** Brak IaC dla brokera, trudniejszy audyt zmian
-
-**Powód odrzucenia B:** Broker powinien być udokumentowany jako zasób IaC.
-W praktyce — jeśli CFN ponownie sprawi problemy, fallback do opcji B jest łatwy
-(broker zostaje, usuwamy tylko stack CFN, SSM pozostaje).
+- RabbitMQ jako osobny lifecycle
+- Kontrakt przez SSM zamiast `!GetAtt`
 
 ---
 
-## 2. Kontrakt aplikacja ↔ broker
-
-### Źródło MQCS
+## Docelowy model
 
 ```
-SSM Parameter Store:
-  /planodkupow/qa/rabbitmq/mqcs
-  Type: SecureString
-  Value: amqps://<endpoint>:5671:admin:<password>
+ROOT stack — nie zawiera RabbitMQStack
+
+KlasterStack:
+  MQCS: '{{resolve:ssm:/planodkupow/<env>/rabbitmq/mqcs}}'
+
+RabbitMQ:
+  zarządzany osobno (manual / dedykowany stack)
 ```
-
-### Jak ECS konsumuje MQCS
-
-W ROOT.yml, parametr KlasterStack:
-
-```yaml
-# PRZED (hard dependency na RabbitMQStack):
-MQCS: !GetAtt [RabbitMQStack, Outputs.MQCS]
-
-# PO (luźne sprzężenie przez SSM):
-MQCS: '{{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}'
-```
-
-**Zasada:** ECS NIGDY nie zależy od lifecycle brokera. Zmiana brokera = zmiana SSM parametru, nie zmiana CFN stacka aplikacji.
 
 ---
 
-## 3. Plan migracji — krok po kroku
+## Zakres zmiany w ROOT.yml
 
-### Krok 0 — Stan wyjściowy (DONE)
-
-```
-✅ Nowy broker aktywny:  b-f231815d, mq.m7g.medium, RUNNING
-✅ ECS używa nowego brokera: KlasterStack zaktualizowany bezpośrednio
-✅ Stary broker:          b-5cb3fcb4, DELETION_IN_PROGRESS
-```
-
-### Krok 1 — Utwórz SSM parameter
-
-```bash
-aws ssm put-parameter \
-  --name "/planodkupow/qa/rabbitmq/mqcs" \
-  --value "amqps://b-f231815d-d0dd-42c5-aeb8-c2aeeaa3f803.mq.eu-central-1.on.aws:5671:admin:ZAQ!2wsxFREF3" \
-  --type SecureString \
-  --region eu-central-1 \
-  --profile plan
-```
-
-### Krok 2 — Zmodyfikuj ROOT.yml
-
-**Zmiana 1** — zastąp `!GetAtt RabbitMQStack` przez SSM resolve (linia 568):
+### Zmiana 1 — źródło MQCS (KlasterStack parameters)
 
 ```yaml
 # USUŃ:
-MQCS: !GetAtt [RabbitMQStack, Outputs.MQCS ]
+MQCS: !GetAtt [RabbitMQStack, Outputs.MQCS]
 
 # DODAJ:
-MQCS: '{{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}'
+MQCS: '{{resolve:ssm:/planodkupow/<env>/rabbitmq/mqcs}}'
 ```
 
-**Zmiana 2** — usuń cały blok `RabbitMQStack` (linie 581–601):
+**Uwaga:** `{{resolve:ssm:...}}` (nie `ssm-secure`) — SSM parameter musi być typu `String`.
+`ssm-secure` nie jest wspierany dla `AWS::CloudFormation::Stack/Properties/Parameters`.
+
+### Zmiana 2 — usunięcie bloku RabbitMQStack
 
 ```yaml
 # USUŃ CAŁY BLOK:
@@ -125,182 +71,292 @@ MQCS: '{{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}'
       Tags: [...]
 ```
 
-### Krok 3 — Upload ROOT.yml do S3
+---
+
+## Warunki przed deployem (BLOCKERY)
+
+Wszystkie muszą być spełnione:
+
+1. Nowy broker istnieje i działa (State: RUNNING, poprawny endpoint)
+2. ECS używa nowego brokera (100% serwisów przełączone, brak ruchu na starym)
+3. SSM parameter `/planodkupow/<env>/rabbitmq/mqcs` istnieje jako `String`
+4. Stary broker: DELETED lub DELETION_IN_PROGRESS (NIE aktywnie używany)
+5. Stack stabilny: `UPDATE_COMPLETE` lub `UPDATE_ROLLBACK_COMPLETE`
+
+---
+
+## Procedura
+
+### Krok 0 — weryfikacja stanu
 
 ```bash
-aws s3 cp cloudformation/ROOT.yml \
+# Stan stacka
+aws cloudformation describe-stacks \
+  --stack-name planodkupow-<env> \
+  --region eu-central-1 --profile plan \
+  --query 'Stacks[0].StackStatus' --output text
+
+# Broker
+aws mq list-brokers --region eu-central-1 --profile plan \
+  --query 'BrokerSummaries[?contains(BrokerName,`<env>`)].[BrokerId,BrokerName,BrokerState]'
+```
+
+### Krok 1 — SSM parameter (typ String)
+
+```bash
+aws ssm put-parameter \
+  --name "/planodkupow/<env>/rabbitmq/mqcs" \
+  --value "amqps://<endpoint>:5671:admin:<password>" \
+  --type String \
+  --overwrite \
+  --region eu-central-1 \
+  --profile plan
+
+# Weryfikacja
+aws ssm get-parameter \
+  --name "/planodkupow/<env>/rabbitmq/mqcs" \
+  --region eu-central-1 --profile plan
+```
+
+### Krok 2 — patch ROOT.yml (z DEPLOYED template jako bazy)
+
+**KRYTYCZNE:** Użyj aktualnie wdrożonego template jako bazy, NIE wersji z repo.
+Różnica tagów między deployed a repo powoduje tag drift → DBStack update → SQLDatabase replacement → rollback.
+
+```bash
+# Pobierz deployed template
+aws cloudformation get-template \
+  --stack-name planodkupow-<env> \
+  --region eu-central-1 --profile plan \
+  --query 'TemplateBody' --output text > /tmp/ROOT_deployed.yml
+
+# Wygeneruj patch
+python3 - << 'EOF'
+with open('/tmp/ROOT_deployed.yml', 'r') as f:
+    content = f.read()
+
+old_mqcs = "        MQCS: !GetAtt [RabbitMQStack, Outputs.MQCS ]"
+new_mqcs = "        MQCS: '{{resolve:ssm:/planodkupow/<env>/rabbitmq/mqcs}}'"
+content = content.replace(old_mqcs, new_mqcs, 1)
+
+# usuń blok RabbitMQStack — dostosuj do faktycznej zawartości deployed template
+# (może mieć Tags lub nie)
+
+with open('/tmp/ROOT_patched.yml', 'w') as f:
+    f.write(content)
+
+# weryfikacja
+remaining = [l for l in content.split('\n') if 'RabbitMQStack' in l or ('MQCS' in l and 'GetAtt' in l)]
+print(f"Remaining bad refs: {remaining}")  # musi być pusta lista
+EOF
+```
+
+### Krok 3 — upload do S3
+
+```bash
+aws s3 cp /tmp/ROOT_patched.yml \
   s3://planodkupow-cf/ROOT.yml \
   --region eu-central-1 --profile plan
 ```
 
-### Krok 4 — Utwórz i zweryfikuj change set
+### Krok 4 — change set (NIE execute)
 
 ```bash
+TIMESTAMP=$(date +%s)
+CS_NAME="remove-rabbitmq-from-root-${TIMESTAMP}"
+
+PARAMS_JSON=$(aws cloudformation describe-stacks \
+  --stack-name planodkupow-<env> \
+  --region eu-central-1 --profile plan \
+  --query 'Stacks[0].Parameters[*].ParameterKey' \
+  --output json | python3 -c "
+import sys, json
+keys = json.load(sys.stdin)
+result = [{'ParameterKey': k, 'UsePreviousValue': True} for k in keys]
+print(json.dumps(result))
+")
+
 aws cloudformation create-change-set \
-  --stack-name planodkupow-qa \
+  --stack-name planodkupow-<env> \
+  --change-set-name "${CS_NAME}" \
   --template-url https://planodkupow-cf.s3.eu-central-1.amazonaws.com/ROOT.yml \
-  --use-previous-template false \
-  --parameters [wszystkie inne parametry z UsePreviousValue=true] \
   --capabilities CAPABILITY_NAMED_IAM \
-  --change-set-name remove-rabbitmq-nested-stack \
+  --parameters "${PARAMS_JSON}" \
   --region eu-central-1 --profile plan
+
+echo "CS_NAME=${CS_NAME}"
 ```
 
-**Weryfikacja change setu — oczekiwane zmiany:**
+Czekaj na `CREATE_COMPLETE`, potem weryfikuj.
 
-| Zasób | Akcja | Oczekiwane |
-|---|---|---|
-| `RabbitMQStack` (nested stack) | DELETE | TAK — stary broker już usunięty |
-| `KlasterStack` | MODIFY | TAK — zmiana parametru MQCS (SSM resolve) |
-| Wszystkie inne | brak | Tak |
+### Krok 5 — walidacja change setu (HARD STOP)
 
-**STOP jeśli:**
-- Jakikolwiek zasób poza RabbitMQStack + KlasterStack jest modyfikowany
-- Replacement: True na KlasterStack
-- DELETE na zasobach poza RabbitMQStack
+```bash
+aws cloudformation describe-change-set \
+  --stack-name planodkupow-<env> \
+  --change-set-name "${CS_NAME}" \
+  --region eu-central-1 --profile plan \
+  --query 'Changes[*].{Action:ResourceChange.Action,LogicalId:ResourceChange.LogicalResourceId,Replacement:ResourceChange.Replacement}' \
+  --output table
+```
 
-### Krok 5 — Wykonaj change set
+**SAFE tylko jeśli:**
+
+| Stack | Akcja | Uwagi |
+|-------|-------|-------|
+| RabbitMQStack | DELETE | wymagane |
+| KlasterStack | MODIFY | ECS rollout |
+| pozostałe | MODIFY | tylko Dynamic/ResourceAttribute |
+
+**HARD STOP jeśli:**
+
+```bash
+# Sprawdź DBStack details
+aws cloudformation describe-change-set \
+  --stack-name planodkupow-<env> \
+  --change-set-name "${CS_NAME}" \
+  --region eu-central-1 --profile plan \
+  --query 'Changes[?ResourceChange.LogicalResourceId==`DBStack`].ResourceChange.Details[*].{Evaluation:Evaluation,Source:ChangeSource}' \
+  --output table
+```
+
+- DBStack ma `Static` evaluation → STOP
+- DBStack ma `DirectModification` → STOP
+- `Replacement: True` gdziekolwiek → STOP
+- DELETE poza RabbitMQStack → STOP
+
+### Krok 6 — execute
 
 ```bash
 aws cloudformation execute-change-set \
-  --stack-name planodkupow-qa \
-  --change-set-name remove-rabbitmq-nested-stack \
+  --stack-name planodkupow-<env> \
+  --change-set-name "${CS_NAME}" \
   --region eu-central-1 --profile plan
 ```
 
-### Krok 6 — (Opcjonalnie) Utwórz dedykowany stack brokera
+### Krok 7 — monitoring
 
 ```bash
-aws cloudformation create-stack \
-  --stack-name planodkupow-qa-rabbitmq \
-  --template-url https://planodkupow-cf.s3.eu-central-1.amazonaws.com/RMQ.yml \
-  --parameters [parametry środowiska] \
-  --region eu-central-1 --profile plan
+# Root stack
+for i in $(seq 1 60); do
+  STATUS=$(aws cloudformation describe-stacks \
+    --stack-name planodkupow-<env> \
+    --region eu-central-1 --profile plan \
+    --query 'Stacks[0].StackStatus' --output text)
+  echo "$(date +%H:%M:%S) $STATUS"
+  [[ "$STATUS" == "UPDATE_COMPLETE" ]] && break
+  [[ "$STATUS" == *"ROLLBACK"* || "$STATUS" == *"FAILED"* ]] && echo "STOP — FAILURE" && break
+  sleep 10
+done
 ```
 
-**Uwaga:** Nowy broker `b-f231815d` nie jest zarządzany przez żaden stack CFN (stworzony manualnie). Opcja:
-- IMPORT `b-f231815d` do `planodkupow-qa-rabbitmq` (wymaga stabilnego stanu)
-- Lub: stack CFN zarządza tylko dokumentacją/przyszłymi brokerami
-
-### Krok 7 — Walidacja końcowa
+### Krok 8 — weryfikacja końcowa
 
 ```bash
-# Stack root stabilny
-aws cloudformation describe-stacks \
-  --stack-name planodkupow-qa \
-  --query 'Stacks[0].StackStatus'
-# Oczekiwane: UPDATE_COMPLETE
-
-# Brak nested stacka RabbitMQStack
+# RabbitMQStack usunięty
 aws cloudformation list-stack-resources \
-  --stack-name planodkupow-qa \
-  --query 'StackResourceSummaries[?ResourceType==`AWS::CloudFormation::Stack`].LogicalResourceId'
-# RabbitMQStack NIE powinien być na liście
+  --stack-name planodkupow-<env> \
+  --region eu-central-1 --profile plan \
+  --query 'StackResourceSummaries[*].{Logical:LogicalResourceId,Status:ResourceStatus}' \
+  --output table
 
-# ECS nadal działa
-aws ecs describe-services --cluster planodkupow-qa-Klaster ...
-# 14/14 desired==running
+# ECS healthy
+aws ecs describe-services \
+  --cluster planodkupow-<env>-Klaster \
+  --services <wszystkie serwisy> \
+  --region eu-central-1 --profile plan \
+  --query 'services[*].[serviceName,desiredCount,runningCount,pendingCount]' \
+  --output table
+```
 
-# SSM parameter dostępny
-aws ssm get-parameter \
-  --name /planodkupow/qa/rabbitmq/mqcs \
-  --with-decryption \
+Oczekiwane: RabbitMQStack brak, ECS `desired==running`, `pending==0`.
+
+---
+
+## Recovery — stack w UPDATE_ROLLBACK_FAILED
+
+Jeśli stack utknął (np. BasicBroker 404):
+
+```bash
+# Krok A — nested stack
+aws cloudformation continue-update-rollback \
+  --stack-name planodkupow-<env>-RabbitMQStack-<ID> \
+  --resources-to-skip BasicBroker \
+  --region eu-central-1 --profile plan
+
+aws cloudformation wait stack-rollback-complete \
+  --stack-name planodkupow-<env>-RabbitMQStack-<ID> \
+  --region eu-central-1 --profile plan
+
+# Krok B — root stack
+aws cloudformation continue-update-rollback \
+  --stack-name planodkupow-<env> \
+  --resources-to-skip "planodkupow-<env>-RabbitMQStack-<ID>.BasicBroker" \
+  --region eu-central-1 --profile plan
+
+aws cloudformation wait stack-rollback-complete \
+  --stack-name planodkupow-<env> \
   --region eu-central-1 --profile plan
 ```
 
 ---
 
-## 4. Co usunąć z ROOT.yml
+## Najczęstsze błędy i ich przyczyny
 
-| Element | Lokalizacja w ROOT.yml | Akcja |
-|---|---|---|
-| `MQCS: !GetAtt [RabbitMQStack, Outputs.MQCS]` | KlasterStack parameters ~linia 568 | Zastąpić SSM resolve |
-| `RabbitMQStack:` blok całkowity | ~linia 581–601 | Usunąć |
+### 1. DBStack UPDATE_FAILED — SQLDatabase requires replacement
 
-Nie ma innych referencji do RabbitMQStack w ROOT.yml.
+**Przyczyna:** tag drift lub zmiana parametrów między deployed a uploaded ROOT.yml.
 
----
+**Symptom:** `CloudFormation cannot update a stack when a custom-named resource requires replacing. Rename planodkupowqadb`
 
-## 5. Ryzyka i mitigacja
+**Fix:** Zawsze patchuj deployed template (krok 2), nie wersję z repo. Tagi i parametry (zwłaszcza `DBSnapshotIdentifier`) muszą być identyczne z deployed.
 
-| Ryzyko | Prawdopodobieństwo | Mitigacja |
-|---|---|---|
-| CFN próbuje USUNĄĆ brokera przy DELETE RabbitMQStack | LOW | Stary broker jest już w DELETION_IN_PROGRESS; nowy broker nie jest w tym stacku |
-| MQCS w SSM nie synchronizuje się z nowym endpointem przy przyszłej zmianie | MEDIUM | Procedura: zawsze najpierw update SSM, potem weryfikacja ECS |
-| ECS nie może odczytać SSM w czasie deploy | LOW | Dodać `ssm:GetParameter` do roli ECS task execution jeśli nie ma |
-| KlasterStack wymaga pełnego redeploy przy zmianie MQCS source | LOW | Zmiana SSM resolve nie wymaga replace'u zasobu ECS |
+### 2. ssm-secure nie działa dla nested stack parameters
 
----
+**Przyczyna:** `{{resolve:ssm-secure:...}}` nie jest wspierany dla `AWS::CloudFormation::Stack/Properties/Parameters`.
 
-## 6. Model operacyjny po refaktorze
+**Fix:** SSM parameter jako typ `String` + `{{resolve:ssm:...}}`.
 
-### Deploy aplikacji (Jenkins — BEZPIECZNY)
+### 3. ParameterNotFound przy create-change-set
 
-```
-ROOT.yml (update-stack --use-previous-template)
-  └── KlasterStack → ECS TaskDefinitions + Services
-      └── MQCS z SSM (statyczne — nie zmienia się podczas deploy)
+**Przyczyna:** SSM parameter nie istnieje.
 
-Nic nie dotyka brokera.
-```
+**Fix:** Krok 1 (put-parameter) przed create-change-set.
 
-### Zmiana brokera (OPERATORSKA, manualna)
+### 4. Stack w UPDATE_ROLLBACK_FAILED blokuje change set
 
-```
-1. Utwórz nowy broker (AWS CLI lub planodkupow-qa-rabbitmq stack)
-2. Poczekaj na RUNNING
-3. Zaktualizuj SSM: /planodkupow/qa/rabbitmq/mqcs
-4. Zaktualizuj KlasterStack (parametr MQCS) → ECS rollout
-5. Weryfikuj metryki
-6. Usuń stary broker
-```
+**Fix:** `continue-update-rollback` na nested + root (patrz sekcja Recovery).
 
-### Reguły bezpieczeństwa
+### 5. DBSnapshotIdentifier nie istnieje w template
 
-```
-❌ Nigdy nie modyfikuj brokera przez CI/CD
-❌ Nigdy nie dodawaj RabbitMQ z powrotem do root stack
-❌ Nigdy nie używaj !GetAtt do przekazywania MQCS między stackami
-✅ SSM jest jedynym źródłem prawdy dla MQCS
-✅ Każda zmiana brokera = jawna operatorska decyzja
-✅ Broker lifecycle ≠ app deployment lifecycle
-```
+**Przyczyna:** Wgranie wersji z repo zamiast deployed. Deployed template może mieć parametry nieobecne w repo.
+
+**Fix:** `get-template` ze stacka, nie `s3 cp` z repo.
 
 ---
 
-## 7. Wnioski (lessons learned)
+## Postęp wdrożenia
 
-### AmazonMQ + CloudFormation nie jest bezpiecznie idempotentny
-
-- Każdy update brokera (nawet niezamierzony przez drift) wywołuje UpdateBroker → RebootBroker
-- Rollback wymaga tych samych uprawnień co update → brak = double failure
-- `continue-update-rollback --resources-to-skip` zamraża stan → trwały drift
-
-### Root stack fan-out = fałszywe poczucie blast radius
-
-Formalne `UPDATE_*` na 9 nested stackach nie oznacza zmiany zasobów. Sprawdzaj zawsze resource-level events w nested stacku.
-
-### Messaging system nie należy do deployment pipeline
-
-RabbitMQ to infrastruktura danych — zmiana brokera to operacja z własnym runbookiem, nie parametr CI/CD.
-
-### SSM > CFN cross-stack outputs dla connection strings
-
-`!GetAtt [Stack, Outputs.ConnectionString]` tworzy hard dependency lifecycle.
-`{{resolve:ssm:/path}}` jest statycznym odczytem — brak zależności.
+| Środowisko | Status | Data | Uwagi |
+|------------|--------|------|-------|
+| QA | ✅ DONE | 2026-04-21 | 3 iteracje przez tag drift + DBStack recovery |
+| UAT | ⏳ TODO | — | stack: UPDATE_ROLLBACK_COMPLETE |
+| PROD | ⏳ TODO | — | po UAT |
 
 ---
 
-## Pliki do zmiany
+## Stan po QA (reference)
 
 ```
-Repo: ~/projekty/mako/aws-projects/infra-bbmt
-
-cloudformation/ROOT.yml
-  - linia 568: zastąpić !GetAtt SSM resolve
-  - linia 581-601: usunąć blok RabbitMQStack
+Root stack:    UPDATE_COMPLETE
+KlasterStack:  UPDATE_COMPLETE
+RabbitMQStack: USUNIĘTY z root
+ECS:           14/14 running, 0 pending
+MQCS:          {{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}
+SSM:           /planodkupow/qa/rabbitmq/mqcs (String, Version 2)
+Broker QA:     b-f231815d, mq.m7g.medium, RUNNING
 ```
 
 ---
 
-*Utworzono: 2026-04-21 | Status: PLAN — do wdrożenia*
+*Ostatnia aktualizacja: 2026-04-21 — po zakończeniu QA*

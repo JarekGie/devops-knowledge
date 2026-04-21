@@ -47,20 +47,44 @@ OTWARTE:
 Runbook:    40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md
 ```
 
-## Aktywne: planodkupow QA — CFN refaktor (RabbitMQ poza root stack)
+## Zamknięte: planodkupow QA — CFN refaktor (RabbitMQ poza root stack) ✓
 
 ```
-Stan:       PLAN GOTOWY (2026-04-21) — do wdrożenia
-Cel:        Usunąć RabbitMQStack z root stack; MQCS przez SSM Parameter Store
+Stan:       DONE (2026-04-21 22:42)
 
-Następne kroki:
-  1. aws ssm put-parameter /planodkupow/qa/rabbitmq/mqcs (profil plan)
-  2. Zmodyfikuj ROOT.yml (linia 568 + 581-601)
-  3. Upload ROOT.yml → s3://planodkupow-cf/ROOT.yml
-  4. Change set: tylko DELETE RabbitMQStack + MODIFY KlasterStack
-  5. Execute + walidacja ECS
+Wykonane:
+  - SSM /planodkupow/qa/rabbitmq/mqcs (String, Version 2) ✓
+  - ROOT.yml patchowany z deployed template jako bazy (nie z repo!) ✓
+  - Change set remove-rabbitmq-safe-1776803624 — EXECUTED ✓
+  - Root stack: UPDATE_COMPLETE ✓
+  - RabbitMQStack: usunięty z root ✓
+  - ECS: 14/14 running, 0 pending ✓
 
-Plan:       40-runbooks/planodkupow-rabbitmq-cfn-refactor.md
+Kluczowe lekcje:
+  - patchuj DEPLOYED template (get-template), nie wersję z repo
+  - tag drift = DBStack DirectModification = rollback przez SQLDatabase replacement
+  - ssm-secure nie działa dla nested stack params → tylko ssm + String
+  - continue-update-rollback wymaga dwóch kroków (nested + root)
+
+Runbook:    40-runbooks/planodkupow-rabbitmq-cfn-refactor.md
+```
+
+## Aktywne: planodkupow UAT — CFN refaktor (RabbitMQ poza root stack)
+
+```
+Stan:       DO WDROŻENIA
+Stack:      planodkupow-uat (UPDATE_ROLLBACK_COMPLETE)
+Broker UAT: b-2d26b881-79f2-4c3c-8b77-06c1a0fb0b29, mq.t3.micro, RUNNING
+
+Następne kroki (według runbooka):
+  1. Zweryfikuj stan stacka i brokera UAT
+  2. aws ssm put-parameter /planodkupow/uat/rabbitmq/mqcs (String, nie SecureString)
+  3. get-template ze stacka → patch (MQCS + usuń RabbitMQStack)
+  4. Upload ROOT.yml → s3://planodkupow-cf/ROOT.yml
+  5. Change set — walidacja (HARD STOP jeśli DBStack Static/Direct)
+  6. Execute + monitoring
+
+Runbook:    40-runbooks/planodkupow-rabbitmq-cfn-refactor.md
 Repo:       ~/projekty/mako/aws-projects/infra-bbmt
 ```
 
@@ -297,4 +321,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 22:42 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 22:50 — sesja aktywna*
