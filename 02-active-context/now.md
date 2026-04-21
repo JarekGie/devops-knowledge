@@ -24,8 +24,8 @@ Stan końcowy:
   - root planodkupow-qa: UPDATE_ROLLBACK_COMPLETE
   - wszystkie 9 nested stacków: UPDATE_COMPLETE
   - Broker QA: RUNNING, 3.13.7, mq.m5.large
-TODO:       dodać mq:UpdateBroker do planodkupow-auto-CFN-Describe-Fix policy
-            + cloudformation:ContinueUpdateRollback (opcjonalnie, do breakglass)
+IAM fix:    mq:UpdateBroker dodany ręcznie do planodkupow-auto-CFN-Describe-Fix ✓
+TODO:       cloudformation:ContinueUpdateRollback (opcjonalnie, do breakglass)
 Runbook:    40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md
 ```
 
@@ -241,4 +241,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-21 11:44 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-21 11:47 — sesja aktywna*
