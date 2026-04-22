@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
+              "title": "Terminal: ✳ NotebookLM integration exploration"
             }
           }
         ]
@@ -222,7 +222,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
     "90-reference/vendors/notebooklm/cli-capabilities.md",
     "90-reference/vendors/notebooklm",
