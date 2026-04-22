@@ -9,14 +9,14 @@
 
 ## TL;DR
 
-| Co | Wartość |
-|----|---------|
-| Rozwiązanie | AWS Distributed Load Testing (SO0062) — AWS-provided solution |
-| Deployment | ~15 minut, `aws_cloudformation_stack` w Terraform lub AWS CLI |
-| Gdzie trzymać | osobny env `envs/load-testing/` — tooling stack, nie app infra |
-| Koszt stały (idle) | ~$1–3/mies. (S3 + DynamoDB) |
-| Koszt testu (10 tasków × 30 min) | ~$15–30 jednorazowo |
-| Rekomendacja użycia | przed każdym releasem do prod, po każdej zmianie `/api/slogan/vote` |
+| Co                               | Wartość                                                             |
+| -------------------------------- | ------------------------------------------------------------------- |
+| Rozwiązanie                      | AWS Distributed Load Testing (SO0062) — AWS-provided solution       |
+| Deployment                       | ~15 minut, `aws_cloudformation_stack` w Terraform lub AWS CLI       |
+| Gdzie trzymać                    | osobny env `envs/load-testing/` — tooling stack, nie app infra      |
+| Koszt stały (idle)               | ~$1–3/mies. (S3 + DynamoDB)                                         |
+| Koszt testu (10 tasków × 30 min) | ~$15–30 jednorazowo                                                 |
+| Rekomendacja użycia              | przed każdym releasem do prod, po każdej zmianie `/api/slogan/vote` |
 
 ---
 
