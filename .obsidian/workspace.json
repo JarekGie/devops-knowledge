@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Design NotebookLM contract for governed synthesis"
+              "title": "Terminal: ✳ Design NotebookLM contract for governed synthesis"
             }
           },
           {
@@ -266,6 +266,7 @@
   },
   "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
+    "_system/NOTEBOOKLM_CONTRACT.md",
     "tree.txt",
     "20-projects/clients/mako/pbms/context.md",
     "20-projects/clients/mako/maspex/distributed-load-testing.md",
@@ -301,7 +302,6 @@
     "_chatgpt/context-packs",
     "_chatgpt",
     "_system/TEMPLATES",
-    "_system",
     "Bez nazwy.canvas"
   ]
 }

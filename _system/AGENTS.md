@@ -42,6 +42,14 @@
 - Format: nagłówek → zakres → kluczowe decyzje → stan → następny krok
 - Szczegóły w: `_system/CHATGPT_WORKFLOW.md`
 
+## NotebookLM — warstwa syntezy
+
+- NotebookLM **nie jest** źródłem prawdy — jest warstwą syntezy na skurowanych paczkach z vault
+- Używaj do: briefingów, contradiction check, decision pack, handoff pack, gap analysis
+- Wynik NotebookLM musi trafić do vault jako notatka syntezy **zanim** zostanie użyty przez agenta
+- Przepływ: `vault → NotebookLM synthesis → notatka w vault → Claude/Codex execution`
+- Pełny kontrakt: `_system/NOTEBOOKLM_CONTRACT.md`
+
 ## Priorytet folderów (od najwyższego)
 
 1. `02-active-context/` — bieżący stan operacyjny
