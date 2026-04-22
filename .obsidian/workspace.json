@@ -224,6 +224,8 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "90-reference/vendors/notebooklm/cli-capabilities.md",
+    "90-reference/vendors/notebooklm",
     "20-projects/clients/mako/pbms/context.md",
     "20-projects/clients/mako/maspex/distributed-load-testing.md",
     "_system/NOTEBOOKLM_CONTRACT.md",
@@ -252,14 +254,12 @@
     "CODEX.md",
     "40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed.md",
     "CLAUDE.md",
-    "40-runbooks/LLM_CONTEXT.md",
     "scripts/new-chatgpt-context.sh",
     "scripts",
     "_chatgpt/templates",
     "_chatgpt/conversations",
     "_chatgpt/context-packs",
     "_chatgpt",
-    "_system/TEMPLATES",
     "Bez nazwy.canvas"
   ]
 }
