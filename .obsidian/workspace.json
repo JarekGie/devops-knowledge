@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: notebooklm generate quiz --difficulty hard"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           },
           {
@@ -280,6 +280,7 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "level1-map.json",
     "00-start-here/how-to-use-this-vault.md",
     "90-reference/notebooklm/pkm-stack-mastery/findings/README.md",
     "90-reference/notebooklm/pkm-stack-mastery/conversations/README.md",
@@ -314,7 +315,6 @@
     "90-reference/notebooklm/runtime-incidents/conversations/2026-04-22-contradiction-check.md",
     "90-reference/notebooklm/runtime-incidents/prompts/recovery-control-contract.md",
     "90-reference/notebooklm/runtime-incidents/prompts/gap-analysis.md",
-    "90-reference/notebooklm/runtime-incidents/prompts/contradiction-check.md",
     "90-reference/notebooklm/runtime-incidents/prompts",
     "Bez nazwy.canvas"
   ]
