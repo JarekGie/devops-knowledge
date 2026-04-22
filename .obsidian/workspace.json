@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠙ devops-knowledge"
             }
           },
           {
@@ -91,8 +91,7 @@
               "title": "README"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -265,12 +264,19 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "5eef5c1c86807462",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "90-reference/notebooklm/pkm-stack-mastery/prompts",
+    "90-reference/notebooklm/pkm-stack-mastery/findings",
+    "90-reference/notebooklm/pkm-stack-mastery/exercises",
+    "90-reference/notebooklm/pkm-stack-mastery/conversations",
+    "90-reference/notebooklm/pkm-stack-mastery/challenges",
+    "90-reference/notebooklm/pkm-stack-mastery/artifacts",
+    "90-reference/notebooklm/pkm-stack-mastery",
+    "90-reference/notebooklm/llz-controls/README.md",
     "90-reference/notebooklm/recovery-controls-catalog.md",
     "90-reference/notebooklm/cloudformation-recovery/README.md",
     "90-reference/notebooklm/finops-reference/README.md",
-    "90-reference/notebooklm/llz-controls/README.md",
     "90-reference/notebooklm/runtime-incidents/findings/recovery-controls.md",
     "90-reference/notebooklm/runtime-incidents/findings/anti-patterns.md",
     "90-reference/notebooklm/runtime-incidents/artifacts/flashcards.json",
@@ -294,15 +300,8 @@
     "90-reference/notebooklm/README.md",
     "90-reference/notebooklm/runtime-incidents/prompts",
     "90-reference/notebooklm/runtime-incidents/findings",
-    "90-reference/notebooklm/runtime-incidents/conversations",
-    "90-reference/notebooklm/runtime-incidents/artifacts",
-    "90-reference/notebooklm/runtime-incidents",
-    "90-reference/notebooklm/llz-controls",
-    "90-reference/notebooklm/finops-reference",
-    "90-reference/notebooklm/cloudformation-recovery",
     "runtime-incidents-report.md",
     "Bez nazwy.md",
-    "90-reference/vendors/notebooklm/cli-capabilities.md",
     "Bez nazwy.canvas"
   ]
 }
