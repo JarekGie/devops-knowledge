@@ -177,10 +177,10 @@ Wynik:      ~30% WAF-ready, 4 HRI, quick wins zidentyfikowane
 HRI:        GuardDuty (SEC 4), SCP (SEC 1), IR plan (SEC 10), DR plan (REL 13)
 ```
 
-## Zamknięte: LLZ health-notifications ✓ WDROŻONE
+## Zamknięte: LLZ health-notifications ✓ WDROŻONE + ZWERYFIKOWANE
 
 ```
-Stan:       APPLY COMPLETE (2026-04-20) — działa, email potwierdzony
+Stan:       APPLY COMPLETE (2026-04-20) + test OK (2026-04-22)
 Repo:       ~/projekty/mako/aws-projects/aws-cloud-platform/platform/health-notifications/
 Architektura (finalna):
   - 11 member accounts (us-east-1): IAM role health-eventbridge-forward + EventBridge rule → monitoring bus
@@ -188,6 +188,11 @@ Architektura (finalna):
   - Lambda (Python 3.12, us-east-1): nazwy kont z env var → formatuje email → SNS eu-central-1
   - SNS: nowy topic health-notifications na monitoring-nagios-bot + subskrypcja email potwierdzona
   - Filtr: tylko statusCode=open, category=issue|investigation
+
+Weryfikacja (2026-04-22):
+  - Lambda invoke bezpośredni → StatusCode 200, brak błędów, SNS publish OK
+  - Email testowy wysłany: [AWS Health] EC2 open — planodkupow (eu-central-1)
+  - Infrastruktura w pełni sprawna; brak realnych eventów od 20.04 (normalny stan)
 
 Koszt:      ~$0.00/miesiąc
 Notatka:    20-projects/internal/llz/session-log.md
@@ -364,4 +369,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-22 09:47 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-22 09:57 — sesja aktywna*
