@@ -112,6 +112,34 @@ Kluczowe wnioski:
     Rekomendacja: DevOps Engineer Pro + Security Specialty (Jarosław)
 ```
 
+## Zamknięte: maspex UAT/preprod — monitoring + CloudFront + .gitignore ✓
+
+```
+Stan:       DONE (2026-04-22)
+
+UAT:
+  - SNS topic maspex-uat-alarms + email subscription jaroslaw.golab@makolab.com
+  - Wszystkie alarmy CloudWatch (11) podłączone do SNS
+  - CloudWatch Logs Insights: nowy query errors-by-path
+  - CloudFront API (E3J76RNXIE2YIG / kapsel.makotest.pl):
+    behaviors /_next/static/* + /landing/* z min_ttl=86400
+  - ECS service lifecycle: ignore_changes = [desired_count, task_definition]
+    → GitLab CI/CD zarządza task definitions, Terraform nie nadpisuje
+
+Preprod:
+  - ALB routing fix: admin_panel_domain=twojkapsel.pl → "Not Found" naprawiony
+  - CloudFront static caching: /_next/static/* + /static/* dodane
+
+Repo:
+  - terraform.tfvars commitowane (branch chore/add-tfvars, mergowane na main)
+  - .gitignore: **/.claude/settings.local.json + .codex/ zignorowane
+  - branch chore/add-tfvars mergowany → main aktualny
+
+TODO:
+  - SNS subscription wymaga potwierdzenia email (klik "Confirm subscription")
+  - Redis connection string do Secrets Manager: maspex/preprod/api (otwarte)
+```
+
 ## Aktywne: planodkupow UAT — CFN refaktor (RabbitMQ poza root stack)
 
 ```
@@ -369,4 +397,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-22 11:09 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-22 11:18 — sesja aktywna*
