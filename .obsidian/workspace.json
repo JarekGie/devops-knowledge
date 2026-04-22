@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠙ devops-knowledge"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           },
           {
@@ -266,6 +266,20 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "90-reference/notebooklm/pkm-stack-mastery/findings/README.md",
+    "90-reference/notebooklm/pkm-stack-mastery/conversations/README.md",
+    "90-reference/notebooklm/pkm-stack-mastery/artifacts/README.md",
+    "90-reference/notebooklm/pkm-stack-mastery/prompts/practical-lesson.md",
+    "90-reference/notebooklm/pkm-stack-mastery/prompts/contradiction-audit.md",
+    "90-reference/notebooklm/pkm-stack-mastery/prompts/challenge-mode.md",
+    "90-reference/notebooklm/pkm-stack-mastery/prompts/curriculum-generator.md",
+    "90-reference/notebooklm/pkm-stack-mastery/prompts/instructor-bootstrap.md",
+    "90-reference/notebooklm/pkm-stack-mastery/challenges/escape-room-scenarios.md",
+    "90-reference/notebooklm/pkm-stack-mastery/exercises/level-based-exercises.md",
+    "90-reference/notebooklm/pkm-stack-mastery/curriculum.md",
+    "90-reference/notebooklm/pkm-stack-mastery/sources.md",
+    "90-reference/notebooklm/pkm-stack-mastery/notebook-contract.md",
+    "90-reference/notebooklm/pkm-stack-mastery/README.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts",
     "90-reference/notebooklm/pkm-stack-mastery/findings",
     "90-reference/notebooklm/pkm-stack-mastery/exercises",
@@ -287,21 +301,7 @@
     "90-reference/notebooklm/runtime-incidents/prompts/gap-analysis.md",
     "90-reference/notebooklm/runtime-incidents/prompts/contradiction-check.md",
     "90-reference/notebooklm/runtime-incidents/sources.md",
-    "90-reference/notebooklm/runtime-incidents/notebook-contract.md",
-    "90-reference/notebooklm/_moc/MOC-Recovery-Patterns.md",
-    "90-reference/notebooklm/_moc/MOC-FinOps.md",
-    "90-reference/notebooklm/_moc/MOC-LLZ.md",
-    "90-reference/notebooklm/_moc/MOC-Incidents.md",
-    "90-reference/notebooklm/_templates/conversation-template.md",
-    "90-reference/notebooklm/_templates/artifact-review-template.md",
-    "90-reference/notebooklm/_templates/notebook-contract-template.md",
-    "90-reference/notebooklm/notebooks-index.md",
-    "90-reference/notebooklm/NOTEBOOKLM_KONTRAKT.md",
-    "90-reference/notebooklm/README.md",
     "90-reference/notebooklm/runtime-incidents/prompts",
-    "90-reference/notebooklm/runtime-incidents/findings",
-    "runtime-incidents-report.md",
-    "Bez nazwy.md",
     "Bez nazwy.canvas"
   ]
 }

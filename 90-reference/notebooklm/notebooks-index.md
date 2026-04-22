@@ -49,6 +49,22 @@
   - [[40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed]]
   - [[40-runbooks/aws/cfn-alb-safe-tagging]]
 
+### PKM-Stack-Mastery
+
+- Katalog roboczy: [[pkm-stack-mastery/README]]
+- Kontrakt notebooka: [[pkm-stack-mastery/notebook-contract]]
+- Typowe zrodla:
+  - [[00-start-here/README]]
+  - [[00-start-here/how-to-use-this-vault]]
+  - [[90-reference/notebooklm/NOTEBOOKLM_KONTRAKT]]
+  - [[40-runbooks/incidents/README]]
+  - [[20-projects/internal/llz/context]]
+
+- Cel:
+  - onboarding do stacka Obsidian + Claude + NotebookLM
+  - nauka pracy na realnym vaultcie
+  - cwiczenia, challenge i artefakty robocze zamiast teorii oderwanej od repo
+
 ## Integracja z istniejacymi domenami
 
 - Incidenty sa integrowane z istniejacym obszarem `40-runbooks/incidents/`, bez dublowania notatek.
