@@ -11,11 +11,12 @@
 
 | Co | Wartość |
 |----|---------|
-| Rozwiązanie | AWS Distributed Load Testing (SO0062) — gotowy CloudFormation stack |
-| Deployment | ~15 minut, jeden stack CFN |
+| Rozwiązanie | AWS Distributed Load Testing (SO0062) — AWS-provided solution |
+| Deployment | ~15 minut, `aws_cloudformation_stack` w Terraform lub AWS CLI |
+| Gdzie trzymać | osobny env `envs/load-testing/` — tooling stack, nie app infra |
 | Koszt stały (idle) | ~$1–3/mies. (S3 + DynamoDB) |
 | Koszt testu (10 tasków × 30 min) | ~$15–30 jednorazowo |
-| Rekomendacja użycia | przed każdym releaste do prod, po każdej zmianie `/api/slogan/vote` |
+| Rekomendacja użycia | przed każdym releasem do prod, po każdej zmianie `/api/slogan/vote` |
 
 ---
 
@@ -43,33 +44,72 @@ API Gateway → Lambda microservices → Step Functions
 
 ## Wdrożenie
 
-### Krok 1 — Deploy CFN stack (jednorazowo)
+### Decyzja: jak zarządzać stack'iem w projekcie Terraform
+
+DLT to AWS-provided solution (CFN template, nie Terraform module). Dwie opcje:
+
+| Opcja | Kiedy | Trade-off |
+|-------|-------|-----------|
+| **`aws_cloudformation_stack` w Terraform** | chcesz wszystko w jednym miejscu | Terraform widzi stack jako czarną skrzynkę; outputs dostępne, ale wewnętrzne zasoby nie |
+| **Deploy przez CLI, poza Terraform** | tooling stack jednorazowy, rzadko aktualizowany | brak driftu, brak ryzyka przypadkowego `terraform destroy` |
+
+**Rekomendacja:** CLI/AWS Console, w osobnym env `envs/load-testing/` tylko jako dokumentacja (backend.tf + outputs.tf bez zasobów), lub po prostu bez Terraform.
+
+DLT to narzędzie operacyjne, nie część infrastruktury aplikacji — nie musi być zarządzane przez Terraform.
+
+---
+
+### Krok 1 — Deploy przez AWS CLI (jednorazowo)
 
 ```bash
-# Przez konsolę AWS CloudFormation → Create Stack → With new resources
-# Template URL:
-https://solutions-reference.s3.amazonaws.com/distributed-load-testing-on-aws/latest/distributed-load-testing-on-aws.template
-
-# Lub przez AWS CLI:
-aws cloudformation create-stack \
+AWS_PROFILE=maspex-cli aws cloudformation create-stack \
   --stack-name maspex-load-testing \
   --template-url https://solutions-reference.s3.amazonaws.com/distributed-load-testing-on-aws/latest/distributed-load-testing-on-aws.template \
   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
   --region eu-west-1
+
+# Śledź status:
+AWS_PROFILE=maspex-cli aws cloudformation wait stack-create-complete \
+  --stack-name maspex-load-testing \
+  --region eu-west-1
+
+# Pobierz URL konsoli:
+AWS_PROFILE=maspex-cli aws cloudformation describe-stacks \
+  --stack-name maspex-load-testing \
+  --region eu-west-1 \
+  --query 'Stacks[0].Outputs'
 ```
 
 **Czas deployu:** ~15 minut  
 **Po deployu:** email z URL do konsoli (CloudFront) + credentials Cognito
 
-**Uwaga regionalna:** Cognito musi być dostępny w regionie. `eu-west-1` — OK.
+**Uwaga regionalna:** `eu-west-1` — Cognito dostępny, OK.
 
-### Krok 2 — Gdzie deployować
+### Alternatywa — `aws_cloudformation_stack` w Terraform
 
-Rekomendacja: **osobne konto AWS** lub przynajmniej osobny region względem maspex UAT/preprod.
+Jeśli jednak chcesz to mieć w Terraform (np. `envs/load-testing/main.tf`):
 
-Opcja prosta (szybki start): deploy do `eu-west-1` na konto maspex (969209893152).
+```hcl
+resource "aws_cloudformation_stack" "dlt" {
+  name          = "maspex-load-testing"
+  template_url  = "https://solutions-reference.s3.amazonaws.com/distributed-load-testing-on-aws/latest/distributed-load-testing-on-aws.template"
+  capabilities  = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"]
 
-### Krok 3 — Dostęp
+  tags = {
+    project     = "maspex"
+    environment = "tooling"
+    managed_by  = "terraform"
+  }
+}
+
+output "console_url" {
+  value = aws_cloudformation_stack.dlt.outputs["CloudFrontUrl"]
+}
+```
+
+Uwaga: `terraform destroy` na tym resource usunie cały DLT stack z wynikami testów.
+
+### Krok 2 — Dostęp
 
 Po deployu dodaj użytkowników w Cognito User Pool (nie w UI rozwiązania — tylko przez konsolę Cognito lub CLI):
 
