@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Review Codex contracts and validations"
+              "title": "Terminal: ⠐ Review Codex contracts and validations"
             }
           },
           {
@@ -55,16 +55,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_chatgpt/context-packs/maspex-load-testing.md",
+                "file": "20-projects/clients/mako/maspex/distributed-load-testing.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "maspex-load-testing"
+              "title": "distributed-load-testing"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -237,11 +236,11 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "69717c4b8b463985",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
-    "20-projects/clients/mako/maspex/load-testing-meeting-prep.md",
-    "_chatgpt/context-packs/maspex-load-testing.md",
     "20-projects/clients/mako/maspex/distributed-load-testing.md",
+    "_chatgpt/context-packs/maspex-load-testing.md",
+    "20-projects/clients/mako/maspex/load-testing-meeting-prep.md",
     "20-projects/clients/mako/wdrozenie-standardow-organizacji/ecs-compliance-wycena-enforcement.md",
     "20-projects/clients/mako/wdrozenie-standardow-organizacji/ecs-competency-llz-mapping.md",
     "20-projects/clients/mako/wdrozenie-standardow-organizacji/standard-iac-tagging-naming.md",
