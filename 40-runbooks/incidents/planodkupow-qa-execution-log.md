@@ -693,3 +693,158 @@ Fix: `update-stack` z `HealthCheckPath=/api/health` po potwierdzeniu z dev teame
 Dev team musi potwierdzić: **jaki jest prawidłowy health check endpoint dla Ocelot gateway?**
 
 *Log zaktualizowany 2026-04-19 22:20*
+
+---
+
+## 2026-04-22 — QA Gateway health check /signin vs /api/health (diagnostyka + przygotowanie fixu)
+
+### Kontekst
+
+- Jenkins uruchomił `update-stack` na `planodkupow-qa`, ale stage zakończył się timeoutem.
+- Root stack długo wisiał w `UPDATE_IN_PROGRESS`.
+- Celem było rozróżnienie: realny fail vs długie domykanie CFN vs pętla ECS.
+
+### Fakty z AWS (read-only)
+
+#### Root stack
+
+```text
+2026-04-22 14:44 UTC+2  planodkupow-qa  UPDATE_COMPLETE
+```
+
+Wcześniej obserwowane stany:
+
+```text
+14:36-14:44 UTC+2  UPDATE_IN_PROGRESS
+14:44 UTC+2        UPDATE_COMPLETE_CLEANUP_IN_PROGRESS
+14:44 UTC+2        UPDATE_COMPLETE
+```
+
+Wniosek: Jenkins timeout nie oznaczał awarii CFN. AWS sam domknął update.
+
+#### Gateway ECS
+
+ECS events potwierdziły pętlę unhealthy/replacement:
+
+```text
+registered target
+Health checks failed with these codes: [404]
+task unhealthy
+task stopped
+ECS replaced 1 tasks due to an unhealthy status
+deregistered target / draining
+```
+
+Końcowe eventy:
+
+```text
+2026-04-22 14:41:10 UTC+2  deployment completed
+2026-04-22 14:41:10 UTC+2  service has reached a steady state
+```
+
+#### Target group
+
+```text
+TargetGroupArn:  arn:aws:elasticloadbalancing:eu-central-1:333320664022:targetgroup/planodkupow-qa-ALB-TargetGroup/c965346fff03709c
+HealthCheckPath: /signin
+Matcher:         200
+```
+
+Aktualny odczyt target health w trakcie incydentu:
+
+```text
+State:        unhealthy
+Reason:       Target.ResponseCodeMismatch
+Description:  Health checks failed with these codes: [404]
+```
+
+### Porównanie QA vs UAT
+
+Stack parameters:
+
+```text
+QA  HealthCheckPath = /signin
+UAT HealthCheckPath = /api/health
+```
+
+IaC:
+
+- `cloudformation/ALB.yml`:
+  - `AlbTG.Properties.HealthCheckPath: !Ref HealthCheckPath`
+- `cloudformation/ROOT.yml`:
+  - parametr `HealthCheckPath` ma default `/signin`
+  - `ALBStack.Parameters.HealthCheckPath: !Ref HealthCheckPath`
+
+Wniosek: fix może być wykonany wyłącznie parametrem stacka. Nie wymaga zmiany template.
+
+### Przygotowany fix (NIE wykonany)
+
+Zakres:
+
+- QA only
+- parameter-only
+- bez zmian template
+- bez uploadu do S3
+- bez zmian RabbitMQ / DB / tagging
+
+Payload:
+
+```json
+[
+  {"ParameterKey":"HealthCheckPath","ParameterValue":"/api/health"},
+  {"ParameterKey":"<pozostałe>","UsePreviousValue":true}
+]
+```
+
+Utworzony change set:
+
+```text
+qa-healthcheck-api-health-1776862141
+Status: CREATE_COMPLETE
+```
+
+### Walidacja change seta
+
+Lista zmian na root:
+
+```text
+Modify  ALBStack       Replacement=False
+Modify  CFStack        Replacement=False
+Modify  DBStack        Replacement=False
+Modify  KlasterStack   Replacement=False
+Modify  RedisStack     Replacement=False
+Modify  S3Stack        Replacement=False
+Modify  SecGroupStack  Replacement=False
+Modify  VPCStack       Replacement=False
+```
+
+Istotne szczegóły:
+
+- `ALBStack`: `Static / ParameterReference / CausingEntity=HealthCheckPath`
+- `DBStack`: tylko `Dynamic / ResourceAttribute`
+- brak zmian RabbitMQ
+- brak `Replacement=True`
+
+Ocena:
+
+```text
+SAFE
+```
+
+Komenda do wykonania fixu, jeśli będzie decyzja operatora:
+
+```bash
+aws cloudformation execute-change-set \
+  --stack-name planodkupow-qa \
+  --change-set-name qa-healthcheck-api-health-1776862141 \
+  --region eu-central-1 \
+  --profile plan
+```
+
+### Stan na koniec sesji
+
+```text
+Root stack:   UPDATE_COMPLETE
+Gateway ECS:  steady state reached
+Fix status:   przygotowany i zwalidowany, ale NIE wykonany
+```

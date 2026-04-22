@@ -2,6 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Aktywne: przełączenie kontekstu — infra-puzzler-b2b-final
+
+```
+Stan:       ACTIVE (2026-04-22)
+Repo:       ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Projekt:    PBMS / Puzzler B2B
+Env:        dev
+Region:     eu-west-2
+
+Punkt wejścia:
+  - 20-projects/clients/mako/pbms/context.md
+  - 40-runbooks/pbms-troubleshoot.md
+  - 20-projects/clients/mako/puzzler-b2b/troubleshooting.md
+
+Kluczowe fakty:
+  - IaC: Terraform >= 1.5.0
+  - ECS cluster: infra-puzzler-b2b-dev-puzzler
+  - ALB: pbms-api-dev.makotest.pl
+  - health check aplikacji: /health
+  - aktywny branch z kontekstu: feat/dev-jumphost-runtime-secret
+
+Uwagi:
+  - To jest przełączenie kontekstu, nie nowa operacja.
+  - UAT/prod poza zakresem do czasu jawnego polecenia.
+```
+
 ## Zamknięte: LLZ audit-pack llz-waf-readonly patch ✓
 
 ```
@@ -326,24 +352,42 @@ TODO:       Fix CFN (PropagateTags: SERVICE) na dev + akcesoria2 przed
 ## Gdzie skończyłem
 
 ```
-Stan:          planodkupow-qa = CREATE_COMPLETE ✓ (2026-04-19 22:18)
-               S3 przywrócone: 297 obj + 1293 obj ✓
-               Backup buckety usunięte ✓
-               
-Drift:         ALB TG health check path zmieniony poza CFN:
-               CFN myśli: HealthCheckPath = /signin
-               Faktycznie działa: HealthCheckPath = /api/health
-               
-               Powód: Ocelot gateway (build 1244+) nie ma trasy /signin
-               Fix tymczasowy: modify-target-group bezpośrednio na AWS
-               Fix docelowy: update-stack z HealthCheckPath=/api/health
-                             (po potwierdzeniu endpointu z dev teamem)
+Stan:          planodkupow-qa = UPDATE_COMPLETE ✓ (2026-04-22 14:44 UTC+2)
+               Dzisiejszy root update zakończony po długim UPDATE_IN_PROGRESS
+               Jenkins timeout był fałszywym alarmem — AWS domknął operację
+
+Diagnoza:      W trakcie update Gateway-SRVC wpadał w pętlę restartów:
+               register target -> 404 na health check /signin -> unhealthy ->
+               stop task -> replace task
+               ECS osiągnął steady state dopiero o 2026-04-22 14:41 UTC+2
+
+Potwierdzone:
+               QA runtime:
+                 - TG HealthCheckPath = /signin
+                 - target zwracał 404 / Target.ResponseCodeMismatch
+               UAT parameter:
+                 - HealthCheckPath = /api/health
+
+Fix przygotowany:
+               Param-only, QA only, bez zmian template i bez uploadu do S3
+               Change set: qa-healthcheck-api-health-1776862141
+               Status: CREATE_COMPLETE
+               Zmiana docelowa: HealthCheckPath = /api/health
+
+Walidacja:
+               SAFE
+               - brak Replacement=True
+               - brak zmian RabbitMQ
+               - DBStack tylko Dynamic/ResourceAttribute
+               - jedyna statyczna zmiana: ALBStack <- HealthCheckPath
 
 Następny krok:
-               1. Rozmowa z dev teamem: jaki jest prawidłowy health check endpoint
-                  dla Ocelot gateway w nowych buildach?
-               2. update-stack planodkupow-qa z HealthCheckPath=<potwierdzony endpoint>
-               3. Rozważyć też update UAT (RabbitMQ mq.t3.micro — ten sam bug co QA)
+               Jeśli chcesz wykonać fix, uruchomić:
+               aws cloudformation execute-change-set \
+                 --stack-name planodkupow-qa \
+                 --change-set-name qa-healthcheck-api-health-1776862141 \
+                 --region eu-central-1 \
+                 --profile plan
 ```
 
 ## Kontekst środowiska
