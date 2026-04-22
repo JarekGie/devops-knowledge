@@ -28,6 +28,41 @@ Uwagi:
   - UAT/prod poza zakresem do czasu jawnego polecenia.
 ```
 
+## Aktywne: PBMS backend — Swagger Core 500
+
+```
+Stan:       ZDIAGNOZOWANE KODOWO (2026-04-22)
+Repo app:   ~/projekty/mako/pbms-backend
+Objaw:      /swagger/docs/v1/Core -> HTTP 500
+
+Architektura:
+  - gateway używa SwaggerForOcelot
+  - /swagger/docs/v1/Core pobiera downstream:
+    http://pbms-core-qa:8080/swagger/v1/swagger.json
+
+Najmocniejszy trop:
+  - Core response DTO:
+      MediaModel.DeliveryDefinition
+      SupplyResponse.DeliveryDefinition
+  - typ: IMediaDeliveryModel
+  - interface ma SwaggerSubType(...)
+  - konfiguracja polimorfizmu w ConfigureSwaggerOptions.cs jest zakomentowana
+
+Wniosek:
+  500 najpewniej powstaje w Core Swagger generation przy schemacie
+  interfejsu IMediaDeliveryModel, nie w gateway routingu.
+
+Minimalny fix:
+  - zmienić tylko typ DeliveryDefinition w:
+    PBMS.Core/Models/Media/MediaModel.cs
+    PBMS.Core/Models/Supply/SupplyResponse.cs
+  - z IMediaDeliveryModel -> object
+
+Walidacja:
+  1. http://pbms-core-qa:8080/swagger/v1/swagger.json
+  2. /swagger/docs/v1/Core
+```
+
 ## Zamknięte: LLZ audit-pack llz-waf-readonly patch ✓
 
 ```

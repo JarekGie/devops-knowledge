@@ -9,6 +9,71 @@
 
 ---
 
+## Symptom: Swagger Core zwraca HTTP 500 na `/swagger/docs/v1/Core`
+
+### Architektura requestu
+
+- Gateway używa `SwaggerForOcelot`, nie generuje dokumentu Core lokalnie.
+- `/swagger/docs/v1/Core` jest składane przez gateway z downstream:
+  `http://pbms-core-qa:8080/swagger/v1/swagger.json`
+- Źródła kodowe:
+  - `~/projekty/mako/pbms-backend/Connector/PBMS.Gateway/Extensions/SwaggerExtensions.cs`
+  - `~/projekty/mako/pbms-backend/Connector/PBMS.Gateway/swaggerEndpoints.QA.json`
+  - `~/projekty/mako/pbms-backend/Core/PBMS.Core.API/Program.cs`
+  - `~/projekty/mako/pbms-backend/PBMS.Common/Extensions/SwaggerExtensions.cs`
+
+### Najbardziej prawdopodobna przyczyna
+
+Swagger wywala się w **Core API**, nie w gatewayu.
+
+Najmocniejszy trop z kodu:
+- `MediaModel` i `SupplyResponse` wystawiają `IMediaDeliveryModel DeliveryDefinition`
+- `IMediaDeliveryModel` jest interfejsem z `SwaggerSubType(typeof(MediaSftpDeliveryModel))`
+- w `ConfigureSwaggerOptions.cs` konfiguracja polimorfizmu Swaggera jest zakomentowana
+
+To daje ścieżkę:
+
+```text
+gateway /swagger/docs/v1/Core
+  -> fetch downstream /swagger/v1/swagger.json
+  -> Core Swagger generation traverses MediaModel / SupplyResponse
+  -> interface schema IMediaDeliveryModel causes runtime failure
+  -> gateway pokazuje 500
+```
+
+### Minimalny fix
+
+Najmniejsza bezpieczna zmiana po stronie aplikacji:
+
+- zmienić tylko typ `DeliveryDefinition` w response DTO:
+  - `PBMS.Core/Models/Media/MediaModel.cs`
+  - `PBMS.Core/Models/Supply/SupplyResponse.cs`
+- z:
+  - `IMediaDeliveryModel`
+- na:
+  - `object`
+
+To jest najmniejszy patch, bo:
+- request DTO już używają `object DeliveryDefinition`
+- nie wymaga przebudowy Swagger/Ocelot
+- nie wymaga zmian infra
+
+### Walidacja po fixie
+
+```bash
+rg -n "IMediaDeliveryModel DeliveryDefinition|object DeliveryDefinition" ~/projekty/mako/pbms-backend/Core/PBMS.Core
+```
+
+```text
+http://pbms-core-qa:8080/swagger/v1/swagger.json
+/swagger/docs/v1/Core
+/
+```
+
+Jeśli pierwszy endpoint dalej zwraca 500, problem nadal jest w Core Swagger generation.
+
+---
+
 ## Symptom: serwis nie odpowiada
 
 ### 1. Czy to scheduler?

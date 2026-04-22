@@ -8,6 +8,36 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-22 — Swagger Core zwraca 500 na `/swagger/docs/v1/Core`
+
+**Symptom:** Swagger UI ładuje się, ale definicja Core kończy się HTTP 500 na `/swagger/docs/v1/Core`.
+
+**Diagnoza:**
+- To nie jest lokalny dokument gatewaya.
+- Gateway używa `SwaggerForOcelot` i pobiera downstream:
+  `http://pbms-core-qa:8080/swagger/v1/swagger.json`
+- Źródło 500 jest więc najbardziej prawdopodobnie w runtime Swagger generation w `PBMS.Core.API`.
+
+Najmocniejszy trop z kodu:
+- `MediaModel` i `SupplyResponse` mają `DeliveryDefinition` typu `IMediaDeliveryModel`
+- `IMediaDeliveryModel` jest interfejsem z `SwaggerSubType(typeof(MediaSftpDeliveryModel))`
+- w `PBMS.Common/Middleware/Swagger/ConfigureSwaggerOptions.cs`
+  obsługa polimorfizmu Swaggera (`UseOneOfForPolymorphism` itd.) jest zakomentowana
+
+**Konkluzja:** najbardziej prawdopodobny crash point to generacja schematu dla interfejsu
+`IMediaDeliveryModel` w downstream Core swagger JSON.
+
+**Minimalny fix:**
+- `~/projekty/mako/pbms-backend/Core/PBMS.Core/Models/Media/MediaModel.cs`
+- `~/projekty/mako/pbms-backend/Core/PBMS.Core/Models/Supply/SupplyResponse.cs`
+- zmienić `DeliveryDefinition` z `IMediaDeliveryModel` na `object`
+
+**Walidacja po fixie:**
+- `http://pbms-core-qa:8080/swagger/v1/swagger.json`
+- `/swagger/docs/v1/Core`
+
+**Status:** [ ] open
+
 ## 2026-04-18 — kontener infra-puzzler-b2b-dev-core nie wstaje (crash loop)
 
 **Symptom:** ECS service `infra-puzzler-b2b-dev-core` w crash loop — running: 0, desired: 1, nowe zadanie co ~30s. Exit code 134 (SIGABRT).
