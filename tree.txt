@@ -1,0 +1,251 @@
+.
+├── _chatgpt
+│   ├── context-packs
+│   │   ├── llz.md
+│   │   └── maspex-load-testing.md
+│   ├── conversations
+│   ├── INDEX.md
+│   ├── README.md
+│   └── templates
+│       ├── context-pack-template.md
+│       └── conversation-note-template.md
+├── _system
+│   ├── AGENTS.md
+│   ├── CHATGPT_WORKFLOW.md
+│   ├── LLM_CONTEXT_GLOBAL.md
+│   └── TEMPLATES
+│       ├── chatgpt-context-template.md
+│       ├── conversation-summary-template.md
+│       └── folder-context-template.md
+├── 00-start-here
+│   ├── how-to-use-this-vault.md
+│   ├── Kontrakt komunikacji — v1.md
+│   ├── LLM_CONTEXT.md
+│   ├── persona.md
+│   └── README.md
+├── 01-inbox
+│   ├── LLM_CONTEXT.md
+│   ├── quick-capture.md
+│   └── README.md
+├── 02-active-context
+│   ├── current-focus.md
+│   ├── LLM_CONTEXT.md
+│   ├── now.md
+│   ├── open-loops.md
+│   └── waiting-for.md
+├── 10-areas
+│   ├── aws
+│   │   ├── amazonmq-rabbitmq.md
+│   │   └── README.md
+│   ├── business
+│   │   └── README.md
+│   ├── cicd
+│   │   └── README.md
+│   ├── cloud-support
+│   │   └── README.md
+│   ├── LLM_CONTEXT.md
+│   ├── observability
+│   │   └── README.md
+│   ├── obsidian
+│   │   ├── git-sync.md
+│   │   ├── index.md
+│   │   └── plugin-terminal.md
+│   └── terraform
+│       └── README.md
+├── 20-projects
+│   ├── clients
+│   │   ├── mako
+│   │   │   ├── finops-rshop.md
+│   │   │   ├── maspex
+│   │   │   │   ├── distributed-load-testing.md
+│   │   │   │   ├── load-testing-meeting-prep.md
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── pbms
+│   │   │   │   └── context.md
+│   │   │   ├── puzzler-b2b
+│   │   │   │   └── troubleshooting.md
+│   │   │   └── wdrozenie-standardow-organizacji
+│   │   │       ├── aws-competency-certyfikaty-bloker.md
+│   │   │       ├── ecs-competency-llz-mapping.md
+│   │   │       ├── ecs-compliance-wycena-enforcement.md
+│   │   │       └── standard-iac-tagging-naming.md
+│   │   └── README.md
+│   ├── internal
+│   │   ├── aws-cloudops-exam
+│   │   │   └── index.md
+│   │   ├── devops-business
+│   │   │   ├── context.md
+│   │   │   ├── decisions.md
+│   │   │   ├── links.md
+│   │   │   ├── next-steps.md
+│   │   │   └── README.md
+│   │   ├── devops-platform
+│   │   │   ├── context.md
+│   │   │   ├── decisions.md
+│   │   │   ├── links.md
+│   │   │   ├── next-steps.md
+│   │   │   └── README.md
+│   │   ├── devops-toolkit
+│   │   │   ├── context.md
+│   │   │   ├── decisions.md
+│   │   │   ├── links.md
+│   │   │   ├── next-steps.md
+│   │   │   ├── README.md
+│   │   │   ├── session-log.md
+│   │   │   └── Zmiany w toolkit.md
+│   │   ├── llz
+│   │   │   ├── context.md
+│   │   │   ├── ideas.md
+│   │   │   ├── org-inventory.md
+│   │   │   ├── progress-tracker.md
+│   │   │   ├── session-log.md
+│   │   │   ├── waf-checklist.md
+│   │   │   └── wymagania-makolab
+│   │   │       ├── analiza-ryzyka.md
+│   │   │       ├── diagram.md
+│   │   │       ├── propozycja-wdrozenia.md
+│   │   │       └── standaryzacja-przygotowania.md
+│   │   └── udemy-transcript-tool
+│   │       ├── pyproject.toml
+│   │       ├── README.md
+│   │       ├── run.sh
+│   │       ├── session-log.md
+│   │       ├── udemy_obsidian
+│   │       │   ├── __init__.py
+│   │       │   ├── __main__.py
+│   │       │   ├── browser.py
+│   │       │   ├── cli.py
+│   │       │   ├── config.py
+│   │       │   ├── discovery.py
+│   │       │   ├── extraction.py
+│   │       │   ├── manifest.py
+│   │       │   ├── models.py
+│   │       │   ├── normalization.py
+│   │       │   ├── renderer.py
+│   │       │   └── writer.py
+│   │       └── udemy_obsidian.egg-info
+│   │           ├── dependency_links.txt
+│   │           ├── entry_points.txt
+│   │           ├── PKG-INFO
+│   │           ├── requires.txt
+│   │           ├── SOURCES.txt
+│   │           └── top_level.txt
+│   ├── LLM_CONTEXT.md
+│   └── reference
+│       └── README.md
+├── 30-standards
+│   ├── aws-tagging-standard.md
+│   ├── cicd-standard.md
+│   ├── documentation-standard.md
+│   ├── iac-standard.md
+│   ├── LLM_CONTEXT.md
+│   └── naming-conventions.md
+├── 40-runbooks
+│   ├── aws
+│   │   ├── cfn-alb-safe-tagging.md
+│   │   ├── iam-access-issue.md
+│   │   ├── README.md
+│   │   └── s3-bucket-policy-lockout.md
+│   ├── ecs
+│   │   ├── ecs-deploy-stuck.md
+│   │   ├── ecs-service-not-starting.md
+│   │   └── README.md
+│   ├── incidents
+│   │   ├── incident-response-checklist.md
+│   │   ├── planodkupow-qa-cfn-rebuild.md
+│   │   ├── planodkupow-qa-execution-log.md
+│   │   ├── planodkupow-qa-postmortem.md
+│   │   ├── planodkupow-qa-rabbitmq-rollback-failed.md
+│   │   ├── planodkupow-uat-rabbitmq-rollback-failed.md
+│   │   ├── prompts
+│   │   │   ├── rshop-prod-503-disable-tag-policy-eni.md
+│   │   │   └── rshop-prod-503-triage.md
+│   │   ├── README.md
+│   │   ├── rshop-prod-503-2026-04-20.md
+│   │   ├── rshop-prod-503-policy-patch
+│   │   │   ├── original-llz-environment.json
+│   │   │   ├── original-llz-project.json
+│   │   │   ├── patched-llz-environment.json
+│   │   │   └── patched-llz-project.json
+│   │   └── rshop-tag-policy-remediation.md
+│   ├── kubernetes
+│   │   ├── pod-crashloopbackoff.md
+│   │   └── README.md
+│   ├── LLM_CONTEXT.md
+│   ├── networking
+│   │   ├── alb-502-503.md
+│   │   └── README.md
+│   ├── pbms-troubleshoot.md
+│   ├── planodkupow-rabbitmq-cfn-refactor.md
+│   ├── planodkupow-tagging-finops.md
+│   └── terraform
+│       ├── README.md
+│       └── terraform-state-lock.md
+├── 50-patterns
+│   ├── debugging-patterns.md
+│   ├── finops-review-patterns.md
+│   ├── incident-analysis-patterns.md
+│   ├── LLM_CONTEXT.md
+│   ├── migration-patterns.md
+│   └── reusable-prompts.md
+├── 60-toolkit
+│   ├── architecture-overview.md
+│   ├── audits
+│   │   └── README.md
+│   ├── command-catalog.md
+│   ├── commands
+│   │   └── README.md
+│   ├── contracts
+│   │   └── README.md
+│   ├── contracts-index.md
+│   ├── e2e-testing.md
+│   ├── finops-reporting.md
+│   ├── LLM_CONTEXT.md
+│   ├── llz-audit.md
+│   ├── minikurs-finops.md
+│   ├── minikurs-operator.md
+│   ├── minikurs-self-test.md
+│   ├── minikurs-shuttle-audit.md
+│   ├── observability-ready.md
+│   ├── plugin-system.md
+│   ├── README.md
+│   ├── reports
+│   │   └── README.md
+│   └── roadmap.md
+├── 70-finops
+│   ├── cost-review-template.md
+│   ├── LLM_CONTEXT.md
+│   ├── optimization-log.md
+│   ├── README.md
+│   ├── reference-projects.md
+│   ├── savings-ideas.md
+│   └── tagging-review-template.md
+├── 80-architecture
+│   ├── decision-log.md
+│   ├── integration-notes.md
+│   ├── LLM_CONTEXT.md
+│   ├── platform-principles.md
+│   ├── README.md
+│   └── system-maps.md
+├── 90-reference
+│   ├── commands
+│   │   └── README.md
+│   ├── glossary
+│   │   └── README.md
+│   ├── LLM_CONTEXT.md
+│   ├── snippets
+│   │   └── README.md
+│   └── vendors
+│       └── README.md
+├── CLAUDE.md
+├── CODEX.md
+├── log-part-1.md
+├── log-part-2.md
+├── log-part-3.md
+├── log-part-4.md
+├── README.md
+├── scripts
+│   └── new-chatgpt-context.sh
+└── tree.txt
+
+60 directories, 189 files
