@@ -8,6 +8,97 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-22 — UAT API: CloudFront 502 dla `/landing/*` i `/_next/static/*`
+
+**Problem:**
+- `https://kapsel.makotest.pl/landing/latwogangg.png` zwracał `502` z `x-cache: Error from cloudfront`
+- dodatkowo `502` pojawiał się dla assetów Next.js pod `/_next/static/chunks/*.js`
+- `/` i `/auth/login` działały poprawnie
+
+**Diagnoza:**
+- dystrybucja API UAT: `E3J76RNXIE2YIG` (`kapsel.makotest.pl`)
+- ordered cache behaviors:
+  - `/_next/static/*`
+  - `/landing/*`
+- oba behavior’y trafiają do originu `ALB`
+- default behavior działał, bo miał `Managed-AllViewer`:
+  - `216adef6-5c7f-47e4-b989-5492eafa07d3`
+- ALB używa host-based routingu i SNI cert selection
+- direct request do ALB z `Host: kapsel.makotest.pl` zwracał asset `200`
+- direct request bez poprawnego `Host` wpadał błędnie
+- ECS / target group były zdrowe
+
+**Root cause:**
+- ordered behaviors dla statyków nie forwardowały do originu tego samego kontekstu viewer request co default behavior
+- brakowało `origin_request_policy_id = Managed-AllViewer`
+- to była ta sama klasa błędu dla `/landing/*` i `/_next/static/*`
+
+**Fix (wdrożony):**
+- w module `cloudfront-site` dodano wąski mechanizm:
+  - `static_path_origin_request_policy_ids = map(string)`
+- w `envs/uat/main.tf` dla `module.cloudfront_site_api` ustawiono:
+```hcl
+static_path_origin_request_policy_ids = {
+  "/_next/static/*" = "216adef6-5c7f-47e4-b989-5492eafa07d3"
+  "/landing/*"      = "216adef6-5c7f-47e4-b989-5492eafa07d3"
+}
+```
+- zakres zmiany był celowo wąski:
+  - tylko `module.cloudfront_site_api`
+  - bez zmian dla `kapsel-admin-uat.makotest.pl`
+
+**Walidacja przed apply:**
+- `terraform fmt`
+- `terraform -chdir=terraform/envs/uat validate`
+- `AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color`
+- wynik planu:
+  - `0 to add`
+  - `1 to change`
+  - `0 to destroy`
+- jedyny zasób:
+  - `module.cloudfront_site_api.aws_cloudfront_distribution.this[0]`
+
+**Wdrożenie:**
+- `AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat apply -no-color -auto-approve`
+- wynik:
+  - `0 added`
+  - `1 changed`
+  - `0 destroyed`
+
+**Weryfikacja po wdrożeniu:**
+```bash
+curl -I -sS https://kapsel.makotest.pl/landing/latwogangg.png
+curl -I -sS https://kapsel.makotest.pl/
+curl -I -sS https://kapsel.makotest.pl/auth/login
+```
+
+**Wynik po fixie:**
+- `/landing/latwogangg.png` -> `HTTP/2 200`
+- `/` -> `HTTP/2 307`
+- `/auth/login` -> `HTTP/2 200`
+
+**Dodatkowa komenda do statusu dystrybucji:**
+```bash
+AWS_PROFILE=maspex-cli aws cloudfront get-distribution \
+  --id E3J76RNXIE2YIG \
+  --query 'Distribution.Status' \
+  --output text
+```
+
+**Rollback:**
+- usunąć linię:
+```hcl
+"/_next/static/*" = "216adef6-5c7f-47e4-b989-5492eafa07d3"
+```
+- następnie:
+```bash
+terraform fmt terraform/envs/uat/main.tf
+terraform -chdir=terraform/envs/uat validate
+AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color
+```
+
+---
+
 ## 2026-04-21 — lukasz.fuchs: dostęp SSM + CloudShell (UAT)
 
 **Wykonane:**
