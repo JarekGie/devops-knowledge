@@ -147,8 +147,7 @@
               "title": "ecs-compliance-wycena-enforcement"
             }
           }
-        ],
-        "currentTab": 7
+        ]
       }
     ],
     "direction": "vertical"
@@ -321,7 +320,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "2e7b850aed40be2b",
+  "active": "38481d6ad7c132f9",
   "lastOpenFiles": [
     "20-projects/clients/mako/wdrozenie-standardow-organizacji/ecs-compliance-wycena-enforcement.md",
     "20-projects/clients/mako/wdrozenie-standardow-organizacji/ecs-competency-llz-mapping.md",
