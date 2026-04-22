@@ -104,8 +104,21 @@
               "icon": "lucide-file",
               "title": "how-to-use-this-vault"
             }
+          },
+          {
+            "id": "9bf45d0013db0c36",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "pkm-stack-infographic.png"
+              },
+              "icon": "lucide-image",
+              "title": "pkm-stack-infographic"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -278,8 +291,12 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "9bf45d0013db0c36",
   "lastOpenFiles": [
+    "pkm-stack-infographic.png",
+    "pkm-stack-infographic.png.tmp",
+    "llz-map",
+    "llz-map.tmp",
     "level1-map.json",
     "00-start-here/how-to-use-this-vault.md",
     "90-reference/notebooklm/pkm-stack-mastery/findings/README.md",
@@ -302,20 +319,16 @@
     "90-reference/notebooklm/pkm-stack-mastery/conversations",
     "90-reference/notebooklm/pkm-stack-mastery/challenges",
     "90-reference/notebooklm/pkm-stack-mastery/artifacts",
-    "90-reference/notebooklm/pkm-stack-mastery",
     "90-reference/notebooklm/llz-controls/README.md",
     "90-reference/notebooklm/recovery-controls-catalog.md",
     "90-reference/notebooklm/cloudformation-recovery/README.md",
     "90-reference/notebooklm/finops-reference/README.md",
     "90-reference/notebooklm/runtime-incidents/findings/recovery-controls.md",
     "90-reference/notebooklm/runtime-incidents/findings/anti-patterns.md",
-    "90-reference/notebooklm/runtime-incidents/artifacts/flashcards.json",
-    "90-reference/notebooklm/runtime-incidents/artifacts/mind-map.json",
     "90-reference/notebooklm/runtime-incidents/artifacts/2026-04-22-briefing-v1.md",
     "90-reference/notebooklm/runtime-incidents/conversations/2026-04-22-contradiction-check.md",
     "90-reference/notebooklm/runtime-incidents/prompts/recovery-control-contract.md",
     "90-reference/notebooklm/runtime-incidents/prompts/gap-analysis.md",
-    "90-reference/notebooklm/runtime-incidents/prompts",
     "Bez nazwy.canvas"
   ]
 }
