@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠇ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -308,6 +308,7 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/maspex-uat-api-supabase-investigation-2026-04-23.md",
     "02-active-context/now.md",
     "CLAUDE.md",
     "90-reference/notebooklm/llz-controls/README.md",
@@ -344,7 +345,6 @@
     "90-reference/notebooklm/pkm-stack-mastery/prompts/challenge-mode.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts/curriculum-generator.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts/instructor-bootstrap.md",
-    "90-reference/notebooklm/pkm-stack-mastery/challenges/escape-room-scenarios.md",
     "Bez nazwy.canvas"
   ]
 }
