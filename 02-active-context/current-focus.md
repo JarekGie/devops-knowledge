@@ -5,15 +5,15 @@
 ## Główny cel
 
 ```
-Przełączony kontekst roboczy: infra-puzzler-b2b-final.
-Skupić się na PBMS / Puzzler B2B w repo Terraform i wrócić do pracy z kontekstem dev w eu-west-2.
+Przełączony kontekst roboczy: maspex troubleshooting.
+Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez aktywne wpisy w troubleshooting.
 ```
 
 ## Projekty aktywne
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| infra-puzzler-b2b-final | aktywny | wejść przez `20-projects/clients/mako/pbms/context.md` i `40-runbooks/pbms-troubleshoot.md` |
+| maspex | aktywny | wejść przez `20-projects/clients/mako/maspex/troubleshooting.md` i doprecyzować konkretny incident / follow-up |
 | devops-toolkit | w tle | |
 | devops-platform | w tle | |
 | devops-business | w tle | |
@@ -21,18 +21,18 @@ Skupić się na PBMS / Puzzler B2B w repo Terraform i wrócić do pracy z kontek
 ## Priorytety tygodnia
 
 1.
-2. Potwierdzić aktywny branch i bieżący problem w `infra-puzzler-b2b-final`.
+2. Potwierdzić, czy bieżący temat to UAT CloudFront / ECS lifecycle czy preprod Redis secret.
 3. Utrzymać pozostałe tematy jako kontekst poboczny, nie aktywny.
 
 ## Aktywni klienci
 
 | Klient | Temat | Deadline |
 |--------|-------|----------|
-| Mako | PBMS / Puzzler B2B | |
+| Mako | Maspex troubleshooting | |
 
 ## Blokery
 
-- [ ] Brak doprecyzowanego konkretnego zadania w `infra-puzzler-b2b-final` po samym przełączeniu kontekstu
+- [ ] Brak doprecyzowanego konkretnego zadania w `maspex` po samym przełączeniu kontekstu
 
 ## Powiązane
 

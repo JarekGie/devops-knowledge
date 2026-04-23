@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠹ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -236,7 +236,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
     "_system/NOTEBOOKLM_CONTRACT.md",
     "90-reference/notebooklm/_templates/notebook-contract-template.md",

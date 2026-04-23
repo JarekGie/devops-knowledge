@@ -2,30 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Aktywne: przełączenie kontekstu — infra-puzzler-b2b-final
+## Aktywne: przełączenie kontekstu — maspex troubleshooting
 
 ```
-Stan:       ACTIVE (2026-04-22)
-Repo:       ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
-Projekt:    PBMS / Puzzler B2B
-Env:        dev
-Region:     eu-west-2
+Stan:       ACTIVE (2026-04-23)
+Repo:       ~/projekty/mako/aws-projects/infra-maspex
+Projekt:    Maspex
+Zakres:     troubleshooting
+Env:        UAT / preprod
+Region:     eu-west-1
 
 Punkt wejścia:
-  - 20-projects/clients/mako/pbms/context.md
-  - 40-runbooks/pbms-troubleshoot.md
-  - 20-projects/clients/mako/puzzler-b2b/troubleshooting.md
+  - 20-projects/clients/mako/maspex/troubleshooting.md
+  - relevant sekcja z 02-active-context/now.md
 
 Kluczowe fakty:
-  - IaC: Terraform >= 1.5.0
-  - ECS cluster: infra-puzzler-b2b-dev-puzzler
-  - ALB: pbms-api-dev.makotest.pl
-  - health check aplikacji: /health
-  - aktywny branch z kontekstu: feat/dev-jumphost-runtime-secret
+  - repo IaC: Terraform, AWS profile `maspex-cli`
+  - UAT API CloudFront: `E3J76RNXIE2YIG` (`kapsel.makotest.pl`)
+  - preprod CloudFront: `E17VHHQJ29MVAB`
+  - otwarte follow-up: Redis secret dla preprod
+  - ECS service lifecycle w UAT ustawiony tak, by CI/CD zarządzał `task_definition`
 
 Uwagi:
   - To jest przełączenie kontekstu, nie nowa operacja.
-  - UAT/prod poza zakresem do czasu jawnego polecenia.
+  - Punkt wejścia operacyjnego: `20-projects/clients/mako/maspex/troubleshooting.md`
+  - Bez zmian zakresu poza troubleshooting do czasu jawnego polecenia.
 ```
 
 ## Aktywne: PBMS backend — Swagger Core 500
