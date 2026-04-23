@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠴ devops-knowledge"
+              "title": "Terminal: ⠦ devops-knowledge"
             }
           },
           {
@@ -125,12 +125,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CLAUDE.md",
+                "file": "02-active-context/now.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CLAUDE"
+              "title": "now"
             }
           }
         ],
@@ -309,6 +309,7 @@
   },
   "active": "dadd9ef74d7c05e2",
   "lastOpenFiles": [
+    "CLAUDE.md",
     "02-active-context/now.md",
     "90-reference/notebooklm/llz-controls/README.md",
     "90-reference/commands/README.md",
@@ -345,7 +346,6 @@
     "90-reference/notebooklm/pkm-stack-mastery/prompts/curriculum-generator.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts/instructor-bootstrap.md",
     "90-reference/notebooklm/pkm-stack-mastery/challenges/escape-room-scenarios.md",
-    "90-reference/notebooklm/pkm-stack-mastery/exercises/level-based-exercises.md",
     "Bez nazwy.canvas"
   ]
 }
