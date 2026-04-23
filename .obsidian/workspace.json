@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠇ devops-knowledge"
             }
           },
           {
@@ -236,8 +236,14 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "artifacts/maspex-bot-incident/task-definition.json",
+    "artifacts/maspex-bot-incident/target-health.json",
+    "artifacts/maspex-bot-incident/ecs-describe-services.json",
+    "artifacts/maspex-bot-incident/alb-rules.json",
+    "artifacts/maspex-bot-incident",
+    "artifacts",
     "_system/NOTEBOOKLM_CONTRACT.md",
     "90-reference/notebooklm/_templates/notebook-contract-template.md",
     "90-reference/notebooklm/_templates/conversation-template.md",
@@ -268,13 +274,7 @@
     "90-reference/notebooklm/pkm-stack-mastery/challenges/escape-room-scenarios.md",
     "90-reference/notebooklm/pkm-stack-mastery/exercises/level-based-exercises.md",
     "90-reference/notebooklm/pkm-stack-mastery/curriculum.md",
-    "90-reference/notebooklm/pkm-stack-mastery/sources.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts",
-    "90-reference/notebooklm/pkm-stack-mastery/findings",
-    "90-reference/notebooklm/pkm-stack-mastery/exercises",
-    "90-reference/notebooklm/pkm-stack-mastery/conversations",
-    "90-reference/notebooklm/pkm-stack-mastery/challenges",
-    "90-reference/notebooklm/pkm-stack-mastery/artifacts",
     "Bez nazwy.canvas"
   ]
 }
