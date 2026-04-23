@@ -46,7 +46,49 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠋ devops-knowledge"
+              "title": "Terminal: ⠧ devops-knowledge"
+            }
+          },
+          {
+            "id": "009f788c16de2237",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge/",
+                  "focus": false,
+                  "profile": {
+                    "args": [
+                      "--login"
+                    ],
+                    "executable": "/bin/zsh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           },
           {
@@ -55,12 +97,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_system/NOTEBOOKLM_CONTRACT.md",
+                "file": "90-reference/notebooklm/llz-controls/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "NOTEBOOKLM_CONTRACT"
+              "title": "README"
             }
           }
         ]
@@ -238,19 +280,20 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "90-reference/notebooklm/llz-controls/README.md",
+    "90-reference/commands/README.md",
+    "_system/NOTEBOOKLM_CONTRACT.md",
     "artifacts/maspex-bot-incident/task-definition.json",
     "artifacts/maspex-bot-incident/target-health.json",
     "artifacts/maspex-bot-incident/ecs-describe-services.json",
     "artifacts/maspex-bot-incident/alb-rules.json",
     "artifacts/maspex-bot-incident",
     "artifacts",
-    "_system/NOTEBOOKLM_CONTRACT.md",
     "90-reference/notebooklm/_templates/notebook-contract-template.md",
     "90-reference/notebooklm/_templates/conversation-template.md",
     "90-reference/notebooklm/recovery-controls-catalog.md",
     "90-reference/notebooklm/README.md",
     "90-reference/notebooklm/NOTEBOOKLM_KONTRAKT.md",
-    "90-reference/notebooklm/llz-controls/README.md",
     "00-start-here/how-to-use-this-vault.md",
     "02-active-context/LLM_CONTEXT.md",
     "00-start-here/Kontrakt komunikacji — v1.md",
@@ -274,7 +317,6 @@
     "90-reference/notebooklm/pkm-stack-mastery/challenges/escape-room-scenarios.md",
     "90-reference/notebooklm/pkm-stack-mastery/exercises/level-based-exercises.md",
     "90-reference/notebooklm/pkm-stack-mastery/curriculum.md",
-    "90-reference/notebooklm/pkm-stack-mastery/prompts",
     "Bez nazwy.canvas"
   ]
 }
