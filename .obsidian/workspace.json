@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠦ devops-knowledge"
+              "title": "Terminal: ⠙ devops-knowledge"
             }
           },
           {
@@ -133,8 +133,7 @@
               "title": "now"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -307,10 +306,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "dadd9ef74d7c05e2",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
-    "CLAUDE.md",
     "02-active-context/now.md",
+    "CLAUDE.md",
     "90-reference/notebooklm/llz-controls/README.md",
     "90-reference/commands/README.md",
     "_system/NOTEBOOKLM_CONTRACT.md",
