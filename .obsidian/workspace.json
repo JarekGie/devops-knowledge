@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "90-reference/notebooklm/_templates/notebook-contract-template.md",
+                "file": "_system/NOTEBOOKLM_CONTRACT.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "notebook-contract-template"
+              "title": "NOTEBOOKLM_CONTRACT"
             }
           }
         ],
@@ -239,6 +239,7 @@
   },
   "active": "0ed5d98e5aba217f",
   "lastOpenFiles": [
+    "90-reference/notebooklm/_templates/notebook-contract-template.md",
     "90-reference/notebooklm/_templates/conversation-template.md",
     "90-reference/notebooklm/recovery-controls-catalog.md",
     "90-reference/notebooklm/README.md",
@@ -269,7 +270,6 @@
     "90-reference/notebooklm/pkm-stack-mastery/curriculum.md",
     "90-reference/notebooklm/pkm-stack-mastery/sources.md",
     "90-reference/notebooklm/pkm-stack-mastery/notebook-contract.md",
-    "90-reference/notebooklm/pkm-stack-mastery/README.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts",
     "90-reference/notebooklm/pkm-stack-mastery/findings",
     "90-reference/notebooklm/pkm-stack-mastery/exercises",
