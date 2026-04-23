@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
+              "title": "Terminal: ✳ Claude Code"
             }
           },
           {
@@ -63,8 +63,7 @@
               "title": "NOTEBOOKLM_CONTRACT"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -237,8 +236,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "0ed5d98e5aba217f",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "_system/NOTEBOOKLM_CONTRACT.md",
     "90-reference/notebooklm/_templates/notebook-contract-template.md",
     "90-reference/notebooklm/_templates/conversation-template.md",
     "90-reference/notebooklm/recovery-controls-catalog.md",
@@ -269,7 +269,6 @@
     "90-reference/notebooklm/pkm-stack-mastery/exercises/level-based-exercises.md",
     "90-reference/notebooklm/pkm-stack-mastery/curriculum.md",
     "90-reference/notebooklm/pkm-stack-mastery/sources.md",
-    "90-reference/notebooklm/pkm-stack-mastery/notebook-contract.md",
     "90-reference/notebooklm/pkm-stack-mastery/prompts",
     "90-reference/notebooklm/pkm-stack-mastery/findings",
     "90-reference/notebooklm/pkm-stack-mastery/exercises",
