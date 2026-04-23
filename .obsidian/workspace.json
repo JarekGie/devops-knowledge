@@ -50,34 +50,6 @@
             }
           },
           {
-            "id": "80f94fe680a73eda",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "runtime-incidents-report.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "runtime-incidents-report"
-            }
-          },
-          {
-            "id": "45c5f531f5fbd9b6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Bez nazwy.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Bez nazwy"
-            }
-          },
-          {
             "id": "5eef5c1c86807462",
             "type": "leaf",
             "state": {
@@ -104,21 +76,8 @@
               "icon": "lucide-file",
               "title": "how-to-use-this-vault"
             }
-          },
-          {
-            "id": "9bf45d0013db0c36",
-            "type": "leaf",
-            "state": {
-              "type": "image",
-              "state": {
-                "file": "pkm-stack-infographic.png"
-              },
-              "icon": "lucide-image",
-              "title": "pkm-stack-infographic"
-            }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -291,8 +250,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "9bf45d0013db0c36",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "log-part-1.md",
+    "Bez nazwy.md",
     "pkm-stack-infographic.png",
     "pkm-stack-infographic.png.tmp",
     "llz-map",
@@ -328,7 +289,6 @@
     "90-reference/notebooklm/runtime-incidents/artifacts/2026-04-22-briefing-v1.md",
     "90-reference/notebooklm/runtime-incidents/conversations/2026-04-22-contradiction-check.md",
     "90-reference/notebooklm/runtime-incidents/prompts/recovery-control-contract.md",
-    "90-reference/notebooklm/runtime-incidents/prompts/gap-analysis.md",
     "Bez nazwy.canvas"
   ]
 }
