@@ -7,6 +7,7 @@
 ```
 Przełączony kontekst roboczy: maspex troubleshooting.
 Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez aktywne wpisy w troubleshooting.
+Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 ```
 
 ## Projekty aktywne
@@ -14,7 +15,7 @@ Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez ak
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
 | maspex | aktywny | po admin CloudFront fix: dopilnować push/PR commita `4810f3c`; otwarty follow-up: Redis secret dla preprod |
-| devops-toolkit | w tle | |
+| devops-toolkit | w tle | Cloud Detective zapisany jako robocza capability; bez aktywnej pracy |
 | devops-platform | w tle | |
 | devops-business | w tle | |
 

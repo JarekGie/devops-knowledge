@@ -5,7 +5,7 @@
 ## Aktywne: przełączenie kontekstu — maspex troubleshooting
 
 ```
-Stan:       ACTIVE (2026-04-23)
+Stan:       ACTIVE (2026-04-23, odświeżone po Cloud Detective)
 Repo:       ~/projekty/mako/aws-projects/infra-maspex
 Projekt:    Maspex
 Zakres:     troubleshooting
@@ -30,6 +30,29 @@ Uwagi:
   - To jest przełączenie kontekstu, nie nowa operacja.
   - Punkt wejścia operacyjnego: `20-projects/clients/mako/maspex/troubleshooting.md`
   - Bez zmian zakresu poza troubleshooting do czasu jawnego polecenia.
+```
+
+## Zamknięte: Cloud Detective — robocze miejsce w vault ✓
+
+```
+Stan:       DONE (2026-04-23)
+Zakres:     robocza przestrzeń do myślenia o Cloud Detective jako capability devops-toolkit
+Lokalizacja: 60-toolkit/cloud-detective/
+
+Utworzone pliki:
+  - README.md
+  - vision.md
+  - boundaries.md
+  - use-cases.md
+  - open-questions.md
+
+Kluczowe założenia zapisane:
+  - Cloud Detective nie jest osobnym produktem ani silnikiem
+  - capability / warstwa rozpoznania i oceny środowiska wewnątrz prywatnego devops-toolkit
+  - zachowuje granice danych toolkitu: raw nie do AI, dane klienta w repo klienta
+  - decyzje o API, raporcie, UI i brandingu są nadal otwarte
+
+Następny kontekst: Maspex troubleshooting.
 ```
 
 ## Zamknięte: maspex UAT admin-panel — CloudFront static origin policy ✓
