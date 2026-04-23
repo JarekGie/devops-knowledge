@@ -27,6 +27,20 @@ Pomysł wymaga rozdzielenia kilku tematów:
 - kontrolowana rehydratacja odpowiedzi,
 - audyt procesu i odpowiedzialność za decyzje.
 
+## Nowe osie dodane w drugim przebiegu
+
+- threat modeling,
+- prompt injection,
+- token semantics,
+- strategiczny kierunek produktowy.
+
+## Critical Architecture Review
+
+Trzeci przebieg dodaje krytyczny przegląd koncepcji:
+- [[20-architecture-challenge]] — ukryte założenia, failure modes i pytanie, czy anonimizator nie powinien być policy brokerem.
+- [[21-red-team-questions]] — lista pytań red-teamowych do future review.
+- [[22-porownanie-z-istniejacymi-klasami-produktow]] — porównanie koncepcyjne z DLP, secrets scanning, secure AI gateways i prompt firewalls.
+
 ## Czego jeszcze nie wiemy
 
 - Jakie źródła dokumentów będą obsługiwane.
@@ -54,6 +68,12 @@ Pomysł wymaga rozdzielenia kilku tematów:
 - [[14-poc-plan]] — mały, kontrolowany plan PoC.
 - [[15-kontrakt-dla-llm]] — roboczy kontrakt i przykładowe prompty.
 - [[16-notatki-robocze]] — luźne obserwacje, hipotezy i decyzje odłożone.
+- [[17-prompt-injection-i-data-exfiltration]] — prompt injection i exfiltration w kontekście dokumentów.
+- [[18-threat-model]] — prosty model zagrożeń dla pipeline.
+- [[19-llm-dlp-gateway-kierunek-produktowy]] — hipoteza, czy to zalążek secure AI gateway / DLP for LLM.
+- [[20-architecture-challenge]] — krytyczny przegląd założeń i failure modes.
+- [[21-red-team-questions]] — pytania red-teamowe do przeglądu koncepcji.
+- [[22-porownanie-z-istniejacymi-klasami-produktow]] — porównanie z klasami rozwiązań pokrewnych.
 
 ## Zasada robocza
 

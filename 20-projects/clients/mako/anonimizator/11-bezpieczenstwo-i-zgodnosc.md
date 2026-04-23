@@ -42,6 +42,42 @@ Do ustalenia:
 - kto może je odczytać,
 - czy wymagany jest approval dla rehydratacji.
 
+## Mapping store jako zasób krytyczny
+
+Mapping store może być bardziej wrażliwy niż pojedynczy dokument wejściowy, bo zawiera relację między wszystkimi tokenami i wartościami oryginalnymi w danym runie.
+
+Jeśli dokument zanonimizowany wycieknie bez mapowania, ryzyko jest ograniczone. Jeśli wycieknie mapping store, możliwa jest pełna reidentyfikacja danych.
+
+### Wymagania bezpieczeństwa
+
+Do rozważenia:
+- envelope encryption dla mapowań,
+- osobny klucz szyfrujący per run lub per projekt,
+- split access: operator anonimizacji niekoniecznie ma prawo rehydratacji,
+- osobny audit trail dla rehydration events,
+- krótka retencja mapowań w PoC,
+- brak mapowań w logach aplikacyjnych,
+- brak mapowań w payloadach do LLM.
+
+### Vault Transit jako opcja przyszła
+
+Vault Transit może być przyszłą opcją dla szyfrowania/dekryptowania mapowań bez trzymania kluczy w aplikacji.
+
+Status: wariant przyszły, nie warunek MVP.
+
+Może być przedwczesną komplikacją dla MVP, jeśli PoC działa na syntetycznych dokumentach i lokalnym storage. Dla pracy na realnych dokumentach klienta wymaga ponownej oceny.
+
+### Audyt rehydratacji
+
+Rehydratacja powinna generować metadane:
+- kto uruchomił rehydratację,
+- kiedy,
+- dla jakiego runu,
+- ile tokenów odtworzono,
+- jaki był powód operacji.
+
+Bez logowania wartości oryginalnych.
+
 ### Audyt operacji
 
 Audyt powinien obejmować:

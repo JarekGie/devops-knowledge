@@ -54,6 +54,27 @@ Przygotować syntetyczne dokumenty:
 - czy rehydratacja działa deterministycznie,
 - czas ręcznego review.
 
+## Jakie hipotezy PoC ma obalić, a nie potwierdzić
+
+PoC nie ma udowodnić, że pomysł działa. Ma próbować wykazać, gdzie nie działa.
+
+Hipotezy falsyfikacyjne:
+
+1. Anonimizacja zachowuje sens dokumentu wystarczająco dobrze, żeby LLM dał użyteczną odpowiedź.
+   - Próba obalenia: przygotować dokument, w którym nazwy systemów, środowisk i relacje są krytyczne dla reasoning.
+
+2. Warstwowa detekcja nie przepuszcza oczywistych danych wrażliwych.
+   - Próba obalenia: seeded secrets w Terraform, YAML, komentarzach, tabelach XLSX i tekstach podobnych do przykładów.
+
+3. Tokeny semantyczne pomagają modelowi, ale nie ujawniają zbyt dużo kontekstu.
+   - Próba obalenia: sprawdzić, czy człowiek albo model może zgadnąć klienta/system po samych tokenach i relacjach.
+
+4. Rehydratacja jest deterministyczna i nie zmienia sensu odpowiedzi.
+   - Próba obalenia: wymusić odpowiedź z przestawionymi, brakującymi i zmodyfikowanymi tokenami.
+
+5. Manual review jest realną kontrolą, nie formalnością.
+   - Próba obalenia: dać operatorowi dłuższy dokument z ukrytymi false negative i sprawdzić, czy zostaną zauważone przed eksportem.
+
 ## Warunki uznania PoC za obiecujący
 
 PoC jest obiecujący, jeśli:

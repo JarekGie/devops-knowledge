@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠋ devops-knowledge"
+              "title": "Terminal: ⠧ devops-knowledge"
             }
           },
           {
@@ -322,6 +322,12 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "20-projects/clients/mako/anonimizator/22-porownanie-z-istniejacymi-klasami-produktow.md",
+    "20-projects/clients/mako/anonimizator/21-red-team-questions.md",
+    "20-projects/clients/mako/anonimizator/20-architecture-challenge.md",
+    "20-projects/clients/mako/anonimizator/19-llm-dlp-gateway-kierunek-produktowy.md",
+    "20-projects/clients/mako/anonimizator/18-threat-model.md",
+    "20-projects/clients/mako/anonimizator/17-prompt-injection-i-data-exfiltration.md",
     "20-projects/clients/mako/anonimizator/16-notatki-robocze.md",
     "20-projects/clients/mako/anonimizator/15-kontrakt-dla-llm.md",
     "20-projects/clients/mako/anonimizator/14-poc-plan.md",
@@ -345,13 +351,7 @@
     "20-projects/clients/mako/anonimizator",
     "60-toolkit/cloud-detective/open-questions.md",
     "60-toolkit/cloud-detective/use-cases.md",
-    "60-toolkit/cloud-detective/boundaries.md",
-    "60-toolkit/cloud-detective/vision.md",
-    "60-toolkit/cloud-detective/README.md",
     "60-toolkit/cloud-detective",
-    "_chatgpt/context-packs/devops-toolkit.md",
-    "_chatgpt/context-packs/maspex-uat-api-supabase-investigation-2026-04-23.md",
-    "02-active-context/now.md",
     "artifacts/maspex-bot-incident/task-definition.json",
     "artifacts/maspex-bot-incident/target-health.json",
     "artifacts/maspex-bot-incident/ecs-describe-services.json",
