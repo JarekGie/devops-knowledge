@@ -18,8 +18,11 @@ Punkt wejścia:
 
 Kluczowe fakty:
   - repo IaC: Terraform, AWS profile `maspex-cli`
+  - UAT admin CloudFront: `E3R9U1TWNUJZ11` (`kapsel-admin-uat.makotest.pl`)
   - UAT API CloudFront: `E3J76RNXIE2YIG` (`kapsel.makotest.pl`)
   - preprod CloudFront: `E17VHHQJ29MVAB`
+  - 2026-04-23: admin-panel static assets fix wdrożony; root cause = brak origin request policy na ordered behaviors `/_next/static/*` i `/static/*`
+  - repo infra-maspex: lokalny commit `4810f3c fix uat admin cloudfront static origin policy`, branch `feat/preprod-zaslepka` ahead 1
   - otwarte follow-up: Redis secret dla preprod
   - ECS service lifecycle w UAT ustawiony tak, by CI/CD zarządzał `task_definition`
 
@@ -27,6 +30,46 @@ Uwagi:
   - To jest przełączenie kontekstu, nie nowa operacja.
   - Punkt wejścia operacyjnego: `20-projects/clients/mako/maspex/troubleshooting.md`
   - Bez zmian zakresu poza troubleshooting do czasu jawnego polecenia.
+```
+
+## Zamknięte: maspex UAT admin-panel — CloudFront static origin policy ✓
+
+```
+Stan:       DONE (2026-04-23)
+Repo:       ~/projekty/mako/aws-projects/infra-maspex
+Branch:     feat/preprod-zaslepka
+Commit:     4810f3c fix uat admin cloudfront static origin policy
+
+Objaw:
+  - /auth/login przez CloudFront 200, ale login wyglądał jak surowy HTML
+  - /_next/static/* przez CloudFront zwracało 502
+  - kontener/admin-panel serwował assety poprawnie lokalnie
+
+Root cause:
+  - admin CloudFront ordered behaviors /_next/static/* i /static/* miały cache policy,
+    ale nie miały origin_request_policy_id
+  - default behavior miał Managed-AllViewer, więc dynamiczne ścieżki działały
+  - statyczne behavior'y nie forwardowały poprawnego viewer request context do ALB origin
+
+Fix:
+  - w module cloudfront_site dla admin distribution dodano:
+    static_path_origin_request_policy_ids:
+      /_next/static/* -> 216adef6-5c7f-47e4-b989-5492eafa07d3
+      /static/*       -> 216adef6-5c7f-47e4-b989-5492eafa07d3
+
+Apply:
+  - AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat apply -no-color -auto-approve
+  - wynik: 0 added, 1 changed, 0 destroyed
+  - zmieniony zasób: module.cloudfront_site.aws_cloudfront_distribution.this[0]
+  - dystrybucja: E3R9U1TWNUJZ11
+
+Post-apply:
+  - CloudFront status: Deployed
+  - invalidation: IC6KFOVSRK9VLU54BZTSVGGQXE
+  - /auth/login: 200
+  - CSS / JS / font assety: 200
+
+Notatka:    20-projects/clients/mako/maspex/troubleshooting.md
 ```
 
 ## Aktywne: PBMS backend — Swagger Core 500

@@ -13,7 +13,7 @@ Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez ak
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| maspex | aktywny | wejść przez `20-projects/clients/mako/maspex/troubleshooting.md` i doprecyzować konkretny incident / follow-up |
+| maspex | aktywny | po admin CloudFront fix: dopilnować push/PR commita `4810f3c`; otwarty follow-up: Redis secret dla preprod |
 | devops-toolkit | w tle | |
 | devops-platform | w tle | |
 | devops-business | w tle | |
@@ -21,7 +21,7 @@ Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez ak
 ## Priorytety tygodnia
 
 1.
-2. Potwierdzić, czy bieżący temat to UAT CloudFront / ECS lifecycle czy preprod Redis secret.
+2. Maspex: domknąć repo po live fixie admin CloudFront (`feat/preprod-zaslepka` ahead 1) albo przejść do preprod Redis secret.
 3. Utrzymać pozostałe tematy jako kontekst poboczny, nie aktywny.
 
 ## Aktywni klienci
@@ -30,9 +30,10 @@ Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez ak
 |--------|-------|----------|
 | Mako | Maspex troubleshooting | |
 
-## Blokery
+## Blokery / otwarte pętle
 
-- [ ] Brak doprecyzowanego konkretnego zadania w `maspex` po samym przełączeniu kontekstu
+- [ ] `infra-maspex` ma lokalny commit `4810f3c` niepushowany (`feat/preprod-zaslepka` ahead 1)
+- [ ] Redis connection string do Secrets Manager `maspex/preprod/api` nadal otwarte
 
 ## Powiązane
 

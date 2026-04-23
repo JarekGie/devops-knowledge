@@ -8,6 +8,76 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-23 — UAT admin-panel: CloudFront 502 dla assetów statycznych
+
+**Problem:**
+- `https://kapsel-admin-uat.makotest.pl/auth/login` zwracał `200`, ale UI wyglądał jak surowy HTML
+- assety Next.js pod `/_next/static/*` przez CloudFront zwracały `502 Error from cloudfront`
+- kontener admin-panel serwował `/auth/login`, CSS, JS i fonty poprawnie lokalnie
+
+**Diagnoza:**
+- dystrybucja admin UAT: `E3R9U1TWNUJZ11` (`kapsel-admin-uat.makotest.pl`)
+- default behavior miał `Managed-AllViewer`:
+  - `216adef6-5c7f-47e4-b989-5492eafa07d3`
+- ordered cache behaviors dla:
+  - `/_next/static/*`
+  - `/static/*`
+- oba behavior'y miały cache policy dla statyków, ale nie miały `origin_request_policy_id`
+- ALB/origin wymaga poprawnego viewer request context, w praktyce tego samego kontraktu co default behavior
+
+**Root cause:**
+- brak `origin_request_policy_id = Managed-AllViewer` na adminowych ordered cache behaviors dla statycznych assetów
+- problem był po stronie CloudFront/Terraform, nie po stronie UI/CSS/Next.js ani obrazu kontenera
+
+**Fix (wdrożony):**
+- w `terraform/envs/uat/main.tf` dla adminowego `module "cloudfront_site"` dodano:
+```hcl
+static_path_origin_request_policy_ids = {
+  "/_next/static/*" = "216adef6-5c7f-47e4-b989-5492eafa07d3"
+  "/static/*"       = "216adef6-5c7f-47e4-b989-5492eafa07d3"
+}
+```
+
+**Walidacja przed apply:**
+- `terraform fmt terraform/envs/uat/main.tf`
+- `AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat validate -no-color`
+- `AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color`
+- wynik planu:
+  - `0 to add`
+  - `1 to change`
+  - `0 to destroy`
+- jedyny zasób:
+  - `module.cloudfront_site.aws_cloudfront_distribution.this[0]`
+
+**Wdrożenie:**
+- `AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat apply -no-color -auto-approve`
+- wynik:
+  - `0 added`
+  - `1 changed`
+  - `0 destroyed`
+- CloudFront status po apply: `Deployed`
+- invalidation:
+  - ID: `IC6KFOVSRK9VLU54BZTSVGGQXE`
+  - paths: `/_next/static/*`, `/static/*`, `/auth/login`
+
+**Weryfikacja po wdrożeniu:**
+- `/auth/login` -> `HTTP/2 200`
+- CSS asset `/_next/static/chunks/74d85594415070d4.css` -> `HTTP/2 200`
+- JS asset `/_next/static/chunks/d59f830a2b8e768c.js` -> `HTTP/2 200`
+- font asset `/_next/static/media/caa3a2e1cccd8315-s.p.853070df.woff2` -> `HTTP/2 200`
+
+**Repo:**
+- repo: `~/projekty/mako/aws-projects/infra-maspex`
+- branch: `feat/preprod-zaslepka`
+- commit lokalny: `4810f3c fix uat admin cloudfront static origin policy`
+- stan po sprzątaniu: branch `ahead 1`; brak niecommitowanych zmian w śledzonych plikach
+
+**Lekcja operacyjna:**
+- jeśli CloudFront ma osobne ordered behavior dla statyków do ALB z host-based routingiem, sprawdzać nie tylko cache policy, ale też origin request policy
+- default behavior może działać, a asset behavior może psuć Host/SNI/routing do originu
+
+---
+
 ## 2026-04-22 — UAT API: CloudFront 502 dla `/landing/*` i `/_next/static/*`
 
 **Problem:**
