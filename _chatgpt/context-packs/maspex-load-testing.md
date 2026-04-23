@@ -8,17 +8,87 @@
 
 **Infrastruktura:**
 - Cloud: AWS, region eu-west-1, konto 969209893152
-- ECS Fargate: klaster `maspex-uat`, 3 serwisy: `maspex-api` (3 tasks, 1024 CPU, 2048 MB), `maspex-admin-panel` (1 task), `maspex-bot` (1 task)
+- ECS Fargate: klaster `maspex-uat`, 3 serwisy: `maspex-api` (3 tasks, docelowo 4096 CPU, 8192 MB), `maspex-admin-panel` (1 task), `maspex-bot` (1 task)
 - Architektura ingress: CloudFront → ALB → ECS
 - UAT: `kapsel.makotest.pl` (api), `kapsel-admin-uat.makotest.pl` (admin panel)
 - Preprod: `twojkapsel.pl`
 - IaC: Terraform, repo `infra-maspex`, envs/uat + envs/preprod
-- Monitoring: CloudWatch alarms → SNS → `jaroslaw.golab@makolab.com`
+- Monitoring: CloudWatch alarms → SNS `maspex-uat-alarms` → `jaroslaw.golab@makolab.com`
 - Brak ECS Auto Scaling (known gap)
 
-**Znany problem:**
-- Load test (Łukasz Fuchs, kwiecień 2026): 7.53% błędów na `POST /api/slogan/vote` przy nieznanej liczbie concurrent users
-- Hipoteza: Redis connection pool exhaustion lub brak auto scaling
+**Aktualny cel testu:**
+- kontrolowany sustained load: 3000 users / 1h
+- główna ścieżka: `GET https://kapsel.makotest.pl/api/slogan?page=1&sortBy=votes_desc`
+- obserwować ECS `maspex-api`, ALB, CloudFront, logi aplikacyjne i Redis
+
+**Najważniejsze ustalenia operacyjne 2026-04-23:**
+- Redis jest aktywny, ale dotychczasowe metryki nie wspierały tezy o saturacji Redis jako root cause
+- silniejsze tropy: request amplification w `GET /api/slogan`, Supabase/PostgREST fallback pressure, API CPU saturation
+- `maspex-api` miał task replacements / unhealthy z powodu `Request timed out`
+- przygotowany patch app w `next-core-app/app/api/slogan/route.ts`:
+  - non-search `resolveCount()` Redis-only / best-effort
+  - brak Supabase exact count fallback na hot path
+  - log `[GET_SLOGANS_COUNT]`
+- przygotowany patch Terraform monitoringowy w `infra-maspex`:
+  - rozbudowa dashboardu `maspex-uat-overview`
+  - 6 nowych alarmów
+  - 6 log metric filters
+  - alerty podpięte do istniejącego SNS `maspex-uat-alarms`
+  - `terraform plan`: `12 to add, 1 to change, 0 to destroy`
+
+---
+
+## Monitoring przygotowany pod test 3000 users / 1h
+
+**Repo:** `~/projekty/mako/aws-projects/infra-maspex`
+
+**Pliki:**
+- `terraform/modules/monitoring/main.tf`
+- `terraform/modules/monitoring/variables.tf`
+- `terraform/modules/monitoring/outputs.tf`
+- `terraform/envs/uat/main.tf`
+
+**Dashboard:** `maspex-uat-overview`
+
+Sekcje:
+- ECS API CPU / memory
+- ECS API RunningTaskCount / DesiredTaskCount
+- ALB TargetResponseTime p99 / RequestCount / 5xx / TargetConnectionErrorCount / UnHealthyHostCount
+- CloudFront API requests / 4xx / 5xx / OriginLatency
+- API log-derived signals:
+  - timeout
+  - aborted
+  - Supabase 502
+  - connection pool timeout
+  - statement timeout
+  - GET_SLOGANS_COUNT
+- Redis:
+  - EngineCPU
+  - DatabaseMemoryUsagePercentage
+  - CurrConnections
+  - NewConnections
+  - Evictions
+
+**Alarmy dodane w patchu:**
+- `maspex-uat-alb-api-target-response-time-high`
+- `maspex-uat-alb-api-target-connection-errors`
+- `maspex-uat-alb-elb-5xx`
+- `maspex-uat-ecs-api-running-below-desired`
+- `maspex-uat-cloudfront-api-5xx-rate`
+- `maspex-uat-api-downstream-log-errors`
+
+**Istniejący kanał alertów:**
+- SNS: `arn:aws:sns:eu-west-1:969209893152:maspex-uat-alarms`
+- email: `jaroslaw.golab@makolab.com`
+
+**Walidacja patcha:**
+```bash
+terraform fmt terraform/envs/uat/main.tf terraform/modules/monitoring/main.tf terraform/modules/monitoring/variables.tf terraform/modules/monitoring/outputs.tf
+terraform -chdir=terraform/envs/uat validate
+AWS_PROFILE=maspex-cli AWS_REGION=eu-west-1 AWS_DEFAULT_REGION=eu-west-1 terraform -chdir=terraform/envs/uat plan -no-color
+```
+
+Plan: `12 to add, 1 to change, 0 to destroy`.
 
 ---
 

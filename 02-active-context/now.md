@@ -5,7 +5,7 @@
 ## Aktywne: przełączenie kontekstu — maspex troubleshooting
 
 ```
-Stan:       ACTIVE (2026-04-23, odświeżone po Cloud Detective)
+Stan:       ACTIVE (2026-04-23, odświeżone po pracy load-test / monitoring)
 Repo:       ~/projekty/mako/aws-projects/infra-maspex
 Projekt:    Maspex
 Zakres:     troubleshooting
@@ -22,14 +22,23 @@ Kluczowe fakty:
   - UAT API CloudFront: `E3J76RNXIE2YIG` (`kapsel.makotest.pl`)
   - preprod CloudFront: `E17VHHQJ29MVAB`
   - 2026-04-23: admin-panel static assets fix wdrożony; root cause = brak origin request policy na ordered behaviors `/_next/static/*` i `/static/*`
-  - repo infra-maspex: lokalny commit `4810f3c fix uat admin cloudfront static origin policy`, branch `feat/preprod-zaslepka` ahead 1
+  - 2026-04-23: przygotowany patch monitoringowy pod test 3000 users / 1h:
+    - dashboard `maspex-uat-overview` rozszerzony o ECS API task count, ALB API latency/connection errors, CloudFront API, API log signals, Redis
+    - nowe alarmy i metric filters w `terraform/modules/monitoring`
+    - alarmy używają istniejącego SNS `arn:aws:sns:eu-west-1:969209893152:maspex-uat-alarms`
+    - `terraform plan`: 12 add, 1 change, 0 destroy
+  - 2026-04-23: przygotowany patch aplikacyjny w `~/projekty/mako/next-core-app/app/api/slogan/route.ts`:
+    - non-search `resolveCount()` Redis-only / best-effort
+    - brak Supabase exact count fallback na hot path
+    - dodany log `[GET_SLOGANS_COUNT]`
+  - repo infra-maspex: branch `feat/preprod-zaslepka`; lokalne zmiany w `terraform/envs/uat/main.tf` + monitoring module
+  - repo next-core-app: lokalna zmiana w `app/api/slogan/route.ts`
   - otwarte follow-up: Redis secret dla preprod
   - ECS service lifecycle w UAT ustawiony tak, by CI/CD zarządzał `task_definition`
 
 Uwagi:
-  - To jest przełączenie kontekstu, nie nowa operacja.
   - Punkt wejścia operacyjnego: `20-projects/clients/mako/maspex/troubleshooting.md`
-  - Bez zmian zakresu poza troubleshooting do czasu jawnego polecenia.
+  - `.obsidian/workspace.json` zmodyfikowany lokalnie przez Obsidian — nie dotykać przy porządkowaniu.
 ```
 
 ## Zamknięte: Cloud Detective — robocze miejsce w vault ✓

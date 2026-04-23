@@ -8,6 +8,151 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-23 — UAT load test 3000 users / 1h: monitoring API path
+
+**Stan:** patch Terraform przygotowany, nieaplikowany.
+
+**Cel:**
+- przygotować dashboard i alarmy pod kontrolowany test obciążeniowy `kapsel.makotest.pl`
+- skupić monitoring na ścieżce: CloudFront → ALB → ECS `maspex-api` → logi aplikacyjne / Redis
+- użyć istniejącego kanału alertów, bez tworzenia równoległego systemu powiadomień
+
+**Stan istniejący potwierdzony:**
+- repo: `~/projekty/mako/aws-projects/infra-maspex`
+- env: `terraform/envs/uat`
+- moduł monitoringu: `terraform/modules/monitoring`
+- dashboard: `maspex-uat-overview`
+- SNS topic: `arn:aws:sns:eu-west-1:969209893152:maspex-uat-alarms`
+- subskrypcja email: `jaroslaw.golab@makolab.com`
+- istniejące alarmy już miały `alarm_actions` i `ok_actions` podpięte do SNS
+- CloudFront API distribution: `E3J76RNXIE2YIG`
+- ECS service: `maspex-api`, desired/running `3/3`
+- live ECS events nadal pokazywały wymiany tasków przez ALB health check timeout:
+  `reason Request timed out`
+
+**Braki przed patchem:**
+- brak alarmu na ALB API `TargetResponseTime` p99
+- brak alarmu na ALB API `TargetConnectionErrorCount`
+- brak osobnego alarmu na `HTTPCode_ELB_5XX_Count`
+- brak alarmu `RunningTaskCount < DesiredTaskCount`
+- brak alarmu na CloudFront API `5xxErrorRate`
+- brak metric filters dla logów aplikacyjnych:
+  - `timeout`
+  - `aborted`
+  - `502`
+  - `Timed out acquiring connection from connection pool`
+  - `statement timeout`
+  - `[GET_SLOGANS_COUNT]`
+- dashboard nie pokazywał jeszcze CloudFront API, Redis, API log signals i task count
+
+**Zmiany przygotowane w Terraform:**
+- `terraform/modules/monitoring/variables.tf`
+  - dodano `api_log_group_name`
+  - dodano `cloudfront_api_distribution_arn`
+  - dodano `redis_cache_cluster_id`
+- `terraform/envs/uat/main.tf`
+  - do `module "monitoring"` podpięto:
+    - `api_log_group_name = module.service_api.log_group_name`
+    - `cloudfront_api_distribution_arn = module.cloudfront_site_api.cloudfront_arn`
+    - `redis_cache_cluster_id = "${var.project}-${var.environment}"`
+- `terraform/modules/monitoring/main.tf`
+  - dodano 6 log metric filters na `/maspex/uat/contest-service`
+  - dodano alarmy:
+    - `maspex-uat-alb-api-target-response-time-high`
+    - `maspex-uat-alb-api-target-connection-errors`
+    - `maspex-uat-alb-elb-5xx`
+    - `maspex-uat-ecs-api-running-below-desired`
+    - `maspex-uat-cloudfront-api-5xx-rate`
+    - `maspex-uat-api-downstream-log-errors`
+  - rozszerzono dashboard `maspex-uat-overview` o:
+    - ECS API RunningTaskCount / DesiredTaskCount
+    - ALB API p99 TargetResponseTime + TargetConnectionErrorCount
+    - CloudFront API requests / 4xx / 5xx / OriginLatency
+    - API log-derived signals
+    - Redis CPU / memory / connections / evictions
+- `terraform/modules/monitoring/outputs.tf`
+  - rozszerzono `alarm_arns`
+
+**Walidacja wykonana:**
+```bash
+terraform fmt terraform/envs/uat/main.tf terraform/modules/monitoring/main.tf terraform/modules/monitoring/variables.tf terraform/modules/monitoring/outputs.tf
+terraform -chdir=terraform/envs/uat validate
+AWS_PROFILE=maspex-cli AWS_REGION=eu-west-1 AWS_DEFAULT_REGION=eu-west-1 terraform -chdir=terraform/envs/uat plan -no-color
+```
+
+**Wynik walidacji:**
+- `terraform validate`: OK
+- `terraform plan`: `12 to add, 1 to change, 0 to destroy`
+- plan dodaje tylko zasoby monitoringu/log metric filters/alarmy i zmienia dashboard
+
+**Uwaga o worktree:**
+- `terraform/envs/uat/main.tf` był już zmodyfikowany przed patchem monitoringu:
+  - image `maspex-api:coreapp-uat-387`
+  - `cpu = 4096`
+  - `memory = 8192`
+- nie traktować tych linii jako części patcha monitoringowego bez sprawdzenia historii lokalnej
+
+**Jak operator używa dashboardu podczas testu:**
+1. `ECS Service — api CPU/Memory` i `ECS Service — api Task Count`: czy API dobija do limitu i czy traci taski.
+2. `ALB API — Target Response + Connection Errors`: czy target response p99 idzie w stronę 30s i czy rosną connection errors.
+3. `CloudFront API`: czy edge widzi 5xx i czy rośnie origin latency.
+4. `API Logs — Timeout / Aborted / Supabase Signals`: czy rosną symptomy downstream.
+5. `Redis`: czy Redis pozostaje zdrowy albo zaczyna pokazywać evictions/connections/CPU.
+
+**Następny krok:**
+- review patcha Terraform
+- jeżeli akceptacja: `terraform plan -out=...`, potem kontrolowany `terraform apply`
+- po apply sprawdzić, czy nowe alarmy mają `AlarmActions` na `maspex-uat-alarms`
+
+---
+
+## 2026-04-23 — next-core-app: minimalny hot-path patch dla `/api/slogan`
+
+**Stan:** patch aplikacyjny przygotowany lokalnie, niecommitowany.
+
+**Repo:**
+- `~/projekty/mako/next-core-app`
+- zmieniony plik: `app/api/slogan/route.ts`
+
+**Cel:**
+- zmniejszyć request amplification na hot path `GET /api/slogan?page=1&sortBy=votes_desc`
+- dla requestów bez `search` usunąć Supabase exact count fallback z `resolveCount()`
+- zostawić zachowanie listy możliwie bez zmian
+
+**Zmiana:**
+- dla `search === null`:
+  - `resolveCount()` próbuje Redis `slogans:total_count`
+  - jeśli Redis zwróci wartość: zwraca count
+  - jeśli Redis zwróci `null`: zwraca `null`
+  - jeśli Redis rzuci błąd: zwraca `null`
+  - nie wykonuje już Supabase exact count query na hot path
+- dla `search !== null`:
+  - zachowano dotychczasowy fallback do Supabase count
+- dodano log:
+  - `[GET_SLOGANS_COUNT]`
+  - pola: `isSearch`, `countSource`, `durationMs`
+  - bez tokenów, user id, treści haseł ani sekretów
+
+**Dlaczego bezpieczne:**
+- kod już obsługuje `totalPages: null`:
+  - `totalCount !== null ? ... : null`
+- `items`, `hasMore`, `page`, `limit`, `votedIds` zostają bez zmiany
+- potencjalny efekt funkcjonalny: klient może częściej dostać `totalPages: null`
+
+**Walidacja lokalna:**
+- `npm run typecheck` nie wykonał się, bo lokalnie brakuje `tsc`:
+  - `sh: tsc: command not found`
+- do walidacji w CI/dev env:
+  - `npm install` / właściwe środowisko zależności
+  - `npm run typecheck`
+  - `npm run lint`
+
+**Następny krok:**
+- review patcha aplikacyjnego
+- po wdrożeniu obserwować metric filter `GET_SLOGANS_COUNT` i spadek Supabase count pressure
+
+---
+
 ## 2026-04-23 — UAT admin-panel: CloudFront 502 dla assetów statycznych
 
 **Problem:**

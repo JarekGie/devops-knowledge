@@ -6,7 +6,8 @@
 
 ```
 Przełączony kontekst roboczy: maspex troubleshooting.
-Skupić się na UAT / preprod w repo Terraform `infra-maspex` i wejść przez aktywne wpisy w troubleshooting.
+Skupić się na UAT load-test readiness i stabilizacji ścieżki API `kapsel.makotest.pl`.
+Wejście przez aktywne wpisy w `20-projects/clients/mako/maspex/troubleshooting.md`.
 Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 ```
 
@@ -14,16 +15,17 @@ Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| maspex | aktywny | po admin CloudFront fix: dopilnować push/PR commita `4810f3c`; otwarty follow-up: Redis secret dla preprod |
+| maspex | aktywny | review/apply patcha monitoringowego UAT; review patcha `next-core-app` dla `/api/slogan`; potem kontrolowany load test 3000 users / 1h |
 | devops-toolkit | w tle | Cloud Detective zapisany jako robocza capability; bez aktywnej pracy |
 | devops-platform | w tle | |
 | devops-business | w tle | |
 
 ## Priorytety tygodnia
 
-1.
-2. Maspex: domknąć repo po live fixie admin CloudFront (`feat/preprod-zaslepka` ahead 1) albo przejść do preprod Redis secret.
-3. Utrzymać pozostałe tematy jako kontekst poboczny, nie aktywny.
+1. Maspex: dokończyć observability pod UAT load test bez tworzenia równoległego alertingu.
+2. Maspex: przejrzeć i ewentualnie wdrożyć minimalny app patch ograniczający Supabase exact count fallback w `/api/slogan`.
+3. Maspex: po apply monitoringu uruchomić kontrolowany test 3000 users / 1h i korelować ECS / ALB / CloudFront / log-derived signals / Redis.
+4. Utrzymać pozostałe tematy jako kontekst poboczny, nie aktywny.
 
 ## Aktywni klienci
 
@@ -33,7 +35,9 @@ Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 
 ## Blokery / otwarte pętle
 
-- [ ] `infra-maspex` ma lokalny commit `4810f3c` niepushowany (`feat/preprod-zaslepka` ahead 1)
+- [ ] `infra-maspex` ma lokalne zmiany monitoringu UAT: `terraform/modules/monitoring/*`, `terraform/envs/uat/main.tf`
+- [ ] `next-core-app` ma lokalny patch `app/api/slogan/route.ts`; lokalnie `npm run typecheck` nie działa, bo brakuje `tsc`
+- [ ] `infra-maspex` ma wcześniejszy lokalny commit `4810f3c` niepushowany (`feat/preprod-zaslepka` ahead 1)
 - [ ] Redis connection string do Secrets Manager `maspex/preprod/api` nadal otwarte
 
 ## Powiązane

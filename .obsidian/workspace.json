@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠧ devops-knowledge"
             }
           },
           {
@@ -322,6 +322,7 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "20-projects/clients/mako/anonimizator",
     "60-toolkit/cloud-detective/open-questions.md",
     "60-toolkit/cloud-detective/use-cases.md",
     "60-toolkit/cloud-detective/boundaries.md",
@@ -358,7 +359,6 @@
     "llz-map",
     "llz-map.tmp",
     "90-reference/notebooklm/pkm-stack-mastery/findings/README.md",
-    "90-reference/notebooklm/pkm-stack-mastery/conversations/README.md",
     "Bez nazwy.canvas"
   ]
 }
