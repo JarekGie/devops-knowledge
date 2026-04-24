@@ -87,6 +87,24 @@ Zasady:
 - Zachowuj istniejący styl notatki lub dokumentu, chyba że jest wyraźnie placeholderowy
 - Nie przenoś plików i nie zmieniaj nazw bez konkretnego powodu
 
+## NotebookLM
+
+Whenever a prompt, task, or instruction mentions `notebooklm`, `NotebookLM`, `notebook`, `notatnik NotebookLM`, or asks to create/update NotebookLM sources, the canonical vault location is:
+
+`90-reference/notebooklm/`
+
+Zasady:
+- nie tworz rownoleglych folderow notebookow pod `30-notebooks/`, `20-projects/` ani `40-runbooks/`, chyba ze uzytkownik wyraznie tego zazada
+- kazdy notebook NotebookLM ma miec osobny katalog pod `90-reference/notebooklm/<notebook-name>/`
+- rekomendowana struktura:
+  - `README.md`
+  - `sources.md`
+  - `notebook-contract.md`
+  - `prompts/`
+  - `findings/`
+  - `artifacts/`
+  - `conversations/`
+
 ## Sandbox i bezpieczeństwo
 
 - Zakładaj, że filesystem może być współdzielony i brudny

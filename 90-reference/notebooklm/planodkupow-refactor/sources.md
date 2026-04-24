@@ -21,6 +21,10 @@ Poniżej lista źródeł rekomendowanych do wgrania do NotebookLM dla notebooka 
   Cel:
   zrozumienie mechaniki awarii, rollbacków, decyzji awaryjnych i zmian wykonanych pod presją incydentu.
 
+- [planodkupow-qa-execution-log.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/40-runbooks/incidents/planodkupow-qa-execution-log.md)
+  Cel:
+  odtworzenie sekwencji wykonawczej i ustalenie, czy czesc legacy artifacts mogla zostac po awaryjnych dzialaniach runtime.
+
 - [planodkupow-qa-rabbitmq-rollback-failed.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md)
   Cel:
   zrozumienie rozjazdu wokół QA RabbitMQ, rollbacków i możliwego wyjęcia brokera poza standardowy lifecycle.
@@ -46,6 +50,19 @@ Poniżej lista źródeł rekomendowanych do wgrania do NotebookLM dla notebooka 
 - [planodkupow-orphan-network-investigation-2026-04-24.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24.md)
   Cel:
   aktualny zapis śledztwa read-only o VPC, NAT, VPC endpoints i klasyfikacji `orphan suspect`.
+
+- [planodkupow-ops-context-2026-04-24.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/_chatgpt/context-packs/planodkupow-ops-context-2026-04-24.md)
+  Cel:
+  skondensowany context pack do rozmowy o ownership, retained artifacts i przyszlym refactorze.
+
+## Notebook-local sources to import
+
+- [README.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/README.md)
+- [sources.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/sources.md)
+- [notebook-contract.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/notebook-contract.md)
+- [meeting-brief.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/artifacts/meeting-brief.md)
+- [hypotheses-and-risks.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/findings/hypotheses-and-risks.md)
+- [refactor-options.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/findings/refactor-options.md)
 
 ## Additional evidence to consider importing
 
@@ -108,3 +125,23 @@ Przy pracy w NotebookLM:
 - traktować źródła incydentowe jako context, nie jako aktualną decyzję
 - traktować notatkę orphan investigation jako evidence pack, nie cleanup plan
 - rozdzielać pytania ownership, runtime usage i governance
+
+## Manual upload list
+
+Jesli lokalne `notebooklm` CLI nie pozwoli automatycznie dodac plikow, do notebooka `Planodkupow-refactor` nalezy recznie wgrac:
+
+- `40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md`
+- `40-runbooks/incidents/planodkupow-qa-postmortem.md`
+- `40-runbooks/incidents/planodkupow-qa-execution-log.md`
+- `40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md`
+- `40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed.md`
+- `40-runbooks/planodkupow-tagging-finops.md`
+- `40-runbooks/planodkupow-rabbitmq-cfn-refactor.md`
+- `20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24.md`
+- `_chatgpt/context-packs/planodkupow-ops-context-2026-04-24.md`
+- `90-reference/notebooklm/planodkupow-refactor/README.md`
+- `90-reference/notebooklm/planodkupow-refactor/sources.md`
+- `90-reference/notebooklm/planodkupow-refactor/notebook-contract.md`
+- `90-reference/notebooklm/planodkupow-refactor/artifacts/meeting-brief.md`
+- `90-reference/notebooklm/planodkupow-refactor/findings/hypotheses-and-risks.md`
+- `90-reference/notebooklm/planodkupow-refactor/findings/refactor-options.md`

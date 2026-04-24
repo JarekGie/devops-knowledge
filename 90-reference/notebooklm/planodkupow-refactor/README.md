@@ -5,9 +5,9 @@ tags: [notebooklm, research, refactor, planodkupow, architecture, operations]
 domain: notebooks
 ---
 
-# planodkupow-refactor
+# Planodkupow-refactor
 
-Pakiet startowy pod nowy notebook NotebookLM o nazwie `planodkupow-refactor`.
+Pakiet startowy pod notebook NotebookLM o nazwie `Planodkupow-refactor`.
 
 Cel notebooka:
 - przygotowanie do rozmowy z zespołem projektowym
@@ -28,19 +28,20 @@ Notebook ma służyć do:
 
 ## Zawartość pakietu
 
-- [SOURCES_INDEX.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/30-notebooks/planodkupow-refactor/SOURCES_INDEX.md)
-- [QUESTIONS_FOR_PROJECT_TEAM.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/30-notebooks/planodkupow-refactor/QUESTIONS_FOR_PROJECT_TEAM.md)
-- [HYPOTHESES_AND_RISKS.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/30-notebooks/planodkupow-refactor/HYPOTHESES_AND_RISKS.md)
-- [REFactor_OPTIONS.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/30-notebooks/planodkupow-refactor/REFactor_OPTIONS.md)
-- [MEETING_BRIEF.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/30-notebooks/planodkupow-refactor/MEETING_BRIEF.md)
+- [sources.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/sources.md)
+- [notebook-contract.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/notebook-contract.md)
+- [questions-for-project-team.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/prompts/questions-for-project-team.md)
+- [hypotheses-and-risks.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/findings/hypotheses-and-risks.md)
+- [refactor-options.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/findings/refactor-options.md)
+- [meeting-brief.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/90-reference/notebooklm/planodkupow-refactor/artifacts/meeting-brief.md)
 
 ## Sposób użycia
 
-1. Wgrać do NotebookLM źródła z `SOURCES_INDEX.md`.
+1. Wgrać do NotebookLM źródła z `sources.md`.
 2. Traktować `planodkupow-orphan-network-investigation-2026-04-24.md` jako input śledczy, nie jako decyzję cleanup.
-3. Użyć `QUESTIONS_FOR_PROJECT_TEAM.md` jako checklisty na spotkanie.
-4. Użyć `REFactor_OPTIONS.md` do porównania wariantów architektoniczno-operacyjnych.
-5. Użyć `MEETING_BRIEF.md` jako krótkiego materiału otwierającego rozmowę.
+3. Użyć `prompts/questions-for-project-team.md` jako checklisty na spotkanie.
+4. Użyć `findings/refactor-options.md` do porównania wariantów architektoniczno-operacyjnych.
+5. Użyć `artifacts/meeting-brief.md` jako krótkiego materiału otwierającego rozmowę.
 
 ## Granice tego notebooka
 

@@ -13,6 +13,7 @@
 3. **NotebookLM nie jest archiwum.** Notebooki nie przechowują aktywnej wiedzy — notatki syntezy zawsze trafiają do vault.
 4. **NotebookLM nie zastępuje agentów.** Claude i Codex wykonują; NotebookLM tylko syntetyzuje z zamkniętego, skurowanego zestawu źródeł.
 5. **Każde wejście do NotebookLM jest paczką źródłową — nigdy surowym dumpem vault.**
+6. **Kanoniczna przestrzen notebookow to `90-reference/notebooklm/`.** Gdy prompt wspomina `notebooklm`, `NotebookLM`, `notebook`, `notatnik NotebookLM` lub prosi o tworzenie/aktualizacje sources, nalezy pracowac w `90-reference/notebooklm/`, a nie w rownoleglych folderach pod `30-notebooks/`, `20-projects/` czy `40-runbooks/`, chyba ze uzytkownik wyraznie zaznaczy inaczej.
 
 ### Dozwolone zastosowania
 
@@ -34,6 +35,22 @@
 ---
 
 ## Topologia notebooków
+
+## Struktura katalogu notebooka
+
+Kazdy notebook powinien miec osobny katalog pod:
+
+`90-reference/notebooklm/<notebook-name>/`
+
+Rekomendowana struktura:
+
+- `README.md`
+- `sources.md`
+- `notebook-contract.md`
+- `prompts/`
+- `findings/`
+- `artifacts/`
+- `conversations/`
 
 **Zasada: jeden notebook per domena, nie per projekt.**
 

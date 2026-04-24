@@ -126,6 +126,24 @@ Szablon: `templates/runbook-template.md`
 
 Używaj `#aws`, `#terraform`, `#incident`, `#finops`, `#todo`, `#decision` do wyszukiwania cross-vault.
 
+## NotebookLM
+
+Whenever a prompt, task, or instruction mentions `notebooklm`, `NotebookLM`, `notebook`, `notatnik NotebookLM`, or asks to create/update NotebookLM sources, the canonical vault location is:
+
+`90-reference/notebooklm/`
+
+Zasady:
+- nie tworz rownoleglych folderow notebookow pod `30-notebooks/`, `20-projects/` ani `40-runbooks/`, chyba ze uzytkownik wyraznie tego zazada
+- kazdy notebook NotebookLM ma miec osobny katalog pod `90-reference/notebooklm/<notebook-name>/`
+- rekomendowana struktura:
+  - `README.md`
+  - `sources.md`
+  - `notebook-contract.md`
+  - `prompts/`
+  - `findings/`
+  - `artifacts/`
+  - `conversations/`
+
 ## Kontekst persony
 
 Użytkownik: doświadczony DevOps/SRE, AWS-primary (też GCP/Azure), ADHD. System musi redukować obciążenie pamięci. Modularne notatki z szybkim dostępem działają dobrze; linearne checklisty i długie sekwencyjne dokumenty — nie. Zobacz [[persona]] dla pełnego profilu.

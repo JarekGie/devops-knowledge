@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠴ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -313,8 +313,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "0205e1545b43934f",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "90-reference/notebooklm/planodkupow-refactor/notebook-contract.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts/questions-for-project-team.md",
     "90-reference/notebooklm/planodkupow-refactor/README.md",
     "90-reference/notebooklm/planodkupow-refactor/sources.md",
@@ -350,7 +351,6 @@
     "20-projects/internal/cloudops-soc-lite/PILOT_IDEA_GLPI_CLOUD_EVENTS.md",
     "20-projects/internal/cloudops-soc-lite/EXISTING_CAPABILITIES_AS_FOUNDATION.md",
     "20-projects/internal/cloudops-soc-lite/CLOUDOPS_SOC_LITE_HYPOTHESIS.md",
-    "20-projects/clients/mako/vpc-endpoints-tagging-audit-2026-04-24.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

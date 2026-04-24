@@ -65,6 +65,30 @@
   - nauka pracy na realnym vaultcie
   - cwiczenia, challenge i artefakty robocze zamiast teorii oderwanej od repo
 
+## Planodkupow-refactor
+
+Purpose:
+Notebook do przygotowania rozmowy z zespołem projektowym o planodkupow: legacy QA VPC, NAT Gateway, VPC endpoints, RabbitMQ ownership, CloudFormation blast radius, tagging/FinOps i przyszly refactor.
+
+Status:
+active / preparation
+
+Primary sources:
+- [[40-runbooks/incidents/planodkupow-qa-cfn-rebuild]]
+- [[40-runbooks/incidents/planodkupow-qa-postmortem]]
+- [[40-runbooks/incidents/planodkupow-qa-execution-log]]
+- [[40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed]]
+- [[40-runbooks/incidents/planodkupow-uat-rabbitmq-rollback-failed]]
+- [[40-runbooks/planodkupow-tagging-finops]]
+- [[40-runbooks/planodkupow-rabbitmq-cfn-refactor]]
+- [[20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24]]
+
+Boundaries:
+- notebook sluzy do przygotowania decyzji
+- nie jest cleanup approval
+- orphan suspect != deletion candidate
+- destructive actions require separate runbook and explicit approval
+
 ## Integracja z istniejacymi domenami
 
 - Incidenty sa integrowane z istniejacym obszarem `40-runbooks/incidents/`, bez dublowania notatek.
