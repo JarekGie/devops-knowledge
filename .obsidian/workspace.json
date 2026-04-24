@@ -63,8 +63,7 @@
               "title": "rshop-tag-policy"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -237,11 +236,11 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "9dd73a71b16a8bd2",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/rshop-tag-policy.md",
     "40-runbooks/incidents/rshop-tag-policy-readiness.md",
     "20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md",
-    "_chatgpt/context-packs/rshop-tag-policy.md",
     "20-projects/clients/mako/anonimizator/07-anonimizacja-tokenizacja-rehydratacja.md",
     "_system/BOUNDARY_REVIEW_REPORT.md",
     "60-toolkit/cloud-detective/ai4devops-relationship.md",
