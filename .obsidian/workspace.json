@@ -105,8 +105,7 @@
               "title": "finops-as-is-estimate"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -279,7 +278,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "0205e1545b43934f",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/finops-as-is-estimate.md",
     "_chatgpt/context-packs/rshop-tag-policy.md",
