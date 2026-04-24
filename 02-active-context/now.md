@@ -513,37 +513,33 @@ Pliki:      udemy_obsidian/browser.py — tryb CDP w __aenter__
             run.sh                   — gotowe komendy
 ```
 
-## Aktywne: rshop — Tag Policy remediation
+## Aktywne: rshop — Tag Policy remediation (audit DONE, czeka na CFN fix)
 
 ```
-Stan:       AKTYWNE (2026-04-24)
+Stan:       AUDIT DONE (2026-04-24) — Tag Policies nadal WYŁĄCZONE
 Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md (RESOLVED)
-Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
+Plan:       40-runbooks/incidents/rshop-tag-policy-readiness.md
 
-Kontekst:
-  - incydent 2026-04-20: Tag Policies (LLZ) → ENI violation → prod 503
-  - Tag Policies wycofane przez terraform destroy
-  - przed ponownym wdrożeniem: fix CFN templates (PropagateTags: SERVICE)
+Audyt AWS: 2026-04-24, konto 943111679945, eu-central-1
+Pliki:
+  - 20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md  ← pełny raport
+  - 40-runbooks/incidents/rshop-tag-policy-readiness.md             ← runbook re-enable
 
-Repozytoria:
-  - ~/projekty/mako/rshop-cloudformation/cloudformation/  (frontend/frontend2/backoffice/api)
-  - ~/projekty/mako/aws-projects/infra-rshop/cloudformation/akcesoria2/svc.yml
+Top 5 blokerów przed re-enable Tag Policies:
+  1. [KRYTYCZNE] rshop-cloudformation: brak PropagateTags/Tags/EnableECSManagedTags
+     w 4 plikach (api/backoffice/frontend/frontend2.yml) — każdy CFN deploy resetuje
+     propagateTags do NONE → natychmiastowa awaria po re-enable
+  2. [KRYTYCZNE] akcesoria2/svc.yml: Tags są, ale brak PropagateTags: SERVICE
+     i EnableECSManagedTags: true — 2 linie na serwis
+  3. [KRYTYCZNE] Weryfikacja allowedValues LLZ Tag Policy dla Project=akcesoria2
+     (może nie być w allowedValues — sprawdzić w terraform LLZ)
+  4. [WYSOKIE] dev-ALB stary schemat Tribecloud (brakuje Project/Owner/CostCenter/ManagedBy)
+  5. [WYSOKIE] ECR rshopapp-prod/qa/uat: brakuje Project, Owner, ManagedBy, CostCenter
 
-AWS account: 943111679945 | Region: eu-central-1
-
-Stan audytu CFN:
-  - rshop-prod:      propagateTags=SERVICE live (drift, CFN nie odzwierciedla) — WYMAGA FIX CFN
-  - rshop-dev:       propagateTags=NONE — WYMAGA FIX CFN
-  - akcesoria2-prod: propagateTags=NONE — WYMAGA FIX CFN
-
-Kolejność bezpieczna:
-  1. Fix CFN templates (PropagateTags: SERVICE + Tags + EnableECSManagedTags)
-  2. Deploy dev → weryfikacja ENI tagów
-  3. Deploy prod → weryfikacja
-  4. Potwierdzić akcesoria2 w allowedValues LLZ Tag Policy
-  5. DOPIERO WTEDY: terraform apply Tag Policies
-
-Następny krok: czytamy pliki CFN i przygotowujemy patche
+Następny krok: przygotować CFN patche (krok 1 i 2 z listy blokerów)
+  → branch feat/ecs-propagate-tags w rshop-cloudformation
+  → commit 4 pliki + akcesoria2/svc.yml
+  → deploy na dev → weryfikacja ENI → deploy prod
 ```
 
 ## Zamknięte: rshop-prod-503 ✓
@@ -646,4 +642,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-24 17:06 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-24 17:31 — sesja aktywna*
