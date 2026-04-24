@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠦ devops-knowledge"
             }
           },
           {
@@ -301,6 +301,7 @@
   },
   "active": "0205e1545b43934f",
   "lastOpenFiles": [
+    "30-patterns",
     "vpc-endpoints-dev-before-tags-20260424-221906.json",
     "_system/LLM_EXPORT_POLICY.md",
     "_system/BOUNDARY_EXCEPTION_PROCESS.md",
@@ -336,7 +337,6 @@
     "30-research",
     "02-active-context/current-focus.md.tmp.46039.1777022578897",
     "20-projects/mako/anonimizator",
-    "20-projects/mako",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
