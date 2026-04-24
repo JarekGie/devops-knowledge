@@ -5,9 +5,9 @@ tags: [rshop, tagging, finops, vpc-endpoints, audit, tag-policy]
 domain: client-work/mako
 ---
 
-# RSHOP VPC ENDPOINTS — AUDIT TAGOWANIA 2026-04-24
+# RSHOP VPC ENDPOINTS — AUDIT I REMEDIATION STATUS 2026-04-24
 
-Audyt read-only. Żadne zasoby AWS nie zostały zmienione.
+Audyt rozpoczął się jako read-only. Notatka została zaktualizowana o finalny stan po manual drift reconciliation wykonanym później tego samego dnia.
 Konto: 943111679945 (eu-central-1), profil CLI `rshop`.
 Kontekst: kontynuacja po remediacji ECS ENI tag propagation (rshop-dev ✓, rshop-prod ✓, akcesoria2-prod ✓).
 
@@ -15,7 +15,7 @@ Kontekst: kontynuacja po remediacji ECS ENI tag propagation (rshop-dev ✓, rsho
 
 ## 1. Wynik jednym zdaniem
 
-**8/8 VPC Endpoints nie ma tagu `Project`. Dev 4/4 nie ma też `Environment`. Root cause: drift CFN — szablony już mają poprawne tagi, ale nie zostały re-deploy'owane. Fix: no-op CFN update obu stacków.**
+**Stan końcowy po remediacji:** dev 4/4 endpointy zgodne, prod 3/4 interface endpoints zgodne, prod S3 gateway pozostaje wyjątkiem pending CFN alignment. Root cause pozostał ten sam: drift między live AWS i desired state/oczekiwaniem operacyjnym.**
 
 ---
 
@@ -23,21 +23,20 @@ Kontekst: kontynuacja po remediacji ECS ENI tag propagation (rshop-dev ✓, rsho
 
 | Endpoint ID | Środowisko | Usługa | Typ | Project | Environment | Owner | ManagedBy | CostCenter | Status |
 |-------------|-----------|--------|-----|---------|-------------|-------|-----------|-----------|--------|
-| vpce-05174e681737bc7a0 | prod | logs | Interface | **BRAK** | ✓ prod | ✓ | ✓ | ✓ | PARTIAL |
-| vpce-04ab55e932a54733f | prod | ecr.api | Interface | **BRAK** | ✓ prod | ✓ | ✓ | ✓ | PARTIAL |
-| vpce-00482d667b910fe3e | prod | ecr.dkr | Interface | **BRAK** | ✓ prod | ✓ | ✓ | ✓ | PARTIAL |
-| vpce-0ad2e4f5d5005bf1f | prod | s3 | Gateway | **BRAK** | ✓ prod | ✓ | ✓ | ✓ | PARTIAL |
-| vpce-06fbbcc50008abf6d | dev | s3 | Gateway | **BRAK** | **BRAK** | ✓ | ✓ | ✓ | FAIL |
-| vpce-0adbca724b31df149 | dev | ecr.api | Interface | **BRAK** | **BRAK** | ✓ | ✓ | ✓ | FAIL |
-| vpce-055c1e81bc384fe77 | dev | ecr.dkr | Interface | **BRAK** | **BRAK** | ✓ | ✓ | ✓ | FAIL |
-| vpce-04a529e00f650ba57 | dev | logs | Interface | **BRAK** | **BRAK** | ✓ | ✓ | ✓ | FAIL |
+| vpce-05174e681737bc7a0 | prod | logs | Interface | ✓ rshop | ✓ prod | ✓ | ✓ | ✓ | GO |
+| vpce-04ab55e932a54733f | prod | ecr.api | Interface | ✓ rshop | ✓ prod | ✓ | ✓ | ✓ | GO |
+| vpce-00482d667b910fe3e | prod | ecr.dkr | Interface | ✓ rshop | ✓ prod | ✓ | ✓ | ✓ | GO |
+| vpce-0ad2e4f5d5005bf1f | prod | s3 | Gateway | **BRAK** | ✓ prod | ✓ | ✓ | ✓ | EXCEPTION |
+| vpce-06fbbcc50008abf6d | dev | s3 | Gateway | ✓ rshop | ✓ dev | ✓ | ✓ | ✓ | GO |
+| vpce-0adbca724b31df149 | dev | ecr.api | Interface | ✓ rshop | ✓ dev | ✓ | ✓ | ✓ | GO |
+| vpce-055c1e81bc384fe77 | dev | ecr.dkr | Interface | ✓ rshop | ✓ dev | ✓ | ✓ | ✓ | GO |
+| vpce-04a529e00f650ba57 | dev | logs | Interface | ✓ rshop | ✓ dev | ✓ | ✓ | ✓ | GO |
 
 **Podsumowanie:**
 - Łącznie: 8 endpointów
-- Zgodnych (PASS): **0**
-- Częściowych (PARTIAL): **4** (prod — brakuje tylko Project)
-- Niezgodnych (FAIL): **4** (dev — brakuje Project + Environment)
-- Brakujące tagi: Project = 8/8, Environment = 4/8
+- Zgodnych (GO): **7**
+- Wyjątki: **1**
+- Brakujące tagi: `Project` = 1/8, `Environment` = 0/8
 
 ---
 
@@ -75,6 +74,11 @@ Parametry stacków:
 Szablony zostały zaktualizowane (dodano `Project` i `Environment` do tagów endpointów) **po** ostatnim wdrożeniu stacków, które zmieniło zasób `AWS::EC2::VPCEndpoint`. Kolejne update'y stacków (prod: 2026-04-05, dev: 2026-04-18) dotyczyły innych zasobów — CFN nie zmodyfikował endpointów i nie nałożył nowych tagów.
 
 CFN drift detection (`DetectStackResourceDrift`) dla `AWS::EC2::VPCEndpoint` zwraca `ValidationError: Drift detection is not supported for the specified ResourceType` — drift potwierdzony empirycznie przez porównanie żywych tagów z templatem.
+
+Późniejsza remediacja manualna potwierdziła dodatkowo:
+- dla dev 4/4 `ec2 create-tags` skutecznie wyrównał live z desired state
+- dla prod 3 interface endpoints `ec2 create-tags` skutecznie dodał `Project=rshop`
+- prod S3 gateway endpoint został świadomie wyłączony z manualnego runu, bo template `prod-VPCStack-PUE148866VHC` nie potwierdzał tagów dla `EcrS3Endpoint`
 
 ### Struktura stacków
 
@@ -152,6 +156,10 @@ aws ec2 create-tags \
 
 Właściwości: instant, reversible, 0 infrastruktura impact, nie zastępuje żadnego zasobu.
 
+To podejście zostało użyte operacyjnie 2026-04-24 dla:
+- dev 4/4 endpoints
+- prod 3/4 interface endpoints
+
 **Uwaga:** Nie tworzy driftu CFN — CFN już ma w internal state że tagi "są" (po UPDATE_COMPLETE z 2026-04-18). `create-tags` ustawia live state zgodny z tym co CFN myśli że jest → likwiduje rzeczywisty drift.
 
 ### Alternatywa: weryfikacja czy change set cokolwiek widzi
@@ -188,8 +196,8 @@ aws cloudformation create-change-set \
 |-------|---------|-----------|
 | Sprawdzić scope LLZ Tag Policy: czy `ec2:vpc-endpoint` jest objęty | HIGH | DevOps + LLZ/Platform team |
 | Sprawdzić ENI generowane przez interface endpoints — czy mają wymagane tagi | HIGH | DevOps |
-| CFN no-op update na `prod` root stack (naprawi prod VPCStack tagi) | MEDIUM | DevOps |
-| CFN no-op update na `dev` root stack (naprawi dev EndPiontsStack tagi) | MEDIUM | DevOps |
+| PROD S3 gateway endpoint: wyrównać desired state CFN dla `EcrS3Endpoint`, potem wykonać reconciliation | MEDIUM | DevOps |
+| Utrzymywać manual `create-tags` jako wzorzec awaryjny dla `AWS::EC2::VPCEndpoint` handler drift | MEDIUM | DevOps |
 
 ### Zidentyfikowane nie-blokery (już naprawione lub poza scope)
 
@@ -199,6 +207,6 @@ aws cloudformation create-change-set \
 
 ---
 
-*Audyt: read-only, 2026-04-24. Żadne zasoby AWS nie zostały zmienione.*
+*Audyt rozpoczęty jako read-only, następnie uzupełniony o wykonany stan remediacji 2026-04-24.*
 *Artefakty: `/tmp/vpc-endpoints-raw-2026-04-24.json`, `/tmp/vpc-endpoints-gap-2026-04-24.json`*
-*Powiązane: [[rshop-tagging-baseline-2026-04-24]] | [[finops-rshop]]*
+*Powiązane: [[rshop-tagging-baseline-2026-04-24]] | [[finops-rshop]] | [[rshop-tagging-remediation-2026-04-24]]*

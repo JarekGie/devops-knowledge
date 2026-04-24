@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠴ devops-knowledge"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠦ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -125,8 +125,7 @@
               "title": "Podgląd grafu"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -299,8 +298,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "0205e1545b43934f",
+  "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "30-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
+    "20-projects/clients/mako/rshop-tagging-remediation-2026-04-24.md",
     "30-patterns",
     "vpc-endpoints-dev-before-tags-20260424-221906.json",
     "_system/LLM_EXPORT_POLICY.md",
@@ -328,7 +329,6 @@
     "20-projects/internal/cloud-support-as-a-service/service-vision.md",
     "20-projects/internal/cloud-support-as-a-service/boundaries.md",
     "20-projects/internal/cloud-support-as-a-service/LLM_CONTEXT.md",
-    "20-projects/internal/cloud-support-as-a-service/README.md",
     "20-projects/internal/cloud-support-as-a-service",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
@@ -336,7 +336,6 @@
     "30-research/ai4devops",
     "30-research",
     "02-active-context/current-focus.md.tmp.46039.1777022578897",
-    "20-projects/mako/anonimizator",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

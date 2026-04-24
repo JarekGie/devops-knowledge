@@ -8,13 +8,13 @@ domain: client-work/mako
 # RSHOP AWS TAGGING BASELINE — 2026-04-24
 
 Audyt przeprowadzony: 2026-04-24, konto 943111679945 (eu-central-1), profil CLI `rshop`.
-Kontekst: po incydencie 2026-04-20 (Tag Policy violation → ENI ENI tagging → prod 503) i tymczasowym wyłączeniu Tag Policies przez `terraform destroy`.
+Kontekst: po incydencie 2026-04-20 (Tag Policy violation → ENI ENI tagging → prod 503) i tymczasowym wyłączeniu Tag Policies przez `terraform destroy`. Notatka zaktualizowana o stan po remediacji wykonanej 2026-04-24.
 
 ---
 
 ## 1. Executive Summary
 
-Konto rshop posiada **dwa schematy tagowania** funkcjonujące równocześnie: nowy schemat LLZ (`Project/Environment/Owner/ManagedBy/CostCenter`) stosowany w prod/dev/akcesoria2 przez CloudFormation oraz stary schemat legacy (`Client/Maintainer/Provisioner/Team/typ`) widoczny w zasobach zarządzanych wcześniej przez Tribecloud (VPC cos\_dev, S3 rshop-cf, rshop-tmp, rshopp-logs). Wszystkie trzy środowiska ECS mają **propagateTags=NONE** w CFN (drift w prod: runtime SERVICE, niezarządzany przez CFN). Zadania (tasks) i interfejsy sieciowe (ENI) **nie dziedziczą tagów serwisów** — to był bezpośredni powód incydentu 2026-04-20. Przed ponownym wdrożeniem Tag Policies wymagane są zmiany w 5 szablonach CFN (rshop: api/backoffice/frontend/frontend2 + akcesoria2: svc.yml) oraz weryfikacja allowedValues dla projektu `akcesoria2` w LLZ Tag Policy. Zasoby niemanaged CFN (rshop-temp, rshop-dev-backup, rshop-dev-bk, terraform-states-rshop, ECR rshopapp-qa/uat, niektóre VPC endpoints) mają niekompletne lub zerowe tagi. Log groups mają retencję 1 dzień (prod/dev) — brak tagów, brak retencji.
+Konto rshop posiada **dwa schematy tagowania** funkcjonujące równocześnie: nowy schemat LLZ (`Project/Environment/Owner/ManagedBy/CostCenter`) stosowany w prod/dev/akcesoria2 przez CloudFormation oraz stary schemat legacy (`Client/Maintainer/Provisioner/Team/typ`) widoczny w zasobach zarządzanych wcześniej przez Tribecloud (VPC cos\_dev, S3 rshop-cf, rshop-tmp, rshopp-logs). Remediacja ECS wykonana 2026-04-24 potwierdziła poprawne ENI tag propagation dla wszystkich 10/10 serwisów ECS w zakresie rshop-dev, rshop-prod i akcesoria2-prod. Manual drift reconciliation VPC endpoints został wykonany dla dev 4/4 oraz prod 3/4 interface endpoints; prod S3 gateway pozostaje jawnym wyjątkiem do wyrównania przez CFN alignment. Zasoby niemanaged CFN (rshop-temp, rshop-dev-backup, rshop-dev-bk, terraform-states-rshop, ECR rshopapp-qa/uat) nadal mają niekompletne lub zerowe tagi. Log groups mają retencję 1 dzień (prod/dev) i nadal pozostają bez tagów.
 
 ---
 
@@ -64,7 +64,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 - **ALB prod-ALB:** Project/Environment/Owner/ManagedBy/CostCenter/Name — **kompletne**
 - **RDS prod (pssa61v1phykq0):** Project/Environment/Owner/ManagedBy/CostCenter/Name — **kompletne**
 - **S3 rshop-prod:** Project/Environment/Owner/ManagedBy/CostCenter/Name — **kompletne** (CFN-managed)
-- **VPC Endpoints (prod, 4):** Owner/ManagedBy/CostCenter/Name — brakuje **Project** (2/4) i **Environment** (0/4) (potwierdzone)
+- **VPC Endpoints (prod, 4):** 3/4 interface endpoints zmanualizowane 2026-04-24 (`Project=rshop` dodany), `Environment=prod` obecny; `vpce-0ad2e4f5d5005bf1f` (s3 gateway) pozostaje wyjątkiem pending CFN alignment
 - **VPC rshop-prod-VPC:** kompletne
 
 ### rshop-dev
@@ -76,7 +76,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 - **S3 rshop-dev:** kompletne (CFN-managed)
 - **S3 rshop-dev-backup:** brak tagów
 - **S3 rshop-dev-bk:** brak tagów
-- **VPC Endpoints (dev, 4):** Owner/ManagedBy/CostCenter/Name — brakuje **Project** i **Environment** (wszystkie 4) (potwierdzone)
+- **VPC Endpoints (dev, 4):** zmanualizowane 2026-04-24 — wszystkie 4 mają `Project=rshop` i `Environment=dev`
 - **VPC cos\_dev (vpc-0f46b727b63c49da3):** stary schemat Tribecloud (Client/Provisioner/Team/Maintainer), ale ma też Environment/Project (inferred: legacy VPC)
 
 ### akcesoria2-prod
@@ -122,8 +122,8 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 | Serwis | propagateTags (live) | propagateTags (CFN) | enableECSManagedTags | Tags na serwisie | ENI dziedziczą tagi | Gotowość Tag Policy |
 |--------|---------------------|---------------------|---------------------|-----------------|--------------------|--------------------|
-| akcesoria2-prod-dacia-svc | NONE | BRAK | False | kompletne (Name/Project/Env/Owner/ManagedBy/CC) | **NIE** | NO-GO |
-| akcesoria2-prod-renault-svc | NONE | BRAK | False | kompletne (Name/Project/Env/Owner/ManagedBy/CC) | **NIE** | NO-GO |
+| akcesoria2-prod-dacia-svc | **SERVICE** ✓ | **SERVICE** ✓ | **True** ✓ | kompletne (Name/Project/Env/Owner/ManagedBy/CC) | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
+| akcesoria2-prod-renault-svc | **SERVICE** ✓ | **SERVICE** ✓ | **True** ✓ | kompletne (Name/Project/Env/Owner/ManagedBy/CC) | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
 
 ---
 
@@ -138,14 +138,14 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 | VPC (3) | 3 | TAK | TAK | PARTIAL | PARTIAL | PARTIAL | cos\_dev = stary schemat |
 | Subnet (15) | 15 | TAK | TAK | PARTIAL | PARTIAL | PARTIAL | 3 subnety w cos\_dev VPC bez Owner/CC |
 | Security Group (15) | 15 | TAK (12) | TAK (12) | TAK (12) | TAK (12) | TAK (12) | default SG + launch-wizard-1 = brak tagów |
-| VPC Endpoint (8) | 8 | PARTIAL (4) | PARTIAL (4) | TAK | TAK | TAK | prod endpoints brakuje Project; dev brakuje Project+Environment |
+| VPC Endpoint (8) | 8 | PARTIAL (7) | PARTIAL (8) | TAK | TAK | TAK | dev 4/4 remediated; prod 3/4 interface remediated; prod S3 gateway pozostaje bez `Project` |
 | ALB (2) | 2 | TAK (1) | TAK (1) | PARTIAL | PARTIAL | PARTIAL | dev-ALB stary schemat (Tribecloud) |
 | RDS (2) | 2 | TAK | TAK | TAK | TAK | TAK | kompletne |
 | S3 (10) | 10 | TAK (7) | TAK (7) | PARTIAL | PARTIAL | PARTIAL | rshop-dev-backup/bk/temp = 0 tagów; terraform-states-rshop = 0 tagów |
 | ECR (5) | 5 | PARTIAL (2) | TAK | NIE (3) | NIE (3) | NIE (3) | rshopapp-qa/uat/prod brakuje Project/Owner/ManagedBy/CostCenter |
 | CloudFront (4) | 4 | ? | ? | ? | ? | ? | CloudFront jest global — nie sprawdzono tagów (poza scope eu-central-1) |
 | CloudWatch Log Group (15) | 15 | NIE | NIE | NIE | NIE | NIE | brak tagów na log groups; retencja 1d na prod/dev |
-| VPC Endpoint (ENI) | ~wiele | **BRAK** | **BRAK** | **BRAK** | **BRAK** | **BRAK** | ENI nie dziedziczą — root cause incydentu |
+| VPC Endpoint (ENI) | ~wiele | **BRAK** | **BRAK** | **BRAK** | **BRAK** | **BRAK** | ENI endpointów nie dziedziczą tagów endpointu; nie był to przedmiot remediacji 2026-04-24 |
 
 ---
 
@@ -170,10 +170,10 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 - **Skutek:** Tag Policy AWS jest case-sensitive. Jeśli polityka wymaga `Environment` z wartością `prod`, tag `environment` nie spełni wymogu.
 - **Status:** potwierdzone
 
-### #4 — WYSOKIE: Brak tagów na VPC Endpoints (prod i dev)
+### #4 — WYSOKIE: Pozostały wyjątek na PROD S3 gateway endpoint
 
-- **Co:** Wszystkie 8 VPC Endpoints nie mają `Project` i/lub `Environment`
-- **Skutek:** Przy Tag Policy wymagającej Project+Environment na ec2 (VPC endpoints są ec2:VpcEndpoint) — violation
+- **Co:** Po remediacji 2026-04-24 jedynym potwierdzonym wyjątkiem pozostaje `vpce-0ad2e4f5d5005bf1f` (prod S3 gateway) bez `Project`
+- **Skutek:** Jeśli Tag Policy obejmie `ec2:vpc-endpoint`, ten jeden zasób nadal pozostanie violation do czasu wyrównania desired state w CFN
 - **Status:** potwierdzone
 
 ### #5 — WYSOKIE: ECR repozytoria rshopapp-qa/uat/prod niekompletnie otagowane
@@ -250,8 +250,8 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 | rshop-prod ECS Services | **GO** ✓ | CFN patch + force-new-deployment 2026-04-24 — wszystkie 4 ENI zwalidowane (Project=rshop, Environment=prod na każdym) |
 | rshop-dev ECS Services | **GO** ✓ | Wszystkie 4 serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
 | akcesoria2-prod ECS Services | **GO** ✓ | Oba serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
-| rshop-prod VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają kompletne tagi; VPC endpoints brakuje Project |
-| rshop-dev VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają tagi; VPC endpoints brakuje Project+Environment; dev-ALB stary schemat |
+| rshop-prod VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają kompletne tagi; jedyny jawny wyjątek to `vpce-0ad2e4f5d5005bf1f` bez `Project` pending CFN alignment |
+| rshop-dev VPC/Subnets/SG | **PARTIAL** | VPC endpoints zostały zremediowane; otwartym wyjątkiem pozostaje dev-ALB w starym schemacie |
 | ECR repozytoria | **NO-GO** | rshopapp-prod/qa/uat brakuje wymaganych tagów |
 | S3 buckets | **PARTIAL** | CFN-managed mają tagi; orphany (backup/bk/temp/terraform-states) bez tagów |
 | CloudWatch Log Groups | **NO-GO** | brak tagów na wszystkich log groups |
@@ -259,7 +259,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 | ALB prod | **TAK** | kompletne tagi |
 | ALB dev | **NO-GO** | stary schemat Tribecloud — brakuje Owner, CostCenter, ManagedBy, Project |
 
-**Ogólna ocena (stan po 2026-04-24):** ECS scope — **GO** (rshop-prod, rshop-dev, akcesoria2-prod — wszystkie środowiska ECS zwalidowane). Pozostałe zasoby poza ECS (VPC endpoints, ECR, log groups, ALB dev) — **NO-GO** dla pełnego re-enable Tag Policies bez selektywnego scope.
+**Ogólna ocena (stan po 2026-04-24):** ECS scope — **GO** (rshop-prod, rshop-dev, akcesoria2-prod — wszystkie środowiska ECS zwalidowane). Interface VPC endpoints są zremediowane, dev endpoints są zremediowane, ale pełny re-enable Tag Policies poza ECS pozostaje **PARTIAL/NO-GO** z powodu prod S3 gateway endpoint, ECR, log groups i dev-ALB.
 
 ---
 
@@ -279,13 +279,15 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 ### Priorytet 2 — Tag remediation (nie blokuje Tag Policy re-enable jeśli poza scopem)
 
-6. **VPC Endpoints (8)** — dodać Project+Environment do wszystkich (prod: 4 endpoints, dev: 4 endpoints) — można przez CFN lub CLI (endpointy są w EndPoinTs/EndPoints stackach)
+6. ~~**VPC Endpoints (dev 4/4 + prod interface 3/4)**~~ — ✅ **WYKONANE 2026-04-24** — dev: manual `ec2 create-tags` (`Project=rshop`, `Environment=dev`) na 4 endpointach; prod: manual `ec2 create-tags` (`Project=rshop`) na 3 interface endpoints. Focused compliance check dla dev zwrócił `[]`.
 
-7. **ECR repozytoria** — dodać Project, Owner, ManagedBy, CostCenter do rshopapp-prod/qa/uat/dev
+7. **PROD S3 gateway endpoint** — `vpce-0ad2e4f5d5005bf1f` pozostaje wyjątkiem; najpierw wyrównać desired state w CFN, dopiero potem wykonać tag reconciliation
 
-8. **S3 orphany** — otagować lub usunąć: rshop-dev-backup, rshop-dev-bk, rshop-temp, terraform-states-rshop
+8. **ECR repozytoria** — dodać Project, Owner, ManagedBy, CostCenter do rshopapp-prod/qa/uat/dev
 
-9. **dev-ALB** — zmigować na nowy schemat tagów (dodać Owner=DC-devops, CostCenter=DC, Project=rshop; zachować istniejące jako addytywne)
+9. **S3 orphany** — otagować lub usunąć: rshop-dev-backup, rshop-dev-bk, rshop-temp, terraform-states-rshop
+
+10. **dev-ALB** — zmigować na nowy schemat tagów (dodać Owner=DC-devops, CostCenter=DC, Project=rshop; zachować istniejące jako addytywne)
 
 ### Priorytet 3 — Cleanup
 
@@ -391,23 +393,28 @@ Wszystkie ENI mają pełen zestaw tagów: `Project=rshop`, `Environment=prod`, `
 
 ---
 
-## 13. VPC Endpoints — wynik audytu 2026-04-24
+## 13. VPC Endpoints — stan po remediacji 2026-04-24
 
 Szczegóły: [[vpc-endpoints-tagging-audit-2026-04-24]]
 
-**Wynik:** 8/8 endpointów brakuje `Project`. Dev 4/4 brakuje też `Environment`. Root cause: drift CFN — szablony są poprawne, stacks nie były re-deploy'owane po dodaniu tagów.
+**Wynik końcowy po wykonaniu remediacji:** dev 4/4 endpointy zmanualizowane, prod 3/4 interface endpoints zmanualizowane, prod S3 gateway pozostaje wyjątkiem. Istotne odkrycie operacyjne: `CloudFormation UPDATE_COMPLETE` dla `AWS::EC2::VPCEndpoint` nie gwarantował fizycznego nałożenia tagów na live resource.
 
 | Środowisko | Stack | Brakujące tagi | Status |
 |-----------|-------|----------------|--------|
-| prod (4 ep.) | prod-VPCStack-PUE148866VHC | Project | PARTIAL |
-| dev (4 ep.) | dev-EndPiontsStack-1J46NEV2QF038 | Project + Environment | FAIL |
+| prod (4 ep.) | prod-VPCStack-PUE148866VHC | tylko `Project` na `vpce-0ad2e4f5d5005bf1f` | PARTIAL |
+| dev (4 ep.) | dev-EndPiontsStack-1J46NEV2QF038 | brak | GO |
 
-Fix: no-op CFN update na root stackach `prod` i `dev` (szablony już mają poprawne tagi — wystarczy `--use-previous-template` + `--include-nested-stacks`). Nie wymaga ręcznego tagowania.
+Wykonany fix:
+- dev: manual `ec2 create-tags` na 4 endpointach (`Project=rshop`, `Environment=dev`)
+- prod: manual `ec2 create-tags` na 3 interface endpoints (`Project=rshop`)
 
-**Priorytet:** Medium. Nie blokuje ECS runtime. Blokuje FinOps attribution (~$129.60/miesiąc nieatrybuowanych interface endpoint costs).
+Niewykonany wyjątek:
+- `vpce-0ad2e4f5d5005bf1f` (prod S3 gateway) pozostawiony bez zmiany pending CFN alignment, bo desired state w aktualnym template nie potwierdzał tagu `Project` dla `EcrS3Endpoint`
+
+**Priorytet:** Medium. Nie blokuje ECS runtime. Remediacja poprawia FinOps attribution dla interface endpoints; otwarty wyjątek pozostaje jeden.
 
 ---
 
-*Audyt: read-only, brak zmian w AWS. Dane z: aws ecs/cloudformation/resourcegroupstaggingapi/ec2/elbv2/rds/s3api/ecr (eu-central-1, 2026-04-24).*
+*Audyt bazowy i późniejsza remediacja: 2026-04-24. Dane z: aws ecs/cloudformation/resourcegroupstaggingapi/ec2/elbv2/rds/s3api/ecr (eu-central-1, 2026-04-24).*
 *Walidacja ENI: 2026-04-24 19:17 (force-new-deployment rshop-dev-api-svc), 2026-04-24 ~20:55-21:12 (rshop-prod wszystkie 4 serwisy).*
-*Powiązane: [[rshop-tag-policy-readiness]] | [[finops-rshop]] | [[vpc-endpoints-tagging-audit-2026-04-24]]*
+*Powiązane: [[rshop-tag-policy-readiness]] | [[finops-rshop]] | [[vpc-endpoints-tagging-audit-2026-04-24]] | [[rshop-tagging-remediation-2026-04-24]]*
