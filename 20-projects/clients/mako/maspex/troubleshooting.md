@@ -172,7 +172,7 @@ Po apply:
 
 ## 2026-04-24 — CloudFront `/_next/image*` caching: GO LIVE package
 
-**Stan:** patch Terraform zwalidowany, gotowy do `terraform plan` + `apply`. Wymaga potwierdzenia od app teamu przed apply.
+**Stan:** WDROŻONE (2026-04-24). `terraform apply` wykonany — 5 added, 2 changed, 0 destroyed.
 
 ### Ownership
 
@@ -215,6 +215,23 @@ Po apply:
 ```bash
 terraform validate  # ✓ SUCCESS (wykonano)
 ```
+
+### Walidacja po apply
+
+```
+/_next/image* behavior → aktywny (dea1b35e = image_optimizer policy)
+/_next/static/*        → ab5d9518 = static_assets
+/landing/*             → ab5d9518
+/favicon.ico           → ab5d9518
+
+/favicon.ico 1. req: Miss + Cache-Control: public, max-age=31536000 ← Next.js wysyła 1 rok
+/favicon.ico 2. req: Hit from cloudfront + age: 10 ✓ KESZUJE
+
+/_next/image?...: Error from cloudfront ← behavior AKTYWNY; error z originu bo testowy URL
+  nie istnieje w next.config.js remotePatterns — to jest app-side, nie infra-side
+```
+
+**Kluczowy wniosek dla app teamu:** `/_next/image` behavior działa po stronie CF. Jeśli obrazy nadal nie keszują się — sprawdź `remotePatterns` i `minimumCacheTTL` w `next.config.js`.
 
 ### Plan GO LIVE
 
