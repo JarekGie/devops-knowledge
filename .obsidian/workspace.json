@@ -300,6 +300,9 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "10-architecture/adr/ADR-toolkit-stabilization-before-llz-expansion.md",
+    "10-architecture/adr",
+    "10-architecture",
     "30-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
     "20-projects/clients/mako/rshop-tagging-remediation-2026-04-24.md",
     "30-patterns",
@@ -328,14 +331,11 @@
     "20-projects/internal/cloud-support-as-a-service/operating-model.md",
     "20-projects/internal/cloud-support-as-a-service/service-vision.md",
     "20-projects/internal/cloud-support-as-a-service/boundaries.md",
-    "20-projects/internal/cloud-support-as-a-service/LLM_CONTEXT.md",
     "20-projects/internal/cloud-support-as-a-service",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
     "tree.txt",
     "30-research/ai4devops",
-    "30-research",
-    "02-active-context/current-focus.md.tmp.46039.1777022578897",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

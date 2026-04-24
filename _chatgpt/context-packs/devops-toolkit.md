@@ -12,6 +12,10 @@ Ten plik jest syntetycznym kontekstem do pracy z ChatGPT/Codex nad projektem
 audytów AWS, FinOps, IaC/Terraform, CloudFormation, LLZ, observability readiness,
 raportów i lokalnej konsoli operatorskiej.
 
+Aktualna decyzja architektoniczna:
+po zakończeniu kampanii remediacji tagowania w projektach docelowych toolkit wchodzi w fazę
+stabilizacji i refaktoru przed dalszą dużą ekspansją capability, zwłaszcza w obszarze LLZ provisioning.
+
 Główna zasada architektury:
 
 > Toolkit jest silnikiem. Nie posiada danych klientów. Wszystkie artefakty projektu
@@ -243,6 +247,10 @@ finops-tagging-reconciliation
 finops-tagging-runtime
 llz-waf-readonly        # nieśledzony, w toku
 ```
+
+Uwaga strategiczna:
+przed dodawaniem nowych major audit packs priorytetem jest konsolidacja istniejących capability,
+szczególnie tam, gdzie nakładają się obszary tagging, governance i FinOps attribution.
 
 Zidentyfikowane audit definitions:
 
