@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠴ devops-knowledge"
             }
           },
           {
@@ -313,8 +313,19 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "0205e1545b43934f",
   "lastOpenFiles": [
+    "90-reference/notebooklm/planodkupow-refactor/prompts/questions-for-project-team.md",
+    "90-reference/notebooklm/planodkupow-refactor/README.md",
+    "90-reference/notebooklm/planodkupow-refactor/sources.md",
+    "90-reference/notebooklm/planodkupow-refactor/findings/hypotheses-and-risks.md",
+    "90-reference/notebooklm/planodkupow-refactor/findings/refactor-options.md",
+    "90-reference/notebooklm/planodkupow-refactor/artifacts/meeting-brief.md",
+    "90-reference/notebooklm/planodkupow-refactor/prompts",
+    "90-reference/notebooklm/planodkupow-refactor/findings",
+    "90-reference/notebooklm/planodkupow-refactor/conversations",
+    "90-reference/notebooklm/planodkupow-refactor/artifacts",
+    "90-reference/notebooklm/planodkupow-refactor",
     "30-notebooks/planodkupow-refactor/MEETING_BRIEF.md",
     "30-notebooks/planodkupow-refactor/REFactor_OPTIONS.md",
     "30-notebooks/planodkupow-refactor/HYPOTHESES_AND_RISKS.md",
@@ -331,7 +342,6 @@
     "30-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
     "20-projects/clients/mako/rshop-tagging-remediation-2026-04-24.md",
     "30-patterns",
-    "vpc-endpoints-dev-before-tags-20260424-221906.json",
     "_system/LLM_EXPORT_POLICY.md",
     "_system/BOUNDARY_EXCEPTION_PROCESS.md",
     "20-projects/internal/cloudops-soc-lite/README.md",
@@ -340,17 +350,7 @@
     "20-projects/internal/cloudops-soc-lite/PILOT_IDEA_GLPI_CLOUD_EVENTS.md",
     "20-projects/internal/cloudops-soc-lite/EXISTING_CAPABILITIES_AS_FOUNDATION.md",
     "20-projects/internal/cloudops-soc-lite/CLOUDOPS_SOC_LITE_HYPOTHESIS.md",
-    "20-projects/internal/cloudops-soc-lite",
     "20-projects/clients/mako/vpc-endpoints-tagging-audit-2026-04-24.md",
-    "20-projects/clients/mako/maspex/finops-as-is-estimate.md",
-    "_chatgpt/context-packs/rshop-tag-policy.md",
-    "40-runbooks/incidents/rshop-tag-policy-readiness.md",
-    "20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md",
-    "20-projects/clients/mako/anonimizator/07-anonimizacja-tokenizacja-rehydratacja.md",
-    "_system/BOUNDARY_REVIEW_REPORT.md",
-    "20-projects/internal/cloud-support-as-a-service",
-    "20-projects/clients/bmw/ai-taskforce",
-    "20-projects/clients/bmw",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
