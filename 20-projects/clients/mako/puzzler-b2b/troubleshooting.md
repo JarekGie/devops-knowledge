@@ -71,6 +71,28 @@ Najmocniejszy trop z kodu:
 
 ---
 
+## 2026-04-24 — Dodanie serwisów Sync i Builder (IaC)
+
+**Zakres:** Nowe wewnętrzne serwisy backendowe za gateway.
+
+**Zmiany w `envs/dev/`:**
+- `services.tf` — `module "sync_service"` i `module "builder_service"` (linie 343, 384); wzorzec identyczny z core/delivery/notifier: `enable_alb = false`, VPC CIDR ingress, Cloud Map, docdb_secrets + azuread_secrets
+- `service_discovery.tf` — `aws_service_discovery_service.pbms_sync` i `pbms_builder`; DNS: `pbms-sync-dev.pbms.local`, `pbms-builder-dev.pbms.local`
+- `variables.tf` — `sync_image`, `builder_image` (default `nginx:latest`)
+- `terraform.tfvars` — placeholder `sync_image = "nginx:latest"`, `builder_image = "nginx:latest"`
+
+**Ocelot / Swagger:** konfiguracja nie jest w tym repo (baked w Docker image). Trasy muszą być dodane przez dev team w `pbms-backend` → gateway `ocelot.json` / `swaggerEndpoints.*.json`.
+
+**Ocelot routes do dodania ręcznie:**
+```json
+{ "UpstreamPathTemplate": "/sync/{everything}", "DownstreamPathTemplate": "/{everything}", "DownstreamHostAndPorts": [{"Host": "pbms-sync-dev.pbms.local","Port": 8080}], "SwaggerKey": "Sync" }
+{ "UpstreamPathTemplate": "/builder/{everything}", "DownstreamPathTemplate": "/api/{everything}", "DownstreamHostAndPorts": [{"Host": "pbms-builder-dev.pbms.local","Port": 8080}], "SwaggerKey": "Builder" }
+```
+
+**Walidacja:** `terraform validate` → Success (11 deprecation warnings pre-existing w upstream module)
+
+**Status:** [x] resolved — IaC gotowe; BLOCKER: zastąp `nginx:latest` docelowym URI ECR po zbudowaniu obrazów
+
 <!-- nowy wpis: -->
 <!-- ## YYYY-MM-DD — [symptom] -->
 <!-- **Symptom:** -->
