@@ -18,13 +18,15 @@ Pełna szczegółowa wycena wygenerowana jako odpowiedź Claude — przechowywan
 3. **CloudWatch logs volume**: zależy od intensywności load testów
 4. **Container Insights**: włączone na klastrze ECS — dodaje ~$24/mies przy 4 vCPU
 
-## Szacunek miesięczny
+## Szacunek miesięczny (po korekcie zakresu — 2026-04-24)
 
-| Wariant | Koszt |
-|---------|-------|
-| Minimalny (API 1024/2048) | ~$420/mies |
-| Najbardziej prawdopodobny (API 1024/2048 + NAT) | ~$470/mies |
-| Ostrożny (API 4096/8192 jeśli TF apply) | ~$790/mies |
+Koszty shared VPC (NAT Gateway ~$35, NAT EIP ~$3,6) wyłączone z alokacji.
+
+| Wariant | Przed korektą | Po korekcie |
+|---------|--------------|-------------|
+| Minimalny (API 1024/2048) | ~$420 | **~$420** (NAT był już $0 w tym wariancie) |
+| Najbardziej prawdopodobny (API 1024/2048) | ~$470 | **~$431** |
+| Ostrożny (API 4096/8192 jeśli TF apply) | ~$790 | **~$751** |
 
 ## Top 3 cost drivery
 
