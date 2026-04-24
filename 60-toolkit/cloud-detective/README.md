@@ -75,3 +75,8 @@ Musi trzymać zasady toolkitu:
 - [[../observability-ready|Observability Readiness]]
 - [[../../20-projects/internal/devops-toolkit/context|devops-toolkit — kontekst]]
 - [[../../20-projects/internal/devops-toolkit/next-steps|devops-toolkit — następne kroki]]
+
+## Powiązane badania
+
+- [[../../30-research/ai4devops/CLOUD_DETECTIVE_CONNECTIONS|AI4DevOps — hipotezy ewolucji Cloud Detective]]
+- [[../../30-research/ai4devops/README|AI4DevOps — przestrzeń badawcza]]
