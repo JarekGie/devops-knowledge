@@ -106,6 +106,70 @@ AWS_PROFILE=maspex-cli AWS_REGION=eu-west-1 AWS_DEFAULT_REGION=eu-west-1 terrafo
 
 ---
 
+## 2026-04-24 — CloudFront cache behavior analysis + infra/observability patch
+
+**Stan:** patch Terraform przygotowany i zwalidowany, nieaplikowany. Zakres wyłącznie infra/observability.
+
+### CloudFront findings
+
+**Dystrybucja API:** `E3J76RNXIE2YIG` (`kapsel.makotest.pl`)
+
+| Path pattern | Cache policy | Origin request policy | Query strings w cache key | Ocena |
+|---|---|---|---|---|
+| `/_next/static/*` | static_assets (min_ttl=86400) | AllViewer | none | OK |
+| `/landing/*` | static_assets (min_ttl=86400) | AllViewer | none | OK |
+| `/favicon.ico` | (BRAK — przed patchem) | — | — | **PROBLEM** → default=CachingDisabled |
+| `/_next/image*` | (BRAK) | — | — | **PROBLEM** → default=CachingDisabled |
+| default | Managed-CachingDisabled | Managed-AllViewer | n/d | OK (dynamika) |
+
+**`/_next/image*` — nie można cachować bez zmiany modułu:**
+- endpoint Next.js Image Optimization używa `?url=...&w=...&q=...`
+- istniejąca `static_assets` cache policy ma `query_string_behavior = "none"` — cachowanie wszystkich request do `/_next/image` na ten sam klucz byłoby błędem (podałoby zły obraz)
+- wymagana nowa cache policy z `query_string_behavior = "all"` lub `allExcept`
+- **zmiana oznaczona jako rekomendacja, nie wdrożona** — wymaga nowego wariantu modułu
+
+**`/favicon.ico` — bezpiecznie keszować:**
+- asset statyczny, Next.js wersjonuje przez hash w query string
+- `query_string_behavior = "none"` w cache key jest poprawny (hash nie zmienia treści pliku)
+- **wdrożono:**
+  - `terraform.tfvars`: `api_cloudfront_static_paths = ["/_next/static/*", "/landing/*", "/favicon.ico"]`
+  - `main.tf`: `/favicon.ico` → `AllViewer` origin request policy (wymagane dla ALB host-based routing)
+
+### Monitoring additions (dołączone do istniejącego patcha)
+
+**Nowe zasoby:**
+- `redis_circuit_open` — log metric filter: `"Redis circuit open"` → `RedisCircuitOpenCount`
+- alarm `maspex-uat-api-redis-circuit-open` — threshold: >10 events/min, SNS
+- dashboard Row 11: `CloudFront API — Cache Hit Rate %` + `Total vs Origin Requests` (wymaga CF additional metrics)
+- dashboard Row 12: `API Logs — Redis Circuit Open`
+- Logs Insights query `top-request-paths` — top 25 ścieżek po liczbie hitów
+- Logs Insights query `next-image-and-favicon-origin-hits` — logi z `/_next/image` lub `favicon.ico`
+- `outputs.tf`: dodano `api_redis_circuit_open` do `alarm_arns`
+
+**`terraform validate`:** SUCCESS
+
+### Co wymaga ręcznego terraform plan/apply
+
+Cały pakiet (monitoring + favicon CF behavior) jest nieaplikowany.
+
+```bash
+AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color
+AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat apply
+```
+
+Po apply:
+- sprawdzić czy nowe alarmy mają `AlarmActions` na `maspex-uat-alarms`
+- sprawdzić czy `/favicon.ico` dostaje `Hit` w CloudFront (nagłówek `X-Cache: Hit from cloudfront`)
+- jeśli CloudFront additional metrics są wyłączone: włączyć je na dystrybucji `E3J76RNXIE2YIG`
+
+### Rekomendacje bez wdrożenia
+
+1. **`/_next/image*` caching** — nowy wariant cache policy z `query_string_behavior = "all"`, TTL 24h-7d. Bez tej zmiany każdy request do `/_next/image` zawsze idzie do originu (ECS API).
+2. **CloudFront additional metrics** — włączyć na `E3J76RNXIE2YIG` żeby działały widgety `CacheHitRate` i `OriginRequests`
+3. **Weryfikacja w AWS CLI**: `aws cloudfront get-distribution-config --id E3J76RNXIE2YIG --profile maspex-cli` — potwierdź listę behaviors i cache policies aktualnego stanu live (stan Terraform może różnić się od stanu live jeśli apply nie był wykonany)
+
+---
+
 ## 2026-04-23 — next-core-app: minimalny hot-path patch dla `/api/slogan`
 
 **Stan:** patch aplikacyjny przygotowany lokalnie, niecommitowany.
