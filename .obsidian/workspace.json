@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Diagnose ECS task tagging after change set deployment"
+              "title": "Terminal: ✳ Diagnose ECS task tagging after change set deployment"
             }
           },
           {
@@ -290,6 +290,7 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "20-projects/clients/mako/vpc-endpoints-tagging-audit-2026-04-24.md",
     "20-projects/clients/mako/maspex/finops-as-is-estimate.md",
     "_chatgpt/context-packs/rshop-tag-policy.md",
     "40-runbooks/incidents/rshop-tag-policy-readiness.md",
@@ -318,7 +319,6 @@
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
     "_system/PROMPT_BOUNDARY_CHECKLIST.md",
-    "_system/DERIVATIVE_INSIGHT_RULES.md",
     "tree.txt",
     "30-research/ai4devops",
     "30-research",

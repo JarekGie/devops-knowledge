@@ -389,6 +389,25 @@ Wszystkie ENI mają pełen zestaw tagów: `Project=rshop`, `Environment=prod`, `
 
 ---
 
+---
+
+## 13. VPC Endpoints — wynik audytu 2026-04-24
+
+Szczegóły: [[vpc-endpoints-tagging-audit-2026-04-24]]
+
+**Wynik:** 8/8 endpointów brakuje `Project`. Dev 4/4 brakuje też `Environment`. Root cause: drift CFN — szablony są poprawne, stacks nie były re-deploy'owane po dodaniu tagów.
+
+| Środowisko | Stack | Brakujące tagi | Status |
+|-----------|-------|----------------|--------|
+| prod (4 ep.) | prod-VPCStack-PUE148866VHC | Project | PARTIAL |
+| dev (4 ep.) | dev-EndPiontsStack-1J46NEV2QF038 | Project + Environment | FAIL |
+
+Fix: no-op CFN update na root stackach `prod` i `dev` (szablony już mają poprawne tagi — wystarczy `--use-previous-template` + `--include-nested-stacks`). Nie wymaga ręcznego tagowania.
+
+**Priorytet:** Medium. Nie blokuje ECS runtime. Blokuje FinOps attribution (~$129.60/miesiąc nieatrybuowanych interface endpoint costs).
+
+---
+
 *Audyt: read-only, brak zmian w AWS. Dane z: aws ecs/cloudformation/resourcegroupstaggingapi/ec2/elbv2/rds/s3api/ecr (eu-central-1, 2026-04-24).*
 *Walidacja ENI: 2026-04-24 19:17 (force-new-deployment rshop-dev-api-svc), 2026-04-24 ~20:55-21:12 (rshop-prod wszystkie 4 serwisy).*
-*Powiązane: [[rshop-tag-policy-readiness]] | [[finops-rshop]]*
+*Powiązane: [[rshop-tag-policy-readiness]] | [[finops-rshop]] | [[vpc-endpoints-tagging-audit-2026-04-24]]*
