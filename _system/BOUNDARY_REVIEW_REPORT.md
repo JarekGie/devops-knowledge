@@ -151,5 +151,32 @@ updated: 2026-04-24
 - [ ] Dodaj frontmatter do `_chatgpt/context-packs/*.md`
 - [ ] Przejrzyj `90-reference/notebooklm/` i ustal co tam jest
 - [ ] Dodaj frontmatter do `20-projects/internal/*/README.md`
-- [ ] Rozstrzygnij klasyfikację `llz/` (internal-product-strategy vs private-rnd)
+- [ ] Rozszerz model `domain: internal-product-strategy` + `related_domains: [private-rnd]` na pozostałe notatki w `20-projects/internal/llz/`
 - [ ] Dodaj frontmatter do `60-toolkit/README.md` i `60-toolkit/contracts/`
+
+---
+
+## Hardening Pass Delta
+
+### New controls added
+
+- Dodano [[BOUNDARY_EXCEPTION_PROCESS]] jako formalny proces kontrolowanych wyjątków granicznych.
+- Dodano [[LLM_EXPORT_POLICY]] jako politykę egress dla ChatGPT, Claude, NotebookLM i modeli lokalnych/self-hosted.
+- Dodano reguły dziedziczenia klasyfikacji do [[CLASSIFICATION_MODEL]], w tym zakaz cichego obniżania klasy wrażliwości.
+- Rozszerzono [[PROMPT_BOUNDARY_CHECKLIST]] o kontrole eksportu i minimalizacji danych.
+- Doprecyzowano LLZ jako domenę główną `internal-product-strategy` z `related_domains: private-rnd`.
+- Dodano reguły anti-drift dla `30-research/ai4devops/`, aby chronić warstwę `shared-concept`.
+
+### Contracts strengthened
+
+- [[DOMAIN_ISOLATION_CONTRACT]] teraz jawnie odsyła do procesu wyjątku granicznego.
+- [[DERIVATIVE_INSIGHT_RULES]] nie dopuszcza już skrótu `client-work -> private-rnd` ani `client-work -> internal-product-strategy` bez pośredniego etapu `shared-concept`.
+- [[KNOWLEDGE_BOUNDARIES]] obejmuje teraz wyjątki graniczne, dziedziczenie klasyfikacji i politykę eksportu LLM.
+- Model granic został doprecyzowany tak, aby `shared-concept` był jedyną warstwą neutralizacji przy przepływie z `client-work`.
+
+### Unresolved questions to revisit later
+
+- Czy potrzebny jest centralny rejestr wyjątków granicznych zamiast dokumentacji rozproszonej po notatkach docelowych.
+- Czy `20-projects/internal/llz/README.md` i pozostałe notatki LLZ powinny otrzymać ten sam model `domain` / `related_domains`.
+- Czy polityka egress powinna rozróżniać warianty narzędzi bardziej granularnie, np. ChatGPT Enterprise vs Teams vs API, Claude web vs API.
+- Czy potrzebny jest osobny kontrakt dla materiałów `mixed`, aby uniknąć nadużycia tej klasy.

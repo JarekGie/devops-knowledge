@@ -15,7 +15,7 @@ updated: 2026-04-24
 > Wypełnij przed wysłaniem prompta do: ChatGPT, Claude, NotebookLM, Codex, Gemini lub innego LLM.
 > Jeśli którekolwiek pytanie wskazuje na problem — zatrzymaj się i rozwiąż go przed wysłaniem.
 
-Powiązane: [[LLM_CONTEXT_BOUNDARY_CONTRACT]] | [[DOMAIN_ISOLATION_CONTRACT]] | [[DERIVATIVE_INSIGHT_RULES]]
+Powiązane: [[LLM_CONTEXT_BOUNDARY_CONTRACT]] | [[DOMAIN_ISOLATION_CONTRACT]] | [[DERIVATIVE_INSIGHT_RULES]] | [[LLM_EXPORT_POLICY]]
 
 ---
 
@@ -79,6 +79,17 @@ Powiązane: [[LLM_CONTEXT_BOUNDARY_CONTRACT]] | [[DOMAIN_ISOLATION_CONTRACT]] | 
   ChatGPT Enterprise → no-training (ok dla confidential).
   Claude API → no-training (ok dla confidential).
   NotebookLM → Google; nie wysyłaj `restricted`.
+
+- [ ] **Czy ten eksport jest zgodny z [[LLM_EXPORT_POLICY]]?**
+  Sprawdź: klasyfikacja materiału, typ narzędzia i czy wymagane jest anonimizowanie.
+  → Jeśli NIE: zatrzymaj eksport.
+
+- [ ] **Czy przygotowałem minimalny zakres danych do egress?**
+  Nie wysyłaj całych notatek, jeśli wystarczy fragment albo wzorzec `shared-concept`.
+  → Jeśli NIE: przytnij input.
+
+- [ ] **Czy próbuję obniżyć klasyfikację tylko po to, żeby użyć zewnętrznego LLM?**
+  → Jeśli TAK: STOP. To wymaga [[BOUNDARY_EXCEPTION_PROCESS]], a nie cichego override.
 
 ---
 

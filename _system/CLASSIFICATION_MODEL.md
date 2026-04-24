@@ -15,7 +15,7 @@ updated: 2026-04-24
 > Definicje klas domen i klas wrażliwości obowiązujące w całym vault.
 > Każda nowa notatka MUST mieć przypisaną domenę i klasę wrażliwości w frontmatter.
 
-Powiązane: [[KNOWLEDGE_BOUNDARIES]] | [[ORIGIN_METADATA_CONTRACT]] | [[DOMAIN_ISOLATION_CONTRACT]]
+Powiązane: [[KNOWLEDGE_BOUNDARIES]] | [[ORIGIN_METADATA_CONTRACT]] | [[DOMAIN_ISOLATION_CONTRACT]] | [[BOUNDARY_EXCEPTION_PROCESS]]
 
 ---
 
@@ -157,6 +157,118 @@ Najwyższy poziom. Materiały objęte NDA, dane osobowe, surowe logi produkcyjne
 | operational-runbook | internal / confidential | restricted | summary-only |
 | reference-material | public / internal | allowed | allowed |
 | inbox-transient | unknown | restricted | prohibited |
+
+---
+
+## Reguły dziedziczenia klasyfikacji
+
+Domyślne klasyfikacje folderów **MAY** być dziedziczone przez notatki potomne, jeśli te notatki nie mają jeszcze jawnie ustawionego frontmatter.
+
+Notatka potomna **SHOULD** przejąć z folderu nadrzędnego co najmniej:
+- `domain`
+- `classification`
+- `llm_exposure`
+- `cross_domain_export`
+
+Frontmatter na poziomie notatki **MAY** nadpisać wartości odziedziczone tylko wtedy, gdy zawiera jawne uzasadnienie w postaci pola opisowego, np.:
+
+```yaml
+classification_justification: "Notatka zawiera wyłącznie zanonimizowany model referencyjny."
+```
+
+Brak uzasadnienia oznacza, że override jest niezgodny z kontraktem.
+
+Notatka potomna **MUST NOT** obniżać poziomu wrażliwości poniżej klasyfikacji rodzica.
+
+Przykład niedozwolony:
+
+```text
+20-projects/clients/<klient>/  -> classification: confidential
+20-projects/clients/<klient>/analiza.md -> classification: internal
+```
+
+Taka zmiana **MUST NOT** nastąpić po cichu. Jeśli istnieje potrzeba obniżenia klasyfikacji:
+1. treść **MUST** zostać przekształcona do postaci pochodnej,
+2. proces **MUST** przejść przez [[BOUNDARY_EXCEPTION_PROCESS]],
+3. notatka wynikowa **MUST** dokumentować uzasadnienie i ślad pochodzenia.
+
+Notatka potomna **MAY** podnieść poziom wrażliwości ponad rodzica, jeśli zawiera bardziej wrażliwy fragment, np. surowe dane operacyjne lub dodatkowe metadane.
+
+Dziedziczenie dotyczy także sesji LLM: jeśli paczka źródłowa jest zbudowana z folderu `confidential`, pojedynczy plik bez frontmatter **MUST** być traktowany co najmniej jako `confidential`.
+
+### Kolejność poziomów wrażliwości
+
+```text
+public < internal < confidential < restricted
+```
+
+### Przykłady dziedziczenia
+
+**Przykład 1 — klientowski folder poufny**
+
+Folder:
+
+```yaml
+domain: client-work
+classification: confidential
+llm_exposure: restricted
+```
+
+Notatka potomna bez frontmatter:
+- **MUST** być traktowana jako `client-work / confidential / restricted`.
+
+**Przykład 2 — jawne podniesienie klasyfikacji**
+
+Folder:
+
+```yaml
+domain: internal-product-strategy
+classification: internal
+```
+
+Notatka potomna:
+
+```yaml
+domain: internal-product-strategy
+classification: confidential
+classification_justification: "Zawiera nieopublikowane decyzje roadmapy i model cenowy."
+```
+
+To jest dozwolone.
+
+**Przykład 3 — niedozwolone ciche obniżenie**
+
+Folder:
+
+```yaml
+domain: client-work
+classification: confidential
+```
+
+Notatka potomna:
+
+```yaml
+domain: client-work
+classification: internal
+```
+
+To jest niedozwolone bez [[BOUNDARY_EXCEPTION_PROCESS]].
+
+**Przykład 4 — wynik po transformacji**
+
+Źródło:
+
+```text
+20-projects/clients/mako/... -> client-work / confidential
+```
+
+Wynik:
+
+```text
+30-research/ai4devops/... -> shared-concept / internal
+```
+
+To jest dozwolone tylko jako nowa notatka pochodna po generalizacji i udokumentowanym wyjątku granicznym. Nie jest to zwykły override potomka.
 
 ---
 

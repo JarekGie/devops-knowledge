@@ -15,7 +15,7 @@ updated: 2026-04-24
 > Dokument przeglądowy. Szczegółowe definicje w dokumentach powiązanych.
 > Czytaj ten plik zanim załadujesz jakikolwiek materiał do LLM.
 
-Powiązane: [[CLASSIFICATION_MODEL]] | [[DOMAIN_ISOLATION_CONTRACT]] | [[LLM_CONTEXT_BOUNDARY_CONTRACT]] | [[PROMPT_BOUNDARY_CHECKLIST]]
+Powiązane: [[CLASSIFICATION_MODEL]] | [[DOMAIN_ISOLATION_CONTRACT]] | [[LLM_CONTEXT_BOUNDARY_CONTRACT]] | [[PROMPT_BOUNDARY_CHECKLIST]] | [[BOUNDARY_EXCEPTION_PROCESS]] | [[LLM_EXPORT_POLICY]]
 
 ---
 
@@ -69,6 +69,10 @@ Mieszanie tych kontekstów — nawet nieintencjonalne — prowadzi do:
 │  │ cloud-detective      │                       │
 │  │ restricted           │                       │
 │  └──────────────────────┘                       │
+│                                                 │
+│  wyjątek graniczny:                              │
+│  client-work -> generalized insight ->          │
+│  shared-concept only                             │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -107,10 +111,12 @@ Przed użyciem notatki w sesji LLM zadaj pytanie:
 
 | Dokument | Zakres |
 |----------|--------|
-| [[CLASSIFICATION_MODEL]] | Definicje klas domen i wrażliwości |
+| [[CLASSIFICATION_MODEL]] | Definicje klas domen, wrażliwości i reguł dziedziczenia |
 | [[DOMAIN_ISOLATION_CONTRACT]] | Kontrakty izolacji z MUST/MUST NOT |
+| [[BOUNDARY_EXCEPTION_PROCESS]] | Kontrolowany proces wyjątków granicznych |
 | [[LLM_CONTEXT_BOUNDARY_CONTRACT]] | Zasady sesji LLM |
 | [[ORIGIN_METADATA_CONTRACT]] | Obowiązkowy frontmatter notatek |
 | [[DERIVATIVE_INSIGHT_RULES]] | Zasady pochodnych wniosków między domenami |
+| [[LLM_EXPORT_POLICY]] | Polityka egress i eksportu treści do narzędzi LLM |
 | [[PROMPT_BOUNDARY_CHECKLIST]] | Checklista przed wysłaniem prompta |
 | [[BOUNDARY_REVIEW_REPORT]] | Raport audytowy stanu vault |

@@ -15,7 +15,7 @@ updated: 2026-04-24
 > Reguluje jedyny legalny mechanizm przepływu wiedzy z domeny wrażliwej do innej.
 > „Derived insight" to wniosek wyabstrahowany, zanonimizowany i jawnie oznaczony.
 
-Powiązane: [[DOMAIN_ISOLATION_CONTRACT]] | [[CLASSIFICATION_MODEL]] | [[KNOWLEDGE_BOUNDARIES]]
+Powiązane: [[DOMAIN_ISOLATION_CONTRACT]] | [[CLASSIFICATION_MODEL]] | [[KNOWLEDGE_BOUNDARIES]] | [[BOUNDARY_EXCEPTION_PROCESS]]
 
 ---
 
@@ -104,8 +104,8 @@ related_domains:
 | Źródło | Cel | Status | Warunek |
 |--------|-----|--------|---------|
 | `client-work` → `shared-concept` | ALLOWED | po pełnej anonimizacji i generalizacji |
-| `client-work` → `internal-product-strategy` | ALLOWED | po pełnej anonimizacji + jawne derived |
-| `client-work` → `private-rnd` | ALLOWED | po pełnej anonimizacji + jawne derived |
+| `client-work` → `internal-product-strategy` | RESTRICTED | wyłącznie przez `shared-concept`, po procesie z [[BOUNDARY_EXCEPTION_PROCESS]] |
+| `client-work` → `private-rnd` | RESTRICTED | wyłącznie przez `shared-concept`, po procesie z [[BOUNDARY_EXCEPTION_PROCESS]] |
 | `internal-product-strategy` → `private-rnd` | ALLOWED | po jawnym oznaczeniu źródła |
 | `private-rnd` → `internal-product-strategy` | ALLOWED | po jawnym oznaczeniu źródła |
 | `client-work` → `client-work` (inny klient) | PROHIBITED | bez wyjątków |
@@ -134,6 +134,18 @@ related_domains:
 > W BMW widzieliśmy że mają problem X, dlatego w Cloud Support as a Service powinniśmy zaoferować Y.
 
 Naruszenie: bezpośrednie przypisanie klienta do wniosku, brak anonimizacji.
+
+---
+
+## Ograniczenie przepływu wtórnego
+
+Derived insight utworzony z `client-work` **MUST** najpierw trafić do warstwy `shared-concept`.
+
+Nie wolno traktować procesu derived jako skrótu:
+- `client-work` -> `internal-product-strategy`
+- `client-work` -> `private-rnd`
+
+bez pośredniego etapu `shared-concept` i bez udokumentowanego wyjątku granicznego.
 
 ---
 

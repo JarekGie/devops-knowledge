@@ -15,7 +15,7 @@ updated: 2026-04-24
 > Kontrakt nadrzędny wobec wszystkich notatek i sesji LLM w tym vault.
 > Język: MUST = obowiązkowe, MUST NOT = bezwzględnie zabronione, SHOULD = zalecane, MAY = dozwolone.
 
-Powiązane: [[KNOWLEDGE_BOUNDARIES]] | [[CLASSIFICATION_MODEL]] | [[DERIVATIVE_INSIGHT_RULES]]
+Powiązane: [[KNOWLEDGE_BOUNDARIES]] | [[CLASSIFICATION_MODEL]] | [[DERIVATIVE_INSIGHT_RULES]] | [[BOUNDARY_EXCEPTION_PROCESS]]
 
 ---
 
@@ -50,7 +50,7 @@ Powiązane: [[KNOWLEDGE_BOUNDARIES]] | [[CLASSIFICATION_MODEL]] | [[DERIVATIVE_I
 2. uogólnienia do wzorca (nie konkretnego przypadku),
 3. oznaczenia w notatce docelowej jako `derived insight` z datą generalizacji.
 
-**Szczegółowe zasady:** [[DERIVATIVE_INSIGHT_RULES]]
+**Szczegółowe zasady:** [[DERIVATIVE_INSIGHT_RULES]] | [[BOUNDARY_EXCEPTION_PROCESS]]
 
 ---
 
@@ -116,8 +116,8 @@ Mieszanie domen MAY być dozwolone wyłącznie gdy:
 
 | Domena A | Domena B | Status | Warunek wyjątku |
 |----------|----------|--------|-----------------|
-| client-work | internal-product-strategy | PROHIBITED | brak |
-| client-work | private-rnd | PROHIBITED | brak |
+| client-work | internal-product-strategy | PROHIBITED | brak; tylko przez derived do shared-concept |
+| client-work | private-rnd | PROHIBITED | brak; tylko przez derived do shared-concept |
 | client-work | client-work (inny klient) | PROHIBITED | brak |
 | internal-product-strategy | private-rnd | RESTRICTED | tylko summary-only, jawne derived |
 | client-work | shared-concept | ALLOWED | shared-concept w roli źródła |
