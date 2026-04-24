@@ -113,9 +113,9 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 | Serwis | propagateTags (live) | propagateTags (CFN) | enableECSManagedTags | Tags na serwisie | ENI dziedziczą tagi | Gotowość Tag Policy |
 |--------|---------------------|---------------------|---------------------|-----------------|--------------------|--------------------|
-| rshop-dev-backoffice-svc | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
-| rshop-dev-frontend-svc1 | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
-| rshop-dev-frontend-svc2 | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
+| rshop-dev-backoffice-svc | **SERVICE** ✓ | BRAK | **True** ✓ | kompletne | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
+| rshop-dev-frontend-svc1 | **SERVICE** ✓ | BRAK | **True** ✓ | kompletne | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
+| rshop-dev-frontend-svc2 | **SERVICE** ✓ | BRAK | **True** ✓ | kompletne | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
 | rshop-dev-api-svc | **SERVICE** ✓ | BRAK | **True** ✓ | kompletne | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
 
 ### akcesoria2-prod (cluster: akcesoria2-prod-Klaster)
@@ -248,7 +248,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 | Zakres | Gotowość | Uzasadnienie |
 |--------|----------|-------------|
 | rshop-prod ECS Services | **NO-GO** | propagateTags=SERVICE tylko runtime (drift), CFN nie ma PropagateTags/Tags — następny deploy CFN resetuje do NONE → TagPolicyViolation na ENI |
-| rshop-dev ECS Services | **NO-GO** | propagateTags=NONE, CFN nie ma PropagateTags — ENI nigdy nie są tagowane |
+| rshop-dev ECS Services | **GO** ✓ | Wszystkie 4 serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
 | akcesoria2-prod ECS Services | **NO-GO** | propagateTags=NONE, CFN nie ma PropagateTags — ENI nigdy nie są tagowane |
 | rshop-prod VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają kompletne tagi; VPC endpoints brakuje Project |
 | rshop-dev VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają tagi; VPC endpoints brakuje Project+Environment; dev-ALB stary schemat |
@@ -362,7 +362,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 **Verdict:** Tag propagation działa end-to-end. `rshop-dev-api-svc` → **GO**.
 
-**Następny krok:** Force-new-deployment na pozostałe 3 dev serwisy (backoffice, frontend-svc1, frontend-svc2) po wykonaniu identycznego change setu dla każdego. Procedura identyczna — ten sam pre-check przed każdym.
+**Następny krok:** Wszystkie 4 dev serwisy zwalidowane. Kolejny etap: analogiczny rollout dla PROD (po fix CFN) i akcesoria2.
 
 ---
 
