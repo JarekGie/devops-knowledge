@@ -1,0 +1,102 @@
+[
+    {
+        "EndpointId": "vpce-06fbbcc50008abf6d",
+        "Service": "com.amazonaws.eu-central-1.s3",
+        "Type": "Gateway",
+        "Vpc": "vpc-0befdfd9f1b71ebf6",
+        "State": "available",
+        "Tags": [
+            {
+                "Key": "Owner",
+                "Value": "DC-devops"
+            },
+            {
+                "Key": "ManagedBy",
+                "Value": "cloudformation"
+            },
+            {
+                "Key": "CostCenter",
+                "Value": "DC"
+            },
+            {
+                "Key": "Name",
+                "Value": "dev-s3"
+            }
+        ]
+    },
+    {
+        "EndpointId": "vpce-0adbca724b31df149",
+        "Service": "com.amazonaws.eu-central-1.ecr.api",
+        "Type": "Interface",
+        "Vpc": "vpc-0befdfd9f1b71ebf6",
+        "State": "available",
+        "Tags": [
+            {
+                "Key": "Owner",
+                "Value": "DC-devops"
+            },
+            {
+                "Key": "ManagedBy",
+                "Value": "cloudformation"
+            },
+            {
+                "Key": "CostCenter",
+                "Value": "DC"
+            },
+            {
+                "Key": "Name",
+                "Value": "dev-ecr"
+            }
+        ]
+    },
+    {
+        "EndpointId": "vpce-055c1e81bc384fe77",
+        "Service": "com.amazonaws.eu-central-1.ecr.dkr",
+        "Type": "Interface",
+        "Vpc": "vpc-0befdfd9f1b71ebf6",
+        "State": "available",
+        "Tags": [
+            {
+                "Key": "Owner",
+                "Value": "DC-devops"
+            },
+            {
+                "Key": "ManagedBy",
+                "Value": "cloudformation"
+            },
+            {
+                "Key": "CostCenter",
+                "Value": "DC"
+            },
+            {
+                "Key": "Name",
+                "Value": "dev-dkr"
+            }
+        ]
+    },
+    {
+        "EndpointId": "vpce-04a529e00f650ba57",
+        "Service": "com.amazonaws.eu-central-1.logs",
+        "Type": "Interface",
+        "Vpc": "vpc-0befdfd9f1b71ebf6",
+        "State": "available",
+        "Tags": [
+            {
+                "Key": "Owner",
+                "Value": "DC-devops"
+            },
+            {
+                "Key": "ManagedBy",
+                "Value": "cloudformation"
+            },
+            {
+                "Key": "CostCenter",
+                "Value": "DC"
+            },
+            {
+                "Key": "Name",
+                "Value": "dev-log"
+            }
+        ]
+    }
+]

@@ -1,9 +1,15 @@
 ---
 project: llz
 type: internal
+domain: internal-product-strategy
+related_domains:
+  - private-rnd
+classification: confidential
+llm_exposure: restricted
+cross_domain_export: summary-only
 tags: [llz, terraform, cloudformation, governance, observability, platform, mako]
 created: 2026-04-18
-updated: 2026-04-18
+updated: 2026-04-24
 ---
 
 # LLZ — Light Landing Zone
@@ -22,6 +28,27 @@ updated: 2026-04-18
 
 LLZ NIE jest pełnym AWS Landing Zone (Control Tower, multi-account governance).
 LLZ JEST: minimalnym zestawem standardów operacyjnych na poziomie projektu.
+
+## Klasyfikacja domenowa LLZ
+
+LLZ **MUST** być traktowany przede wszystkim jako `domain: internal-product-strategy`, ponieważ definiuje standard platformowy, governance i docelowy operating model dla projektów MakoLab.
+
+LLZ **MUST NOT** być upraszczany do pojedynczego przypadku `private-rnd`, ponieważ wtedy zaciera się jego rola jako kontraktu organizacyjnego.
+
+Jednocześnie LLZ ma realne powiązania z `private-rnd`, bo część capability jest implementowana lub prototypowana w `devops-toolkit`.
+
+Dlatego ta notatka używa modelu:
+
+```yaml
+domain: internal-product-strategy
+related_domains:
+  - private-rnd
+```
+
+Racjonalizacja:
+- warstwa zasad, onboardingu i governance należy do `internal-product-strategy`,
+- warstwa implementacyjna i eksperymentalna może istnieć w `private-rnd`,
+- przepływ między tymi warstwami **MUST** zachować separację: strategia nie staje się automatycznie decyzją implementacyjną, a implementacja nie staje się automatycznie standardem platformowym.
 
 ---
 

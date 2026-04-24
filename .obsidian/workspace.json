@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠙ devops-knowledge"
+              "title": "Terminal: ⠼ devops-knowledge"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠼ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -125,7 +125,8 @@
               "title": "Podgląd grafu"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -298,8 +299,11 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "0205e1545b43934f",
   "lastOpenFiles": [
+    "vpc-endpoints-dev-before-tags-20260424-221906.json",
+    "_system/LLM_EXPORT_POLICY.md",
+    "_system/BOUNDARY_EXCEPTION_PROCESS.md",
     "20-projects/internal/cloudops-soc-lite/README.md",
     "20-projects/internal/cloudops-soc-lite/CONNECTION_TO_LLZ_AND_NIS2.md",
     "20-projects/internal/cloudops-soc-lite/INCUBATION_STRATEGY.md",
@@ -325,9 +329,6 @@
     "20-projects/internal/cloud-support-as-a-service/LLM_CONTEXT.md",
     "20-projects/internal/cloud-support-as-a-service/README.md",
     "20-projects/internal/cloud-support-as-a-service",
-    "20-projects/clients/bmw/ai-taskforce/open-questions.md",
-    "20-projects/clients/bmw/ai-taskforce/presentation-analysis.md",
-    "20-projects/clients/bmw/ai-taskforce/transcript-analysis.md",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
     "tree.txt",

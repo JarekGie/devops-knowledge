@@ -117,6 +117,32 @@ Prompt injection w pipeline CI/CD, agent manipulowany przez dane w logu — to n
 > Hipotezy cloud-detective zostały przeniesione/oddzielone do `60-toolkit/cloud-detective/ai4devops-relationship.md`.
 > Folder jest czysty jako `shared-concept`.
 
+## Anti-drift rules
+
+Ten folder **MUST NOT** zawierać:
+- implementation commitments
+- product roadmaps
+- client deliverables
+- private R&D design decisions
+
+Ten folder **MUST** zawierać wyłącznie:
+- concepts
+- patterns
+- hypotheses
+- reference models
+
+No implementation commitments.
+
+Jeśli notatka zaczyna zawierać:
+- decyzję o wdrożeniu,
+- zobowiązanie roadmapowe,
+- specyfikę produktu,
+- materiał do oddania klientowi,
+
+to **MUST** zostać przeniesiona albo rozdzielona do właściwej domeny zamiast rozszerzać `shared-concept`.
+
+Warstwa `shared-concept` **MUST** chronić się przed dryfem domenowym. Neutralny język, brak ownerów implementacji i brak terminów dostarczenia są wymaganiem, nie stylem redakcyjnym.
+
 ## Questions to revisit later
 
 - Czy AI4DevOps ma sens jako osobna dyscyplina, czy to tylko AIOps + Copilot?
