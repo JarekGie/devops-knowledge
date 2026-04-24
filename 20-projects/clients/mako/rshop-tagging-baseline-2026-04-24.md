@@ -102,12 +102,12 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 | Serwis | propagateTags (live) | propagateTags (CFN) | enableECSManagedTags | Tags na serwisie | ENI dziedziczą tagi | Gotowość Tag Policy |
 |--------|---------------------|---------------------|---------------------|-----------------|--------------------|--------------------|
-| rshop-prod-backoffice-svc | SERVICE (drift) | **BRAK** | True (drift) | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** (runtime, drift) | NO-GO — CFN nie odzwierciedla, redeployment zresetuje |
-| rshop-prod-frontend-svc1 | SERVICE (drift) | **BRAK** | True (drift) | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** (runtime, drift) | NO-GO — jak wyżej |
-| rshop-prod-frontend-svc2 | SERVICE (drift) | **BRAK** | True (drift) | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** (runtime, drift) | NO-GO — jak wyżej |
-| rshop-prod-api-svc | SERVICE (drift) | **BRAK** | True (drift) | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** (runtime, drift) | NO-GO — CFN nie odzwierciedla |
+| rshop-prod-backoffice-svc | **SERVICE** ✓ | **SERVICE** ✓ | **True** ✓ | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
+| rshop-prod-frontend-svc1 | **SERVICE** ✓ | **SERVICE** ✓ | **True** ✓ | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
+| rshop-prod-frontend-svc2 | **SERVICE** ✓ | **SERVICE** ✓ | **True** ✓ | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
+| rshop-prod-api-svc | **SERVICE** ✓ | **SERVICE** ✓ | **True** ✓ | Project/Env/Owner/ManagedBy/CC + hybrid lowercase | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
 
-**Uwaga krytyczna:** rshop-prod aktualnie NIE produkuje nowych ENI bez tagów (propagateTags=SERVICE runtime), ale CFN template nie zawiera `PropagateTags: SERVICE`. Każdy deploy przez CFN (update stack) zresetuje propagateTags do domyślnego (NONE) i ponownie złamie Tag Policy.
+**CFN patch wykonany 2026-04-24:** PropagateTags + EnableECSManagedTags dodane do api.yml, backoffice.yml, frontend.yml, frontend2.yml (s3://rshop-cf/). Change set `prod-propagate-tags-2026-04-24` wykonany na root stack `prod`. Force-new-deployment wszystkich 4 serwisów — ENI zwalidowane.
 
 ### rshop-dev (cluster: rshop-dev-Klaster)
 
@@ -247,7 +247,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 | Zakres | Gotowość | Uzasadnienie |
 |--------|----------|-------------|
-| rshop-prod ECS Services | **NO-GO** | propagateTags=SERVICE tylko runtime (drift), CFN nie ma PropagateTags/Tags — następny deploy CFN resetuje do NONE → TagPolicyViolation na ENI |
+| rshop-prod ECS Services | **GO** ✓ | CFN patch + force-new-deployment 2026-04-24 — wszystkie 4 ENI zwalidowane (Project=rshop, Environment=prod na każdym) |
 | rshop-dev ECS Services | **GO** ✓ | Wszystkie 4 serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
 | akcesoria2-prod ECS Services | **GO** ✓ | Oba serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
 | rshop-prod VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają kompletne tagi; VPC endpoints brakuje Project |
@@ -259,7 +259,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 | ALB prod | **TAK** | kompletne tagi |
 | ALB dev | **NO-GO** | stary schemat Tribecloud — brakuje Owner, CostCenter, ManagedBy, Project |
 
-**Ogólna ocena: NO-GO** — re-enable Tag Policies bez uprzedniego fix CFN + tag remediation spowoduje powtórkę incydentu 2026-04-20.
+**Ogólna ocena (stan po 2026-04-24):** ECS scope — **GO** (rshop-prod, rshop-dev, akcesoria2-prod — wszystkie środowiska ECS zwalidowane). Pozostałe zasoby poza ECS (VPC endpoints, ECR, log groups, ALB dev) — **NO-GO** dla pełnego re-enable Tag Policies bez selektywnego scope.
 
 ---
 
@@ -267,30 +267,15 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 ### Priorytet 1 — BLOKERZY (przed re-enable Tag Policies)
 
-1. **Fix CFN: rshop-cloudformation** — dodać do każdego `AWS::ECS::Service` (api.yml, backoffice.yml, frontend.yml, frontend2.yml):
-   ```yaml
-   PropagateTags: SERVICE
-   EnableECSManagedTags: true
-   Tags:
-     - Key: Project
-       Value: !Ref Projekt
-     - Key: Environment
-       Value: !Ref Srodowisko
-     - Key: Owner
-       Value: DC-devops
-     - Key: ManagedBy
-       Value: cloudformation
-     - Key: CostCenter
-       Value: DC
-   ```
+1. ~~**Fix CFN: rshop-cloudformation**~~ — ✅ **WYKONANE 2026-04-24** — `PropagateTags: SERVICE` + `EnableECSManagedTags: true` dodane do api.yml, backoffice.yml, frontend.yml, frontend2.yml. Upload s3://rshop-cf/. Change set + force-new-deployment + ENI validation na wszystkich 4 serwisach PROD.
 
-2. **Fix CFN: akcesoria2/svc.yml** — dodać `PropagateTags: SERVICE` i `EnableECSManagedTags: true` do DaciaSvc i RenaultSvc (Tags już są zdefiniowane — tylko 2 linie brakuje per serwis)
+2. ~~**Fix CFN: akcesoria2/svc.yml**~~ — ✅ **WYKONANE 2026-04-24** — PropagateTags + EnableECSManagedTags dodane do DaciaSvc i RenaultSvc. Change set + force-new-deployment + ENI validation.
 
-3. **Deploy dev → weryfikacja** — uruchomić update stack na dev, sprawdzić czy nowe ENI (ENI Fargate task) mają tagi
+3. ~~**Deploy dev → weryfikacja**~~ — ✅ **WYKONANE 2026-04-24** — force-new-deployment 4 dev serwisów, ENI tags potwierdzone.
 
-4. **Deploy prod** — po walidacji dev
+4. ~~**Deploy prod**~~ — ✅ **WYKONANE 2026-04-24** — patrz sekcja 12.
 
-5. **Weryfikacja allowedValues** — sprawdzić czy LLZ Tag Policy allowedValues dla `Project` zawiera `akcesoria2` (nie tylko `rshop`)
+5. **Weryfikacja allowedValues** — sprawdzić czy LLZ Tag Policy allowedValues dla `Project` zawiera `akcesoria2` (nie tylko `rshop`) — **TODO**
 
 ### Priorytet 2 — Tag remediation (nie blokuje Tag Policy re-enable jeśli poza scopem)
 
@@ -366,6 +351,44 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 ---
 
+---
+
+## 12. Log walidacji — 2026-04-24 (wieczór) — rshop-PROD
+
+### CFN Patch
+
+- Pobrano szablony S3: `s3://rshop-cf/{api,backoffice,frontend,frontend2}.yml` → `/tmp/s3-*.yml`
+- Odkryto: lokalne pliki w repo `rshop-cloudformation/cloudformation/` są STARSZE niż S3 (brakuje sekcji Tags, ma duże zakomentowane bloki). Patchowane tylko pliki /tmp (bazowane na S3).
+- Patch: dodano `PropagateTags: SERVICE` + `EnableECSManagedTags: true` po `DesiredCount: 1` w każdym `AWS::ECS::Service`
+- cfn-lint: exit 6 — tylko pre-existing E1029 (Description) i W2001 (unused params), 0 błędów związanych z patchem
+- Upload: `aws s3 cp /tmp/s3-*.yml s3://rshop-cf/` ×4 — OK
+
+### Change Set
+
+- Root stack: `prod` (25 parametrów)
+- Nested: `prod-ECSStack-1LOA0PMP7B7UL` → 4 service stacks (`-backoffice-CTB1Z7BM6LHA`, `-api-1N5J197K2D2U9`, `-FrontendRenault-UVIL1B36VW65`, `-FrontendDacia-8S3KNFES1APF`)
+- Polecenie: `create-change-set --use-previous-template --include-nested-stacks` z 25× `UsePreviousValue=true`
+- Change set `prod-propagate-tags-2026-04-24` — CREATE_COMPLETE w ~22s
+- Inspekcja root: `ECSStack Modify/False` — jedyna zmiana
+- Inspekcja ECSStack: `FrontendDacia Modify/False`, `FrontendRenault Modify/False`, `api Modify/False`, `backoffice Modify/False`
+- Inspekcja Level 3 (każdy z 4): `<Svc> Modify/False`, zmiany tylko `Properties/PropagateTags (Static)` + `Properties/EnableECSManagedTags (Static)` — 0 innych zmian
+- Wykonanie: `execute-change-set` → UPDATE_COMPLETE w ~105s
+
+### Force-new-deployment + ENI validation
+
+| Serwis | Nowy task ARN (suffix) | ENI | Project | Environment | Wynik |
+|--------|----------------------|-----|---------|-------------|-------|
+| rshop-prod-api-svc | `…/0f8488b11f6b4a69a5df63fdce47efb1` | eni-0659cc996c95f1740 | rshop | prod | **GO** ✓ |
+| rshop-prod-backoffice-svc | `…/7b048ec3436d4c36a0320bbf4c219d68` | eni-02e74cb686b4f2610 | rshop | prod | **GO** ✓ |
+| rshop-prod-frontend-svc1 | `…/3d9d40214baa42aa8c4a0d5ed57faca6` | eni-0f5ee713ecc27be47 | rshop | prod | **GO** ✓ |
+| rshop-prod-frontend-svc2 | `…/a7190059bd724be3a0048771f391de44` | eni-06de40dfa3640b2c9 | rshop | prod | **GO** ✓ |
+
+Wszystkie ENI mają pełen zestaw tagów: `Project=rshop`, `Environment=prod`, `Owner=DC-devops`, `ManagedBy=cloudformation`, `CostCenter=DC`, `Service=<nazwa>`, `aws:ecs:serviceName`, `aws:ecs:clusterName`.
+
+**Czas wykonania PROD remediation:** ~20:51–21:12 UTC (ok. 20 minut łącznie)
+
+---
+
 *Audyt: read-only, brak zmian w AWS. Dane z: aws ecs/cloudformation/resourcegroupstaggingapi/ec2/elbv2/rds/s3api/ecr (eu-central-1, 2026-04-24).*
-*Walidacja ENI: 2026-04-24 19:17 (force-new-deployment rshop-dev-api-svc).*
+*Walidacja ENI: 2026-04-24 19:17 (force-new-deployment rshop-dev-api-svc), 2026-04-24 ~20:55-21:12 (rshop-prod wszystkie 4 serwisy).*
 *Powiązane: [[rshop-tag-policy-readiness]] | [[finops-rshop]]*
