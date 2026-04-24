@@ -164,7 +164,7 @@ Po apply:
 
 ### Rekomendacje bez wdrożenia
 
-1. **`/_next/image*` caching** — nowy wariant cache policy z `query_string_behavior = "all"`, TTL 24h-7d. Bez tej zmiany każdy request do `/_next/image` zawsze idzie do originu (ECS API).
+1. **`/_next/image*` caching** — WDROŻONO w osobnej sekcji poniżej (2026-04-24 #2).
 2. **CloudFront additional metrics** — włączyć na `E3J76RNXIE2YIG` żeby działały widgety `CacheHitRate` i `OriginRequests`
 3. **Weryfikacja w AWS CLI**: `aws cloudfront get-distribution-config --id E3J76RNXIE2YIG --profile maspex-cli` — potwierdź listę behaviors i cache policies aktualnego stanu live (stan Terraform może różnić się od stanu live jeśli apply nie był wykonany)
 
