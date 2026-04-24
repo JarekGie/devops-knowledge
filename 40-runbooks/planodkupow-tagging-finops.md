@@ -5,6 +5,16 @@
 **Data:** 2026-04-21
 **Status:** Faza 1 DONE ✅ (audyt read-only 2026-04-21) | Faza 2 — decyzja projektowa
 
+## Update 2026-04-24 — network artifact investigation
+
+Dodatkowe read-only śledztwo dla legacy artifacts zostało zapisane w:
+- [planodkupow-orphan-network-investigation-2026-04-24.md](/Users/jaroslaw.golab/projekty/devops/devops-knowledge/20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24.md)
+
+Istotne zastrzeżenie operatorskie:
+- część wcześniejszych obserwacji o `endpoint tagging gap` i `NAT tagging gap` może dotyczyć legacy `orphan suspect` assets, a nie aktywnego runtime
+- ta wiedza **nie oznacza cleanup approval**
+- przed jakąkolwiek decyzją cleanup wymagana jest walidacja z zespołem projektowym
+
 ---
 
 ## Założenia operacyjne

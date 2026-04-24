@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠙ devops-knowledge"
             }
           },
           {
@@ -315,6 +315,9 @@
   },
   "active": "0205e1545b43934f",
   "lastOpenFiles": [
+    "30-notebooks/planodkupow-refactor",
+    "30-notebooks",
+    "20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24.md",
     "_chatgpt/context-packs/planodkupow-ops-context-2026-04-24.md",
     "10-architecture/adr/ADR-toolkit-stabilization-before-llz-expansion.md",
     "10-architecture/adr",
@@ -344,13 +347,10 @@
     "20-projects/internal/cloud-support-as-a-service/roi-hypotheses.md",
     "20-projects/internal/cloud-support-as-a-service/itsm-process-map.md",
     "20-projects/internal/cloud-support-as-a-service/ai4devops-opportunities.md",
-    "20-projects/internal/cloud-support-as-a-service/operating-model.md",
-    "20-projects/internal/cloud-support-as-a-service/service-vision.md",
     "20-projects/internal/cloud-support-as-a-service",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
     "tree.txt",
-    "30-research/ai4devops",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
