@@ -1,31 +1,67 @@
 .
+├── _chatgpt
+│   ├── context-packs
+│   │   ├── devops-toolkit.md
+│   │   ├── llz.md
+│   │   ├── maspex-load-testing.md
+│   │   ├── maspex-uat-api-supabase-investigation-2026-04-23.md
+│   │   ├── planodkupow-ops-context-2026-04-24.md
+│   │   └── rshop-tag-policy.md
+│   ├── conversations
+│   ├── INDEX.md
+│   ├── README.md
+│   └── templates
+│       ├── context-pack-template.md
+│       └── conversation-note-template.md
+├── _system
+│   ├── AGENTS.md
+│   ├── BOUNDARY_EXCEPTION_PROCESS.md
+│   ├── BOUNDARY_REVIEW_REPORT.md
+│   ├── CHATGPT_WORKFLOW.md
+│   ├── CLASSIFICATION_MODEL.md
+│   ├── DERIVATIVE_INSIGHT_RULES.md
+│   ├── DOMAIN_ISOLATION_CONTRACT.md
+│   ├── KNOWLEDGE_BOUNDARIES.md
+│   ├── LLM_CONTEXT_BOUNDARY_CONTRACT.md
+│   ├── LLM_CONTEXT_GLOBAL.md
+│   ├── LLM_EXPORT_POLICY.md
+│   ├── NOTEBOOKLM_CONTRACT.md
+│   ├── ORIGIN_METADATA_CONTRACT.md
+│   ├── PROMPT_BOUNDARY_CHECKLIST.md
+│   └── TEMPLATES
+│       ├── chatgpt-context-template.md
+│       ├── conversation-summary-template.md
+│       └── folder-context-template.md
 ├── 00-start-here
+│   ├── how-to-use-this-vault.md
 │   ├── Kontrakt komunikacji — v1.md
 │   ├── LLM_CONTEXT.md
-│   ├── README.md
-│   ├── how-to-use-this-vault.md
-│   └── persona.md
+│   ├── persona.md
+│   └── README.md
 ├── 01-inbox
 │   ├── LLM_CONTEXT.md
-│   ├── README.md
-│   └── quick-capture.md
+│   ├── quick-capture.md
+│   └── README.md
 ├── 02-active-context
-│   ├── LLM_CONTEXT.md
 │   ├── current-focus.md
+│   ├── LLM_CONTEXT.md
 │   ├── now.md
 │   ├── open-loops.md
 │   └── waiting-for.md
+├── 10-architecture
+│   └── adr
+│       └── ADR-toolkit-stabilization-before-llz-expansion.md
 ├── 10-areas
-│   ├── LLM_CONTEXT.md
 │   ├── aws
-│   │   ├── README.md
-│   │   └── amazonmq-rabbitmq.md
+│   │   ├── amazonmq-rabbitmq.md
+│   │   └── README.md
 │   ├── business
 │   │   └── README.md
 │   ├── cicd
 │   │   └── README.md
 │   ├── cloud-support
 │   │   └── README.md
+│   ├── LLM_CONTEXT.md
 │   ├── observability
 │   │   └── README.md
 │   ├── obsidian
@@ -35,71 +71,101 @@
 │   └── terraform
 │       └── README.md
 ├── 20-projects
-│   ├── LLM_CONTEXT.md
 │   ├── clients
-│   │   ├── README.md
-│   │   └── mako
-│   │       ├── anonimizator
-│   │       │   ├── 00-README.md
-│   │       │   ├── 01-cel-i-kontekst.md
-│   │       │   ├── 02-problem-do-rozwiazania.md
-│   │       │   ├── 03-zakres-i-poza-zakresem.md
-│   │       │   ├── 04-pytania-otwarte.md
-│   │       │   ├── 05-zrodla-danych-i-ingest.md
-│   │       │   ├── 06-klasy-danych-wrazliwych.md
-│   │       │   ├── 07-anonimizacja-tokenizacja-rehydratacja.md
-│   │       │   ├── 08-warianty-architektury.md
-│   │       │   ├── 09-stack-poc.md
-│   │       │   ├── 10-ryzyka.md
-│   │       │   ├── 11-bezpieczenstwo-i-zgodnosc.md
-│   │       │   ├── 12-operating-model.md
-│   │       │   ├── 13-utrzymanie-i-koszt-zlozonosci.md
-│   │       │   ├── 14-poc-plan.md
-│   │       │   ├── 15-kontrakt-dla-llm.md
-│   │       │   ├── 16-notatki-robocze.md
-│   │       │   ├── 17-prompt-injection-i-data-exfiltration.md
-│   │       │   ├── 18-threat-model.md
-│   │       │   ├── 19-llm-dlp-gateway-kierunek-produktowy.md
-│   │       │   ├── 20-architecture-challenge.md
-│   │       │   ├── 21-red-team-questions.md
-│   │       │   └── 22-porownanie-z-istniejacymi-klasami-produktow.md
-│   │       ├── finops-rshop.md
-│   │       ├── maspex
-│   │       │   ├── distributed-load-testing.md
-│   │       │   ├── load-testing-meeting-prep.md
-│   │       │   └── troubleshooting.md
-│   │       ├── pbms
-│   │       │   └── context.md
-│   │       ├── puzzler-b2b
-│   │       │   └── troubleshooting.md
-│   │       └── wdrozenie-standardow-organizacji
-│   │           ├── aws-competency-certyfikaty-bloker.md
-│   │           ├── ecs-competency-llz-mapping.md
-│   │           ├── ecs-compliance-wycena-enforcement.md
-│   │           └── standard-iac-tagging-naming.md
+│   │   ├── bmw
+│   │   │   └── ai-taskforce
+│   │   │       ├── client-boundaries.md
+│   │   │       ├── LLM_CONTEXT.md
+│   │   │       ├── materials-index.md
+│   │   │       ├── meeting-notes.md
+│   │   │       ├── open-questions.md
+│   │   │       ├── presentation-analysis.md
+│   │   │       ├── README.md
+│   │   │       └── transcript-analysis.md
+│   │   ├── mako
+│   │   │   ├── anonimizator
+│   │   │   │   ├── 00-README.md
+│   │   │   │   ├── 01-cel-i-kontekst.md
+│   │   │   │   ├── 02-problem-do-rozwiazania.md
+│   │   │   │   ├── 03-zakres-i-poza-zakresem.md
+│   │   │   │   ├── 04-pytania-otwarte.md
+│   │   │   │   ├── 05-zrodla-danych-i-ingest.md
+│   │   │   │   ├── 06-klasy-danych-wrazliwych.md
+│   │   │   │   ├── 07-anonimizacja-tokenizacja-rehydratacja.md
+│   │   │   │   ├── 08-warianty-architektury.md
+│   │   │   │   ├── 09-stack-poc.md
+│   │   │   │   ├── 10-ryzyka.md
+│   │   │   │   ├── 11-bezpieczenstwo-i-zgodnosc.md
+│   │   │   │   ├── 12-operating-model.md
+│   │   │   │   ├── 13-utrzymanie-i-koszt-zlozonosci.md
+│   │   │   │   ├── 14-poc-plan.md
+│   │   │   │   ├── 15-kontrakt-dla-llm.md
+│   │   │   │   ├── 16-notatki-robocze.md
+│   │   │   │   ├── 17-prompt-injection-i-data-exfiltration.md
+│   │   │   │   ├── 18-threat-model.md
+│   │   │   │   ├── 19-llm-dlp-gateway-kierunek-produktowy.md
+│   │   │   │   ├── 20-architecture-challenge.md
+│   │   │   │   ├── 21-red-team-questions.md
+│   │   │   │   └── 22-porownanie-z-istniejacymi-klasami-produktow.md
+│   │   │   ├── finops-rshop.md
+│   │   │   ├── maspex
+│   │   │   │   ├── distributed-load-testing.md
+│   │   │   │   ├── finops-as-is-estimate.md
+│   │   │   │   ├── load-testing-meeting-prep.md
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── pbms
+│   │   │   │   └── context.md
+│   │   │   ├── planodkupow-orphan-network-investigation-2026-04-24.md
+│   │   │   ├── puzzler-b2b
+│   │   │   │   └── troubleshooting.md
+│   │   │   ├── rshop-tagging-baseline-2026-04-24.md
+│   │   │   ├── rshop-tagging-remediation-2026-04-24.md
+│   │   │   ├── vpc-endpoints-tagging-audit-2026-04-24.md
+│   │   │   └── wdrozenie-standardow-organizacji
+│   │   │       ├── aws-competency-certyfikaty-bloker.md
+│   │   │       ├── ecs-competency-llz-mapping.md
+│   │   │       ├── ecs-compliance-wycena-enforcement.md
+│   │   │       └── standard-iac-tagging-naming.md
+│   │   └── README.md
 │   ├── internal
 │   │   ├── aws-cloudops-exam
 │   │   │   └── index.md
+│   │   ├── cloud-support-as-a-service
+│   │   │   ├── ai4devops-opportunities.md
+│   │   │   ├── boundaries.md
+│   │   │   ├── itsm-process-map.md
+│   │   │   ├── LLM_CONTEXT.md
+│   │   │   ├── operating-model.md
+│   │   │   ├── README.md
+│   │   │   ├── roi-hypotheses.md
+│   │   │   └── service-vision.md
+│   │   ├── cloudops-soc-lite
+│   │   │   ├── CLOUDOPS_SOC_LITE_HYPOTHESIS.md
+│   │   │   ├── CONNECTION_TO_LLZ_AND_NIS2.md
+│   │   │   ├── EXISTING_CAPABILITIES_AS_FOUNDATION.md
+│   │   │   ├── INCUBATION_STRATEGY.md
+│   │   │   ├── PILOT_IDEA_GLPI_CLOUD_EVENTS.md
+│   │   │   └── README.md
 │   │   ├── devops-business
-│   │   │   ├── README.md
-│   │   │   ├── context.md
-│   │   │   ├── decisions.md
-│   │   │   ├── links.md
-│   │   │   └── next-steps.md
-│   │   ├── devops-platform
-│   │   │   ├── README.md
-│   │   │   ├── context.md
-│   │   │   ├── decisions.md
-│   │   │   ├── links.md
-│   │   │   └── next-steps.md
-│   │   ├── devops-toolkit
-│   │   │   ├── README.md
-│   │   │   ├── Zmiany w toolkit.md
 │   │   │   ├── context.md
 │   │   │   ├── decisions.md
 │   │   │   ├── links.md
 │   │   │   ├── next-steps.md
-│   │   │   └── session-log.md
+│   │   │   └── README.md
+│   │   ├── devops-platform
+│   │   │   ├── context.md
+│   │   │   ├── decisions.md
+│   │   │   ├── links.md
+│   │   │   ├── next-steps.md
+│   │   │   └── README.md
+│   │   ├── devops-toolkit
+│   │   │   ├── context.md
+│   │   │   ├── decisions.md
+│   │   │   ├── links.md
+│   │   │   ├── next-steps.md
+│   │   │   ├── README.md
+│   │   │   ├── session-log.md
+│   │   │   └── Zmiany w toolkit.md
 │   │   ├── llz
 │   │   │   ├── context.md
 │   │   │   ├── ideas.md
@@ -113,8 +179,8 @@
 │   │   │       ├── propozycja-wdrozenia.md
 │   │   │       └── standaryzacja-przygotowania.md
 │   │   └── udemy-transcript-tool
-│   │       ├── README.md
 │   │       ├── pyproject.toml
+│   │       ├── README.md
 │   │       ├── run.sh
 │   │       ├── session-log.md
 │   │       ├── udemy_obsidian
@@ -131,42 +197,51 @@
 │   │       │   ├── renderer.py
 │   │       │   └── writer.py
 │   │       └── udemy_obsidian.egg-info
-│   │           ├── PKG-INFO
-│   │           ├── SOURCES.txt
 │   │           ├── dependency_links.txt
 │   │           ├── entry_points.txt
+│   │           ├── PKG-INFO
 │   │           ├── requires.txt
+│   │           ├── SOURCES.txt
 │   │           └── top_level.txt
+│   ├── LLM_CONTEXT.md
 │   └── reference
 │       └── README.md
+├── 30-notebooks
+│   └── planodkupow-refactor
+│       ├── HYPOTHESES_AND_RISKS.md
+│       ├── MEETING_BRIEF.md
+│       ├── QUESTIONS_FOR_PROJECT_TEAM.md
+│       ├── README.md
+│       ├── REFactor_OPTIONS.md
+│       └── SOURCES_INDEX.md
+├── 30-patterns
+│   └── cloudformation-drift-reconciliation-vpc-endpoint-tags.md
 ├── 30-research
 │   └── ai4devops
-│       ├── AI4DEVOPS_REFERENCE_MODEL.md
 │       ├── AI_SECURITY_IN_DEVOPS.md
+│       ├── AI4DEVOPS_REFERENCE_MODEL.md
 │       ├── CLOUD_DETECTIVE_CONNECTIONS.md
 │       ├── ITSM_AI_OPPORTUNITIES.md
 │       ├── README.md
 │       └── VENDORS_AND_PATTERNS.md
 ├── 30-standards
-│   ├── LLM_CONTEXT.md
 │   ├── aws-tagging-standard.md
 │   ├── cicd-standard.md
 │   ├── documentation-standard.md
 │   ├── iac-standard.md
+│   ├── LLM_CONTEXT.md
 │   └── naming-conventions.md
 ├── 40-runbooks
-│   ├── LLM_CONTEXT.md
 │   ├── aws
-│   │   ├── README.md
 │   │   ├── cfn-alb-safe-tagging.md
 │   │   ├── iam-access-issue.md
+│   │   ├── README.md
 │   │   └── s3-bucket-policy-lockout.md
 │   ├── ecs
-│   │   ├── README.md
 │   │   ├── ecs-deploy-stuck.md
-│   │   └── ecs-service-not-starting.md
+│   │   ├── ecs-service-not-starting.md
+│   │   └── README.md
 │   ├── incidents
-│   │   ├── README.md
 │   │   ├── incident-response-checklist.md
 │   │   ├── planodkupow-qa-cfn-rebuild.md
 │   │   ├── planodkupow-qa-execution-log.md
@@ -176,19 +251,22 @@
 │   │   ├── prompts
 │   │   │   ├── rshop-prod-503-disable-tag-policy-eni.md
 │   │   │   └── rshop-prod-503-triage.md
+│   │   ├── README.md
 │   │   ├── rshop-prod-503-2026-04-20.md
 │   │   ├── rshop-prod-503-policy-patch
 │   │   │   ├── original-llz-environment.json
 │   │   │   ├── original-llz-project.json
 │   │   │   ├── patched-llz-environment.json
 │   │   │   └── patched-llz-project.json
+│   │   ├── rshop-tag-policy-readiness.md
 │   │   └── rshop-tag-policy-remediation.md
 │   ├── kubernetes
-│   │   ├── README.md
-│   │   └── pod-crashloopbackoff.md
+│   │   ├── pod-crashloopbackoff.md
+│   │   └── README.md
+│   ├── LLM_CONTEXT.md
 │   ├── networking
-│   │   ├── README.md
-│   │   └── alb-502-503.md
+│   │   ├── alb-502-503.md
+│   │   └── README.md
 │   ├── pbms-troubleshoot.md
 │   ├── planodkupow-rabbitmq-cfn-refactor.md
 │   ├── planodkupow-tagging-finops.md
@@ -196,22 +274,22 @@
 │       ├── README.md
 │       └── terraform-state-lock.md
 ├── 50-patterns
-│   ├── LLM_CONTEXT.md
 │   ├── debugging-patterns.md
 │   ├── finops-review-patterns.md
 │   ├── incident-analysis-patterns.md
+│   ├── LLM_CONTEXT.md
 │   ├── migration-patterns.md
 │   └── reusable-prompts.md
 ├── 60-toolkit
-│   ├── LLM_CONTEXT.md
-│   ├── README.md
 │   ├── architecture-overview.md
 │   ├── audits
 │   │   └── README.md
 │   ├── cloud-detective
-│   │   ├── README.md
+│   │   ├── ai4devops-relationship.md
 │   │   ├── boundaries.md
 │   │   ├── open-questions.md
+│   │   ├── README.md
+│   │   ├── research-boundaries.md
 │   │   ├── use-cases.md
 │   │   └── vision.md
 │   ├── command-catalog.md
@@ -222,6 +300,7 @@
 │   ├── contracts-index.md
 │   ├── e2e-testing.md
 │   ├── finops-reporting.md
+│   ├── LLM_CONTEXT.md
 │   ├── llz-audit.md
 │   ├── minikurs-finops.md
 │   ├── minikurs-operator.md
@@ -229,33 +308,32 @@
 │   ├── minikurs-shuttle-audit.md
 │   ├── observability-ready.md
 │   ├── plugin-system.md
+│   ├── README.md
 │   ├── reports
 │   │   └── README.md
 │   └── roadmap.md
 ├── 70-finops
-│   ├── LLM_CONTEXT.md
-│   ├── README.md
 │   ├── cost-review-template.md
+│   ├── LLM_CONTEXT.md
 │   ├── optimization-log.md
+│   ├── README.md
 │   ├── reference-projects.md
 │   ├── savings-ideas.md
 │   └── tagging-review-template.md
 ├── 80-architecture
-│   ├── LLM_CONTEXT.md
-│   ├── README.md
 │   ├── decision-log.md
 │   ├── integration-notes.md
+│   ├── LLM_CONTEXT.md
 │   ├── platform-principles.md
+│   ├── README.md
 │   └── system-maps.md
 ├── 90-reference
-│   ├── LLM_CONTEXT.md
 │   ├── commands
 │   │   └── README.md
 │   ├── glossary
 │   │   └── README.md
+│   ├── LLM_CONTEXT.md
 │   ├── notebooklm
-│   │   ├── NOTEBOOKLM_KONTRAKT.md
-│   │   ├── README.md
 │   │   ├── _moc
 │   │   │   ├── MOC-FinOps.md
 │   │   │   ├── MOC-Incidents.md
@@ -271,9 +349,9 @@
 │   │   │   └── README.md
 │   │   ├── llz-controls
 │   │   │   └── README.md
+│   │   ├── NOTEBOOKLM_KONTRAKT.md
 │   │   ├── notebooks-index.md
 │   │   ├── pkm-stack-mastery
-│   │   │   ├── README.md
 │   │   │   ├── artifacts
 │   │   │   │   └── README.md
 │   │   │   ├── challenges
@@ -292,7 +370,9 @@
 │   │   │   │   ├── curriculum-generator.md
 │   │   │   │   ├── instructor-bootstrap.md
 │   │   │   │   └── practical-lesson.md
+│   │   │   ├── README.md
 │   │   │   └── sources.md
+│   │   ├── README.md
 │   │   ├── recovery-controls-catalog.md
 │   │   └── runtime-incidents
 │   │       ├── artifacts
@@ -313,42 +393,22 @@
 │   ├── snippets
 │   │   └── README.md
 │   └── vendors
-│       ├── README.md
-│       └── notebooklm
-│           └── cli-capabilities.md
-├── Bez nazwy.md
-├── CLAUDE.md
-├── CODEX.md
-├── README.md
-├── _chatgpt
-│   ├── INDEX.md
-│   ├── README.md
-│   ├── context-packs
-│   │   ├── devops-toolkit.md
-│   │   ├── llz.md
-│   │   ├── maspex-load-testing.md
-│   │   └── maspex-uat-api-supabase-investigation-2026-04-23.md
-│   ├── conversations
-│   └── templates
-│       ├── context-pack-template.md
-│       └── conversation-note-template.md
-├── _system
-│   ├── AGENTS.md
-│   ├── CHATGPT_WORKFLOW.md
-│   ├── LLM_CONTEXT_GLOBAL.md
-│   ├── NOTEBOOKLM_CONTRACT.md
-│   └── TEMPLATES
-│       ├── chatgpt-context-template.md
-│       ├── conversation-summary-template.md
-│       └── folder-context-template.md
+│       ├── notebooklm
+│       │   └── cli-capabilities.md
+│       └── README.md
 ├── artifacts
 │   └── maspex-bot-incident
 │       ├── alb-rules.json
 │       ├── ecs-describe-services.json
 │       ├── target-health.json
 │       └── task-definition.json
+├── Bez nazwy.md
+├── CLAUDE.md
+├── CODEX.md
+├── README.md
 ├── scripts
 │   └── new-chatgpt-context.sh
-└── tree.txt
+├── tree.txt
+└── vpc-endpoints-dev-before-tags-20260424-221906.json
 
-85 directories, 267 files
+94 directories, 318 files

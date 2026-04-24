@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠙ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -313,8 +313,14 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "0205e1545b43934f",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "30-notebooks/planodkupow-refactor/MEETING_BRIEF.md",
+    "30-notebooks/planodkupow-refactor/REFactor_OPTIONS.md",
+    "30-notebooks/planodkupow-refactor/HYPOTHESES_AND_RISKS.md",
+    "30-notebooks/planodkupow-refactor/QUESTIONS_FOR_PROJECT_TEAM.md",
+    "30-notebooks/planodkupow-refactor/SOURCES_INDEX.md",
+    "30-notebooks/planodkupow-refactor/README.md",
     "30-notebooks/planodkupow-refactor",
     "30-notebooks",
     "20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24.md",
@@ -342,15 +348,9 @@
     "20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/anonimizator/07-anonimizacja-tokenizacja-rehydratacja.md",
     "_system/BOUNDARY_REVIEW_REPORT.md",
-    "60-toolkit/cloud-detective/ai4devops-relationship.md",
-    "60-toolkit/cloud-detective/research-boundaries.md",
-    "20-projects/internal/cloud-support-as-a-service/roi-hypotheses.md",
-    "20-projects/internal/cloud-support-as-a-service/itsm-process-map.md",
-    "20-projects/internal/cloud-support-as-a-service/ai4devops-opportunities.md",
     "20-projects/internal/cloud-support-as-a-service",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
-    "tree.txt",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
