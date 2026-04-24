@@ -2,6 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Zamknięte: puzzler-b2b — sync + builder IaC ✓
+
+```
+Stan:       DONE (2026-04-24)
+Repo:       ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Zakres:     envs/dev — nowe serwisy Sync i Builder za gateway
+
+Zmiany:
+  - services.tf: module "sync_service" (L343) + module "builder_service" (L384)
+  - service_discovery.tf: pbms-sync-dev.pbms.local + pbms-builder-dev.pbms.local
+  - variables.tf: sync_image + builder_image (default nginx:latest)
+  - terraform.tfvars: placeholders z # BLOCKER
+
+Walidacja: terraform validate → SUCCESS
+terraform plan: wymaga aktywnej sesji AWS (puzzler-pbms)
+
+BLOCKER: Ocelot routes + SwaggerForOcelot są w kodzie gateway (pbms-backend),
+nie w tym repo. Dev team musi dodać w ocelot.json:
+  /sync/{everything} → pbms-sync-dev.pbms.local:8080/{everything}   [SwaggerKey: Sync]
+  /builder/{everything} → pbms-builder-dev.pbms.local:8080/api/{everything}   [SwaggerKey: Builder]
+
+BLOCKER: zastąp nginx:latest docelowymi URI ECR po zbudowaniu obrazów
+Notatka: 20-projects/clients/mako/puzzler-b2b/troubleshooting.md
+```
+
 ## Aktywne: przełączenie kontekstu — maspex troubleshooting
 
 ```
@@ -552,4 +577,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-24 09:28 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-24 11:23 — sesja aktywna*

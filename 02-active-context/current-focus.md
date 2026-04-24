@@ -16,6 +16,7 @@ Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
 | maspex | aktywny | review/apply patcha monitoringowego UAT; review patcha `next-core-app` dla `/api/slogan`; potem kontrolowany load test 3000 users / 1h |
+| puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
 | devops-toolkit | w tle | Cloud Detective zapisany jako robocza capability; bez aktywnej pracy |
 | devops-platform | w tle | |
 | devops-business | w tle | |

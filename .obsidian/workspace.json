@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Review Codex vault changes from yesterday"
+              "title": "Terminal: ⠂ Review Codex vault changes from yesterday"
             }
           },
           {
@@ -280,6 +280,7 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "02-active-context/current-focus.md.tmp.46039.1777022578897",
     "20-projects/clients/mako/anonimizator/07-anonimizacja-tokenizacja-rehydratacja.md",
     "20-projects/clients/mako/anonimizator/11-bezpieczenstwo-i-zgodnosc.md",
     "20-projects/clients/mako/anonimizator/00-README.md",
@@ -308,7 +309,6 @@
     "20-projects/clients/mako/anonimizator/01-cel-i-kontekst.md",
     "20-projects/clients/mako/anonimizator",
     "60-toolkit/cloud-detective/open-questions.md",
-    "60-toolkit/cloud-detective/use-cases.md",
     "60-toolkit/cloud-detective",
     "artifacts/maspex-bot-incident/task-definition.json",
     "artifacts/maspex-bot-incident/target-health.json",
