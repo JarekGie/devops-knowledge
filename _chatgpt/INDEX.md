@@ -12,6 +12,7 @@
 | `context-packs/devops-toolkit.md` | devops-toolkit | 2026-04-23 | Pełny kontekst CLI engine: architektura, CLI API, capabilities, roadmapa |
 | `context-packs/maspex-load-testing.md` | Maspex load testing | 2026-04-23 | Kontekst load testów UAT |
 | `context-packs/maspex-uat-api-supabase-investigation-2026-04-23.md` | Maspex UAT API/Supabase | 2026-04-23 | Dochodzenie połączeń API z Supabase |
+| `context-packs/planodkupow-ops-context-2026-04-24.md` | planodkupow operations | 2026-04-24 | Runbooki, RCA, RabbitMQ, CFN recovery, tagging/FinOps, decyzje architektoniczne |
 | `context-packs/rshop-tag-policy.md` | rshop Tag Policy | 2026-04-24 | TagPolicyViolation incydent, stan audytu CFN, plan remediacji, FinOps backlog |
 
 ## Podsumowania rozmów (`conversations/`)
