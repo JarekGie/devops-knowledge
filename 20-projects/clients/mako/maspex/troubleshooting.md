@@ -170,6 +170,98 @@ Po apply:
 
 ---
 
+## 2026-04-24 — CloudFront `/_next/image*` caching: GO LIVE package
+
+**Stan:** patch Terraform zwalidowany, gotowy do `terraform plan` + `apply`. Wymaga potwierdzenia od app teamu przed apply.
+
+### Ownership
+
+| Rola | Kto |
+|---|---|
+| App / Next.js owner | dev team / właściciel `next.config.js` |
+| Infra / CloudFront owner | DevOps (ty) |
+| Approve zmiany | app team musi potwierdzić 2 pytania (patrz niżej) |
+| Deploy | DevOps po approve |
+
+**2 pytania wymagające odpowiedzi od app teamu przed apply:**
+1. Czy URL-e do obrazów (`/_next/image?url=...`) są stabilne (content-addressed)? Czy zdjęcia użytkowników lub dynamicznie generowane zmieniają się bez zmiany URL?
+2. Ile wynosi `minimumCacheTTL` w `next.config.js`? (default: 60s — jeśli tak, po apply należy rozważyć `image_cache_min_ttl = 86400` w `main.tf`)
+
+### Co zmieniono w repo infra
+
+**`terraform/modules/cloudfront-site/variables.tf`** — dodano 5 zmiennych:
+- `image_optimizer_paths` (default `[]`)
+- `image_optimizer_origin_request_policy_id` (default: AllViewer)
+- `image_cache_min_ttl` (default `0` — respektuje `Cache-Control` z originu)
+- `image_cache_default_ttl` (default `86400`)
+- `image_cache_max_ttl` (default `2592000` = 30 dni)
+
+**`terraform/modules/cloudfront-site/main.tf`** — dodano:
+- resource `aws_cloudfront_cache_policy.image_optimizer` z `query_string_behavior = "all"` (kluczowe — bez tego różne url+w+q dostawałyby ten sam cached obraz)
+- `dynamic "ordered_cache_behavior"` dla `image_optimizer_paths` — **PRZED** static_assets blokiem
+
+**`terraform/envs/uat/main.tf`** — w `cloudfront_site_api`:
+- `image_optimizer_paths = ["/_next/image*"]`
+- `image_cache_min_ttl = 0` (bezpieczny default)
+
+### Cache policy — dlaczego `query_string_behavior = "all"`
+
+- `/_next/image?url=https://example.com/a.jpg&w=800&q=75` i `?url=...&w=400` to DWA RÓŻNE obrazy
+- `query_string_behavior = "none"` (jak w `static_assets`) → te same cache key → CloudFront podaje błędny obraz ← NIEDOPUSZCZALNE
+- `query_string_behavior = "all"` → każda kombinacja QS = osobny cache entry → bezpieczne
+
+### Walidacja
+
+```bash
+terraform validate  # ✓ SUCCESS (wykonano)
+```
+
+### Plan GO LIVE
+
+```bash
+# 1. pre-check
+AWS_PROFILE=maspex-cli aws cloudfront get-distribution-config \
+  --id E3J76RNXIE2YIG | jq '.DistributionConfig.CacheBehaviors.Items[].PathPattern'
+
+# 2. terraform plan
+AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color
+
+# 3. apply (po review planu)
+AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat apply
+
+# 4. walidacja
+curl -sI "https://kapsel.makotest.pl/_next/image?url=%2Fsome-img.jpg&w=800&q=75" \
+  | grep -i "x-cache\|cache-control\|age"
+# oczekiwane: X-Cache: Miss from cloudfront (pierwsze trafienie)
+# drugi request: X-Cache: Hit from cloudfront
+
+# 5. weryfikacja izolacji cache key
+curl -sI "https://kapsel.makotest.pl/_next/image?url=%2Fimg.jpg&w=400&q=75" | grep x-cache
+curl -sI "https://kapsel.makotest.pl/_next/image?url=%2Fimg.jpg&w=800&q=75" | grep x-cache
+# oba mogą być HIT, ale po invalidacji pierwszy hit miss, drugi hit miss = INNE klucze ✓
+```
+
+### Rollback criteria
+
+- Błędne obrazy (inny obraz niż oczekiwany) → `terraform apply` z `image_optimizer_paths = []`
+- Wzrost 5xx na `cloudfront-api-5xx-rate` alarm
+- Cache HIT rate 0% po 15 min = policy nie cachuje → sprawdź CF additional metrics, sprawdź `Cache-Control` z originu
+
+### TTL — dependency od app team
+
+Przy `image_cache_min_ttl = 0` (aktualny stan):
+- jeśli Next.js wysyła `Cache-Control: public, max-age=60` (default `minimumCacheTTL`), CF keszuje przez 60s
+- zysk jest (cache hit przez 60s zamiast 0), ale niewielki przy dużym ruchu
+
+Jeśli app team potwierdzi stabilne URL-e obrazów:
+```hcl
+# w terraform/envs/uat/main.tf → cloudfront_site_api:
+image_cache_min_ttl = 86400   # zastąp 0
+```
+→ obrazy keszowane 24h niezależnie od app config → drastyczna redukcja origin pressure
+
+---
+
 ## 2026-04-23 — next-core-app: minimalny hot-path patch dla `/api/slogan`
 
 **Stan:** patch aplikacyjny przygotowany lokalnie, niecommitowany.
