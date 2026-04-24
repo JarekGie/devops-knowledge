@@ -121,44 +121,62 @@ Kwota ~$59.62 odpowiada około połowie miesięcznego kosztu 6 interface endpoin
 
 ---
 
-## 6. Ocena bezpieczeństwa remediacji
+## 6. Ocena bezpieczeństwa remediacji (ZAKTUALIZOWANE 2026-04-24)
 
-### Najlepsze podejście
+### Odkrycie krytyczne: CFN bug w tag update dla AWS::EC2::VPCEndpoint
 
-**Fix: no-op CloudFormation update** — nie trzeba ręcznie tagować ani nic tworzyć.
+**Głęboka analiza (2026-04-24) wykazała, że no-op CFN update może NIE naprawić driftu.**
 
-Kroki (wymagają uprawnień do CFN):
+**Oś czasu:**
+- 2024-10-14: stack stworzony (bez Project/Environment w szablonie)
+- 2026-04-06: S3 `endpoints-dev.yml` zaktualizowany (dodano Project/Environment)
+- 2026-04-18: stack update z nowym szablonem → WSZYSTKIE 4 endpointy UPDATE_COMPLETE → **tagi nadal nie ma na live resources**
+
+CFN Resource Schema potwierdza `tagUpdatable: true`, handler update ma `ec2:CreateTags`. Jednak CFN wyraportował UPDATE_COMPLETE, a tagi nie pojawiły się. To potwierdza bug w handlerze lub silent failure podczas CreateTags.
+
+### Implikacja dla change set
+
+Change set `--use-previous-template` najprawdopodobniej zwróci **0 zmian** (EMPTY), ponieważ CFN's internal state (po UPDATE_COMPLETE 2026-04-18) zakłada że tagi są już zaaplikowane.
+
+### Jedyna bezpieczna opcja: aws ec2 create-tags
+
 ```bash
-# PROD — zaktualizuj VPCStack poprzez root stack prod
-aws cloudformation create-change-set \
-  --stack-name prod \
-  --change-set-name vpc-endpoint-tags-2026-XX-XX \
-  --use-previous-template \
-  --include-nested-stacks \
-  --parameters [wszystkie 25 parametrów UsePreviousValue=true] \
-  --profile rshop
-
-# DEV — zaktualizuj EndPiontsStack poprzez root stack dev
-aws cloudformation create-change-set \
-  --stack-name dev \
-  --change-set-name vpc-endpoint-tags-2026-XX-XX \
-  --use-previous-template \
-  --include-nested-stacks \
-  --parameters [wszystkie parametry UsePreviousValue=true] \
-  --profile rshop
+# DEV — 4 endpointy, 2 tagi, 0 zmian infrastruktury
+aws ec2 create-tags \
+  --region eu-central-1 \
+  --profile rshop \
+  --resources vpce-0adbca724b31df149 vpce-055c1e81bc384fe77 \
+              vpce-06fbbcc50008abf6d vpce-04a529e00f650ba57 \
+  --tags Key=Project,Value=rshop Key=Environment,Value=dev
 ```
 
-**Dlaczego bezpieczne:**
-- `AWS::EC2::VPCEndpoint` z dodaniem/zmianą tagu = Modify, Replacement=False
-- Nie zmienia routing table, subnet IDs, security groups, service name
-- Gateway endpoints: bezpieczna zmiana tagu
-- Interface endpoints: bezpieczna zmiana tagu (nie powoduje restartu ENI)
+Właściwości: instant, reversible, 0 infrastruktura impact, nie zastępuje żadnego zasobu.
 
-**NIE stosować:**
-- `aws ec2 create-tags` (ominęłoby CFN → utrzymałoby drift)
-- Ręczna edycja tagów w konsoli (te same powody)
+**Uwaga:** Nie tworzy driftu CFN — CFN już ma w internal state że tagi "są" (po UPDATE_COMPLETE z 2026-04-18). `create-tags` ustawia live state zgodny z tym co CFN myśli że jest → likwiduje rzeczywisty drift.
 
-**Priorytet:** Medium. Nie blokuje aktywności ECS (endpointy działają). Blokuje FinOps attribution i potencjalnie Tag Policy enforcement scope (zależnie od definicji polityki).
+### Alternatywa: weryfikacja czy change set cokolwiek widzi
+
+```bash
+aws cloudformation create-change-set \
+  --region eu-central-1 --profile rshop \
+  --stack-name dev-EndPiontsStack-1J46NEV2QF038 \
+  --change-set-name vpc-endpoint-tag-drift-check-2026-04-24 \
+  --use-previous-template \
+  --parameters \
+    ParameterKey=PrivateSubnetA,UsePreviousValue=true \
+    ParameterKey=PrivateSubnetB,UsePreviousValue=true \
+    ParameterKey=PrivateSubnetC,UsePreviousValue=true \
+    ParameterKey=PRTC,UsePreviousValue=true \
+    ParameterKey=PRTB,UsePreviousValue=true \
+    ParameterKey=VPCID,UsePreviousValue=true \
+    ParameterKey=Projekt,UsePreviousValue=true \
+    ParameterKey=Srodowisko,UsePreviousValue=true \
+    ParameterKey=PRTA,UsePreviousValue=true \
+    ParameterKey=SrvSG,UsePreviousValue=true
+# → Inspekcja (NIE execute). Jeśli Changes=[] → potwierdzony bug CFN state. Cleanup: delete-change-set.
+```
+
+**Priorytet remediacji:** Medium. Endpointy działają. Fix tagów nie wpływa na routing ani connectivity.
 
 ---
 

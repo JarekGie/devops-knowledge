@@ -29,4 +29,20 @@ Dla szczegółowych ADR: kopiuj `templates/decision-template.md`.
 
 ---
 
+### EXP-001 — 2026-04-24 — CloudOps/SOC-lite: exploration thread otwarty
+
+**Status:** exploration (nie decyzja — brak zatwierdzenia)
+
+**Kontekst:** CEO zapytał Head of Cloud o możliwość wystawienia SOC. Wczesna próba
+szerokiej burzy mózgów zakończyła się bez efektu. Równoległy ból operacyjny (AWS Health
+events docierające spóźnione) zainicjował konkretny pomysł: integracja AWS Health → GLPI.
+
+**Eksplorowana hipoteza:** Zamiast budowania SOC enterprise, połączyć istniejące capability
+(GLPI, Wazuh, LLZ, on-call) w model Prevent → Detect → Respond, zaczynając od pilota
+AWS Health → GLPI Problems (dogfooding przez Cloud Support Team).
+
+**Nie jest to decyzja architektoniczna.** Pilot jest wymagany przed jakąkolwiek decyzją.
+
+**Notatki:** [[../20-projects/internal/cloudops-soc-lite/CLOUDOPS_SOC_LITE_HYPOTHESIS]]
+
 <!-- Dodawaj kolejne decyzje poniżej -->

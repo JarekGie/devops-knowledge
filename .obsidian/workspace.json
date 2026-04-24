@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Diagnose ECS task tagging after change set deployment"
+              "title": "Terminal: ✳ Diagnose ECS task tagging after change set deployment"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Wycena kosztów AWS Maspex environment as-is"
+              "title": "Terminal: ✳ Wycena kosztów AWS Maspex environment as-is"
             }
           },
           {
@@ -125,7 +125,8 @@
               "title": "Podgląd grafu"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -298,8 +299,13 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "0205e1545b43934f",
   "lastOpenFiles": [
+    "20-projects/internal/cloudops-soc-lite/README.md",
+    "20-projects/internal/cloudops-soc-lite/CONNECTION_TO_LLZ_AND_NIS2.md",
+    "20-projects/internal/cloudops-soc-lite/INCUBATION_STRATEGY.md",
+    "20-projects/internal/cloudops-soc-lite/PILOT_IDEA_GLPI_CLOUD_EVENTS.md",
+    "20-projects/internal/cloudops-soc-lite/EXISTING_CAPABILITIES_AS_FOUNDATION.md",
     "20-projects/internal/cloudops-soc-lite/CLOUDOPS_SOC_LITE_HYPOTHESIS.md",
     "20-projects/internal/cloudops-soc-lite",
     "20-projects/clients/mako/vpc-endpoints-tagging-audit-2026-04-24.md",
@@ -323,11 +329,6 @@
     "20-projects/clients/bmw/ai-taskforce/open-questions.md",
     "20-projects/clients/bmw/ai-taskforce/presentation-analysis.md",
     "20-projects/clients/bmw/ai-taskforce/transcript-analysis.md",
-    "20-projects/clients/bmw/ai-taskforce/meeting-notes.md",
-    "20-projects/clients/bmw/ai-taskforce/materials-index.md",
-    "20-projects/clients/bmw/ai-taskforce/LLM_CONTEXT.md",
-    "20-projects/clients/bmw/ai-taskforce/client-boundaries.md",
-    "20-projects/clients/bmw/ai-taskforce/README.md",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
     "tree.txt",

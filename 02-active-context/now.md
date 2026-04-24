@@ -2,6 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Zamknięte: vault — CloudOps/SOC-lite discovery thread ✓
+
+```
+Stan:       DONE (2026-04-24)
+Lokalizacja: 20-projects/internal/cloudops-soc-lite/
+
+Utworzone:
+  README.md                           — discovery index + exploratory kanban
+  CLOUDOPS_SOC_LITE_HYPOTHESIS.md     — geneza, working hypothesis (Prevent/Detect/Respond)
+  EXISTING_CAPABILITIES_AS_FOUNDATION.md — mapa GLPI/Wazuh/Nagios/on-call + current/future-state diagram
+  PILOT_IDEA_GLPI_CLOUD_EVENTS.md     — minimalny pilot: AWS Health → GLPI + GuardDuty → Wazuh
+  INCUBATION_STRATEGY.md              — small-circle first; 3 fazy dogfooding→internal→customer-facing
+  CONNECTION_TO_LLZ_AND_NIS2.md       — LLZ jako Prevent layer, NIS2 kontekst, audytowalność
+
+Kluczowe hipotezy:
+  - Nie "SOC", lecz CloudOps visibility capability na istniejącym stacku
+  - Prevent (LLZ) → Detect (Wazuh + AWS findings) → Respond (GLPI + on-call)
+  - Adoption before branding — najpierw dogfooding przez Cloud Support Team
+  - AWS Health → GLPI Problems jako minimalny pilot (Lambda bridge + EventBridge)
+
+Powiązania:
+  ↔ 20-projects/internal/cloud-support-as-a-service/
+  ↔ 20-projects/internal/llz/
+  ↔ 10-areas/observability/
+```
+
 ## Zamknięte: vault — governance layer knowledge boundaries ✓
 
 ```
@@ -642,4 +668,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-24 21:31 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-24 21:54 — sesja aktywna*
