@@ -17,6 +17,9 @@ Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 |---------|--------|---------------|
 | maspex | aktywny | review/apply patcha monitoringowego UAT; review patcha `next-core-app` dla `/api/slogan`; potem kontrolowany load test 3000 users / 1h |
 | puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
+| vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
+| BMW AI Taskforce | scaffold gotowy | 20-projects/clients/bmw/ai-taskforce/ — czeka na pierwsze materiały od klienta |
+| cloud-support-as-a-service | scaffold gotowy | 20-projects/internal/cloud-support-as-a-service/ — czeka na wypełnienie |
 | devops-toolkit | w tle | Cloud Detective zapisany jako robocza capability; bez aktywnej pracy |
 | devops-platform | w tle | |
 | devops-business | w tle | |

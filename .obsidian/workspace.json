@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Review Codex vault changes from yesterday"
+              "title": "Terminal: ✳ Review Codex vault changes from yesterday"
             }
           },
           {
@@ -280,6 +280,18 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "_system/BOUNDARY_REVIEW_REPORT.md",
+    "60-toolkit/cloud-detective/ai4devops-relationship.md",
+    "60-toolkit/cloud-detective/research-boundaries.md",
+    "20-projects/internal/cloud-support-as-a-service/roi-hypotheses.md",
+    "20-projects/internal/cloud-support-as-a-service/itsm-process-map.md",
+    "20-projects/internal/cloud-support-as-a-service/ai4devops-opportunities.md",
+    "20-projects/internal/cloud-support-as-a-service/operating-model.md",
+    "20-projects/internal/cloud-support-as-a-service/service-vision.md",
+    "20-projects/internal/cloud-support-as-a-service/boundaries.md",
+    "20-projects/internal/cloud-support-as-a-service/LLM_CONTEXT.md",
+    "20-projects/internal/cloud-support-as-a-service/README.md",
+    "20-projects/internal/cloud-support-as-a-service",
     "20-projects/clients/bmw/ai-taskforce/open-questions.md",
     "20-projects/clients/bmw/ai-taskforce/presentation-analysis.md",
     "20-projects/clients/bmw/ai-taskforce/transcript-analysis.md",
@@ -298,24 +310,12 @@
     "_system/CLASSIFICATION_MODEL.md",
     "_system/KNOWLEDGE_BOUNDARIES.md",
     "tree.txt",
-    "30-research/ai4devops/CLOUD_DETECTIVE_CONNECTIONS.md",
-    "30-research/ai4devops/AI_SECURITY_IN_DEVOPS.md",
-    "30-research/ai4devops/VENDORS_AND_PATTERNS.md",
-    "30-research/ai4devops/ITSM_AI_OPPORTUNITIES.md",
-    "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
-    "30-research/ai4devops/README.md",
     "30-research/ai4devops",
     "30-research",
     "02-active-context/current-focus.md.tmp.46039.1777022578897",
-    "20-projects/clients/mako/anonimizator/07-anonimizacja-tokenizacja-rehydratacja.md",
-    "20-projects/clients/mako/anonimizator/11-bezpieczenstwo-i-zgodnosc.md",
-    "20-projects/clients/mako/anonimizator/00-README.md",
-    "20-projects/clients/mako/anonimizator/22-porownanie-z-istniejacymi-klasami-produktow.md",
-    "20-projects/clients/mako/anonimizator/21-red-team-questions.md",
     "20-projects/mako/anonimizator",
     "20-projects/mako",
     "20-projects/clients/mako/anonimizator",
-    "60-toolkit/cloud-detective",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

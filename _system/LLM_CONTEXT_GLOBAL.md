@@ -34,6 +34,18 @@ Operacyjna baza wiedzy DevOps/SRE — narzędzie pracy, nie wiki. Właściciel: 
 - `LLZ health-notifications` — wdrożone na monitoring-nagios-bot
 - `LLZ Faza B` — planowana (GuardDuty, Config, SCP, Security Account)
 
+## Zasada bezpieczeństwa wiedzy — przeczytaj przed każdą sesją LLM
+
+> **Jedna sesja LLM = jedna domena wrażliwości.**
+>
+> Nie łącz `client-work` + `internal-product-strategy` + `private-rnd` w jednym prompcie.
+>
+> Jeżeli potrzebne jest porównanie między domenami, użyj wyłącznie neutralnego `shared-concept` (`30-research/ai4devops/`, `30-standards/`, `10-areas/`) albo przygotuj zanonimizowane summary oznaczone jako derived insight.
+>
+> Szczegółowe zasady: [[DOMAIN_ISOLATION_CONTRACT]] | [[LLM_CONTEXT_BOUNDARY_CONTRACT]]
+> Checklista: [[PROMPT_BOUNDARY_CHECKLIST]]
+> Model klas: [[CLASSIFICATION_MODEL]]
+
 ## Zasady organizacji
 
 | Zasada | Opis |

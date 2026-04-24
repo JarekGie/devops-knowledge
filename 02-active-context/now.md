@@ -2,6 +2,55 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Zamknięte: vault — governance layer knowledge boundaries ✓
+
+```
+Stan:       DONE (2026-04-24)
+Zakres:     separacja domen BMW / Cloud Support as a Service / private-rnd / shared-concept
+
+Utworzone:
+  _system/:
+    KNOWLEDGE_BOUNDARIES.md     — mapa domen, szybka reguła decyzyjna
+    CLASSIFICATION_MODEL.md     — 7 klas domen + 4 klasy wrażliwości + dopuszczalne wartości frontmatter
+    DOMAIN_ISOLATION_CONTRACT.md — 7 reguł MUST/MUST NOT
+    LLM_CONTEXT_BOUNDARY_CONTRACT.md — zasady sesji LLM: jedna sesja = jedna domena
+    ORIGIN_METADATA_CONTRACT.md — obowiązkowy frontmatter dla nowych notatek
+    DERIVATIVE_INSIGHT_RULES.md — legalna ścieżka przeniesienia wiedzy z client-work
+    PROMPT_BOUNDARY_CHECKLIST.md — 12 pytań przed każdym promptem do LLM
+    BOUNDARY_REVIEW_REPORT.md   — raport audytowy + akcje ręczne do wykonania
+
+  20-projects/clients/bmw/ai-taskforce/ — 8 plików (scaffold klientowski)
+  20-projects/internal/cloud-support-as-a-service/ — 8 plików (scaffold strategii)
+  60-toolkit/cloud-detective/ — research-boundaries.md + ai4devops-relationship.md
+
+Zaktualizowane:
+  30-research/ai4devops/README.md — frontmatter + kontrakt domeny + callout boundary
+  _system/LLM_CONTEXT_GLOBAL.md — zasada globalna: jedna sesja = jedna domena
+  00-start-here/how-to-use-this-vault.md — sekcja Knowledge safety model
+
+Oczekujące (ręczne — z BOUNDARY_REVIEW_REPORT.md):
+  - Dodać frontmatter do 20-projects/clients/mako/*/troubleshooting.md
+  - Dodać frontmatter do _chatgpt/context-packs/*.md
+  - Przejrzeć 90-reference/notebooklm/
+  - Rozstrzygnąć klasyfikację llz/ (internal-product-strategy vs private-rnd)
+  - Dodać frontmatter do 60-toolkit/README.md i kontraktów komend
+```
+
+## Zamknięte: vault — AI4DevOps research space ✓
+
+```
+Stan:       DONE (2026-04-24)
+Lokalizacja: 30-research/ai4devops/
+
+Utworzone:
+  README.md                    — mapa pojęć, hipotezy, relacje z LLZ/toolkit
+  AI4DEVOPS_REFERENCE_MODEL.md — 5-warstwowa architektura referencyjna
+  ITSM_AI_OPPORTUNITIES.md     — mapa 6 procesów ITIL × AI
+  VENDORS_AND_PATTERNS.md      — Dynatrace/IBM/PagerDuty/ServiceNow/Moogsoft
+  AI_SECURITY_IN_DEVOPS.md     — prompt injection, agent security, guardrails
+  CLOUD_DETECTIVE_CONNECTIONS.md — hipotezy ewolucji cloud-detective
+```
+
 ## Zamknięte: puzzler-b2b — sync + builder IaC ✓
 
 ```
@@ -577,4 +626,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-24 11:31 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-24 11:43 — sesja aktywna*

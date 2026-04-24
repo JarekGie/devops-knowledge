@@ -1,11 +1,18 @@
 ---
 title: AI4DevOps — Przestrzeń badawcza
+domain: shared-concept
+origin: own
+classification: internal
+llm_exposure: allowed
+cross_domain_export: allowed
+source_of_truth: vault
 tags:
   - research
   - ai4devops
   - aiops
   - agentic-ops
 created: 2026-04-24
+updated: 2026-04-24
 status: scaffolding
 ---
 
@@ -14,6 +21,22 @@ status: scaffolding
 > Nie jest to folder z notatkami o vendorach.
 > To długoterminowa przestrzeń eksploracyjna łącząca DevOps, ITSM, AIOps i operacje agentyczne.
 > Wszystko tu jest hipotezą dopóki nie zostanie oznaczone inaczej.
+
+## Kontrakt domeny — przeczytaj zanim załadujesz do LLM
+
+> [!important] Granica domeny: `shared-concept`
+> Ten folder JEST: neutralną przestrzenią wzorców, modeli referencyjnych i hipotez technicznych o AI w operacjach.
+>
+> Ten folder NIE ZAWIERA:
+> - materiałów BMW ani żadnego innego klienta,
+> - roadmapy devops-toolkit ani cloud-detective (te są w `60-toolkit/`),
+> - strategii produktowej Cloud Support as a Service (ta jest w `20-projects/internal/cloud-support-as-a-service/`),
+> - żadnych danych identyfikujących klientów lub konkretne projekty.
+>
+> MAY być swobodnie używany jako źródło w sesjach LLM każdej domeny.
+> Hipotezy specyficzne dla cloud-detective MUST znajdować się w `60-toolkit/cloud-detective/`, nie tutaj.
+
+---
 
 ## Czym jest ta przestrzeń
 
@@ -86,6 +109,13 @@ Prompt injection w pipeline CI/CD, agent manipulowany przez dane w logu — to n
 3. **Vendorzy i wzorce** — [[VENDORS_AND_PATTERNS]] — co architektonicznie reprezentują istniejące produkty
 4. **Bezpieczeństwo** — [[AI_SECURITY_IN_DEVOPS]] — ryzyka i guardrails
 5. **Cloud Detective → AIOps** — [[CLOUD_DETECTIVE_CONNECTIONS]] — jak to, co już mamy, może ewoluować
+
+## Boundary review
+
+> [!check] Stan po przeglądzie 2026-04-24
+> Pliki w tym folderze nie zawierają materiałów klientowskich ani strategii produktowej.
+> Hipotezy cloud-detective zostały przeniesione/oddzielone do `60-toolkit/cloud-detective/ai4devops-relationship.md`.
+> Folder jest czysty jako `shared-concept`.
 
 ## Questions to revisit later
 
