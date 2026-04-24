@@ -2,184 +2,228 @@
 
 > Wklej całość na początku rozmowy z ChatGPT.
 
-**Zakres:** rshop — ECS TagPolicyViolation, CFN fix, FinOps backlog tagowania
-**Data przygotowania:** 2026-04-24
+**Zakres:** rshop — CFN fix ECS PropagateTags, tag remediation, pre-audit data (2026-04-24)
+**Data audytu:** 2026-04-24 (read-only, AWS CLI, konto 943111679945)
 
 ---
 
-## Kim jestem / kontekst roli
+## Rola i kontekst
 
-Senior DevOps/SRE, AWS multi-account (Organizations), Terraform + CloudFormation, ECS Fargate.
-Pracuję nad klientem `mako/rshop` — e-commerce Renault/Dacia (sklep.renault.pl i spółka).
+Senior DevOps/SRE. Projekt rshop = e-commerce Renault/Dacia (sklep.renault.pl i 7 innych domen). AWS ECS Fargate, CloudFormation, eu-central-1, konto 943111679945, profil CLI `rshop`.
+
+Był incydent PROD (2026-04-20): HTTP 503 przez ECS TagPolicyViolation. Tag Policies LLZ są aktualnie WYŁĄCZONE. Przed ponownym wdrożeniem wymagane zmiany CFN.
 
 ---
 
-## Infrastruktura rshop
+## Infrastruktura
 
 ```
-AWS Account: 943111679945
-Region: eu-central-1
-Profile: rshop
-IaC: CloudFormation (nie Terraform)
+AWS Account:  943111679945
+Region:       eu-central-1
+IaC:          CloudFormation (nie Terraform)
+Profile CLI:  rshop
 
 Klastry ECS:
-  rshop-prod-Klaster — sklep.renault.pl, eshop.renault.{cz,sk,hu}, dacia equiv.
+  rshop-prod-Klaster     → sklep.renault.pl, eshop.renault.{cz,sk,hu}, dacia equiv.
   rshop-dev-Klaster
+  akcesoria2-prod-Klaster → akcesoria.{renault,dacia}.pl
 
-Serwisy ECS Fargate:
-  rshop-prod-backoffice-svc   → /admin
-  rshop-prod-frontend-svc1    → Renault domains
-  rshop-prod-frontend-svc2    → Dacia domains
-  rshop-prod-api-svc          → /api* (NIE było dotknięte incydentem)
+Serwisy ECS (prod):
+  rshop-prod-backoffice-svc  rshop-prod-frontend-svc1
+  rshop-prod-frontend-svc2   rshop-prod-api-svc
 
-Repozytoria CFN:
-  ~/projekty/mako/rshop-cloudformation/cloudformation/
-    api.yml, backoffice.yml, frontend.yml, frontend2.yml
-  ~/projekty/mako/aws-projects/infra-rshop/cloudformation/akcesoria2/svc.yml
-    DaciaSvc, RenaultSvc (akcesoria2-prod-Klaster)
+Serwisy ECS (dev — identyczna struktura nazw):
+  rshop-dev-backoffice-svc  rshop-dev-frontend-svc1
+  rshop-dev-frontend-svc2   rshop-dev-api-svc
 
-Baza danych: SQL Server RDS (eu-central-1) — jedyne zewnętrzne połączenie aplikacji
-Redis/RabbitMQ: NIE ISTNIEJĄ w tym koncie
+Serwisy ECS (akcesoria2):
+  akcesoria2-prod-dacia-svc  akcesoria2-prod-renault-svc
+
+Baza danych: SQL Server RDS (eu-central-1) — jedyne zewnętrzne połączenie
+Redis/RabbitMQ: nie istnieją w tym koncie
 ```
 
 ---
 
-## Incydent PROD (2026-04-20)
+## Root cause incydentu (2026-04-20)
 
-**Objaw:** HTTP 503 na 3 serwisach (backoffice, frontend-svc1, frontend-svc2).
-API działało bez problemu.
+ECS Fargate tworzy ENI (Elastic Network Interface) przy każdym nowym tasku. Tag Policy LLZ wymaga tagów `Environment` + `Project` na `ec2:network-interface`. Serwisy miały `propagateTags=SERVICE` (lub NONE) ustawione manualnie po incydencie, ale szablony CFN **nigdy nie zawierały** `PropagateTags: SERVICE`. Następny deploy przez CFN zresetuje propagateTags do domyślnego (NONE) → ENI bez tagów → TagPolicyViolation → task nie startuje → 503.
 
-**Root cause:** `TagPolicyViolation` — ECS Fargate nie może otagować ENI przy starcie taska.
-
-```
-StopCode:   TaskFailedToStart
-StopReason: Unexpected EC2 error while attempting to tag the network
-            interface: TagPolicyViolation
-```
-
-**Mechanizm:**
-- 2026-04-19: Tag Policies LLZ wdrożone przez Terraform (`llz-environment`, `llz-project`)
-  wymagające tagów `Environment` + `Project` na `ec2:network-interface`
-- ECS Fargate tworzy nowy ENI przy każdym starcie taska
-- Serwisy mają `propagateTags=SERVICE`, ale `Tags=null` w ECS → ENI bez tagów → violation
-- API-svc przeżyło: task był aktywny od 2026-04-17, ENI już istniał, brak nowego startu
-
-**Fix zastosowany (doraźny):**
-`terraform destroy` na Tag Policies — ECS automatycznie ponowił próbę, serwisy wstały.
-
-**Status:** Tag Policies są wyłączone. Przed ponownym wdrożeniem wymagane zmiany CFN.
+Fix doraźny 2026-04-20: `terraform destroy` Tag Policies (LLZ). Serwisy wstały automatycznie.
 
 ---
 
-## Stan audytu tagowania (po incydencie)
+## Aktualny stan (potwierdzony AWS CLI 2026-04-24)
 
-| Klaster | Serwis | propagateTags | Tags w CFN | Stan |
-|---------|--------|---------------|------------|------|
-| prod | backoffice-svc | SERVICE ✓ | brak | drift (set ręcznie) |
-| prod | frontend-svc1 | SERVICE ✓ | brak | drift |
-| prod | frontend-svc2 | SERVICE ✓ | brak | drift |
-| prod | api-svc | SERVICE ✓ | brak | drift |
-| dev | backoffice-svc | NONE ✗ | brak | wymaga naprawy |
-| dev | frontend-svc1 | NONE ✗ | brak | wymaga naprawy |
-| dev | frontend-svc2 | NONE ✗ | brak | wymaga naprawy |
-| dev | api-svc | NONE ✗ | brak | wymaga naprawy |
-| akcesoria2-prod | dacia-svc | NONE ✗ | jest | brak PropagateTags |
-| akcesoria2-prod | renault-svc | NONE ✗ | jest | brak PropagateTags |
+### ECS services — propagateTags
 
-Prod ma `propagateTags=SERVICE` przez drift — CFN go nie definiuje.
-akcesoria2 ma `Tags` zdefiniowane w CFN, ale brak `PropagateTags: SERVICE`.
+| Klaster | Serwis | propagateTags LIVE | propagateTags CFN | enableECSManagedTags | ENI tagowane? |
+|---------|--------|-------------------|-------------------|---------------------|---------------|
+| prod | backoffice-svc | SERVICE (drift) | **BRAK** | True (drift) | TAK (tymczasowo) |
+| prod | frontend-svc1 | SERVICE (drift) | **BRAK** | True (drift) | TAK (tymczasowo) |
+| prod | frontend-svc2 | SERVICE (drift) | **BRAK** | True (drift) | TAK (tymczasowo) |
+| prod | api-svc | SERVICE (drift) | **BRAK** | True (drift) | TAK (tymczasowo) |
+| dev | backoffice-svc | **NONE** | **BRAK** | False | **NIE** |
+| dev | frontend-svc1 | **NONE** | **BRAK** | False | **NIE** |
+| dev | frontend-svc2 | **NONE** | **BRAK** | False | **NIE** |
+| dev | api-svc | **NONE** | **BRAK** | False | **NIE** |
+| akcesoria2 | dacia-svc | **NONE** | **BRAK** | False | **NIE** |
+| akcesoria2 | renault-svc | **NONE** | **BRAK** | False | **NIE** |
+
+**WNIOSEK:** Wszystkie 10 serwisów ECS = NO-GO dla Tag Policy re-enable.
+Prod działa tylko dlatego, że tagi zostały ustawione ręcznie po incydencie — każdy update stacku CFN je zresetuje.
+
+### CFN templates — co brakuje (potwierdzone grep)
+
+| Plik | PropagateTags | EnableECSManagedTags | Tags na ECS Service |
+|------|--------------|----------------------|---------------------|
+| `rshop-cloudformation/cloudformation/api.yml` | **BRAK** | **BRAK** | **BRAK** |
+| `rshop-cloudformation/cloudformation/backoffice.yml` | **BRAK** | **BRAK** | **BRAK** |
+| `rshop-cloudformation/cloudformation/frontend.yml` | **BRAK** | **BRAK** | **BRAK** |
+| `rshop-cloudformation/cloudformation/frontend2.yml` | **BRAK** | **BRAK** | **BRAK** |
+| `infra-rshop/cloudformation/akcesoria2/svc.yml` | **BRAK** | **BRAK** | **JEST** (Name/Project/Environment/Owner/ManagedBy/CostCenter) |
+
+### Schemat tagowania w koncie
+
+W koncie współistnieją 3 schematy (potwierdzone):
+- **LLZ/nowy** (CFN-managed): `Project`, `Environment`, `Owner`, `ManagedBy`, `CostCenter`, `Name`
+- **Legacy Tribecloud**: `Client`, `Maintainer`, `Provisioner`, `Team`, `typ` — na starych zasobach (VPC cos_dev, dev-ALB, S3 rshop-cf)
+- **Hybryda lowercase** (manual, drift prod): `owner`, `environment`, `application`, `service` — dodane ręcznie do prod serwisów po incydencie
+
+Konflikt case-sensitivity: `Owner=DC-devops` i `owner=platform` istnieją jednocześnie na prod serwisach. Tag Policy AWS jest case-sensitive.
 
 ---
 
-## Fix CFN — co dodać
+## Co dokładnie trzeba dodać do CFN
 
-Do każdego `AWS::ECS::Service` w obu repozytoriach:
+### Przypadek A — rshop-cloudformation (api/backoffice/frontend/frontend2.yml)
+
+Do każdego `AWS::ECS::Service` dodać:
 
 ```yaml
 PropagateTags: SERVICE
 EnableECSManagedTags: true
 Tags:
-  - Key: Environment
-    Value: !Ref Srodowisko
   - Key: Project
     Value: !Ref Projekt
+  - Key: Environment
+    Value: !Ref Srodowisko
+  - Key: Owner
+    Value: DC-devops
   - Key: ManagedBy
     Value: cloudformation
+  - Key: CostCenter
+    Value: DC
+  - Key: Service
+    Value: <backoffice|api|frontend-renault|frontend-dacia>
 ```
 
-Pliki do zmiany:
-- `rshop-cloudformation/cloudformation/frontend.yml`
-- `rshop-cloudformation/cloudformation/frontend2.yml`
-- `rshop-cloudformation/cloudformation/backoffice.yml`
-- `rshop-cloudformation/cloudformation/api.yml`
-- `infra-rshop/cloudformation/akcesoria2/svc.yml` (DaciaSvc, RenaultSvc)
+Parametry (`!Ref Projekt`, `!Ref Srodowisko`) istnieją już w szablonach — używane w innych zasobach.
+
+### Przypadek B — akcesoria2/svc.yml (DaciaSvc, RenaultSvc)
+
+Tags **już są** zdefiniowane poprawnie. Brakuje tylko 2 linii per serwis:
+
+```yaml
+PropagateTags: SERVICE
+EnableECSManagedTags: true
+```
 
 ---
 
-## Bezpieczna kolejność operacji
+## Lokalne ścieżki repozytoriów
 
 ```
-1. Fix CFN templates (PropagateTags: SERVICE + Tags + EnableECSManagedTags)
-2. Deploy dev (rshop-dev) → weryfikacja ENI tagów w AWS Console
-3. Deploy prod (rshop-prod) → weryfikacja ENI tagów
-4. Sprawdzić czy allowedValues LLZ Tag Policy obejmuje Project=akcesoria2
-5. DOPIERO WTEDY wdrożyć Tag Policies przez Terraform
-```
+~/projekty/mako/rshop-cloudformation/cloudformation/
+  api.yml
+  backoffice.yml
+  frontend.yml
+  frontend2.yml
 
-ZASADA: nigdy nie wdrażać Tag Policies gdy CFN nie jest poprawiony.
-Nowy deploy = nowy ENI = TagPolicyViolation = prod down.
+~/projekty/mako/aws-projects/infra-rshop/cloudformation/akcesoria2/
+  svc.yml
+```
 
 ---
 
-## FinOps backlog tagowania (stan 2026-04-18)
+## Bezpieczna kolejność deploymentów
 
-Pokrycie tagów: **44.2%** (55.8% kosztów bez tagu `Environment`).
-Koszt MTD: $584.83 (+30% vs poprzedni okres).
+```
+1. Fix CFN rshop-cloudformation (4 pliki) — feature branch, code review
+2. Deploy dev (aws cloudformation update-stack)
+   → weryfikacja: aws ecs describe-services --query propagateTags → SERVICE
+   → weryfikacja ENI tagów na nowym tasku
+3. Deploy prod
+4. Fix CFN akcesoria2/svc.yml + deploy
+5. Weryfikacja allowedValues LLZ Tag Policy: czy 'akcesoria2' jest w Project allowedValues
+   (sprawdzić w repo aws-cloud-platform / LLZ terraform)
+6. terraform apply Tag Policies (LLZ)
+7. Monitoring 24h: CloudTrail na TagPolicyViolation, ECS desiredCount vs runningCount
+```
 
-Problemy z tagowaniem CFN (toolkit apply-pack tagging):
-- 11/27 stacków bez wymaganych tagów
-- root stacki (`dev`, `prod`) mają 0 tagów — propagacja kaskaduje na nested → toolkit blokuje
-- toolkit blokuje każdą modyfikację zasobu przez CFN propagację tagów (safety check)
-  → wymaga poprawki w toolkicie (`validate_tag_only_changeset`)
+**ZASADA:** Nigdy Tag Policies aktywne przy deploymencie bez naprawionych szablonów.
+**ROLLBACK:** terraform destroy Tag Policies (jak 2026-04-20) — odblokuje ECS natychmiast.
 
-Observability gaps (audit-pack aws-logging):
-- ALB access logs: NOT_ENABLED (prod + dev)
-- CloudFront logging: NOT_ENABLED (4 dystrybucje)
-- VPC Flow Logs: NOT_ENABLED (3 VPC) — rekomendacja: S3 nie CW Logs ($2-8/mies. vs $45-135/mies.)
+---
 
-Root stacki wymagają tagowania przez IaC (w szablonie deployującym root stack), nie przez toolkit apply-pack.
+## Inne luki (nie blokują ECS, ale blokują pełny Tag Policy compliance)
+
+| Problem | Zasób | Priorytet |
+|---------|-------|-----------|
+| Brak Project+Environment | VPC Endpoints (8 sztuk, prod+dev) | WYSOKIE |
+| Brak Project/Owner/ManagedBy/CostCenter | ECR rshopapp-prod/qa/uat | WYSOKIE |
+| Stary schemat Tribecloud | dev-ALB, VPC cos_dev | WYSOKIE |
+| Brak tagów | S3 orphany (rshop-dev-backup, rshop-dev-bk, rshop-temp, terraform-states-rshop) | ŚREDNIE |
+| Brak tagów | CloudWatch Log Groups (wszystkie 15) | NISKIE |
+| Retencja 1 dzień | /ecs/rshop-prod, /ecs/rshop-dev | NISKIE (odrębny problem) |
+
+### Orphany QA (środowisko usunięte marzec 2026)
+
+- task definition `qa-api-task:335` — aktywna, nieużywana
+- task definition `jumhost-qa:5` — aktywna, nieużywana
+- log group `/ecs/jumhost-qa` — literówka w nazwie, storedBytes=0
+- log group `/aws/ecs/containerinsights/rshop-qa-Klaster/performance` — storedBytes=0
+- ECR `rshopapp-qa`, `rshopapp-uat` — repozytoria istnieją, niekompletne tagi
 
 ---
 
 ## Szybki prompt dla ChatGPT
 
 ```
-Pracujesz nad projektem rshop (e-commerce Renault/Dacia) w AWS (eu-central-1, konto 943111679945).
-Infrastruktura: ECS Fargate, CloudFormation, profil AWS: rshop.
+Pracujesz nad projektem rshop (e-commerce Renault/Dacia) w AWS eu-central-1, konto 943111679945, profil rshop. IaC: CloudFormation.
 
-Kontekst:
-- Był incydent PROD 503 z powodu TagPolicyViolation — ECS nie mógł otagować ENI przy starcie tasków
-- Root cause: Tag Policy LLZ wymaga Environment + Project na ec2:network-interface,
-  ECS Fargate tworzy ENI przy każdym starcie, serwisy mają propagateTags=SERVICE ale Tags=null w CFN
-- Fix doraźny: terraform destroy na Tag Policies (serwisy wstały automatycznie)
-- Tag Policies są WYŁĄCZONE — można bezpiecznie deployować, ale przed ponownym wdrożeniem
-  polityk trzeba naprawić CFN
+KONTEKST:
+- Incydent PROD 2026-04-20: ECS TagPolicyViolation → HTTP 503. Przyczyna: ENI Fargate tasks
+  tworzone bez tagów bo CFN nie ma PropagateTags: SERVICE w żadnym z szablonów.
+- Fix doraźny: terraform destroy Tag Policies (LLZ). Aktualnie Tag Policies WYŁĄCZONE.
+- rshop-prod: propagateTags=SERVICE ustawione ręcznie (drift), ale CFN tego nie odzwierciedla
+  — każdy deploy przez CFN zresetuje do NONE → awaria przy ponownym re-enable Tag Policies.
+- rshop-dev: propagateTags=NONE, nie taguje ENI wcale.
+- akcesoria2-prod: Tags zdefiniowane w svc.yml, ale brak PropagateTags — ENI bez tagów.
 
-Repozytoria CFN (lokalne):
-  ~/projekty/mako/rshop-cloudformation/cloudformation/ (api/backoffice/frontend/frontend2.yml)
+REPOZYTORIA (lokalne):
+  ~/projekty/mako/rshop-cloudformation/cloudformation/ → api/backoffice/frontend/frontend2.yml
   ~/projekty/mako/aws-projects/infra-rshop/cloudformation/akcesoria2/svc.yml
 
-Do każdego AWS::ECS::Service dodać:
+CO DODAĆ do każdego AWS::ECS::Service w rshop-cloudformation:
   PropagateTags: SERVICE
   EnableECSManagedTags: true
   Tags:
-    - Key: Environment
-      Value: !Ref Srodowisko
     - Key: Project
       Value: !Ref Projekt
+    - Key: Environment
+      Value: !Ref Srodowisko
+    - Key: Owner
+      Value: DC-devops
     - Key: ManagedBy
       Value: cloudformation
+    - Key: CostCenter
+      Value: DC
 
-Kolejność: dev deploy → weryfikacja ENI tagów → prod deploy → weryfikacja → Tag Policies Terraform.
-NIGDY: Tag Policies aktywne podczas deployu bez naprawionych szablonów.
+CO DODAĆ do DaciaSvc/RenaultSvc w akcesoria2/svc.yml (Tags już są):
+  PropagateTags: SERVICE
+  EnableECSManagedTags: true
+
+KOLEJNOŚĆ: dev deploy → weryfikacja ENI tagów → prod deploy → akcesoria2 deploy →
+  weryfikacja allowedValues LLZ Tag Policy (Project=akcesoria2?) → terraform apply Tag Policies.
 ```
