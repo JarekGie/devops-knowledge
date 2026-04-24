@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠦ devops-knowledge"
+              "title": "Terminal: ⠸ devops-knowledge"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠧ devops-knowledge"
             }
           },
           {
@@ -139,7 +139,8 @@
               "title": "planodkupow-ops-context-2026-04-24"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -312,7 +313,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "0205e1545b43934f",
   "lastOpenFiles": [
     "_chatgpt/context-packs/planodkupow-ops-context-2026-04-24.md",
     "10-architecture/adr/ADR-toolkit-stabilization-before-llz-expansion.md",
