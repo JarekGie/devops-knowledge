@@ -249,7 +249,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 |--------|----------|-------------|
 | rshop-prod ECS Services | **NO-GO** | propagateTags=SERVICE tylko runtime (drift), CFN nie ma PropagateTags/Tags — następny deploy CFN resetuje do NONE → TagPolicyViolation na ENI |
 | rshop-dev ECS Services | **GO** ✓ | Wszystkie 4 serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
-| akcesoria2-prod ECS Services | **NO-GO** | propagateTags=NONE, CFN nie ma PropagateTags — ENI nigdy nie są tagowane |
+| akcesoria2-prod ECS Services | **GO** ✓ | Oba serwisy zwalidowane 2026-04-24 — ENI nowych tasków mają komplet wymaganych tagów |
 | rshop-prod VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają kompletne tagi; VPC endpoints brakuje Project |
 | rshop-dev VPC/Subnets/SG | **PARTIAL** | CFN-managed zasoby mają tagi; VPC endpoints brakuje Project+Environment; dev-ALB stary schemat |
 | ECR repozytoria | **NO-GO** | rshopapp-prod/qa/uat brakuje wymaganych tagów |
