@@ -116,7 +116,7 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 | rshop-dev-backoffice-svc | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
 | rshop-dev-frontend-svc1 | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
 | rshop-dev-frontend-svc2 | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
-| rshop-dev-api-svc | NONE | BRAK | False | kompletne | **NIE** | NO-GO |
+| rshop-dev-api-svc | **SERVICE** ✓ | BRAK | **True** ✓ | kompletne | **TAK** ✓ | **GO** — zwalidowane 2026-04-24 |
 
 ### akcesoria2-prod (cluster: akcesoria2-prod-Klaster)
 
@@ -329,5 +329,43 @@ Na serwisach rshop-prod widoczne są dodatkowe tagi poza CFN-schematem, dodane r
 
 ---
 
+---
+
+## 11. Log walidacji — 2026-04-24 (popołudnie)
+
+### rshop-dev-api-svc — force-new-deployment + weryfikacja ENI
+
+**Kontekst:** Change set `propagateTags=SERVICE` + `enableECSManagedTags=true` wykonany wcześniej, ale żaden nowy task nie wystartował — aktywny task żył od 2026-04-14. ENI starego taska miał `TagSet=[]`.
+
+**Wykonano:**
+1. PRE-CHECK: desired=1, running=1, pending=0, propagateTags=SERVICE, enableECSManagedTags=true → GO
+2. `aws ecs update-service --force-new-deployment` na `rshop-dev-api-svc`
+3. Rollout: IN\_PROGRESS (pending=1) → COMPLETED w ~2 minuty
+
+**Nowy task:**
+- ARN: `arn:aws:ecs:eu-central-1:943111679945:task/rshop-dev-Klaster/3db0d4e07c1d48ed9ebe5bbbc5ecf0a3`
+- Created: `2026-04-24T19:17:11`
+- ENI: `eni-018a89285883e88ff`
+
+**Tagi na nowym ENI — wszystkie 6 wymaganych:**
+
+| Tag | Wartość |
+|-----|---------|
+| Project | rshop |
+| Environment | dev |
+| Owner | DC-devops |
+| ManagedBy | cloudformation |
+| CostCenter | DC |
+| Service | api |
+| aws:ecs:clusterName | rshop-dev-Klaster *(ECS managed)* |
+| aws:ecs:serviceName | rshop-dev-api-svc *(ECS managed)* |
+
+**Verdict:** Tag propagation działa end-to-end. `rshop-dev-api-svc` → **GO**.
+
+**Następny krok:** Force-new-deployment na pozostałe 3 dev serwisy (backoffice, frontend-svc1, frontend-svc2) po wykonaniu identycznego change setu dla każdego. Procedura identyczna — ten sam pre-check przed każdym.
+
+---
+
 *Audyt: read-only, brak zmian w AWS. Dane z: aws ecs/cloudformation/resourcegroupstaggingapi/ec2/elbv2/rds/s3api/ecr (eu-central-1, 2026-04-24).*
+*Walidacja ENI: 2026-04-24 19:17 (force-new-deployment rshop-dev-api-svc).*
 *Powiązane: [[rshop-tag-policy-readiness]] | [[finops-rshop]]*
