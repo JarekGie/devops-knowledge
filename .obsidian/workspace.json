@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Diagnose ECS task tagging after change set deployment"
+              "title": "Terminal: ⠐ Diagnose ECS task tagging after change set deployment"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Wycena kosztów AWS Maspex environment as-is"
+              "title": "Terminal: ⠐ Wycena kosztów AWS Maspex environment as-is"
             }
           },
           {
@@ -107,6 +107,16 @@
           },
           {
             "id": "7a200f9c450de064",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Podgląd grafu"
+            }
+          },
+          {
+            "id": "72fd1aab7616d0e1",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -290,6 +300,8 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "20-projects/internal/cloudops-soc-lite/CLOUDOPS_SOC_LITE_HYPOTHESIS.md",
+    "20-projects/internal/cloudops-soc-lite",
     "20-projects/clients/mako/vpc-endpoints-tagging-audit-2026-04-24.md",
     "20-projects/clients/mako/maspex/finops-as-is-estimate.md",
     "_chatgpt/context-packs/rshop-tag-policy.md",
@@ -318,14 +330,12 @@
     "20-projects/clients/bmw/ai-taskforce/README.md",
     "20-projects/clients/bmw/ai-taskforce",
     "20-projects/clients/bmw",
-    "_system/PROMPT_BOUNDARY_CHECKLIST.md",
     "tree.txt",
     "30-research/ai4devops",
     "30-research",
     "02-active-context/current-focus.md.tmp.46039.1777022578897",
     "20-projects/mako/anonimizator",
     "20-projects/mako",
-    "20-projects/clients/mako/anonimizator",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
