@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Diagnose ECS task tagging after change set deployment"
+              "title": "Terminal: ⠂ Diagnose ECS task tagging after change set deployment"
             }
           },
           {
@@ -103,6 +103,16 @@
               },
               "icon": "lucide-file",
               "title": "finops-as-is-estimate"
+            }
+          },
+          {
+            "id": "7a200f9c450de064",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Podgląd grafu"
             }
           }
         ]
