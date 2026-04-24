@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Check current vault status"
+              "title": "Terminal: ✳ Check current vault status"
             }
           },
           {
@@ -88,10 +88,11 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Wycena kosztów AWS Maspex environment as-is"
+              "title": "Terminal: ⠐ Wycena kosztów AWS Maspex environment as-is"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -264,8 +265,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "aad53a74e7f83c67",
+  "active": "0205e1545b43934f",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/finops-as-is-estimate.md",
     "_chatgpt/context-packs/rshop-tag-policy.md",
     "40-runbooks/incidents/rshop-tag-policy-readiness.md",
     "20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md",
@@ -294,7 +296,6 @@
     "20-projects/clients/bmw",
     "_system/PROMPT_BOUNDARY_CHECKLIST.md",
     "_system/DERIVATIVE_INSIGHT_RULES.md",
-    "_system/ORIGIN_METADATA_CONTRACT.md",
     "tree.txt",
     "30-research/ai4devops",
     "30-research",
