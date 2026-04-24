@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Review Codex vault changes from yesterday"
+              "title": "Terminal: ✳ Review Codex vault changes from yesterday"
             }
           },
           {
@@ -280,6 +280,11 @@
   },
   "active": "aad53a74e7f83c67",
   "lastOpenFiles": [
+    "30-research/ai4devops/ITSM_AI_OPPORTUNITIES.md",
+    "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
+    "30-research/ai4devops/README.md",
+    "30-research/ai4devops",
+    "30-research",
     "02-active-context/current-focus.md.tmp.46039.1777022578897",
     "20-projects/clients/mako/anonimizator/07-anonimizacja-tokenizacja-rehydratacja.md",
     "20-projects/clients/mako/anonimizator/11-bezpieczenstwo-i-zgodnosc.md",
@@ -306,16 +311,11 @@
     "20-projects/clients/mako/anonimizator/04-pytania-otwarte.md",
     "20-projects/clients/mako/anonimizator/03-zakres-i-poza-zakresem.md",
     "20-projects/clients/mako/anonimizator/02-problem-do-rozwiazania.md",
-    "20-projects/clients/mako/anonimizator/01-cel-i-kontekst.md",
     "20-projects/clients/mako/anonimizator",
-    "60-toolkit/cloud-detective/open-questions.md",
     "60-toolkit/cloud-detective",
     "artifacts/maspex-bot-incident/task-definition.json",
     "artifacts/maspex-bot-incident/target-health.json",
     "artifacts/maspex-bot-incident/ecs-describe-services.json",
-    "artifacts/maspex-bot-incident/alb-rules.json",
-    "artifacts/maspex-bot-incident",
-    "artifacts",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
