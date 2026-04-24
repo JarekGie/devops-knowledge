@@ -76,43 +76,32 @@ BLOCKER: zastąp nginx:latest docelowymi URI ECR po zbudowaniu obrazów
 Notatka: 20-projects/clients/mako/puzzler-b2b/troubleshooting.md
 ```
 
-## Aktywne: przełączenie kontekstu — maspex troubleshooting
+## Zamknięte: maspex — CloudFront / observability infra sprint ✓
 
 ```
-Stan:       ACTIVE (2026-04-23, odświeżone po pracy load-test / monitoring)
+Stan:       DONE (2026-04-24) — terraform apply wykonany
 Repo:       ~/projekty/mako/aws-projects/infra-maspex
-Projekt:    Maspex
-Zakres:     troubleshooting
-Env:        UAT / preprod
-Region:     eu-west-1
+Branch:     feat/preprod-zaslepka
+Env:        UAT | AWS profile: maspex-cli | Region: eu-west-1
 
-Punkt wejścia:
-  - 20-projects/clients/mako/maspex/troubleshooting.md
-  - relevant sekcja z 02-active-context/now.md
+Co wdrożono (terraform apply — 5 added, 2 changed, 0 destroyed):
 
-Kluczowe fakty:
-  - repo IaC: Terraform, AWS profile `maspex-cli`
-  - UAT admin CloudFront: `E3R9U1TWNUJZ11` (`kapsel-admin-uat.makotest.pl`)
-  - UAT API CloudFront: `E3J76RNXIE2YIG` (`kapsel.makotest.pl`)
-  - preprod CloudFront: `E17VHHQJ29MVAB`
-  - 2026-04-23: admin-panel static assets fix wdrożony; root cause = brak origin request policy na ordered behaviors `/_next/static/*` i `/static/*`
-  - 2026-04-23: przygotowany patch monitoringowy pod test 3000 users / 1h:
-    - dashboard `maspex-uat-overview` rozszerzony o ECS API task count, ALB API latency/connection errors, CloudFront API, API log signals, Redis
-    - nowe alarmy i metric filters w `terraform/modules/monitoring`
-    - alarmy używają istniejącego SNS `arn:aws:sns:eu-west-1:969209893152:maspex-uat-alarms`
-    - `terraform plan`: 12 add, 1 change, 0 destroy
-  - 2026-04-23: przygotowany patch aplikacyjny w `~/projekty/mako/next-core-app/app/api/slogan/route.ts`:
-    - non-search `resolveCount()` Redis-only / best-effort
-    - brak Supabase exact count fallback na hot path
-    - dodany log `[GET_SLOGANS_COUNT]`
-  - repo infra-maspex: branch `feat/preprod-zaslepka`; lokalne zmiany w `terraform/envs/uat/main.tf` + monitoring module
-  - repo next-core-app: lokalna zmiana w `app/api/slogan/route.ts`
-  - otwarte follow-up: Redis secret dla preprod
-  - ECS service lifecycle w UAT ustawiony tak, by CI/CD zarządzał `task_definition`
+  CloudFront `E3J76RNXIE2YIG` (kapsel.makotest.pl):
+    - nowy behavior `/_next/image*` → cache policy image_optimizer (QS=all, min_ttl=0, default=86400)
+    - nowy behavior `/favicon.ico` → cache policy static_assets (86400s)
+    - /favicon.ico walidacja: Hit from cloudfront ✓ | Cache-Control: max-age=31536000
 
-Uwagi:
-  - Punkt wejścia operacyjnego: `20-projects/clients/mako/maspex/troubleshooting.md`
-  - `.obsidian/workspace.json` zmodyfikowany lokalnie przez Obsidian — nie dotykać przy porządkowaniu.
+  CloudWatch monitoring:
+    - metric filter RedisCircuitOpenCount + alarm maspex-uat-api-redis-circuit-open
+    - dashboard rows 11-12: CF CacheHitRate / OriginRequests / Redis Circuit Open
+    - Logs Insights: top-request-paths + next-image-and-favicon-origin-hits
+
+Otwarte po stronie app teamu:
+  - potwierdzić czy /_next/image z realnymi URL-ami daje Hit from cloudfront
+  - sprawdzić minimumCacheTTL w next.config.js (jeśli < 86400: rozważyć image_cache_min_ttl=86400)
+  - patch aplikacyjny next-core-app (resolveCount Redis-only) — nadal lokalny, niecommitowany
+
+Notatka: 20-projects/clients/mako/maspex/troubleshooting.md
 ```
 
 ## Zamknięte: Cloud Detective — robocze miejsce w vault ✓
@@ -524,14 +513,45 @@ Pliki:      udemy_obsidian/browser.py — tryb CDP w __aenter__
             run.sh                   — gotowe komendy
 ```
 
+## Aktywne: rshop — Tag Policy remediation
+
+```
+Stan:       AKTYWNE (2026-04-24)
+Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md (RESOLVED)
+Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
+
+Kontekst:
+  - incydent 2026-04-20: Tag Policies (LLZ) → ENI violation → prod 503
+  - Tag Policies wycofane przez terraform destroy
+  - przed ponownym wdrożeniem: fix CFN templates (PropagateTags: SERVICE)
+
+Repozytoria:
+  - ~/projekty/mako/rshop-cloudformation/cloudformation/  (frontend/frontend2/backoffice/api)
+  - ~/projekty/mako/aws-projects/infra-rshop/cloudformation/akcesoria2/svc.yml
+
+AWS account: 943111679945 | Region: eu-central-1
+
+Stan audytu CFN:
+  - rshop-prod:      propagateTags=SERVICE live (drift, CFN nie odzwierciedla) — WYMAGA FIX CFN
+  - rshop-dev:       propagateTags=NONE — WYMAGA FIX CFN
+  - akcesoria2-prod: propagateTags=NONE — WYMAGA FIX CFN
+
+Kolejność bezpieczna:
+  1. Fix CFN templates (PropagateTags: SERVICE + Tags + EnableECSManagedTags)
+  2. Deploy dev → weryfikacja ENI tagów
+  3. Deploy prod → weryfikacja
+  4. Potwierdzić akcesoria2 w allowedValues LLZ Tag Policy
+  5. DOPIERO WTEDY: terraform apply Tag Policies
+
+Następny krok: czytamy pliki CFN i przygotowujemy patche
+```
+
 ## Zamknięte: rshop-prod-503 ✓
 
 ```
-Stan:       RESOLVED — wszystkie 3 serwisy running=1 (2026-04-20)
+Stan:       RESOLVED (2026-04-20)
 Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md
 Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
-TODO:       Fix CFN (PropagateTags: SERVICE) na dev + akcesoria2 przed
-            ponownym wdrożeniem Tag Policies przez Terraform
 ```
 
 ## Gdzie skończyłem
@@ -626,4 +646,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-24 14:33 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-24 16:57 — sesja aktywna*
