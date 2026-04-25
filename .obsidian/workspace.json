@@ -224,6 +224,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/mako/planodkupow-qa-tagging-audit-2026-04-25.md",
     "40-runbooks/incidents/planodkupow-qa-tagging-audit.sh",
     "CODEX.md",
     "40-runbooks/incidents/planodkupow-qa-network-forensic-audit.md",
@@ -258,7 +259,6 @@
     "10-architecture/adr",
     "10-architecture",
     "20-projects/clients/mako/rshop-tagging-remediation-2026-04-24.md",
-    "30-patterns",
     "_system/LLM_EXPORT_POLICY.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
