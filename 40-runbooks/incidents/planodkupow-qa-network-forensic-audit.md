@@ -145,6 +145,116 @@ Subnety starej VPC mają inny prv1 CIDR niż nowej: `10.2.48.0/20` vs `10.2.60.0
 
 ---
 
+---
+
+## Global Accelerator Forensic Audit — 2026-04-25
+
+### Zasoby pod lupą
+
+| Zasób | ID | Subnet | Stan |
+|---|---|---|---|
+| GA ENI-1 | eni-0bc3e7b87b93ce431 | subnet-0f3ba588e935c435a (pub2, eu-central-1b) | in-use, attached |
+| GA ENI-2 | eni-0e9dd0667e09a945c | subnet-049522191fe108784 (pub1, eu-central-1a) | in-use, attached |
+| GA SG | sg-0a9a29d06a6a7d85c | vpc-02f804baee8a3f048 | IpPermissions: EMPTY |
+
+### Evidence matrix
+
+| Sprawdzenie | Wynik | Interpretacja |
+|---|---|---|
+| GA CloudWatch metrics (AWS/GlobalAccelerator namespace, us-east-1) | **0 metryk** | Brak aktywnego acceleratora generującego dane |
+| GA zasoby via Resource Tag API (us-east-1) | **0 zasobów** | Brak ARN acceleratora — accelerator nie istnieje |
+| CloudTrail GA events (90-dniowe okno) | **0 eventów** | Brak zmian w konfiguracji GA od >2026-01-25 |
+| SG inbound rules | **EMPTY** | Endpoint group usunięty lub nigdy nie skonfigurowany |
+| ENI dry-run delete | **DryRunOperation: SUCCESS** | AWS pozwala usunąć ENI — aktywny GA blokowałby operację |
+| ENI InstanceOwnerId | amazon-aws | AWS wciąż trzyma attachment, ale accelerator zniknął |
+| ENI InterfaceType | global_accelerator_managed | Potwierdzone jako GA-managed (nie ELB, nie EC2) |
+
+### Werdykt
+
+**ORPHANED — accelerator usunięty (prawdopodobnie przed 2026-01-25), cleanup ENI nieukończony przez AWS.**
+
+To znany edge case AWS GA: usunięcie acceleratora nie zawsze czyści managed ENIs. ENI pozostają w stanie `in-use` mimo że accelerator nie istnieje. Potwierdzenie: `dry-run delete` zakończył się sukcesem — aktywny GA blokowałby tę operację.
+
+---
+
+## Pełny inwentarz starej VPC — Decommission Readiness (FINAL)
+
+| Zasób | ID/wartość | Blokada |
+|---|---|---|
+| VPC | vpc-02f804baee8a3f048 | — |
+| IGW | igw-0862c2814f8c0265b | nadal attached |
+| NAT | nat-08adf3e0a226779a7 | EIP eipalloc-03f5ee498546ec65c |
+| Subnet pub1 | subnet-049522191fe108784 | — |
+| Subnet pub2 | subnet-0f3ba588e935c435a | — |
+| Subnet prv1 | subnet-09ab9fdda1c1d2dea | — |
+| Subnet prv2 | subnet-044777a4a035cb0ab | — |
+| RT private | rtb-0413d3e3d2f15d6a5 | route 0.0.0.0/0 → NAT |
+| RT main | rtb-04bdad34f8ac8b34a | (default, usunięty z VPC) |
+| NACL | acl-0fe7c4971a5f960a8 | default, 4 assoc |
+| VPCE ecr.api | vpce-0f06338f894336448 | — |
+| VPCE ecr.dkr | vpce-0066f4327e86d8687 | — |
+| VPCE secretsmanager | vpce-0dcfc106af654bae6 | — |
+| VPCE logs | vpce-093fc974c5ae750f4 | — |
+| GA ENI-1 | eni-0bc3e7b87b93ce431 | **ORPHANED** — deletable |
+| GA ENI-2 | eni-0e9dd0667e09a945c | **ORPHANED** — deletable |
+| GA SG | sg-0a9a29d06a6a7d85c | — |
+
+**GO/NO-GO: GO — brak aktywnych blokerów. Stara VPC gotowa do decommission.**
+
+### Kolejność usuwania
+
+```bash
+PROFILE="plan"
+REGION="eu-central-1"
+
+# 1. Usuń orphaned GA ENIs
+aws ec2 delete-network-interface --profile $PROFILE --region $REGION \
+  --network-interface-id eni-0bc3e7b87b93ce431
+aws ec2 delete-network-interface --profile $PROFILE --region $REGION \
+  --network-interface-id eni-0e9dd0667e09a945c
+
+# 2. Usuń VPC Endpoints (4x)
+aws ec2 delete-vpc-endpoints --profile $PROFILE --region $REGION \
+  --vpc-endpoint-ids vpce-0f06338f894336448 vpce-0066f4327e86d8687 \
+    vpce-0dcfc106af654bae6 vpce-093fc974c5ae750f4
+
+# 3. Usuń NAT Gateway + poczekaj na deleted
+aws ec2 delete-nat-gateway --profile $PROFILE --region $REGION \
+  --nat-gateway-id nat-08adf3e0a226779a7
+# wait ~60s, potem:
+aws ec2 release-address --profile $PROFILE --region $REGION \
+  --allocation-id eipalloc-03f5ee498546ec65c
+
+# 4. Odepnij i usuń IGW
+aws ec2 detach-internet-gateway --profile $PROFILE --region $REGION \
+  --internet-gateway-id igw-0862c2814f8c0265b \
+  --vpc-id vpc-02f804baee8a3f048
+aws ec2 delete-internet-gateway --profile $PROFILE --region $REGION \
+  --internet-gateway-id igw-0862c2814f8c0265b
+
+# 5. Usuń subnety
+aws ec2 delete-subnet --profile $PROFILE --region $REGION --subnet-id subnet-049522191fe108784
+aws ec2 delete-subnet --profile $PROFILE --region $REGION --subnet-id subnet-0f3ba588e935c435a
+aws ec2 delete-subnet --profile $PROFILE --region $REGION --subnet-id subnet-09ab9fdda1c1d2dea
+aws ec2 delete-subnet --profile $PROFILE --region $REGION --subnet-id subnet-044777a4a035cb0ab
+
+# 6. Usuń niestandardowe route tables
+aws ec2 delete-route-table --profile $PROFILE --region $REGION \
+  --route-table-id rtb-0413d3e3d2f15d6a5
+
+# 7. Usuń GA SG
+aws ec2 delete-security-group --profile $PROFILE --region $REGION \
+  --group-id sg-0a9a29d06a6a7d85c
+
+# 8. Usuń VPC (NACL default usunięty automatycznie)
+aws ec2 delete-vpc --profile $PROFILE --region $REGION \
+  --vpc-id vpc-02f804baee8a3f048
+```
+
+**Uwaga przed wykonaniem:** Zweryfikuj czy ECS service bastionhost nie restartował się ponownie w starej VPC (`describe-network-interfaces --filters Name=vpc-id,Values=vpc-02f804baee8a3f048 Name=interface-type,Values=interface`). Jeśli pojawi się nowy ENI typu `interface` — najpierw zaktualizuj ECS service do nowej VPC.
+
+---
+
 ## CloudTrail Lake — zapytania dla danych sprzed 2026-01-25
 
 ```sql
