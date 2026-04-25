@@ -157,23 +157,44 @@ Subnety starej VPC mają inny prv1 CIDR niż nowej: `10.2.48.0/20` vs `10.2.60.0
 | GA ENI-2 | eni-0e9dd0667e09a945c | subnet-049522191fe108784 (pub1, eu-central-1a) | in-use, attached |
 | GA SG | sg-0a9a29d06a6a7d85c | vpc-02f804baee8a3f048 | IpPermissions: EMPTY |
 
-### Evidence matrix
+### Korekta hipotezy — 2026-04-25 (impact analysis)
+
+**WERDYKT: GA aktywny, endpoint = ALB w nowej VPC. ENI w starej VPC to relikt niezaktualizowanej konfiguracji subnetów endpoint grupy.**
+
+#### Root cause ENI w starej VPC
+
+CloudTrail potwierdza istnienie **poprzedniego ALB** `planodkupow-qa-ALB/2fb9eac9f1c26133` w starej VPC (ENI tworzone do 2026-04-15). Po rebuild'zie 19 kwietnia:
+1. Stary ALB usunięty
+2. Nowy ALB (`4971065864890a9b`) w nowej VPC stworzony przez CFN
+3. GA endpoint zaktualizowany → nowy ALB ✓
+4. **GA endpoint group subnety NIE zaktualizowane** → wciąż wskazują na pub1/pub2 starej VPC
+
+Dlatego ENI są `in-use` (aktywna ELA attachment z endpoint grupy) i CLI delete fail z "currently in use". Dry-run sukces = tylko IAM permission check, nie weryfikuje attachment state.
+
+#### Stan GA endpoint
+
+| Sprawdzenie | Wynik |
+|---|---|
+| GA endpoint | ALB `planodkupow-qa-ALB` — nowa VPC (`vpc-007d115c41f079bf3`) |
+| ALB targety | `10.2.36.98:80` (gateway, healthy), `10.2.42.37:80` (healthy) |
+| ALB listener | HTTP:80, priority rules (http-header + path-pattern), default=403 |
+| GA health status | **Unknown** — ALB zwraca 403 dla health check (brak wymaganego headera) |
+| Route53 planodkupow.qa | **PRIVATE zone** (skojarzona z nową VPC) — zero rekordów do GA/ALB |
+| planodkupow.makotest.pl | PUBLIC — pusta (tylko NS/SOA) |
+| Realny user traffic przez GA | **ZERO** — brak publicznego DNS entry wskazującego na GA |
+| ALB ruch 7d | 499 requestów (prawdopodobnie GA health probes) |
+
+#### Evidence matrix (zaktualizowana)
 
 | Sprawdzenie | Wynik | Interpretacja |
 |---|---|---|
-| GA CloudWatch metrics (AWS/GlobalAccelerator namespace, us-east-1) | **0 metryk** | Brak aktywnego acceleratora generującego dane |
-| GA zasoby via Resource Tag API (us-east-1) | **0 zasobów** | Brak ARN acceleratora — accelerator nie istnieje |
-| CloudTrail GA events (90-dniowe okno) | **0 eventów** | Brak zmian w konfiguracji GA od >2026-01-25 |
-| SG inbound rules | **EMPTY** | Endpoint group usunięty lub nigdy nie skonfigurowany |
-| ENI dry-run delete | **DryRunOperation: SUCCESS** | AWS pozwala usunąć ENI — aktywny GA blokowałby operację |
-| ENI InstanceOwnerId | amazon-aws | AWS wciąż trzyma attachment, ale accelerator zniknął |
-| ENI InterfaceType | global_accelerator_managed | Potwierdzone jako GA-managed (nie ELB, nie EC2) |
-
-### Werdykt
-
-**ORPHANED — accelerator usunięty (prawdopodobnie przed 2026-01-25), cleanup ENI nieukończony przez AWS.**
-
-To znany edge case AWS GA: usunięcie acceleratora nie zawsze czyści managed ENIs. ENI pozostają w stanie `in-use` mimo że accelerator nie istnieje. Potwierdzenie: `dry-run delete` zakończył się sukcesem — aktywny GA blokowałby tę operację.
+| GA endpoint w Console | ALB planodkupow-qa-ALB | Accelerator istnieje i jest aktywny |
+| ALB VPC | vpc-007d115c41f079bf3 (NOWA) | Endpoint wskazuje nową VPC |
+| GA ENI subnety | subnet-049..., subnet-0f3... (STARA VPC) | Endpoint group subnety nie zaktualizowane po VPC rebuild |
+| ENI delete fail | "currently in use" | ELA attachment z endpoint grupy trzyma ENI |
+| Dry-run sukces | tylko IAM check | Nie oznaczał orphan — błędna interpretacja |
+| GA health: Unknown | ALB default → 403 | Health check nie ma wymaganego headera |
+| Route53 | brak wpisu do GA | Zerowy realny ruch przez GA |
 
 ---
 
