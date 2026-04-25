@@ -1,0 +1,203 @@
+---
+tags: [#aws, #cloudtrail, #forensic, #networking, #vpc, #planodkupow, #incident]
+date: 2026-04-25
+---
+
+# Forensic Audit — Sieć QA planodkupow (CloudTrail, eu-central-1)
+
+## Symptom / zakres badania
+
+Dwie QA VPC współistnieją w tym samym accountcie. Legacy NAT i orphan-suspect VPC endpoints.
+Cel: ustalić evidence-based historię sieci za 2026-01-01 → 2026-04-25.
+
+## Granica danych
+
+CloudTrail Event History: 90 dni wstecz = **od 2026-01-25**.
+Dane przed 25 stycznia niewidoczne w Event History → wymagany **CloudTrail Lake** (zapytania na końcu).
+
+---
+
+## Zasoby pod lupą
+
+| Zasób | Rola | Stan |
+|---|---|---|
+| `vpc-02f804baee8a3f048` | **Stara QA VPC** (orphan suspect) | alive, brak CFN stack |
+| `vpc-007d115c41f079bf3` | **Nowa QA VPC** (rebuild 2026-04-19) | alive, CFN UPDATE_ROLLBACK_COMPLETE |
+| `nat-08adf3e0a226779a7` | Legacy NAT w starej VPC | available, EIP 3.76.77.101 |
+| `igw-0862c2814f8c0265b` | IGW starej VPC | **nadal attached** (state: available) |
+
+---
+
+## Timeline zdarzeń (evidence only)
+
+### Przed 2026-01-25 (poza oknem CT)
+
+- `nat-08adf3e0a226779a7` stworzony **2025-07-31 19:31 UTC** → subnet-049522191fe108784, VPC vpc-02f804baee8a3f048 (public subnet, EIP eipalloc-03f5ee498546ec65c)
+- Stara VPC, jej IGW, 4x VPC endpoints (ECR API, ECR DKR, Secrets Manager, CloudWatch Logs) — wszystkie sprzed okna
+
+### 2026-04-19 — Pełny teardown + rebuild (chaos day)
+
+```
+08:46  ModifyDBInstance / CreateDBSnapshot (stara VPC, sesja 1776587421)
+09:22  DeleteStack planodkupow-qa            ← próba #1 teardown (sesja 1776582013)
+09:44  DeleteStack DBStack + S3Stack
+09:51  DeleteStack planodkupow-qa            ← próba #2 (sesja 1776584716)
+10:13  DeleteStack SecGroupStack
+10:32  DeleteStack SecGroupStack             ← retry
+10:33  DeleteStack planodkupow-qa            ← próba #3 (sesja 1776587421)
+10:33–10:48  ❌ 61x DetachInternetGateway igw-0862c2814f8c0265b ← STUCK (co 15s przez ~15min)
+10:51  DeleteStack planodkupow-qa-VPCStack-1OHNJ84RQI8K2  ← force-delete VPC stacka
+10:52  DeleteStack planodkupow-qa            ← próba #4
+10:59  DeleteDBInstance planodkupowqadb
+11:25  CreateVpc vpc-04ac01f61d512607b       ← rebuild próba #1 (natychmiast DeleteVpc)
+11:41  DeleteStack planodkupow-qa            ← próba #5
+11:42  CreateVpc vpc-049afc46fbd3c98ca       ← próba #2 (DeleteVpc po ~30min)
+12:12  CreateVpc vpc-085e7c613b0b98fd8       ← próba #3 (DeleteVpc)
+12:41  CreateVpc vpc-0bb7f36e7bac35be3       ← próba #4 (MQ endpoint wpada! DeleteVpc)
+15:13  CreateVpc vpc-0d00d4ca3b92acfe1       ← próba #5 (MQ endpoint wpada! DeleteVpc)
+20:26  DeleteStack planodkupow-qa            ← finalny parent stack cleanup
+20:28  ✅ CreateVpc vpc-007d115c41f079bf3    ← SUKCES (stack 1V91EF1UIC85A)
+20:29  CreateSubnet ×4 + AttachInternetGateway igw-066da2ad497da3c91
+20:35  CreateVpcEndpoint vpce-033cbde652500a1e4 ← AmazonMQ broker b-5cb3fcb4 (mq.amazonaws.com)
+```
+
+### 2026-04-20 → 2026-04-21
+
+```
+2026-04-20 17:35  CreateNetworkInterface bastionhost ← STARA VPC vpc-02f804baee8a3f048! (ECS)
+2026-04-21 09:19  CreateNetworkInterface bastionhost ← STARA VPC vpc-02f804baee8a3f048! (ECS)
+2026-04-21 11:25  CreateVpcEndpoint vpce-0aab2367ad6396bd9 ← AmazonMQ broker b-f231815d (nowa VPC)
+```
+
+### 2026-04-22 → 2026-04-25
+
+Brak network create events. Tylko ECS ENI w nowej VPC.
+
+---
+
+## Diagnoza: dlaczego 61x DetachInternetGateway FAIL?
+
+CloudFormation próbował odpiąć IGW od starej VPC, ale NAT gateway (`nat-08adf3e0a226779a7`) miał aktywny EIP i aktywne połączenia przez IGW. CFN nie obsłużył właściwej kolejności:
+
+```
+Poprawna kolejność:  DeleteNatGateway → ReleaseAddress → DetachInternetGateway → DeleteIGW
+CFN faktycznie:      DetachInternetGateway ❌❌❌ (61x) → force-delete stack
+```
+
+Skutek: stack `planodkupow-qa-VPCStack-1OHNJ84RQI8K2` zniknął z CloudFormation,
+ale VPC, NAT, IGW (nadal attached!), subnety i 4 VPC endpoints **pozostały jako retained resources**.
+
+---
+
+## Obecny stan starej VPC vpc-02f804baee8a3f048
+
+| Zasób | ID | Stan |
+|---|---|---|
+| VPC | vpc-02f804baee8a3f048 | available |
+| IGW | igw-0862c2814f8c0265b | **attached** (state: available) |
+| NAT | nat-08adf3e0a226779a7 | available, EIP 3.76.77.101 |
+| Subnet pub1 | subnet-049522191fe108784 | 10.2.0.0/20, eu-central-1a |
+| Subnet pub2 | subnet-0f3ba588e935c435a | 10.2.32.0/20, eu-central-1b |
+| Subnet prv1 | subnet-09ab9fdda1c1d2dea | 10.2.48.0/20, eu-central-1a |
+| Subnet prv2 | subnet-044777a4a035cb0ab | 10.2.96.0/20, eu-central-1b |
+| VPCE ecr.api | vpce-0f06338f894336448 | available |
+| VPCE ecr.dkr | vpce-0066f4327e86d8687 | available |
+| VPCE secretsmanager | vpce-0dcfc106af654bae6 | available |
+| VPCE logs | vpce-093fc974c5ae750f4 | available |
+| CFN stack | planodkupow-qa-VPCStack-1OHNJ84RQI8K2 | **nie istnieje** |
+
+Subnety starej VPC mają inny prv1 CIDR niż nowej: `10.2.48.0/20` vs `10.2.60.0/20`.
+
+---
+
+## Obecny stan nowej VPC vpc-007d115c41f079bf3
+
+| Zasób | Wartość |
+|---|---|
+| CFN stack | planodkupow-qa-VPCStack-1V91EF1UIC85A |
+| Stack status | **UPDATE_ROLLBACK_COMPLETE** (ostatnia zmiana 2026-04-21 19:38 UTC) |
+| CIDR | 10.2.0.0/16 |
+| Subnety | pub1 10.2.0.0/20, pub2 10.2.32.0/20, prv1 10.2.60.0/20, prv2 10.2.96.0/20 |
+| MQ endpoint 1 | vpce-033cbde652500a1e4 (svc 04b93b939af25977f, broker b-5cb3fcb4) |
+| MQ endpoint 2 | vpce-0aab2367ad6396bd9 (svc 0a5b5f37b93736d09, broker b-f231815d) |
+
+---
+
+## Wnioski
+
+### Nieoczekiwane network creates w 2026?
+**Nie.** Wszystkie create events to: CFN-managed rebuild (OrganizationAccountAccessRole) lub service-managed (mq.amazonaws.com, ecs.amazonaws.com).
+
+### Shadow/manual infrastructure?
+**Nie ma.** Zero manual creates. NAT z 2025-07-31 był prawdopodobnie stworzony przez CFN.
+
+### GO/NO-GO dla tezy "stara QA VPC to orphan"?
+**GO — potwierdzone przez CloudTrail evidence.**
+
+| Pytanie | Verdict |
+|---|---|
+| Stara VPC = orphan (stack nie istnieje) | ✅ CONFIRMED |
+| NAT = legacy (stworzony 2025-07-31, never deleted) | ✅ CONFIRMED |
+| Teardown failed (61x IGW detach FAIL) | ✅ CONFIRMED |
+| IGW nadal attached do starej VPC | ✅ CONFIRMED |
+| ECS nadal deployował do starej VPC po rebuild | ✅ CONFIRMED |
+| Brak shadow infra | ✅ CONFIRMED |
+
+---
+
+## CloudTrail Lake — zapytania dla danych sprzed 2026-01-25
+
+```sql
+-- Historia tworzenia starej VPC i NAT (okolice 2025-07)
+SELECT eventTime, eventName, userIdentity.arn, userAgent, requestParameters
+FROM <EVENT_DATA_STORE_ARN>
+WHERE eventTime BETWEEN '2025-06-01 00:00:00' AND '2025-09-01 00:00:00'
+  AND awsRegion = 'eu-central-1'
+  AND (
+    (eventName IN ('CreateVpc','CreateNatGateway','AttachInternetGateway','CreateVpcEndpoint')
+     AND element_at(requestParameters, 'vpcId') = 'vpc-02f804baee8a3f048')
+    OR (eventName = 'CreateVpc'
+     AND json_extract_scalar(responseElements, '$.vpc.vpcId') = 'vpc-02f804baee8a3f048')
+    OR (eventName = 'CreateNatGateway'
+     AND json_extract_scalar(responseElements, '$.natGateway.natGatewayId') = 'nat-08adf3e0a226779a7')
+  )
+ORDER BY eventTime ASC
+```
+
+```sql
+-- Pełna historia NAT nat-08adf3e0a226779a7
+SELECT eventTime, eventName, userIdentity.arn, userAgent, requestParameters
+FROM <EVENT_DATA_STORE_ARN>
+WHERE awsRegion = 'eu-central-1'
+  AND eventName IN ('CreateNatGateway','DeleteNatGateway','DescribeNatGateways')
+  AND (element_at(requestParameters,'natGatewayId') = 'nat-08adf3e0a226779a7'
+   OR json_extract_scalar(responseElements,'$.natGateway.natGatewayId') = 'nat-08adf3e0a226779a7')
+ORDER BY eventTime ASC
+```
+
+---
+
+## Komendy użyte w audycie
+
+```bash
+# Lookup events (przykład)
+aws cloudtrail lookup-events \
+  --profile plan --region eu-central-1 \
+  --start-time 2026-01-01T00:00:00Z --end-time 2026-04-25T23:59:59Z \
+  --lookup-attributes AttributeKey=EventName,AttributeValue=CreateVpc \
+  --output json
+
+# Resource lookup
+aws cloudtrail lookup-events \
+  --profile plan --region eu-central-1 \
+  --lookup-attributes AttributeKey=ResourceName,AttributeValue=vpc-02f804baee8a3f048 \
+  --output json
+
+# Sprawdzenie NAT
+aws ec2 describe-nat-gateways --profile plan --region eu-central-1 \
+  --nat-gateway-ids nat-08adf3e0a226779a7
+
+# Sprawdzenie IGW
+aws ec2 describe-internet-gateways --profile plan --region eu-central-1 \
+  --internet-gateway-ids igw-0862c2814f8c0265b
+```

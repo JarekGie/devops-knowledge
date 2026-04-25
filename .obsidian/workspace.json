@@ -60,7 +60,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ CloudTrail forensic audit of AWS networking events January-April 2026"
+              "title": "Terminal: ✳ CloudTrail forensic audit of AWS networking events January-April 2026"
             }
           }
         ],
@@ -239,6 +239,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "40-runbooks/incidents/planodkupow-qa-network-forensic-audit.md",
     "CODEX.md",
     "CLAUDE.md",
     "Bez nazwy.md",
@@ -274,7 +275,6 @@
     "30-patterns",
     "_system/LLM_EXPORT_POLICY.md",
     "_system/BOUNDARY_EXCEPTION_PROCESS.md",
-    "20-projects/internal/cloudops-soc-lite/README.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
