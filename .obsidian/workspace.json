@@ -20,8 +20,51 @@
               "icon": "lucide-file",
               "title": "CODEX"
             }
+          },
+          {
+            "id": "ea8eea0fdff7071a",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
+                  "focus": false,
+                  "profile": {
+                    "args": [
+                      "--login"
+                    ],
+                    "executable": "/bin/zsh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: claude"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -194,8 +237,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "af8aefb38acb7953",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "CODEX.md",
     "CLAUDE.md",
     "Bez nazwy.md",
     "2026-04-24.md",
@@ -231,7 +275,6 @@
     "_system/LLM_EXPORT_POLICY.md",
     "_system/BOUNDARY_EXCEPTION_PROCESS.md",
     "20-projects/internal/cloudops-soc-lite/README.md",
-    "20-projects/internal/cloudops-soc-lite/CONNECTION_TO_LLZ_AND_NIS2.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
