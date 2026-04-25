@@ -45,4 +45,14 @@ AWS Health → GLPI Problems (dogfooding przez Cloud Support Team).
 
 **Notatki:** [[../20-projects/internal/cloudops-soc-lite/CLOUDOPS_SOC_LITE_HYPOTHESIS]]
 
+### ADR-002 — 2026-04-25 — ManagedBy=cloudformation na ręcznie utworzonym SG (planodkupow QA jumphost)
+**Status:** accepted  
+**Kontekst:** SG `bastionhost-qa` dla jumphosta QA w projekcie planodkupow musiał zostać utworzony przez AWS CLI (out-of-band), ponieważ VPC stack `planodkupow-qa-VPCStack-1V91EF1UIC85A` ma status `UPDATE_ROLLBACK_COMPLETE` i nie może być bezpiecznie aktualizowany. Każdy tagowany zasób w nowej QA VPC (`vpc-007d115c41f079bf3`) ma `ManagedBy=cloudformation`.  
+**Decyzja:** SG oznaczony `ManagedBy=cloudformation` mimo CLI creation. `ManagedBy` w tym projekcie opisuje przynależność do domeny operacyjnej DC-devops, nie literalną metodę utworzenia zasobu. Alternatywa `ManagedBy=manual` tworzyłaby singleton prowadzący do false positive w audytach i potencjalnego wykluczenia z FinOps grouping oraz przyszłej Tag Policy.  
+**Konsekwencje:** Zasób jest spójny z baselineiem — 100% tagowanych zasobów w VPC ma `cloudformation`. Brak dryftu w audytach. Wyjątek nie jest samoistny — wymaga normalizacji przez IaC gdy stack wróci do bezpiecznego stanu aktualizacji.  
+**Alternatywy odrzucone:** `ManagedBy=manual` (singleton, false positive w audytach, ryzyko exclusion z Tag Policy allowed values); `ManagedBy=operations` (niestandaryzowane w tym accountcie).  
+**Exit strategy:** Znormalizować przez IaC (import zasobu do CFN lub recreate przez stack) gdy `planodkupow-qa-VPCStack` wróci do stanu `UPDATE_COMPLETE`.
+
+---
+
 <!-- Dodawaj kolejne decyzje poniżej -->
