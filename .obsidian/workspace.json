@@ -77,8 +77,7 @@
               "title": "maspex"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -251,7 +250,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "afe15f8ff1668107",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
     "_chatgpt/context-packs/maspex.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
