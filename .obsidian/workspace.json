@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Analyze night export traffic paths and Global Accelerator role"
+              "title": "Terminal: ✳ Analyze night export traffic paths and Global Accelerator role"
             }
           }
         ]
@@ -224,6 +224,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/mako/planodkupow-ce-audit-2026-04-26.md",
     "20-projects/clients/mako/planodkupow-finops-governance-audit-2026-04-25.md",
     "20-projects/clients/mako/planodkupow-qa-tagging-audit-2026-04-25.md",
     "40-runbooks/incidents/planodkupow-qa-tagging-audit.sh",
@@ -259,7 +260,6 @@
     "10-architecture/adr/ADR-toolkit-stabilization-before-llz-expansion.md",
     "10-architecture/adr",
     "10-architecture",
-    "20-projects/clients/mako/rshop-tagging-remediation-2026-04-24.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
