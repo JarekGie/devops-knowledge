@@ -511,81 +511,68 @@ apply_retention() {
 
 ---
 
-**Action — Stage 1: apply retention to UAT broker log groups (highest cost, 134 + 29 GB):**
+**Action — Stage 1: apply retention to UAT broker log groups (highest cost, 164 GB across 7 log groups):**
 
-Stage 1 is scoped to the specific UAT broker ID — no scope expansion risk.
+Scope: all log groups for broker `b-2d26b881` (active UAT broker). Live P0 confirmed 7 groups: connection, channel, general, federation, mirroring, queue, upgrade. Scoped by exact broker ID — no expansion risk.
 
 ```bash
 UAT_BROKER_ID="b-2d26b881-79f2-4c3c-8b77-06c1a0fb0b29"
 
-# Derive target list from P0 snapshot (locked at snapshot time, not live re-query)
-STAGE1_GROUPS=$(jq -r \
-  --arg bid "$UAT_BROKER_ID" \
-  '.[] | select(.name | contains($bid)) | select(.retentionDays == null) | .name' \
-  "$SNAPSHOT_DIR/cw-log-groups-merged.json")
-
 echo "=== Stage 1 targets (UAT broker $UAT_BROKER_ID) ==="
-echo "$STAGE1_GROUPS"
+jq -r --arg bid "$UAT_BROKER_ID" \
+  '.[] | select(.name | contains($bid)) | select(.retentionDays == null) | "\(.storedGB) GB | \(.name)"' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json"
 echo "=== Retention: ${RETENTION_DAYS}d | DRY_RUN: ${DRY_RUN} ==="
+echo "Press Ctrl-C within 10 seconds to abort..."
+sleep 10
 
-for LG in $STAGE1_GROUPS; do
+# IMPORTANT: use while-read not for-in.
+# In zsh, unquoted variable expansion does not word-split on newlines by default —
+# for-in would pass all names as a single argument and the API call would fail.
+jq -r --arg bid "$UAT_BROKER_ID" \
+  '.[] | select(.name | contains($bid)) | select(.retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json" | while IFS= read -r LG; do
   apply_retention "$LG"
 done
 ```
 
-**Action — Stage 2: apply to chaos-day orphan MQ log groups (explicit list from snapshot only):**
+**Action — Stage 2: apply to chaos-day orphan MQ log groups (explicit ID list from snapshot):**
 
-> **Scope safety:** Stage 2 does NOT use a live `/aws/amazonmq/` prefix scan. A live prefix scan would match the active QA broker (b-f231815d), any future brokers, and any new log groups created between snapshot and execution time. Instead, the target set is locked to the specific broker IDs confirmed as deleted in P1.3 pre-checks.
+> **Scope safety:** Stage 2 does NOT use a live `/aws/amazonmq/` prefix scan. A live prefix scan would match the active QA broker (b-f231815d), any future brokers, and any log groups created between snapshot and execution time. Instead, the target set is locked to specific deleted broker IDs confirmed absent from `mq list-brokers` during P0.
+
+> **Updated chaos broker list (confirmed by live P0.3 rehearsal 2026-04-26):** The original runbook listed 3 chaos-day IDs. Live snapshot revealed a 4th deleted orphan: `b-52e41f96`. Two additional deleted brokers (`b-81d3e96e`, `b-baa74389`) already have `retention=1 day` and are intentionally excluded. Active QA broker (`b-f231815d`) confirmed NOT matched by this pattern.
 
 ```bash
-# Explicit list of confirmed-deleted chaos-day broker IDs (from April 19 investigation)
-# Do NOT expand this list without re-running P0 and confirming broker deletion
-CHAOS_BROKER_IDS=(
-  "b-5cb3fcb4"
-  "b-b70793a7"
-  "b-9df801b4"
-)
-
-# Build target list from P0 snapshot — only groups matching confirmed-deleted broker IDs
-STAGE2_GROUPS=$(jq -r \
-  '.[] | select(.retentionDays == null) | .name' \
-  "$SNAPSHOT_DIR/cw-log-groups-merged.json" | \
-  grep -E "$(IFS='|'; echo "${CHAOS_BROKER_IDS[*]}")")
+# Confirmed-deleted chaos-day broker IDs — verified absent from mq list-brokers (P0.2)
+# Do NOT expand without re-running P0 and confirming absence from active broker list
+CHAOS_PATTERN="b-5cb3fcb4|b-b70793a7|b-9df801b4|b-52e41f96"
 
 echo "=== Stage 2 targets (chaos-day orphan brokers) ==="
-echo "$STAGE2_GROUPS"
+jq -r '.[] | select(.retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json" | grep -E "$CHAOS_PATTERN"
 echo "=== Retention: ${RETENTION_DAYS}d | DRY_RUN: ${DRY_RUN} ==="
 
-if [ -z "$STAGE2_GROUPS" ]; then
-  echo "No matching log groups found — nothing to do."
-else
-  for LG in $STAGE2_GROUPS; do
-    apply_retention "$LG"
-  done
-fi
+jq -r '.[] | select(.retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json" | \
+  grep -E "$CHAOS_PATTERN" | while IFS= read -r LG; do
+  apply_retention "$LG"
+done
 ```
 
 **Action — Stage 3: apply to CloudWatch Synthetics (cwsyn) canary log groups:**
 
-Stage 3 uses the `cwsyn-bbmt-` prefix, which is specific to the known canary naming pattern for this account. If other cwsyn canaries exist outside this prefix, they are not touched.
+Stage 3 uses the `cwsyn-bbmt-` prefix, specific to the known canary naming pattern for this account. Live P0 confirmed 15 log groups (4 QA, 11 UAT), all near-zero storage. Other cwsyn canaries outside this prefix are not touched.
 
 ```bash
-# Build target list from P0 snapshot — only cwsyn groups with no retention
-STAGE3_GROUPS=$(jq -r \
-  '.[] | select((.name | startswith("/aws/lambda/cwsyn-bbmt-")) and .retentionDays == null) | .name' \
-  "$SNAPSHOT_DIR/cw-log-groups-merged.json")
-
 echo "=== Stage 3 targets (cwsyn-bbmt canary log groups) ==="
-echo "$STAGE3_GROUPS"
+jq -r '.[] | select((.name | startswith("/aws/lambda/cwsyn-bbmt-")) and .retentionDays == null) | "\(.storedGB) GB | \(.name)"' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json"
 echo "=== Retention: ${RETENTION_DAYS}d | DRY_RUN: ${DRY_RUN} ==="
 
-if [ -z "$STAGE3_GROUPS" ]; then
-  echo "No matching canary log groups found — nothing to do."
-else
-  for LG in $STAGE3_GROUPS; do
-    apply_retention "$LG"
-  done
-fi
+jq -r '.[] | select((.name | startswith("/aws/lambda/cwsyn-bbmt-")) and .retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json" | while IFS= read -r LG; do
+  apply_retention "$LG"
+done
 ```
 
 **Post-check — verify retention applied and inspect sizes:**
