@@ -419,7 +419,15 @@ Reversible before log expiry:    YES — delete the retention policy to restore 
 Reversible after log expiry:     NO — expired log events are permanently gone
 ```
 
-**Expected impact:** ~$111/month reduction after decay (30-day retention) or ~$58/month (90-day retention). Savings appear gradually as older events expire.
+**Expected impact:** ~$111/month reduction after decay (30-day retention) or ~$58/month (90-day retention).
+
+**Important — cost reduction timeline:**
+Setting retention does NOT reduce the CloudWatch bill immediately.
+- Log events expire gradually as they age past the retention window
+- Stored bytes decrease only as old events are purged by AWS (daily background process)
+- Cost reduction appears over 30–90 days depending on retention chosen
+- The first billing cycle after applying retention will show little or no reduction
+- Full savings are only visible once the oldest cohort of events has aged out
 
 **Rollback — correct command to restore NEVER_EXPIRES:**
 ```bash
@@ -431,7 +439,14 @@ aws logs delete-retention-policy \
 # aws logs put-retention-policy --log-group-name "<name>" --retention-in-days 0
 ```
 
-**CFN drift risk:** None. CloudWatch log group retention is managed via `RetentionInDays` in CFN, but setting it via API does not constitute drift unless the template explicitly sets a different value. MQ-managed log groups are not in any CFN stack. Verify with pre-check below.
+**CFN drift risk:** None for this operation. CloudWatch log group retention is managed via `RetentionInDays` in CFN, but setting it via API does not constitute drift unless the template explicitly sets a different value. MQ-managed log groups are not in any CFN stack.
+
+**Retention drift on recreation — known failure mode:** Amazon MQ creates its log groups automatically when a broker is provisioned. CloudWatch Synthetics creates Lambda log groups when a canary runs. In both cases, AWS sets no retention policy by default — any recreated log groups will return to NEVER_EXPIRES. This means:
+- If a broker is deleted and recreated (as happened on April 19), the new log groups start with NEVER_EXPIRES
+- If a canary is redeployed, the new Lambda log group has no retention
+- This runbook's fix is a one-time remediation, not a persistent control
+
+**Recommended follow-up:** Codify retention in IaC. For CFN-managed log groups, add `RetentionInDays` to `AWS::Logs::LogGroup` resources. For MQ broker log groups (AWS-managed, not in CFN), add a Lambda or EventBridge rule that applies retention on `CreateLogGroup` events — otherwise retention drift will recur after any rebuild.
 
 ---
 
@@ -463,7 +478,7 @@ jq -r '.[] | select(.name | contains("amazonmq")) | "\(.storedGB) GB | \(.retent
 
 ---
 
-**Retention mode — choose one before running actions:**
+**Retention mode and dry-run flag — set both before running any stage:**
 
 ```bash
 # Default conservative mode (recommended for first run):
@@ -473,61 +488,104 @@ RETENTION_DAYS=90
 # Aggressive cost mode (use only after explicit team approval):
 # 30 days — maximum savings, higher risk of losing recent-ish logs
 # RETENTION_DAYS=30
+
+# Dry-run mode: set to true to print commands without executing them.
+# Always run with DRY_RUN=true first, review output, then set to false.
+DRY_RUN=true
+```
+
+```bash
+# Helper function — used by all three stages below
+apply_retention() {
+  local LG="$1"
+  if [ "$DRY_RUN" = true ]; then
+    echo "[DRY-RUN] aws logs put-retention-policy --log-group-name \"$LG\" --retention-in-days $RETENTION_DAYS"
+  else
+    aws logs put-retention-policy \
+      --log-group-name "$LG" \
+      --retention-in-days "$RETENTION_DAYS"
+    echo "Applied: $LG"
+  fi
+}
 ```
 
 ---
 
 **Action — Stage 1: apply retention to UAT broker log groups (highest cost, 134 + 29 GB):**
+
+Stage 1 is scoped to the specific UAT broker ID — no scope expansion risk.
+
 ```bash
 UAT_BROKER_ID="b-2d26b881-79f2-4c3c-8b77-06c1a0fb0b29"
 
-BROKER_LOG_GROUPS=$(aws logs describe-log-groups \
-  --log-group-name-prefix "/aws/amazonmq/broker/${UAT_BROKER_ID}" \
-  --query 'logGroups[*].logGroupName' \
-  --output text)
+# Derive target list from P0 snapshot (locked at snapshot time, not live re-query)
+STAGE1_GROUPS=$(jq -r \
+  --arg bid "$UAT_BROKER_ID" \
+  '.[] | select(.name | contains($bid)) | select(.retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json")
 
-echo "=== Log groups to update (review before proceeding) ==="
-echo "$BROKER_LOG_GROUPS"
-echo "=== Retention will be set to: ${RETENTION_DAYS} days ==="
-echo "Press Ctrl-C within 10 seconds to abort..."
-sleep 10
+echo "=== Stage 1 targets (UAT broker $UAT_BROKER_ID) ==="
+echo "$STAGE1_GROUPS"
+echo "=== Retention: ${RETENTION_DAYS}d | DRY_RUN: ${DRY_RUN} ==="
 
-for LG in $BROKER_LOG_GROUPS; do
-  echo "Setting retention=${RETENTION_DAYS}d for: $LG"
-  aws logs put-retention-policy \
-    --log-group-name "$LG" \
-    --retention-in-days "$RETENTION_DAYS"
-  echo "Done: $LG"
+for LG in $STAGE1_GROUPS; do
+  apply_retention "$LG"
 done
 ```
 
-**Action — Stage 2: apply to ALL remaining MQ log groups with NEVER_EXPIRES:**
+**Action — Stage 2: apply to chaos-day orphan MQ log groups (explicit list from snapshot only):**
+
+> **Scope safety:** Stage 2 does NOT use a live `/aws/amazonmq/` prefix scan. A live prefix scan would match the active QA broker (b-f231815d), any future brokers, and any new log groups created between snapshot and execution time. Instead, the target set is locked to the specific broker IDs confirmed as deleted in P1.3 pre-checks.
+
 ```bash
-# Only touches log groups with no current retention policy (select on null)
-aws logs describe-log-groups \
-  --log-group-name-prefix "/aws/amazonmq/" \
-  --output json | \
-  jq -r '.logGroups[] | select(.retentionInDays == null) | .logGroupName' | \
-  while read LG; do
-    echo "Fixing: $LG"
-    aws logs put-retention-policy \
-      --log-group-name "$LG" \
-      --retention-in-days "$RETENTION_DAYS"
+# Explicit list of confirmed-deleted chaos-day broker IDs (from April 19 investigation)
+# Do NOT expand this list without re-running P0 and confirming broker deletion
+CHAOS_BROKER_IDS=(
+  "b-5cb3fcb4"
+  "b-b70793a7"
+  "b-9df801b4"
+)
+
+# Build target list from P0 snapshot — only groups matching confirmed-deleted broker IDs
+STAGE2_GROUPS=$(jq -r \
+  '.[] | select(.retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json" | \
+  grep -E "$(IFS='|'; echo "${CHAOS_BROKER_IDS[*]}")")
+
+echo "=== Stage 2 targets (chaos-day orphan brokers) ==="
+echo "$STAGE2_GROUPS"
+echo "=== Retention: ${RETENTION_DAYS}d | DRY_RUN: ${DRY_RUN} ==="
+
+if [ -z "$STAGE2_GROUPS" ]; then
+  echo "No matching log groups found — nothing to do."
+else
+  for LG in $STAGE2_GROUPS; do
+    apply_retention "$LG"
   done
+fi
 ```
 
 **Action — Stage 3: apply to CloudWatch Synthetics (cwsyn) canary log groups:**
+
+Stage 3 uses the `cwsyn-bbmt-` prefix, which is specific to the known canary naming pattern for this account. If other cwsyn canaries exist outside this prefix, they are not touched.
+
 ```bash
-aws logs describe-log-groups \
-  --log-group-name-prefix "/aws/lambda/cwsyn-" \
-  --output json | \
-  jq -r '.logGroups[] | select(.retentionInDays == null) | .logGroupName' | \
-  while read LG; do
-    echo "Fixing cwsyn: $LG"
-    aws logs put-retention-policy \
-      --log-group-name "$LG" \
-      --retention-in-days "$RETENTION_DAYS"
+# Build target list from P0 snapshot — only cwsyn groups with no retention
+STAGE3_GROUPS=$(jq -r \
+  '.[] | select((.name | startswith("/aws/lambda/cwsyn-bbmt-")) and .retentionDays == null) | .name' \
+  "$SNAPSHOT_DIR/cw-log-groups-merged.json")
+
+echo "=== Stage 3 targets (cwsyn-bbmt canary log groups) ==="
+echo "$STAGE3_GROUPS"
+echo "=== Retention: ${RETENTION_DAYS}d | DRY_RUN: ${DRY_RUN} ==="
+
+if [ -z "$STAGE3_GROUPS" ]; then
+  echo "No matching canary log groups found — nothing to do."
+else
+  for LG in $STAGE3_GROUPS; do
+    apply_retention "$LG"
   done
+fi
 ```
 
 **Post-check — verify retention applied and inspect sizes:**
