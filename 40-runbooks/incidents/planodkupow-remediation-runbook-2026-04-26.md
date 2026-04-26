@@ -31,7 +31,7 @@ Three distinct problem categories, each with a different fix path:
 
 | # | Problem | Current cost | Fix path | Risk |
 |---|---------|-------------|---------|------|
-| A | CloudWatch log groups NEVER_EXPIRES — 164 GB accumulated | ~$97/mo and growing | `logs put-retention-policy` — pure API, no resource change | **Zero** |
+| A | CloudWatch log groups NEVER_EXPIRES — 164 GB accumulated | ~$97/mo and growing | `logs put-retention-policy` — pure API, no resource change | **Medium** — workload safe, but eventually deletes old log events; requires compliance approval |
 | B | ECS `PropagateTags=NONE` on 26/28 services — task ENIs untagged | $267/mo misattributed | CFN template change set on existing stacks | Low |
 | C | MQ orphan broker zero tags | $21/mo unattributed | `mq create-tags` — pure metadata | **Zero** |
 | D | Unassociated EIP 3.77.136.162 | $3.60/mo pure waste | `ec2 release-address` — irreversible | Low-medium |
@@ -64,7 +64,7 @@ Three distinct problem categories, each with a different fix path:
 | Action | Risk level | Reversible? | CFN drift risk? | Requires change window? |
 |--------|-----------|------------|----------------|------------------------|
 | Export evidence (P0) | **Zero** | N/A | No | No |
-| `logs put-retention-policy` | **Zero** | Yes (re-apply NEVER_EXPIRES) | No | No |
+| `logs put-retention-policy` | Runtime: **Zero** / Compliance: **Medium** | Yes, before log expiry (see P1.1 rollback) | No | No — but requires compliance gate (see P1.1) |
 | `mq create-tags` | **Zero** | Yes (delete tags) | No | No |
 | `cloudtrail add-tags` | **Zero** | Yes | No | No |
 | `globalaccelerator tag-resource` | **Zero** | Yes | No | No |
@@ -400,55 +400,110 @@ DO NOT PROCEED if any snapshot failed.
 ## Phase P1 — Zero-Risk Remediations
 
 **Gate condition:** P0 complete, all snapshots green.  
-**Risk:** Zero to low. All actions are reversible except EIP release.  
+**Risk:** Low. Most actions are reversible. Exception: EIP release (irreversible), log deletion (irreversible), log expiry after retention window closes (irreversible).  
 **Estimated time:** 20-30 minutes.  
-**No change window required.** Inform team before EIP release.
+**No change window required.** Inform team before EIP release and before applying log retention.
 
 ---
 
 ### P1.1 — CloudWatch Log Retention: MQ broker logs
 
-**Why:** UAT broker log groups carry 164 GB with NEVER_EXPIRES. AWS charges $0.03/GB/month for CloudWatch storage. After setting retention=30d, logs older than 30 days auto-expire over the following 30 days. No data is deleted immediately.
+**Why:** UAT broker log groups carry 164 GB with NEVER_EXPIRES. AWS charges $0.03/GB/month for CloudWatch storage. After setting a retention policy, log events older than the retention window auto-expire gradually. No data is deleted immediately — expiry begins only after the retention window elapses from each event's creation time.
 
-**Expected impact:** ~$111/month reduction after 30-day decay.
+**Risk classification:**
+```
+Runtime risk:                    zero — setting retention does not interrupt workloads
+Data-retention/compliance risk:  MEDIUM unless approved — log events will eventually be deleted
+Cost impact:                     HIGH — ~$111/month reduction after decay
+Reversible before log expiry:    YES — delete the retention policy to restore NEVER_EXPIRES
+Reversible after log expiry:     NO — expired log events are permanently gone
+```
 
-**Rollback:** Re-apply NEVER_EXPIRES: `aws logs put-retention-policy --log-group-name <name> --retention-in-days 0` (0 = never expires).
+**Expected impact:** ~$111/month reduction after decay (30-day retention) or ~$58/month (90-day retention). Savings appear gradually as older events expire.
 
-**CFN drift risk:** None. CloudWatch log group retention is a property that CFN manages via `RetentionInDays`, but setting it via API does not constitute drift — CFN only drifts if the property exists in the template with a different value. Log groups without explicit CFN retention often have no retention in template at all. Verify with P1.1-pre-check below.
-
-**Pre-check:** Confirm log group names and current retention:
+**Rollback — correct command to restore NEVER_EXPIRES:**
 ```bash
-# Show all MQ log groups with current retention
-jq -r '.[] | select(.name | contains("amazonmq")) | "\(.storedGB) GB | \(.retentionDays // "NEVER_EXPIRES") | \(.name)"' \
+# CORRECT: removes the retention policy entirely, restoring NEVER_EXPIRES behaviour
+aws logs delete-retention-policy \
+  --log-group-name "<log-group-name>"
+
+# WRONG — do NOT use retention-in-days 0; this is not a valid value:
+# aws logs put-retention-policy --log-group-name "<name>" --retention-in-days 0
+```
+
+**CFN drift risk:** None. CloudWatch log group retention is managed via `RetentionInDays` in CFN, but setting it via API does not constitute drift unless the template explicitly sets a different value. MQ-managed log groups are not in any CFN stack. Verify with pre-check below.
+
+---
+
+#### P1.1 — GO/NO-GO Gate (mandatory before applying retention)
+
+```
+GO only if ALL of the following are confirmed:
+
+[ ] Application/team owner confirms MQ logs older than 30 days (or 90 days)
+    are not required for operational or debugging purposes
+[ ] No contractual, audit, or regulatory requirement mandates longer retention
+    (e.g., GDPR data processing records, PCI-DSS audit logs, ISO 27001 retention policy)
+[ ] P0.3 log group inventory snapshot is complete and storedBytes values are recorded
+[ ] The exact list of target log groups has been printed and reviewed before apply
+    (see pre-check below — run it, read the output, then decide)
+
+If any item is NOT confirmed → defer this action and document the reason.
+Do NOT apply retention speculatively.
+```
+
+---
+
+**Pre-check — print list before touching anything:**
+```bash
+# Show all MQ log groups with current retention and size
+jq -r '.[] | select(.name | contains("amazonmq")) | "\(.storedGB) GB | \(.retentionDays // "NEVER_EXPIRES") days | \(.name)"' \
   "$SNAPSHOT_DIR/cw-log-groups-merged.json"
 ```
 
-**Action — Stage 1: apply retention to UAT broker log groups (highest cost):**
+---
+
+**Retention mode — choose one before running actions:**
+
+```bash
+# Default conservative mode (recommended for first run):
+# 90 days — meaningful cost reduction with lower compliance risk
+RETENTION_DAYS=90
+
+# Aggressive cost mode (use only after explicit team approval):
+# 30 days — maximum savings, higher risk of losing recent-ish logs
+# RETENTION_DAYS=30
+```
+
+---
+
+**Action — Stage 1: apply retention to UAT broker log groups (highest cost, 134 + 29 GB):**
 ```bash
 UAT_BROKER_ID="b-2d26b881-79f2-4c3c-8b77-06c1a0fb0b29"
 
-# Enumerate all log group prefixes for this broker
 BROKER_LOG_GROUPS=$(aws logs describe-log-groups \
   --log-group-name-prefix "/aws/amazonmq/broker/${UAT_BROKER_ID}" \
   --query 'logGroups[*].logGroupName' \
   --output text)
 
-echo "Log groups to update:"
+echo "=== Log groups to update (review before proceeding) ==="
 echo "$BROKER_LOG_GROUPS"
+echo "=== Retention will be set to: ${RETENTION_DAYS} days ==="
+echo "Press Ctrl-C within 10 seconds to abort..."
+sleep 10
 
-# Apply 30-day retention to each
 for LG in $BROKER_LOG_GROUPS; do
-  echo "Setting retention=30d for: $LG"
+  echo "Setting retention=${RETENTION_DAYS}d for: $LG"
   aws logs put-retention-policy \
     --log-group-name "$LG" \
-    --retention-in-days 30
+    --retention-in-days "$RETENTION_DAYS"
   echo "Done: $LG"
 done
 ```
 
-**Action — Stage 2: apply to ALL MQ log groups with NEVER_EXPIRES:**
+**Action — Stage 2: apply to ALL remaining MQ log groups with NEVER_EXPIRES:**
 ```bash
-# Safe: only touches log groups with no current retention policy
+# Only touches log groups with no current retention policy (select on null)
 aws logs describe-log-groups \
   --log-group-name-prefix "/aws/amazonmq/" \
   --output json | \
@@ -457,7 +512,7 @@ aws logs describe-log-groups \
     echo "Fixing: $LG"
     aws logs put-retention-policy \
       --log-group-name "$LG" \
-      --retention-in-days 30
+      --retention-in-days "$RETENTION_DAYS"
   done
 ```
 
@@ -471,11 +526,11 @@ aws logs describe-log-groups \
     echo "Fixing cwsyn: $LG"
     aws logs put-retention-policy \
       --log-group-name "$LG" \
-      --retention-in-days 30
+      --retention-in-days "$RETENTION_DAYS"
   done
 ```
 
-**Post-check:**
+**Post-check — verify retention applied and inspect sizes:**
 ```bash
 # Verify no MQ log groups remain with NEVER_EXPIRES
 aws logs describe-log-groups \
@@ -483,6 +538,12 @@ aws logs describe-log-groups \
   --query 'logGroups[?retentionInDays==`null`].logGroupName' \
   --output text
 # Expected: empty output
+
+# Full inventory with retention and stored bytes — confirm state matches intent
+aws logs describe-log-groups \
+  --log-group-name-prefix "/aws/amazonmq/" \
+  --query 'logGroups[*].{Name:logGroupName,Retention:retentionInDays,StoredBytes:storedBytes}' \
+  --output table
 ```
 
 ---
