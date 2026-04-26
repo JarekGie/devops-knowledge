@@ -315,6 +315,50 @@ Decyzja wymagana przed Fazą 3:
 Runbook:    40-runbooks/planodkupow-tagging-finops.md
 ```
 
+## Zamknięte: planodkupow QA — FinOps remediation sprint ✓ (P1.1 pending compliance gate)
+
+```
+Stan:       SPRINT CLOSED (2026-04-26) — P1.1 execution pending compliance gate
+Projekt:    planodkupow, 333320664022, eu-central-1, profil: plan
+
+Zrobione:
+  runtime-verification-2026-04-26.md  — skompilowane evidence ze wszystkich live CLI runs:
+    ECS PropagateTags: 26/28 serwisów = NONE (UAT) → tag propagation broken
+    MQ orphan: b-f231815d (nowy QA broker) — ZERO tagów, poza CFN stackiem
+    CW log groups: 164.39 GB, 93 grupy NEVER_EXPIRES (UAT broker b-2d26b881 dominant)
+    VPC endpoints: 4 orphan w starym VPC (out-of-scope nowego QA VPC)
+    EIP: 1 unassociated ($3.60/mies. waste)
+    WAF, GA, ECR: zero governance tags
+
+  remediation-runbook-2026-04-26.md  — 4-fazowy runbook (P0/P1/P2/P3), 4 rundy patchy:
+    P0: snapshot collection (read-only) — wykonany w dry-run
+    P1.1: CloudWatch retention (4 etapy), DRY_RUN=true — wykonany, wynik walidowany
+    Kluczowe poprawki w runbooku:
+      - rollback: delete-retention-policy (NIE: retention-in-days 0 — invalid API value)
+      - risk: MEDIUM compliance (NIE: zero)
+      - scope: snapshot-locked targeting (NIE: live prefix re-query → scope expansion risk)
+      - shell: while IFS= read -r (NIE: for-in — zsh word-split bug)
+      - broker b-52e41f96 dodany do CHAOS_PATTERN (odkryty dopiero w P0.3)
+      - savings: $4.67/mies. storage (NIE: $58/mies. — błąd ×12-24)
+    Split retention: RETENTION_DAYS_ACTIVE=90 (Stage 1 UAT broker), RETENTION_DAYS_ORPHAN=30 (Stage 2+3 chaos)
+
+Kluczowe ustalenia:
+  - $97-126/mies. CW wzrost = ingestion z ECS logów (jednorazowy), NIE storage MQ
+  - Storage CW: $4.93/mies. (164 GB × $0.03), savings po retention fix: $4.67/mies.
+  - GO verdict na P1.1 — warunkowo: wymaga team confirmation na 90-day retention policy
+
+Otwarte (poza scope zamkniętego sprintu):
+  - P1.1 execution: czeka na compliance sign-off → flip DRY_RUN=false
+  - P1.2–P1.9: MQ tagging, WAF/GA/ECR tagging, EIP release
+  - P2 (ECS PropagateTags): wymaga scheduled deploy window
+  - P3 (old VPC teardown): wymaga 7-day metric gate + business sign-off
+
+Artefakty:
+  20-projects/clients/mako/planodkupow-runtime-verification-2026-04-26.md
+  20-projects/clients/mako/planodkupow-ce-audit-2026-04-26.md
+  40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md
+```
+
 ## Zamknięte: standard IaC + ECS Competency mapping ✓
 
 ```
@@ -579,42 +623,19 @@ Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
 ## Gdzie skończyłem
 
 ```
-Stan:          planodkupow-qa = UPDATE_COMPLETE ✓ (2026-04-22 14:44 UTC+2)
-               Dzisiejszy root update zakończony po długim UPDATE_IN_PROGRESS
-               Jenkins timeout był fałszywym alarmem — AWS domknął operację
+Stan:          planodkupow FinOps remediation sprint CLOSED (2026-04-26)
+               Switching context → maspex
 
-Diagnoza:      W trakcie update Gateway-SRVC wpadał w pętlę restartów:
-               register target -> 404 na health check /signin -> unhealthy ->
-               stop task -> replace task
-               ECS osiągnął steady state dopiero o 2026-04-22 14:41 UTC+2
+Ostatnie działania (2026-04-26):
+  - Runbook P1.1 DRY_RUN=true wykonany i zwalidowany
+  - Split retention policy potwierdzona: 90d (UAT broker) / 30d (chaos orphans + cwsyn)
+  - Savings przeliczone: $4.67/mies. storage (nie $58 — błąd był ×12-24)
+  - GO/NO-GO: GO — czeka na compliance sign-off przed flip DRY_RUN=false
 
-Potwierdzone:
-               QA runtime:
-                 - TG HealthCheckPath = /signin
-                 - target zwracał 404 / Target.ResponseCodeMismatch
-               UAT parameter:
-                 - HealthCheckPath = /api/health
-
-Fix przygotowany:
-               Param-only, QA only, bez zmian template i bez uploadu do S3
-               Change set: qa-healthcheck-api-health-1776862141
-               Status: CREATE_COMPLETE
-               Zmiana docelowa: HealthCheckPath = /api/health
-
-Walidacja:
-               SAFE
-               - brak Replacement=True
-               - brak zmian RabbitMQ
-               - DBStack tylko Dynamic/ResourceAttribute
-               - jedyna statyczna zmiana: ALBStack <- HealthCheckPath
-
-Następny krok:
-               Jeśli chcesz wykonać fix, uruchomić:
-               aws cloudformation execute-change-set \
-                 --stack-name planodkupow-qa \
-                 --change-set-name qa-healthcheck-api-health-1776862141 \
-                 --region eu-central-1 \
-                 --profile plan
+Następny projekt:  maspex
+  Vault:           20-projects/clients/mako/maspex/
+  Repo:            ~/projekty/mako/aws-projects/infra-maspex
+  Profil:          maspex-cli | Region: eu-west-1
 ```
 
 ## Kontekst środowiska
@@ -668,4 +689,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-26 10:20 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-26 16:06 — sesja aktywna*
