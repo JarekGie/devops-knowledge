@@ -1,7 +1,7 @@
 ---
 tags: [maspex, aws, cloudfront, terraform, cache, #decision]
 date: 2026-04-26
-status: plan-ready, awaiting apply
+status: applied, live
 ---
 
 # CloudFront cache dla /api/slogan — implementacja
@@ -140,6 +140,20 @@ curl -sI "https://kapsel.makotest.pl/api/slogan?page=1&sortBy=votes_desc&foo=bar
 - Query strings spoza whitelist (`foo`, `debug`) są ignorowane w cache key — ale przekazywane do originu (przez origin request policy all QS)
 - Zmiana jest dla UAT. Dla preprod — osobna implementacja gdy gotowi
 
-## Commit branch
+## Regresja po wdrożeniu — 502 fix (2026-04-26)
 
-Implementacja w repo `infra-maspex` na branchu feature — do ustalenia z zespołem.
+Po apply oryginalnej implementacji pojawił się `502 Bad Gateway` na `GET /api/slogan?page=1&sortBy=newest`.
+
+**Root cause:** Custom ORP miał `header_behavior = "none"` — CloudFront nie forwardował nagłówka `Host` do originu (ALB). Bez `Host`, CloudFront używał domeny originu (`maspex-uat-1361582173.eu-west-1.elb.amazonaws.com`) jako SNI dla TLS. Certyfikat ALB jest wystawiony na `kapsel.makotest.pl` — mismatch → TLS handshake failure → 502.
+
+**Fix:** Zmiana `header_behavior = "none"` na `whitelist` z `["Host"]` w `aws_cloudfront_origin_request_policy.api` (`modules/cloudfront-site/main.tf`). Cache policy bez zmian.
+
+**Lekcja:** Dla ALB z `https-only` i host-based routing, ORP MUSI forwardować `Host`. Wystarczy whitelist z `["Host"]` — nie trzeba Managed-AllViewer. Cache key jest kontrolowany niezależnie przez cache policy.
+
+**Weryfikacja po apply:**
+```
+HTTP/2 200  x-cache: Miss from cloudfront   (1. request)
+HTTP/2 200  x-cache: Hit from cloudfront    (2. request)
+```
+
+Apply: 2026-04-26. Apply time: <5 sekund. 0 destroy. Propagacja CF natychmiastowa.
