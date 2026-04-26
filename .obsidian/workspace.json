@@ -76,8 +76,19 @@
               "icon": "lucide-file",
               "title": "maspex"
             }
+          },
+          {
+            "id": "1a777d35f5520afa",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Podgląd grafu"
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -250,7 +261,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ea8eea0fdff7071a",
+  "active": "1a777d35f5520afa",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
