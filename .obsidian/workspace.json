@@ -262,6 +262,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/finops-uat-preprod-cost-estimate-2026-04.md",
     "20-projects/clients/mako/maspex/incident-uat-auth-refresh-token-2026-04-26.md",
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
@@ -293,7 +294,6 @@
     "90-reference/notebooklm/planodkupow-refactor/artifacts",
     "90-reference/notebooklm/planodkupow-refactor",
     "30-notebooks/planodkupow-refactor/MEETING_BRIEF.md",
-    "30-notebooks/planodkupow-refactor/REFactor_OPTIONS.md",
     "30-notebooks/planodkupow-refactor",
     "30-notebooks",
     "10-architecture/adr",
