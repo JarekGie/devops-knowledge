@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Analyze night export traffic paths and Global Accelerator role"
+              "title": "Terminal: ✳ Incident check for Maspex UAT auth token error"
             }
           },
           {
@@ -87,8 +87,7 @@
               "title": "Podgląd grafu"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -261,7 +260,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "1a777d35f5520afa",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
