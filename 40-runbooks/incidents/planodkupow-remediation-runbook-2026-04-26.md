@@ -31,7 +31,7 @@ Three distinct problem categories, each with a different fix path:
 
 | # | Problem | Current cost | Fix path | Risk |
 |---|---------|-------------|---------|------|
-| A | CloudWatch log groups NEVER_EXPIRES — 164 GB accumulated | ~$97/mo and growing | `logs put-retention-policy` — pure API, no resource change | **Medium** — workload safe, but eventually deletes old log events; requires compliance approval |
+| A | CloudWatch log groups NEVER_EXPIRES — 164 GB accumulated | Storage: ~$4.93/mo (growing). Main CW cost of $97/mo is ingestion, not storage. | `logs put-retention-policy` — pure API, no resource change | **Medium** — workload safe, but eventually deletes old log events; requires compliance approval |
 | B | ECS `PropagateTags=NONE` on 26/28 services — task ENIs untagged | $267/mo misattributed | CFN template change set on existing stacks | Low |
 | C | MQ orphan broker zero tags | $21/mo unattributed | `mq create-tags` — pure metadata | **Zero** |
 | D | Unassociated EIP 3.77.136.162 | $3.60/mo pure waste | `ec2 release-address` — irreversible | Low-medium |
@@ -53,7 +53,7 @@ Three distinct problem categories, each with a different fix path:
 | P1 complete | ~$787 (MQ tagged, minor shift) | ~$3.60 (EIP) |
 | P2 complete | ~$550 (ECS attributed) | ~$0 (attribution fix, not cost reduction) |
 | P3 complete | ~$450 (VPC orphans gone) | **~$65-85/mo real savings** |
-| Log retention fix in P1 | CW drops from $126/mo → ~$15/mo after decay | **~$111/mo savings after 30-day decay** |
+| Log retention fix in P1 | Storage drops from $4.93/mo → ~$0.26/mo after decay | **~$4.67/mo storage savings** (main CW cost is ingestion, not storage) |
 
 **Total recoverable over 90 days: ~$175-200/month**
 
@@ -419,7 +419,19 @@ Reversible before log expiry:    YES — delete the retention policy to restore 
 Reversible after log expiry:     NO — expired log events are permanently gone
 ```
 
-**Expected impact:** ~$111/month reduction after decay (30-day retention) or ~$58/month (90-day retention).
+**Expected impact — corrected (verified 2026-04-26):**
+
+| Metric | Value |
+|--------|-------|
+| Total NEVER_EXPIRES stored (all groups) | 164.39 GB |
+| Current monthly storage cost | **$4.93/month** (164.39 × $0.03/GB/month) |
+| UAT broker ingestion rate (est.) | 2.91 GB/month (derived: 164 GB ÷ 56.4 months) |
+| Steady-state stored at 90-day retention | ~8.7 GB → **$0.26/month** |
+| Steady-state stored at 30-day retention | ~2.9 GB → **$0.09/month** |
+| **Storage savings at 90 days (eventual)** | **~$4.67/month** |
+| **Storage savings at 30 days (eventual)** | **~$4.84/month** |
+
+> **Critical correction:** Prior estimates of $111/month (30-day) and $58/month (90-day) were wrong. Those figures incorrectly attributed the full CloudWatch CE increase ($97/month post-chaos) to log storage. The $97/month increase is driven by log **ingestion** from new ECS task log groups — retention policy does not affect ingestion cost. CloudWatch storage pricing is $0.03/GB/month; 164 GB = $4.93/month storage. Retention fix targets storage only.
 
 **Important — cost reduction timeline:**
 Setting retention does NOT reduce the CloudWatch bill immediately.
