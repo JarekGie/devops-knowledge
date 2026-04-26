@@ -224,6 +224,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/mako/planodkupow-runtime-verification-2026-04-26.md",
     "20-projects/clients/mako/planodkupow-ce-audit-2026-04-26.md",
     "20-projects/clients/mako/planodkupow-finops-governance-audit-2026-04-25.md",
     "20-projects/clients/mako/planodkupow-qa-tagging-audit-2026-04-25.md",
@@ -257,7 +258,6 @@
     "30-notebooks/planodkupow-refactor",
     "30-notebooks",
     "20-projects/clients/mako/planodkupow-orphan-network-investigation-2026-04-24.md",
-    "10-architecture/adr/ADR-toolkit-stabilization-before-llz-expansion.md",
     "10-architecture/adr",
     "10-architecture",
     "pkm-stack-infographic.png",
