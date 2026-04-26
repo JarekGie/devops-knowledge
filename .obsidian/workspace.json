@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Analyze night export traffic paths and Global Accelerator role"
+              "title": "Terminal: ⠂ Analyze night export traffic paths and Global Accelerator role"
             }
           },
           {
@@ -252,6 +252,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
     "_chatgpt/context-packs/maspex.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
@@ -283,7 +284,6 @@
     "30-notebooks/planodkupow-refactor/MEETING_BRIEF.md",
     "30-notebooks/planodkupow-refactor/REFactor_OPTIONS.md",
     "30-notebooks/planodkupow-refactor/HYPOTHESES_AND_RISKS.md",
-    "30-notebooks/planodkupow-refactor/QUESTIONS_FOR_PROJECT_TEAM.md",
     "30-notebooks/planodkupow-refactor",
     "30-notebooks",
     "10-architecture/adr",
