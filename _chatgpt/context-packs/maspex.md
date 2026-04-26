@@ -82,6 +82,31 @@ Internet → CloudFront → ALB → ECS Fargate (maspex-uat cluster)
 
 ---
 
+## CloudFront cache /api/slogan — GOTOWE DO APPLY (2026-04-26)
+
+MR: `feat/preprod-zaslepka` → main na GitLab infra-maspex-kapsel
+Plan: `2 to add, 1 to change, 0 to destroy` — validate OK
+
+Nowy behavior na E3J76RNXIE2YIG:
+- path: `/api/slogan` (exact, bez wildcard — `/api/slogan/vote` nadal CachingDisabled)
+- cache policy: QS whitelist `[page, sortBy, search]`, no cookies, no auth headers
+- origin request policy: te same whitelisted QS do originu
+- TTL: min=0 (respektuj `s-maxage` z aplikacji), default=60s, max=600s
+
+Po apply zweryfikuj:
+```bash
+# Miss (cold)
+curl -sI "https://kapsel.makotest.pl/api/slogan?page=1&sortBy=votes_desc" | grep x-cache
+# Hit (warm)
+curl -sI "https://kapsel.makotest.pl/api/slogan?page=1&sortBy=votes_desc" | grep x-cache
+# /vote — zawsze Miss
+curl -sI "https://kapsel.makotest.pl/api/slogan/vote" | grep x-cache
+```
+
+⚠️ ECS lifecycle zmiana (desired_count wyszedł z ignore_changes) — sprawdź tfvars przed apply.
+
+---
+
 ## Co jest przygotowane ale NIE wdrożone (terraform plan OK, apply pending)
 
 ### Patch monitoring — load test readiness (przygotowany 2026-04-23/24)

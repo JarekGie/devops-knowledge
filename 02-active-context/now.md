@@ -623,19 +623,39 @@ Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
 ## Gdzie skończyłem
 
 ```
-Stan:          planodkupow FinOps remediation sprint CLOSED (2026-04-26)
-               Switching context → maspex
+Stan:          maspex — CloudFront /api/slogan cache GOTOWE DO APPLY (2026-04-26)
+Repo:          ~/projekty/mako/aws-projects/infra-maspex
+Branch:        feat/preprod-zaslepka (wypchniętny na GitLab)
+MR:            https://gitlab.makolab.net/admin-makolab/dc/aws-projects/infra-maspex-kapsel/-/merge_requests/new?merge_request%5Bsource_branch%5D=feat%2Fpreprod-zaslepka
 
-Ostatnie działania (2026-04-26):
-  - Runbook P1.1 DRY_RUN=true wykonany i zwalidowany
-  - Split retention policy potwierdzona: 90d (UAT broker) / 30d (chaos orphans + cwsyn)
-  - Savings przeliczone: $4.67/mies. storage (nie $58 — błąd był ×12-24)
-  - GO/NO-GO: GO — czeka na compliance sign-off przed flip DRY_RUN=false
+Wykonano (2026-04-26):
+  1. CloudFront audit (read-only) — zero driftu na wszystkich 3 dystrybucjach
+     Ryzyka: brak WAF na preprod, brak security headers policy, /landing/* z min_ttl=86400
+     Raport: 20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md
 
-Następny projekt:  maspex
-  Vault:           20-projects/clients/mako/maspex/
-  Repo:            ~/projekty/mako/aws-projects/infra-maspex
-  Profil:          maspex-cli | Region: eu-west-1
+  2. CloudFront cache dla /api/slogan (UAT E3J76RNXIE2YIG):
+     - nowy ordered behavior: path="/api/slogan" (exact, bez wildcard)
+     - cache policy: QS whitelist [page, sortBy, search], no cookies, no auth headers
+     - origin request policy: te same whitelisted QS do originu (nie "all" — unikamy cache poisoning)
+     - TTL: min=0 (respektuj s-maxage aplikacji), default=60s, max=600s
+     - /api/slogan/vote i inne NIE objęte (exact path pattern)
+     - plan: 2 add, 1 change in-place, 0 destroy — validate OK, fmt OK
+
+  3. Commit + push (3 commity na feat/preprod-zaslepka):
+     45b718b  feat(cloudfront): add api_cache_behaviors — whitelist QS cache
+     168a569  fix(ecs): manage desired_count via Terraform
+     743d43e  fix(preprod): scale api to 1 task, wire api log group to monitoring
+
+Następny krok:
+  - `terraform apply` UAT po review MR
+  - weryfikacja: curl → Miss, potem Hit na /api/slogan?page=1&sortBy=votes_desc
+  - obserwacja CacheHitRate na dashboard maspex-uat-overview przez ~15 min
+  - po walidacji: kolejny test obciążeniowy
+
+⚠️ Uwaga przed apply:
+  - ECS lifecycle zmiana (ignore_changes bez desired_count) dotyka UAT + preprod
+    Sprawdź desired_count w UAT tfvars przed apply
+  - /api/slogan trailing slash: behavior nie obejmuje /api/slogan/ — sprawdzić po apply
 ```
 
 ## Kontekst środowiska
@@ -689,4 +709,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-26 17:42 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-26 18:58 — sesja aktywna*
