@@ -356,6 +356,8 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/puzzler-b2b/qa-alb-cert-wrong-region-2026-04-27.md",
+    "20-projects/clients/puzzler-b2b",
     "20-projects/clients/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
     "_chatgpt/context-packs/maspex-load-testing.md",
     "01-inbox/quick-capture.md",
@@ -382,7 +384,6 @@
     "30-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
     "90-reference/notebooklm/planodkupow-refactor/notebook-contract.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts/questions-for-project-team.md",
-    "90-reference/notebooklm/planodkupow-refactor/README.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "90-reference/notebooklm/planodkupow-refactor/findings",
     "90-reference/notebooklm/planodkupow-refactor/conversations",
@@ -391,7 +392,6 @@
     "30-notebooks/planodkupow-refactor",
     "30-notebooks",
     "10-architecture/adr",
-    "10-architecture",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
