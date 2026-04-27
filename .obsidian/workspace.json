@@ -356,6 +356,7 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
     "_chatgpt/context-packs/maspex-load-testing.md",
     "01-inbox/quick-capture.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
@@ -382,7 +383,6 @@
     "90-reference/notebooklm/planodkupow-refactor/notebook-contract.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts/questions-for-project-team.md",
     "90-reference/notebooklm/planodkupow-refactor/README.md",
-    "90-reference/notebooklm/planodkupow-refactor/sources.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "90-reference/notebooklm/planodkupow-refactor/findings",
     "90-reference/notebooklm/planodkupow-refactor/conversations",
