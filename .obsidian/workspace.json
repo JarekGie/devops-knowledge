@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Analyze Maspex issues and prepare ChatGPT context"
+              "title": "Terminal: ✳ Analyze Maspex issues and prepare ChatGPT context"
             }
           },
           {
@@ -167,8 +167,7 @@
               "title": "maspex-load-testing"
             }
           }
-        ],
-        "currentTab": 7
+        ]
       }
     ],
     "direction": "vertical"
@@ -341,8 +340,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "1aeee816e2d9a80b",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/maspex-load-testing.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
     "_chatgpt/context-packs/maspex.md",
     "01-inbox/LLM_CONTEXT.md",
@@ -369,7 +369,6 @@
     "90-reference/notebooklm/planodkupow-refactor/README.md",
     "90-reference/notebooklm/planodkupow-refactor/sources.md",
     "90-reference/notebooklm/planodkupow-refactor/findings/hypotheses-and-risks.md",
-    "90-reference/notebooklm/planodkupow-refactor/findings/refactor-options.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "90-reference/notebooklm/planodkupow-refactor/findings",
     "90-reference/notebooklm/planodkupow-refactor/conversations",
