@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Obsidian commercial use license question"
+              "title": "Terminal: ✳ Claude Code"
             }
           },
           {
@@ -356,6 +356,8 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "20-projects/clients/bmw/ai-taskforce/ai-taskforce.xlsx",
+    "20-projects/clients/bmw/ai-taskforce/ai-taskforce.pptx",
     "20-projects/clients/puzzler-b2b/alb-ip-restriction-makolab-2026-04-27.md",
     "40-runbooks/aws/cfn-sg-rollback-failed-iam.md",
     "20-projects/clients/puzzler-b2b/qa-alb-cert-wrong-region-2026-04-27.md",
@@ -383,7 +385,6 @@
     "2026-04-24.md",
     "20-projects/clients/mako/maspex/finops-as-is-estimate.md",
     "_chatgpt/context-packs/planodkupow-ops-context-2026-04-24.md",
-    "30-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "90-reference/notebooklm/planodkupow-refactor/findings",
     "90-reference/notebooklm/planodkupow-refactor/conversations",
@@ -391,7 +392,6 @@
     "90-reference/notebooklm/planodkupow-refactor",
     "30-notebooks/planodkupow-refactor",
     "30-notebooks",
-    "10-architecture/adr",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
