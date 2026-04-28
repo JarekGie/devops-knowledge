@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Expand BMW AI-ITSM roadmap with enterprise governance"
+              "title": "Terminal: ⠂ Execute previous task"
             }
           },
           {
@@ -356,6 +356,8 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/maspex.md",
+    "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
     "20-projects/clients/bmw/ai-taskforce/~$ai-taskforce-pl.xlsx",
     "20-projects/clients/bmw/ai-taskforce/ai-taskforce-pl.xlsx",
     "20-projects/clients/bmw/ai-taskforce/session-log.md",
@@ -369,8 +371,6 @@
     "20-projects/clients/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
     "_chatgpt/context-packs/maspex-load-testing.md",
     "01-inbox/quick-capture.md",
-    "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
-    "_chatgpt/context-packs/maspex.md",
     "01-inbox/LLM_CONTEXT.md",
     "40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md",
     "20-projects/clients/mako/maspex/finops-uat-preprod-cost-estimate-2026-04.md",
@@ -391,7 +391,6 @@
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "90-reference/notebooklm/planodkupow-refactor/findings",
     "90-reference/notebooklm/planodkupow-refactor/conversations",
-    "90-reference/notebooklm/planodkupow-refactor/artifacts",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

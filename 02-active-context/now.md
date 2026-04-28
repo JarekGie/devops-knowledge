@@ -623,8 +623,9 @@ Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
 ## Zamknięte: BMW AI Taskforce — ITSM AI Mapping Excel ✓
 
 ```
-Stan:       DONE (2026-04-27)
-Plik:       20-projects/clients/bmw/ai-taskforce/ai-taskforce.xlsx
+Stan:       DONE (2026-04-28)
+Pliki:      20-projects/clients/bmw/ai-taskforce/ai-taskforce.xlsx      ← oryginał EN
+            20-projects/clients/bmw/ai-taskforce/ai-taskforce-pl.xlsx   ← kopia PL
 Session:    20-projects/clients/bmw/ai-taskforce/session-log.md
 
 Co zrobiono:
@@ -636,6 +637,7 @@ Co zrobiono:
   - Uzupełniono brakujące wiersze: Svc Configuration, Capacity, IT Service Continuity
   - Dodano 3 nowe wiersze: Change Management, CMDB/Asset Mgmt, Cloud Ops/SRE
   - Executive summary: high value/low risk vs high risk/advanced maturity
+  - Polska wersja: ai-taskforce-pl.xlsx — pełne tłumaczenie treści + nazwy arkuszy
 
 Otwarte:
   - Development section (Plan→Deploy) nadal bez AI data w arkuszu
@@ -646,39 +648,23 @@ Otwarte:
 ## Gdzie skończyłem
 
 ```
-Stan:          maspex — CloudFront /api/slogan cache GOTOWE DO APPLY (2026-04-26)
+Aktywny projekt: MASPEX
+Stan:          CloudFront /api/slogan cache GOTOWE DO APPLY (przygotowane 2026-04-26)
 Repo:          ~/projekty/mako/aws-projects/infra-maspex
-Branch:        feat/preprod-zaslepka (wypchniętny na GitLab)
-MR:            https://gitlab.makolab.net/admin-makolab/dc/aws-projects/infra-maspex-kapsel/-/merge_requests/new?merge_request%5Bsource_branch%5D=feat%2Fpreprod-zaslepka
+Branch:        feat/preprod-zaslepka (wypchnięty na GitLab)
 
-Wykonano (2026-04-26):
-  1. CloudFront audit (read-only) — zero driftu na wszystkich 3 dystrybucjach
-     Ryzyka: brak WAF na preprod, brak security headers policy, /landing/* z min_ttl=86400
-     Raport: 20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md
+Następny krok (WEJŚCIE PO PRZERWIE):
+  1. terraform apply UAT — CloudFront /api/slogan behavior
+  2. Weryfikacja: curl → Miss, potem Hit na /api/slogan?page=1&sortBy=votes_desc
+  3. Obserwacja CacheHitRate na dashboard maspex-uat-overview ~15 min
 
-  2. CloudFront cache dla /api/slogan (UAT E3J76RNXIE2YIG):
-     - nowy ordered behavior: path="/api/slogan" (exact, bez wildcard)
-     - cache policy: QS whitelist [page, sortBy, search], no cookies, no auth headers
-     - origin request policy: te same whitelisted QS do originu (nie "all" — unikamy cache poisoning)
-     - TTL: min=0 (respektuj s-maxage aplikacji), default=60s, max=600s
-     - /api/slogan/vote i inne NIE objęte (exact path pattern)
-     - plan: 2 add, 1 change in-place, 0 destroy — validate OK, fmt OK
-
-  3. Commit + push (3 commity na feat/preprod-zaslepka):
-     45b718b  feat(cloudfront): add api_cache_behaviors — whitelist QS cache
-     168a569  fix(ecs): manage desired_count via Terraform
-     743d43e  fix(preprod): scale api to 1 task, wire api log group to monitoring
-
-Następny krok:
-  - `terraform apply` UAT po review MR
-  - weryfikacja: curl → Miss, potem Hit na /api/slogan?page=1&sortBy=votes_desc
-  - obserwacja CacheHitRate na dashboard maspex-uat-overview przez ~15 min
-  - po walidacji: kolejny test obciążeniowy
-
-⚠️ Uwaga przed apply:
+⚠️ Uwagi przed apply:
   - ECS lifecycle zmiana (ignore_changes bez desired_count) dotyka UAT + preprod
     Sprawdź desired_count w UAT tfvars przed apply
   - /api/slogan trailing slash: behavior nie obejmuje /api/slogan/ — sprawdzić po apply
+
+Notatka projektu: 20-projects/clients/mako/maspex/
+Ostatni raport:   20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md
 ```
 
 ## Kontekst środowiska
@@ -732,4 +718,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-28 06:01 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-28 08:30 — sesja aktywna*
