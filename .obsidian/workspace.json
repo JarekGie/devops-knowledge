@@ -222,8 +222,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ea8eea0fdff7071a",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "10-areas/private",
+    "40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
     "_chatgpt/context-packs/maspex.md",
     "01-inbox/LLM_CONTEXT.md",
@@ -256,8 +258,6 @@
     "20-projects/clients/mako/maspex/finops-uat-preprod-cost-estimate-2026-04.md",
     "20-projects/clients/mako/maspex/incident-uat-auth-refresh-token-2026-04-26.md",
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
-    "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
-    "20-projects/clients/mako/planodkupow-runtime-verification-2026-04-26.md",
     "40-runbooks/incidents/planodkupow-qa-tagging-audit.sh",
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "pkm-stack-infographic.png",
