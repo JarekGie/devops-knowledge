@@ -620,6 +620,29 @@ Incydent:   40-runbooks/incidents/rshop-prod-503-2026-04-20.md
 Plan:       40-runbooks/incidents/rshop-tag-policy-remediation.md
 ```
 
+## Zamknięte: BMW AI Taskforce — ITSM AI Mapping Excel ✓
+
+```
+Stan:       DONE (2026-04-27)
+Plik:       20-projects/clients/bmw/ai-taskforce/ai-taskforce.xlsx
+Session:    20-projects/clients/bmw/ai-taskforce/session-log.md
+
+Co zrobiono:
+  - Arkusz Excel wzbogacony jako senior AIOps/ITSM/EA konsultant
+  - Manage Problems: skorygowano 50% → 20–30% (halucynacje RCA, brak full observability)
+  - Manage Knowledge: podniesiono do 40–55% (GenAI impact na drafting/search)
+  - Kolumna "Saving" → "Effort Reduction Potential"
+  - Nowe kolumny: Prerequisites / Maturity Required + AI Type Classification
+  - Uzupełniono brakujące wiersze: Svc Configuration, Capacity, IT Service Continuity
+  - Dodano 3 nowe wiersze: Change Management, CMDB/Asset Mgmt, Cloud Ops/SRE
+  - Executive summary: high value/low risk vs high risk/advanced maturity
+
+Otwarte:
+  - Development section (Plan→Deploy) nadal bez AI data w arkuszu
+  - Ewentualny transfer do pptx
+  - Omówienie prerequisites maturity z BMW
+```
+
 ## Gdzie skończyłem
 
 ```
@@ -709,4 +732,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-27 21:15 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-28 05:51 — sesja aktywna*
