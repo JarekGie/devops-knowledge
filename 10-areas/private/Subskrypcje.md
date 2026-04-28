@@ -7,10 +7,10 @@
 | Nazwa       | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi |
 | ----------- | --------------- | ------- | ----- | ------ | ------- | ----- |
 | Netflix     | 07.05           | monthly | 49    | PLN    | aktywna |       |
-| Audioteka   |                 | monthly | 30    | PLN    | aktywna |       |
-| Spotify     |                 | monthly |       | PLN    | aktywna |       |
+| Audioteka   | 09.05           | monthly | 30    | PLN    | aktywna |       |
+| Spotify     |                 | monthly | 39    | PLN    | aktywna |       |
 | remarkable2 |                 | monthly |       |        |         |       |
-| Toya        |                 |         |       |        |         |       |
+| iCloud      |                 |         |       |        |         |       |
 |             |                 |         |       |        |         |       |
 
 ## Zawodowe

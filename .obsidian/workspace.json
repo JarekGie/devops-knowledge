@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠸ devops-knowledge"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "planodkupow-rabbitmq-cfn-refactor"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -279,11 +278,11 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "b3855f1eda2adc07",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "10-areas/private/Subskrypcje.md",
     "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
     "40-runbooks/incidents/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
-    "10-areas/private/Subskrypcje.md",
     "10-areas/private/Domeny.md",
     "10-areas/private",
     "40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md",
