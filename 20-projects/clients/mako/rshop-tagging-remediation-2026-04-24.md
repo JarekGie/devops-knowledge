@@ -132,6 +132,45 @@ Wniosek:
 - można mówić o gotowości warunkowej dla zakresu rshop
 - nie należy rozszerzać tego wniosku na cały AWS Organization bez osobnego evidence
 
+## DEV CFN Deploy Failure — 2026-04-28
+
+Objaw:
+- Jenkins `create-change-set` przeszedł poprawnie
+- `execute-change-set` zostało wywołane
+- waiter zakończył się terminalnie: `Waiter StackUpdateComplete failed`
+
+Kontekst:
+- stack root: `dev`
+- region: `eu-central-1`
+- profil: `rshop`
+- problem wystąpił po naprawie wcześniejszych parametrów `ALBDNS` / TG ARN
+
+Root cause:
+- pierwszym realnym błędem nie był ECS ani TagPolicyViolation
+- leaf failure: `dev-VPCStack-FFQTYHECIX9M` → `SiecDB` (`AWS::RDS::DBSubnetGroup`)
+- CloudFormation działał jako `arn:aws:iam::943111679945:user/jenkinsit`
+- brak uprawnienia `rds:ModifyDBSubnetGroup`
+
+Evidence:
+```text
+2026-04-28T09:04:42.267000+00:00
+Stack: dev-VPCStack-FFQTYHECIX9M
+Resource: SiecDB
+Type: AWS::RDS::DBSubnetGroup
+Status: UPDATE_FAILED
+Reason: User arn:aws:iam::943111679945:user/jenkinsit is not authorized to perform rds:ModifyDBSubnetGroup on arn:aws:rds:eu-central-1:943111679945:subgrp:dev-vpcstack-ffqtyhecix9m-siecdb-fspddhruuczb because no identity-based policy allows the rds:ModifyDBSubnetGroup action
+```
+
+Rollback noise:
+- `ECSStack`, `IAMStack`, `S3Stack` miały `Resource update cancelled`
+- ECS child stacks `api` i `backoffice` miały wyłącznie `Resource update cancelled`
+- runtime ECS po rollbacku był healthy: 4/4 services `Desired=1`, `Running=1`, `Pending=0`, rollout completed
+- target groups `dev-api-ALB-TG` i `dev-backoffice-ALB-TG` miały healthy targets
+
+Wniosek operacyjny:
+- minimalny fix dotyczy IAM dla deployment usera/roli Jenkins: dodać kontrolowane uprawnienie do `rds:ModifyDBSubnetGroup` dla właściwego DB subnet group scope
+- przed retry sprawdzić, czy change set faktycznie modyfikuje `AWS::RDS::DBSubnetGroup`; jeśli nie, zidentyfikować template/tag drift wymuszający update
+
 ## Evidence References
 
 Kluczowe evidence z 2026-04-24:
