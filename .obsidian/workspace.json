@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠸ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -264,7 +264,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
     "10-areas/private/Subskrypcje.md",
     "10-areas/private/Domeny.md",

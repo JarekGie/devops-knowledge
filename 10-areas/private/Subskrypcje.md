@@ -4,13 +4,14 @@
 
 ## Domowe
 
-| Nazwa     | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi |
-| --------- | --------------- | ------- | ----- | ------ | ------- | ----- |
-| Netflix   |                 | monthly |       | PLN    | aktywna |       |
-| Audioteka |                 | monthly |       | PLN    | aktywna |       |
-| Spotify   |                 | monthly |       | PLN    | aktywna |       |
-| Plus      |                 |         |       |        |         |       |
-| Toya      |                 |         |       |        |         |       |
+| Nazwa       | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi |
+| ----------- | --------------- | ------- | ----- | ------ | ------- | ----- |
+| Netflix     |                 | monthly |       | PLN    | aktywna |       |
+| Audioteka   |                 | monthly |       | PLN    | aktywna |       |
+| Spotify     |                 | monthly |       | PLN    | aktywna |       |
+| remarkable2 |                 | monthly |       |        |         |       |
+| Toya        |                 |         |       |        |         |       |
+|             |                 |         |       |        |         |       |
 
 ## Zawodowe
 
