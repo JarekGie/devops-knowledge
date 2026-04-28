@@ -116,6 +116,93 @@ Maspex:
   zapisany jako standby; nie mieszać z bieżącą sesją rshop.
 ```
 
+## Standby: Maspex — load test analysis + Terraform observability/WAF work
+
+```
+Stan:       ZAPISANE / STANDBY (2026-04-28 późny wieczór)
+Repo:       ~/projekty/mako/aws-projects/infra-maspex
+Env:        terraform/envs/uat
+AWS:        profile maspex-cli, region eu-west-1, account 969209893152
+
+LOAD TEST REPORT:
+  - Utworzono raport:
+    20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md
+  - Okno analizy: 2026-04-28 15:15-16:15 UTC, rozszerzone 15:00-16:30 UTC.
+  - Wniosek: ruch testowy widoczny głównie 15:40-16:00 UTC.
+    CloudFront ~1.04M requests, ALB/API ~575k requests.
+  - Brak potwierdzonej saturacji ECS / ALB / Redis.
+  - Autoscaling API nie skalował, bo CPU/memory były poniżej progów.
+  - Luka: brak CloudFront CacheHitRate/OriginRequests/OriginLatency datapoints
+    oraz brak per-path metrics dla /api/slogan, /_next/image*, /_next/static/*.
+
+TERRAFORM CHANGES PREPARED, NOT APPLIED:
+  Repo ma lokalne zmiany:
+    - terraform/envs/uat/main.tf
+    - terraform/envs/uat/waf.tf
+    - terraform/envs/uat/cloudfront_observability.tf
+    - terraform/modules/cloudfront-site/main.tf
+    - terraform/modules/cloudfront-site/variables.tf
+
+  Implementacja:
+    - CloudFront module dostał opcjonalne web_acl_id.
+    - UAT admin CloudFront ma dostać WAFv2 CLOUDFRONT allowlist:
+      195.117.107.110/32, 91.233.19.251/32.
+    - WAF tworzony przez provider aws.us_east_1, scope CLOUDFRONT.
+    - API CloudFront nie jest ograniczane WAF-em.
+    - Observability: Athena database + Glue table nad istniejącymi CloudFront standard logs
+      z prefixu s3://maspex-uat-access-logs-969209893152/cloudfront/maspex-uat/api/
+      oraz named query grupujące /api/slogan, /_next/image*, /_next/static/* po x_edge_result_type.
+
+VALIDATION:
+  - terraform fmt dla zmienionych plików: OK.
+  - terraform validate w terraform/envs/uat: OK.
+  - terraform plan: BLOKADA backendu remote state, nie błąd kodu.
+
+REMOTE STATE BACKEND DIAGNOSIS:
+  Backend UAT:
+    bucket = terraform-state-969209893152
+    key = maspex/uat/terraform.tfstate
+    dynamodb_table = terraform-locks-969209893152
+    region = eu-west-1
+
+  Evidence:
+    - S3 latest state exists, versioning enabled.
+    - S3 latest LastModified: 2026-04-28T06:46:38Z
+    - S3 latest ETag / local md5: 891cfb7b5e1475192a717c12ca9fae1a
+    - State parses as Terraform state v4, Terraform 1.5.7, serial 123, resources 97.
+    - DynamoDB UAT md5 item:
+      LockID = terraform-state-969209893152/maspex/uat/terraform.tfstate-md5
+      Digest = 48a21bb5c16aa5ce693a2734910bd456
+    - Brak aktywnego lock itemu bez suffixu -md5.
+    - Digest 48a21... odpowiada starej wersji S3 z 2026-04-23T10:00:16Z.
+    - shared i preprod mają digest zgodny z aktualnym S3 ETag.
+
+  Wniosek:
+    Najbardziej prawdopodobny root cause = stary/osierocony digest w DynamoDB
+    dla UAT, nie uszkodzony state.
+
+  Safe recovery, DO NOT RUN automatically:
+    conditional update tylko rekordu Digest:
+      old = 48a21bb5c16aa5ce693a2734910bd456
+      new = 891cfb7b5e1475192a717c12ca9fae1a
+    Wykonać dopiero po freeze Terraform dla UAT i ponownym prechecku S3/DDB.
+
+NIE ROBIĆ:
+  - nie apply Terraform przed zdrowym planem
+  - nie usuwać locków
+  - nie cofać wersji S3 state
+  - nie edytować state ręcznie
+  - nie aktualizować digest bez condition-expression i świeżego prechecku
+
+POWRÓT DO MASPEX:
+  1. Precheck S3 head-object + DDB get-item + brak lock itemu.
+  2. Conditional update DDB digest, jeśli ETag nadal 891cfb...
+  3. terraform init -reconfigure -backend-config=backend.hcl
+  4. terraform validate
+  5. terraform plan -no-color
+  6. Review plan: expected add WAF/IPSet/Athena/Glue + in-place web_acl_id only on admin CF.
+```
+
 ## Zamknięte: vault — CloudOps/SOC-lite discovery thread ✓
 
 ```

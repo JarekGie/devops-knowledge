@@ -25,7 +25,7 @@ Maspex zapisany i przesunięty do standby.
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
 | rshop | aktywny | kontrolowany test Jenkins dev path po ECSStack-only mitigation; potem permanent fix nested `TemplateURL` i powrót do ECS PropagateTags CFN patch |
-| maspex | standby | UAT observability wdrożone; nadal otwarte: patch `next-core-app`, potwierdzenie `/_next/image`, Redis secret |
+| maspex | standby | Load test report zapisany; Terraform observability/WAF patch przygotowany, ale nie apply; blokada: UAT remote state digest S3/DynamoDB wymaga kontrolowanej conditional korekty przed `terraform plan` |
 | puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
 | BMW AI Taskforce | scaffold gotowy | 20-projects/clients/bmw/ai-taskforce/ — czeka na pierwsze materiały od klienta |
@@ -40,7 +40,7 @@ Maspex zapisany i przesunięty do standby.
 2. rshop: nie używać root stack `dev` jako app deploy path; root deploy tylko jako świadomy infra rollout.
 3. rshop: przygotować permanent fix: version-pinned nested templates / immutable artifact paths + pipeline guard jako standard.
 4. rshop: po ustabilizowaniu deploy boundary przygotować minimalne CFN zmiany dla ECS Services i walidować najpierw dev.
-5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać sesji roboczej.
+5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać sesji roboczej; powrót tylko po explicit switch i prechecku remote state.
 
 ## Aktywni klienci
 
@@ -55,8 +55,8 @@ Maspex zapisany i przesunięty do standby.
 - [ ] `rshop` root/nested CFN używa mutowalnych `TemplateURL`; app-only deploy przez root może replayować nowsze nested templates (`CFN-MUT-001`)
 - [ ] Jenkins mitigation dla dev zapisany w `~/projekty/mako/eshop-cicd/jenkinsfiles/BE/{eshop-dev-aws,eshop-dev-aws-scan-2}.jenkinsfile`; wymaga kontrolowanego testu
 - [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
-- [ ] Maspex standby: `next-core-app` ma lokalny patch `app/api/slogan/route.ts`; lokalnie `npm run typecheck` nie działa, bo brakuje `tsc`
-- [ ] Maspex standby: Redis connection string do Secrets Manager `maspex/preprod/api` nadal otwarte
+- [ ] Maspex standby: Terraform UAT plan blokuje stary/osierocony digest w `terraform-locks-969209893152`; safe recovery opisane w `02-active-context/now.md`
+- [ ] Maspex standby: `infra-maspex` ma lokalny patch observability/WAF niezaaplikowany: WAF admin allowlist + Athena/Glue per-path CloudFront logs
 
 ## Powiązane
 
