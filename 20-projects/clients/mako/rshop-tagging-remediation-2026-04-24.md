@@ -171,6 +171,23 @@ Wniosek operacyjny:
 - minimalny fix dotyczy IAM dla deployment usera/roli Jenkins: dodać kontrolowane uprawnienie do `rds:ModifyDBSubnetGroup` dla właściwego DB subnet group scope
 - przed retry sprawdzić, czy change set faktycznie modyfikuje `AWS::RDS::DBSubnetGroup`; jeśli nie, zidentyfikować template/tag drift wymuszający update
 
+### Forensics: dlaczego app-only deploy dotknął `SiecDB`
+
+Wynik read-only forensics:
+- `changeSet-1253` nie był już dostępny (`ChangeSetNotFound`), więc nie da się odtworzyć `ResourceChange.Details`
+- root `VPCStack` przekazuje tylko `Projekt` i `Srodowisko`; parametry ALB/TG nie idą do VPCStack
+- `VPCStack` używa stałego `TemplateURL`: `https://rshop-cf.s3.eu-central-1.amazonaws.com/dev/vpc-dev.yml`
+- obiekt S3 `dev/vpc-dev.yml` został podmieniony 2026-03-21/2026-04-06 względem wersji 2024-10-14
+- diff wersji S3 pokazuje dodanie tagów `Project`, `Environment`, `Owner`, `ManagedBy`, `CostCenter` do zasobów VPC, w tym `SiecDB`
+- eventy VPCStack pokazują `UPDATE_IN_PROGRESS` dla wielu zasobów tagowanych oraz `SiecDB`; `SiecDB` kończy na `AccessDenied: rds:ModifyDBSubnetGroup`
+- drift detection po fakcie: `IN_SYNC`, `DriftedStackResourceCount=0`; `SiecDB` bez `PropertyDifferences`
+
+Wniosek:
+- przyczyną nie był live drift ani ALB/TG parameter propagation
+- app-only deploy odświeżył nested stack przez stały, nieversionowany `TemplateURL` i wciągnął wcześniej podmieniony VPC template
+- mutacja `SiecDB` była efektem tag-related template delta / replay nested stack template, nie świadomą zmianą aplikacyjną
+- przed kolejnym retry należy wyeliminować unintended VPCStack mutation albo świadomie zatwierdzić infra/tag rollout z odpowiednimi IAM permissions
+
 ## Evidence References
 
 Kluczowe evidence z 2026-04-24:
