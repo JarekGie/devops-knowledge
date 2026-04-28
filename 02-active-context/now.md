@@ -2,6 +2,48 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Podsumowanie dnia — 2026-04-28
+
+```
+Stan:       ZAPISANE
+Zakres:     rshop forensics + AI Cost Optimization governance + reusable CFN runbook pattern
+
+RSHOP:
+  - Zdiagnozowano fail deployu DEV po execute-change-set:
+    pierwsza realna awaria = VPCStack / SiecDB / AWS::RDS::DBSubnetGroup
+    błąd = AccessDenied na rds:ModifyDBSubnetGroup dla usera jenkinsit
+  - Ustalono, że IAM nie jest root cause, tylko symptomem ukrytej mutacji infra.
+  - Forensics wykazał pattern:
+    app-only deploy -> root stack update -> mutable nested TemplateURL -> nowszy vpc-dev.yml z S3
+    -> tag delta na zasobach VPC/SiecDB -> próba ModifyDBSubnetGroup.
+  - Drift check VPCStack: IN_SYNC, SiecDB PropertyDifferences=[].
+  - Wniosek operacyjny:
+    NIE dodawać ślepo rds:ModifyDBSubnetGroup; najpierw wyeliminować hidden VPCStack mutation
+    albo jawnie zatwierdzić infra/tag rollout.
+
+UTWORZONE / ZAKTUALIZOWANE:
+  - 20-projects/clients/mako/rshop-tagging-remediation-2026-04-24.md
+    dopisano DEV CFN deploy failure + forensics mutable TemplateURL.
+  - 40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md
+    nowy reusable runbook pattern: CFN-MUT-001 Nested Template Mutability Hazard.
+  - _system/AI_COST_AWARE_AGENT_CONTRACT.md
+    nowy kontrakt Cost-Aware Agent Execution Policy / AI FinOps lite.
+  - AGENTS.md, CLAUDE.md, CODEX.md, LLM_CONTEXT_GLOBAL.md, CHATGPT_WORKFLOW.md,
+    _chatgpt/README.md, _chatgpt/templates/context-pack-template.md
+    minimalne addytywne linki do cost-aware contract.
+  - 100-ai-cost-optimization/prompts/
+    przenośna biblioteka promptów 01-06 + README dla rollout/audit/context optimization/model tiering/AI FinOps.
+
+NASTĘPNY KROK RSHOP:
+  1. Nie retry root app deploy dopóki VPCStack mutation nie jest wyjaśniona/wyeliminowana.
+  2. Rozdzielić app deploy od infra/tag rollout albo przypiąć nested TemplateURL do immutable artifactu.
+  3. Dopiero potem wrócić do pierwotnego ECS PropagateTags/EnableECSManagedTags fix.
+
+NIE RUSZANE:
+  - .obsidian/workspace.json — zmiana lokalnego workspace Obsidian
+  - 10-areas/private/Subskrypcje.md — osobna nieśledzona notatka
+```
+
 ## Aktywne teraz: rshop — Tag Policy remediation
 
 ```
@@ -15,9 +57,9 @@ Wejście:
   - 20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md
 
 Następny krok:
-  1. rshop-cloudformation: dodać PropagateTags/EnableECSManagedTags/Tags do 4 ECS Service templates
-  2. infra-rshop akcesoria2: dodać PropagateTags: SERVICE + EnableECSManagedTags: true
-  3. deploy dev -> weryfikacja ENI -> deploy prod -> dopiero potem rozważyć re-enable Tag Policies
+  1. Usunąć/obejść CFN-MUT-001: mutable nested TemplateURL powoduje ukrytą mutację VPCStack
+  2. Nie wykonywać retry root stack app deploy zanim VPCStack mutation nie będzie świadomie wyłączona lub zatwierdzona
+  3. Po ustabilizowaniu deploy boundary wrócić do ECS PropagateTags/EnableECSManagedTags fix
 
 Maspex:
   zapisany jako standby; nie mieszać z bieżącą sesją rshop.
