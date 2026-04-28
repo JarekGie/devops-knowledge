@@ -44,6 +44,57 @@ NIE RUSZANE:
   - 10-areas/private/Subskrypcje.md — osobna nieśledzona notatka
 ```
 
+## Update — 2026-04-28 wieczór — rshop CFN-MUT-001 Jenkins mitigation
+
+```
+Stan:       ZAPISANE
+Zakres:     rshop DEV deploy path mitigation w eshop-cicd Jenkinsfiles
+
+AWS / CFN:
+  - Root stack dev po kolejnych testach Jenkins ponownie reprodukował CFN-MUT-001:
+    app-intended root deploy -> VPCStack -> SiecDB -> rds:ModifyDBSubnetGroup AccessDenied.
+  - Minimalny recovery pattern nadal: continue-update-rollback z resources-to-skip:
+    dev-VPCStack-FFQTYHECIX9M.SiecDB.
+  - Cascade resources typu RouteTables / InternetGateway miały "Resource update cancelled";
+    nie są samodzielnym powodem do rozszerzania skip listy bez świeżego evidence.
+
+ECS HOTFIX TEST:
+  - ECSStack-only change set 1253 został reviewowany i wykonany kontrolowanie.
+  - Runtime 1253 nie był stabilny:
+    API 1253 -> ALB healthcheck HTTP 500.
+    Backoffice 1253 -> EssentialContainerExited / exit code 139.
+  - CFN/ECS może zostawiać nowe TaskDefinition revisions po rollbacku;
+    UPDATE_ROLLBACK_COMPLETE nie oznacza automatycznie runtime quiescence.
+
+JENKINS MITIGATION:
+  Repo: ~/projekty/mako/eshop-cicd
+  Pliki zmienione:
+    - jenkinsfiles/BE/eshop-dev-aws.jenkinsfile
+    - jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile
+
+  Co zmieniono:
+    - dla params.Envi == 'dev' CloudFormation target = dev-ECSStack-1BLAWHL0P6JKO
+      zamiast root stack dev
+    - qa/uat zostają na dotychczasowym UpEnv/root flow
+    - dev używa ECSStack params: apiimg/backofficeimg lowercase + reszta UsePreviousValue
+    - dev nie wysyła root-only params: ALBDNS, DB, CF cert/domain, Engine*, DeployDB
+    - dev create-change-set ma --include-nested-stacks
+    - dodany pre-execute guard blokujący VPCStack/DBStack/SGStack/IAMStack/S3Stack/CFStack/SiecDB
+      oraz AWS::EC2/RDS/IAM/S3/ElasticLoadBalancingV2
+    - allowed dev scope: api/backoffice nested stacks + AWS::ECS::TaskDefinition/AWS::ECS::Service
+
+Review:
+  - eshop-dev-aws-scan-2.jenkinsfile przeszedł review PASS dla:
+    dev stack target, qa/uat unchanged, lowercase ECS params, no root-only dev params,
+    include-nested-stacks, guard before execute, execute/wait using CfnStackName,
+    changeSetIdBackend scoping unchanged.
+
+Następny krok:
+  - Kontrolowany Jenkins test dev po upewnieniu się, że root dev/ECSStack nie są w toku.
+  - Nadal traktować to jako mitigation deployment path, nie permanent fix.
+  - Permanent fix: immutable nested TemplateURL pinning / release artifact paths + runtime guard.
+```
+
 ## Aktywne teraz: rshop — Tag Policy remediation
 
 ```
@@ -57,9 +108,9 @@ Wejście:
   - 20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md
 
 Następny krok:
-  1. Usunąć/obejść CFN-MUT-001: mutable nested TemplateURL powoduje ukrytą mutację VPCStack
-  2. Nie wykonywać retry root stack app deploy zanim VPCStack mutation nie będzie świadomie wyłączona lub zatwierdzona
-  3. Po ustabilizowaniu deploy boundary wrócić do ECS PropagateTags/EnableECSManagedTags fix
+  1. Przetestować Jenkins dev path po mitigation: app deploy ma iść do dev-ECSStack-1BLAWHL0P6JKO, nie root dev
+  2. Utrzymać zakaz root stack app deploy do czasu immutable TemplateURL pinning / release artifact paths
+  3. Po stabilnym deploy boundary wrócić do ECS PropagateTags/EnableECSManagedTags fix
 
 Maspex:
   zapisany jako standby; nie mieszać z bieżącą sesją rshop.

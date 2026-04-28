@@ -168,8 +168,9 @@ Rollback noise:
 - target groups `dev-api-ALB-TG` i `dev-backoffice-ALB-TG` miały healthy targets
 
 Wniosek operacyjny:
-- minimalny fix dotyczy IAM dla deployment usera/roli Jenkins: dodać kontrolowane uprawnienie do `rds:ModifyDBSubnetGroup` dla właściwego DB subnet group scope
-- przed retry sprawdzić, czy change set faktycznie modyfikuje `AWS::RDS::DBSubnetGroup`; jeśli nie, zidentyfikować template/tag drift wymuszający update
+- wcześniejsza hipoteza permission-only została odrzucona po głębszym forensics
+- `rds:ModifyDBSubnetGroup` był symptomem, nie root cause
+- przed retry root stack nie należy ślepo dodawać uprawnienia; najpierw trzeba usunąć/obejść unintended VPCStack mutation
 
 ### Forensics: dlaczego app-only deploy dotknął `SiecDB`
 
@@ -187,6 +188,50 @@ Wniosek:
 - app-only deploy odświeżył nested stack przez stały, nieversionowany `TemplateURL` i wciągnął wcześniej podmieniony VPC template
 - mutacja `SiecDB` była efektem tag-related template delta / replay nested stack template, nie świadomą zmianą aplikacyjną
 - przed kolejnym retry należy wyeliminować unintended VPCStack mutation albo świadomie zatwierdzić infra/tag rollout z odpowiednimi IAM permissions
+
+## DEV Deploy Path Mitigation — Jenkinsfiles — 2026-04-28
+
+Status:
+- mitigation przygotowany i reviewowany w repo `~/projekty/mako/eshop-cicd`
+- nie jest to permanent fix dla mutable TemplateURL, tylko bezpieczniejsza granica app deploy dla DEV
+
+Zmodyfikowane pliki:
+- `jenkinsfiles/BE/eshop-dev-aws.jenkinsfile`
+- `jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile`
+
+Zmiana:
+- dla `params.Envi == 'dev'` CloudFormation target został przełączony z root stack `dev` na `dev-ECSStack-1BLAWHL0P6JKO`
+- dla `qa` i `uat` zachowanie pozostaje bez zmian (`CfnStackName = UpEnv`)
+- dev używa parametrów ECSStack:
+  - `apiimg`
+  - `backofficeimg`
+  - pozostałe ECSStack params z `UsePreviousValue=true`
+- dev nie przekazuje root-only params:
+  - `ALBDNS`
+  - `MasterUsername`, `MasterUserPassword`
+  - `Engine`, `EngineVersion`
+  - `DBInstanceClass`, `DBSnapshotIdentifier`, `DeployDB`
+  - `CertyfikatCF`, `AltDomains`, `AltDomainsForeign2`, `CertyfikatCFForeign2`
+- dev `create-change-set` używa `--include-nested-stacks`
+- przed `execute-change-set` działa guard:
+  - blokuje `VPCStack`, `DBStack`, `SGStack`, `IAMStack`, `S3Stack`, `CFStack`, `SiecDB`
+  - blokuje typy `AWS::EC2::*`, `AWS::RDS::*`, `AWS::IAM::*`, `AWS::S3::*`, `AWS::ElasticLoadBalancingV2::*`
+  - dopuszcza tylko `api`, `backoffice`, `AWS::ECS::TaskDefinition`, `AWS::ECS::Service`
+
+Review `eshop-dev-aws-scan-2.jenkinsfile`:
+- PASS: dev targetuje `dev-ECSStack-1BLAWHL0P6JKO`, nie root `dev`
+- PASS: `qa/uat` bez zmiany zachowania
+- PASS: dev image params to lowercase `apiimg` / `backofficeimg`
+- PASS: root-only params nie są wysyłane dla dev
+- PASS: `--include-nested-stacks` tylko dla dev
+- PASS: guard działa przed execute
+- PASS: execute i wait używają `CfnStackName`
+- PASS: `changeSetIdBackend` scope zgodny z wcześniejszym wzorcem
+
+Następne kroki:
+- wykonać kontrolowany test Jenkins dev path dopiero gdy CFN root/ECSStack są w stanie terminalnym
+- traktować ten fix jako mitigation deploy path, nie permanentną naprawę architektury
+- permanent fix: immutable `TemplateURL` pinning / release artifact paths oraz guard jako standard pipeline
 
 ## Evidence References
 

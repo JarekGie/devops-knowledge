@@ -8,6 +8,10 @@
 Przełączony kontekst roboczy: rshop Tag Policy remediation.
 Skupić się najpierw na odblokowaniu bezpiecznej granicy deployu CloudFormation:
 CFN-MUT-001 mutable nested TemplateURL powoduje ukrytą mutację VPCStack podczas app deploy.
+Mitigation wykonany w Jenkinsfiles BE dla dev:
+  - dev targetuje dev-ECSStack-1BLAWHL0P6JKO zamiast root dev
+  - dodany pre-execute change-set guard dla app-only scope
+  - qa/uat bez zmiany zachowania
 Po usunięciu/obejściu tego ryzyka wrócić do CFN fix dla ECS PropagateTags /
 EnableECSManagedTags przed ponownym włączeniem Tag Policies LLZ.
 Wejście przez `40-runbooks/incidents/rshop-tag-policy-readiness.md` oraz
@@ -20,7 +24,7 @@ Maspex zapisany i przesunięty do standby.
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| rshop | aktywny | najpierw wyeliminować hidden VPCStack mutation (`CFN-MUT-001`: mutable nested `TemplateURL`); potem wrócić do ECS PropagateTags CFN patch |
+| rshop | aktywny | kontrolowany test Jenkins dev path po ECSStack-only mitigation; potem permanent fix nested `TemplateURL` i powrót do ECS PropagateTags CFN patch |
 | maspex | standby | UAT observability wdrożone; nadal otwarte: patch `next-core-app`, potwierdzenie `/_next/image`, Redis secret |
 | puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
@@ -32,10 +36,11 @@ Maspex zapisany i przesunięty do standby.
 
 ## Priorytety tygodnia
 
-1. rshop: nie retry root stack app deploy dopóki mutable nested `TemplateURL` / VPCStack mutation nie jest rozwiązana.
-2. rshop: przygotować bezpieczną granicę deployu: version-pinned nested templates, immutable artifact path albo rozdzielenie app/infra pipeline.
-3. rshop: po ustabilizowaniu deploy boundary przygotować minimalne CFN zmiany dla ECS Services i walidować najpierw dev.
-4. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać sesji roboczej.
+1. rshop: przetestować poprawiony Jenkins dev path, który targetuje `dev-ECSStack-1BLAWHL0P6JKO` i ma guard przed execute.
+2. rshop: nie używać root stack `dev` jako app deploy path; root deploy tylko jako świadomy infra rollout.
+3. rshop: przygotować permanent fix: version-pinned nested templates / immutable artifact paths + pipeline guard jako standard.
+4. rshop: po ustabilizowaniu deploy boundary przygotować minimalne CFN zmiany dla ECS Services i walidować najpierw dev.
+5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać sesji roboczej.
 
 ## Aktywni klienci
 
@@ -47,7 +52,8 @@ Maspex zapisany i przesunięty do standby.
 
 - [ ] `rshop-cloudformation/cloudformation/{api,backoffice,frontend,frontend2}.yml` bez `PropagateTags`, `EnableECSManagedTags` i tagów ECS Service
 - [ ] `infra-rshop/cloudformation/akcesoria2/svc.yml` ma tagi, ale brakuje `PropagateTags: SERVICE` i `EnableECSManagedTags: true`
-- [ ] `rshop` root/nested CFN używa mutowalnych `TemplateURL`; app-only deploy może replayować nowsze nested templates (`CFN-MUT-001`)
+- [ ] `rshop` root/nested CFN używa mutowalnych `TemplateURL`; app-only deploy przez root może replayować nowsze nested templates (`CFN-MUT-001`)
+- [ ] Jenkins mitigation dla dev zapisany w `~/projekty/mako/eshop-cicd/jenkinsfiles/BE/{eshop-dev-aws,eshop-dev-aws-scan-2}.jenkinsfile`; wymaga kontrolowanego testu
 - [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
 - [ ] Maspex standby: `next-core-app` ma lokalny patch `app/api/slogan/route.ts`; lokalnie `npm run typecheck` nie działa, bo brakuje `tsc`
 - [ ] Maspex standby: Redis connection string do Secrets Manager `maspex/preprod/api` nadal otwarte
