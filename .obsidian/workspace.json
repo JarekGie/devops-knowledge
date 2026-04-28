@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠦ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           },
           {
@@ -370,6 +370,13 @@
   },
   "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "100-ai-cost-optimization/prompts/README.md",
+    "100-ai-cost-optimization/prompts/06-cross-vault-contract-primitives.md",
+    "100-ai-cost-optimization/prompts/05-ai-finops-readiness-notes.md",
+    "100-ai-cost-optimization/prompts/04-model-tiering-for-vault.md",
+    "100-ai-cost-optimization/prompts/03-optimize-context-packs.md",
+    "100-ai-cost-optimization/prompts/02-audit-existing-contracts.md",
+    "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
     "_chatgpt/context-packs/maspex-load-testing.md",
     "100-ai-cost-optimization/prompts/wdrozenie.md",
@@ -397,14 +404,7 @@
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
     "20-projects/clients/mako/planodkupow-runtime-verification-2026-04-26.md",
-    "20-projects/clients/mako/planodkupow-ce-audit-2026-04-26.md",
-    "20-projects/clients/mako/planodkupow-finops-governance-audit-2026-04-25.md",
-    "20-projects/clients/mako/planodkupow-qa-tagging-audit-2026-04-25.md",
     "40-runbooks/incidents/planodkupow-qa-tagging-audit.sh",
-    "CODEX.md",
-    "40-runbooks/incidents/planodkupow-qa-network-forensic-audit.md",
-    "CLAUDE.md",
-    "Bez nazwy.md",
     "90-reference/notebooklm/planodkupow-refactor/prompts",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
