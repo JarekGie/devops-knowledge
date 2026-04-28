@@ -7,11 +7,13 @@
 | Nazwa       | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi |
 | ----------- | --------------- | ------- | ----- | ------ | ------- | ----- |
 | Netflix     | 07.05           | monthly | 49    | PLN    | aktywna |       |
-| Audioteka   | 09.05           | monthly | 30    | PLN    | aktywna |       |
-| Spotify     |                 | monthly | 39    | PLN    | aktywna |       |
-| remarkable2 |                 | monthly |       |        |         |       |
-| iCloud      |                 |         |       |        |         |       |
-|             |                 |         |       |        |         |       |
+| Audioteka   | 09.05           | monthly | 35    | PLN    | aktywna |       |
+| Spotify     | 07.05           | monthly | 37    | PLN    | aktywna |       |
+| remarkable2 |                 | monthly |       |        | brak    |       |
+| iCloud      | 16.05           | monthly | 50    |        | aktywna |       |
+| 1password   | 10.05           | monthly | 30    |        | aktywna |       |
+| YouTube     | 24.05           | monthly | 23    |        | aktywna |       |
+| Speak       | 08.04.2027      | annualy | 250   |        | aktywna |       |
 
 ## Zawodowe
 
