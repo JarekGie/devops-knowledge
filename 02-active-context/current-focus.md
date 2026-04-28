@@ -5,17 +5,20 @@
 ## Główny cel
 
 ```
-Przełączony kontekst roboczy: maspex troubleshooting.
-Skupić się na UAT load-test readiness i stabilizacji ścieżki API `kapsel.makotest.pl`.
-Wejście przez aktywne wpisy w `20-projects/clients/mako/maspex/troubleshooting.md`.
-Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
+Przełączony kontekst roboczy: rshop Tag Policy remediation.
+Skupić się na CFN fix dla ECS PropagateTags / EnableECSManagedTags przed ponownym
+włączeniem Tag Policies LLZ.
+Wejście przez `40-runbooks/incidents/rshop-tag-policy-readiness.md` oraz
+`_chatgpt/context-packs/rshop-tag-policy.md`.
+Maspex zapisany i przesunięty do standby.
 ```
 
 ## Projekty aktywne
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| maspex | aktywny | review/apply patcha monitoringowego UAT; review patcha `next-core-app` dla `/api/slogan`; potem kontrolowany load test 3000 users / 1h |
+| rshop | aktywny | przygotować CFN patche: `rshop-cloudformation` 4 pliki ECS Service + `infra-rshop/cloudformation/akcesoria2/svc.yml`; potem deploy dev -> weryfikacja ENI -> deploy prod |
+| maspex | standby | UAT observability wdrożone; nadal otwarte: patch `next-core-app`, potwierdzenie `/_next/image`, Redis secret |
 | puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
 | BMW AI Taskforce | scaffold gotowy | 20-projects/clients/bmw/ai-taskforce/ — czeka na pierwsze materiały od klienta |
@@ -26,23 +29,24 @@ Cloud Detective zapisany w `60-toolkit/cloud-detective/`; wraca do tła.
 
 ## Priorytety tygodnia
 
-1. Maspex: dokończyć observability pod UAT load test bez tworzenia równoległego alertingu.
-2. Maspex: przejrzeć i ewentualnie wdrożyć minimalny app patch ograniczający Supabase exact count fallback w `/api/slogan`.
-3. Maspex: po apply monitoringu uruchomić kontrolowany test 3000 users / 1h i korelować ECS / ALB / CloudFront / log-derived signals / Redis.
-4. Utrzymać pozostałe tematy jako kontekst poboczny, nie aktywny.
+1. rshop: przygotować minimalne CFN zmiany dla ECS Services, bez refaktoru szablonów.
+2. rshop: wdrożyć najpierw dev i potwierdzić `propagateTags=SERVICE`, `enableECSManagedTags=true` oraz tagi na nowych ENI.
+3. rshop: dopiero po dev przejść na prod i akcesoria2; Tag Policies LLZ zostają wyłączone do pełnej walidacji.
+4. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać sesji roboczej.
 
 ## Aktywni klienci
 
 | Klient | Temat | Deadline |
 |--------|-------|----------|
-| Mako | Maspex troubleshooting | |
+| Mako | rshop Tag Policy remediation | |
 
 ## Blokery / otwarte pętle
 
-- [ ] `infra-maspex` ma lokalne zmiany monitoringu UAT: `terraform/modules/monitoring/*`, `terraform/envs/uat/main.tf`
-- [ ] `next-core-app` ma lokalny patch `app/api/slogan/route.ts`; lokalnie `npm run typecheck` nie działa, bo brakuje `tsc`
-- [ ] `infra-maspex` ma wcześniejszy lokalny commit `4810f3c` niepushowany (`feat/preprod-zaslepka` ahead 1)
-- [ ] Redis connection string do Secrets Manager `maspex/preprod/api` nadal otwarte
+- [ ] `rshop-cloudformation/cloudformation/{api,backoffice,frontend,frontend2}.yml` bez `PropagateTags`, `EnableECSManagedTags` i tagów ECS Service
+- [ ] `infra-rshop/cloudformation/akcesoria2/svc.yml` ma tagi, ale brakuje `PropagateTags: SERVICE` i `EnableECSManagedTags: true`
+- [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
+- [ ] Maspex standby: `next-core-app` ma lokalny patch `app/api/slogan/route.ts`; lokalnie `npm run typecheck` nie działa, bo brakuje `tsc`
+- [ ] Maspex standby: Redis connection string do Secrets Manager `maspex/preprod/api` nadal otwarte
 
 ## Powiązane
 

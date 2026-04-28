@@ -2,6 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Aktywne teraz: rshop — Tag Policy remediation
+
+```
+Stan:       KONTEKST PRZEŁĄCZONY (2026-04-28)
+Cel:        przygotować CFN fix dla ECS Tag Policy readiness przed re-enable LLZ Tag Policies
+
+Wejście:
+  - 02-active-context/current-focus.md
+  - _chatgpt/context-packs/rshop-tag-policy.md
+  - 40-runbooks/incidents/rshop-tag-policy-readiness.md
+  - 20-projects/clients/mako/rshop-tagging-baseline-2026-04-24.md
+
+Następny krok:
+  1. rshop-cloudformation: dodać PropagateTags/EnableECSManagedTags/Tags do 4 ECS Service templates
+  2. infra-rshop akcesoria2: dodać PropagateTags: SERVICE + EnableECSManagedTags: true
+  3. deploy dev -> weryfikacja ENI -> deploy prod -> dopiero potem rozważyć re-enable Tag Policies
+
+Maspex:
+  zapisany jako standby; nie mieszać z bieżącą sesją rshop.
+```
+
 ## Zamknięte: vault — CloudOps/SOC-lite discovery thread ✓
 
 ```
