@@ -29,8 +29,15 @@
 | Kontekst do ponownego wklejenia | Duplikaty tego co jest w projektach |
 | Paczki tematyczne (np. "LLZ Faza B") | Pliki większe niż ~50KB |
 
+## Cost-aware context packs
+
+- Paczka ma zawierać minimalny kontekst wystarczający do zadania, nie pełny dump vault
+- Preferuj linki do źródeł prawdy i krótkie evidence zamiast powtarzania stabilnego kontekstu
+- Dobór modelu i długości promptu powinien respektować `_system/AI_COST_AWARE_AGENT_CONTRACT.md`
+
 ## Powiązania
 
 - Workflow: `[[_system/CHATGPT_WORKFLOW]]`
 - Kontekst globalny: `[[_system/LLM_CONTEXT_GLOBAL]]`
 - Aktywny stan: `[[02-active-context/now]]`
+- Cost-aware execution: `[[_system/AI_COST_AWARE_AGENT_CONTRACT]]`

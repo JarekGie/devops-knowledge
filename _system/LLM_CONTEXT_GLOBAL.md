@@ -45,6 +45,7 @@ Operacyjna baza wiedzy DevOps/SRE — narzędzie pracy, nie wiki. Właściciel: 
 > Szczegółowe zasady: [[DOMAIN_ISOLATION_CONTRACT]] | [[LLM_CONTEXT_BOUNDARY_CONTRACT]]
 > Checklista: [[PROMPT_BOUNDARY_CHECKLIST]]
 > Model klas: [[CLASSIFICATION_MODEL]]
+> Koszt i routing modeli: [[AI_COST_AWARE_AGENT_CONTRACT]]
 
 ## Zasady organizacji
 

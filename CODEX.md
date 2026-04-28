@@ -27,6 +27,7 @@ Operacyjny vault wiedzy oparty na Obsidian dla starszego inżyniera DevOps/SRE (
 - Nie wykonuj destrukcyjnych operacji na git lub plikach bez wyraźnej prośby
 - Nie nadpisuj cudzych zmian tylko dlatego, że są niewygodne; dostosuj się do stanu repo
 - Jeśli coś jest niejasne, przyjmij ostrożne założenie i zaznacz je w odpowiedzi
+- Działaj cost-aware: minimalny wystarczający kontekst, małe diffy, bez premium reasoning domyślnie; pełny kontrakt: `_system/AI_COST_AWARE_AGENT_CONTRACT.md`
 
 ## Zasady zapisu do vaulta
 

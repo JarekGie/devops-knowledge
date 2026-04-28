@@ -21,6 +21,12 @@ Operacyjny vault wiedzy oparty na Obsidian dla starszego inżyniera DevOps/SRE (
 
 **Każdy wątek rozmowy, który generuje wiedzę operacyjną, musi być natychmiast zapisany do vault.**
 
+Warstwa cost-aware:
+- używaj minimalnego wystarczającego kontekstu i najniższego wystarczającego poziomu reasoning
+- preferuj małe diffy i odwołania do istniejących notatek zamiast pełnych rewrite'ów
+- nie eskaluj do premium reasoning domyślnie; eskaluj tylko przy niepewności, sprzeczności lub wysokim ryzyku
+- pełny kontrakt: `_system/AI_COST_AWARE_AGENT_CONTRACT.md`
+
 Zasady zapisu:
 - Nie czekaj na koniec rozmowy — zapisuj w trakcie, gdy tylko pojawi się wartościowa treść
 - Wybierz właściwy katalog zgodnie z priorytetem folderów (patrz niżej)

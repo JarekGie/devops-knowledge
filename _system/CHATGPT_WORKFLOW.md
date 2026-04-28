@@ -38,6 +38,7 @@ Jeśli rozmowa dotyczyła konkretnego projektu:
 Jeśli temat będzie kontynuowany:
 - Skopiuj plik `_chatgpt/conversations/<plik>.md` do `_chatgpt/context-packs/`
 - Skróć do <2000 tokenów
+- Zastosuj cost-aware context: minimum potrzebnego kontekstu, bez dumpów stabilnej historii
 - Dodaj do `_chatgpt/INDEX.md`
 
 ---
@@ -114,3 +115,5 @@ Jeśli temat będzie kontynuowany:
 - Gdy Claude Code ma problem z długim kontekstem
 - Gdy chcesz szybką odpowiedź bez narzędzi
 - Przy przygotowaniu dokumentacji dla zewnętrznych odbiorców (klientów, AWS SA)
+
+Model i rozmiar promptu dobieraj zgodnie z [[AI_COST_AWARE_AGENT_CONTRACT]].

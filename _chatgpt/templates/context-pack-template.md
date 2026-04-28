@@ -1,6 +1,7 @@
 # Paczka kontekstu — {{TYTUŁ}}
 
 > Wklej całość na początku rozmowy z ChatGPT. Cel: <1500 tokenów.
+> Cost-aware: minimalny kontekst wystarczający do zadania; nie wklejaj stabilnego kontekstu, jeśli wystarczy link lub krótkie evidence.
 
 **Zakres:** {{ZAKRES}}
 **Data przygotowania:** {{DATA}}

@@ -50,6 +50,13 @@
 - Przepływ: `vault → NotebookLM synthesis → notatka w vault → Claude/Codex execution`
 - Pełny kontrakt: `_system/NOTEBOOKLM_CONTRACT.md`
 
+## Cost-aware execution
+
+- Dobieraj najniższy wystarczający tier modelu i minimalny wystarczający kontekst
+- Nie używaj premium reasoning domyślnie; eskaluj dopiero przy nierozwiązanej niepewności, sprzeczności lub wysokim ryzyku błędu
+- Preferuj diffy, linki i krótkie evidence zamiast pełnych rewrite'ów i ponownego wklejania stabilnego kontekstu
+- Pełny kontrakt: `_system/AI_COST_AWARE_AGENT_CONTRACT.md`
+
 ## Priorytet folderów (od najwyższego)
 
 1. `02-active-context/` — bieżący stan operacyjny
