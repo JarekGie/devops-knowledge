@@ -90,8 +90,23 @@
               "icon": "lucide-file",
               "title": "Subskrypcje"
             }
+          },
+          {
+            "id": "c6746501a1d424bc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "planodkupow-rabbitmq-cfn-refactor"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -264,8 +279,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ea8eea0fdff7071a",
+  "active": "b3855f1eda2adc07",
   "lastOpenFiles": [
+    "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
+    "40-runbooks/incidents/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
     "10-areas/private/Subskrypcje.md",
     "10-areas/private/Domeny.md",
     "10-areas/private",
@@ -296,11 +313,9 @@
     "40-runbooks/aws/cfn-sg-rollback-failed-iam.md",
     "20-projects/clients/puzzler-b2b/qa-alb-cert-wrong-region-2026-04-27.md",
     "20-projects/clients/puzzler-b2b",
-    "20-projects/clients/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
     "01-inbox/quick-capture.md",
     "40-runbooks/incidents/planodkupow-qa-cfn-rebuild.md",
     "20-projects/clients/mako/maspex/finops-uat-preprod-cost-estimate-2026-04.md",
-    "20-projects/clients/mako/maspex/incident-uat-auth-refresh-token-2026-04-26.md",
     "40-runbooks/incidents/planodkupow-qa-tagging-audit.sh",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
