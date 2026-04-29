@@ -119,8 +119,7 @@
               "title": "makolab-projects-vault-context"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -293,7 +292,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "018bf775d0af5811",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
     "_chatgpt/context-packs/makolab-projects-vault-context.md",
     "40-runbooks/aws/cfn-sg-rollback-failed-iam.md",
