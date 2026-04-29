@@ -14,6 +14,7 @@
 | `context-packs/maspex-uat-api-supabase-investigation-2026-04-23.md` | Maspex UAT API/Supabase | 2026-04-23 | Dochodzenie połączeń API z Supabase |
 | `context-packs/planodkupow-ops-context-2026-04-24.md` | planodkupow operations | 2026-04-24 | Runbooki, RCA, RabbitMQ, CFN recovery, tagging/FinOps, decyzje architektoniczne |
 | `context-packs/rshop-tag-policy.md` | rshop Tag Policy | 2026-04-24 | TagPolicyViolation incydent, stan audytu CFN, plan remediacji, FinOps backlog |
+| `context-packs/makolab-projects-vault-context.md` | MakoLab projects + vault governance | 2026-04-29 | Zbiorczy kontekst dla ChatGPT: rshop, planodkupow, puzzler-b2b, maspex oraz kontrakty vault/agentów |
 
 ## Podsumowania rozmów (`conversations/`)
 
