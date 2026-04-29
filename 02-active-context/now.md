@@ -2,6 +2,84 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-29 — rshop DEV Jenkins overnight failure diagnosis
+
+```
+Stan:       ZAPISANE
+Zakres:     rshop DEV Jenkins / CloudFormation / ECS read-only diagnosis
+
+Najważniejszy wniosek:
+  Nocna awaria nie była powrotem CFN-MUT-001.
+  Root stack dev nie został dotknięty przez app deploy.
+  VPCStack/SiecDB nie pojawiły się w nocnej ścieżce awarii.
+
+AWS EVIDENCE:
+  Root stack:
+    dev = UPDATE_ROLLBACK_COMPLETE
+    LastUpdatedTime = 2026-04-28T16:41:09Z
+    brak nowych nocnych zdarzeń root/VPC/SiecDB
+
+  ECSStack:
+    dev-ECSStack-1BLAWHL0P6JKO = UPDATE_ROLLBACK_COMPLETE
+    UPDATE_IN_PROGRESS User Initiated = 2026-04-28T21:46:07Z
+    UPDATE_ROLLBACK_IN_PROGRESS = 2026-04-29T00:46:22Z
+    UPDATE_ROLLBACK_COMPLETE = 2026-04-29T00:54:05Z
+
+  Leaf failure:
+    api child stack -> ApiSvc UPDATE_FAILED
+      Resource handler returned message: "Exceeded attempts to wait"
+      HandlerErrorCode: NotStabilized
+
+    backoffice child stack -> BackofficeSvc UPDATE_FAILED
+      Resource handler returned message: "Exceeded attempts to wait"
+      HandlerErrorCode: NotStabilized
+
+ECS CURRENT STATE:
+  rshop-dev-api-svc:
+    desired=1 running=1 pending=0 rollout=COMPLETED
+    task definition dev-api-task:1040
+    image api.1252
+    target health healthy
+
+  rshop-dev-backoffice-svc:
+    desired=1 running=1 pending=0 rollout=COMPLETED
+    task definition dev-backoffice-task:1039
+    image backoffice.1252
+    target health healthy
+
+  Frontends:
+    unchanged, running healthy
+
+RUNTIME SIGNALS:
+  API podczas nieudanego rollout miało ALB healthcheck failures HTTP 500.
+  Backoffice miało powtarzane replacement/registration/draining events.
+  Późniejszy list-tasks --desired-status STOPPED nie zwrócił task ARN,
+  więc szczegóły stopped task containers nie były dostępne w późnym odczycie.
+
+JENKINS LOG:
+  Nie znaleziono lokalnego aktualnego console logu z tej nocy.
+  Znalezione pliki #1292 dev.txt i #1342 dev.txt są stare i pokazują dawny root deploy,
+  więc nie są dowodem dla tej awarii.
+
+KLASYFIKACJA:
+  - Jenkins-only failure: NIE
+  - CloudFormation rollback: TAK, ograniczony do ECSStack
+  - ECS/application rollout failure: TAK
+  - guard failure: brak dowodu
+  - AWS CLI/Jenkins sandbox issue: brak dowodu
+  - CFN-MUT-001 recurrence: NIE
+
+ZAPIS TRWAŁY:
+  - 40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md
+
+NASTĘPNY KROK:
+  1. Nie rerunować ślepo.
+  2. Sprawdzić logi aplikacyjne dla obrazów próbowanych w tym rollout:
+     API healthcheck 500 i backoffice startup/runtime.
+  3. Utrzymać app deploy path przez ECSStack, nie root dev.
+  4. Permanentnie naprawić CFN-MUT-001 przez immutable TemplateURL / artifact paths.
+```
+
 ## Podsumowanie dnia — 2026-04-28
 
 ```

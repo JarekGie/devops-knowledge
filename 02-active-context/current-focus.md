@@ -24,7 +24,7 @@ Maspex zapisany i przesunięty do standby.
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| rshop | aktywny | kontrolowany test Jenkins dev path po ECSStack-only mitigation; potem permanent fix nested `TemplateURL` i powrót do ECS PropagateTags CFN patch |
+| rshop | aktywny | po nocnym ECSStack-only rollback sprawdzić app logs dla API 500/backoffice startup; nie wracać do root deploy; potem permanent fix nested `TemplateURL` i powrót do ECS PropagateTags CFN patch |
 | maspex | standby | Load test report zapisany; Terraform observability/WAF patch przygotowany, ale nie apply; blokada: UAT remote state digest S3/DynamoDB wymaga kontrolowanej conditional korekty przed `terraform plan` |
 | puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
@@ -36,7 +36,7 @@ Maspex zapisany i przesunięty do standby.
 
 ## Priorytety tygodnia
 
-1. rshop: przetestować poprawiony Jenkins dev path, który targetuje `dev-ECSStack-1BLAWHL0P6JKO` i ma guard przed execute.
+1. rshop: po nocnym teście Jenkins dev path traktować routing jako potwierdzony na poziomie CFN-MUT-001 mitigation; awaria była ECS/app `NotStabilized`, nie root/VPC.
 2. rshop: nie używać root stack `dev` jako app deploy path; root deploy tylko jako świadomy infra rollout.
 3. rshop: przygotować permanent fix: version-pinned nested templates / immutable artifact paths + pipeline guard jako standard.
 4. rshop: po ustabilizowaniu deploy boundary przygotować minimalne CFN zmiany dla ECS Services i walidować najpierw dev.
@@ -53,7 +53,7 @@ Maspex zapisany i przesunięty do standby.
 - [ ] `rshop-cloudformation/cloudformation/{api,backoffice,frontend,frontend2}.yml` bez `PropagateTags`, `EnableECSManagedTags` i tagów ECS Service
 - [ ] `infra-rshop/cloudformation/akcesoria2/svc.yml` ma tagi, ale brakuje `PropagateTags: SERVICE` i `EnableECSManagedTags: true`
 - [ ] `rshop` root/nested CFN używa mutowalnych `TemplateURL`; app-only deploy przez root może replayować nowsze nested templates (`CFN-MUT-001`)
-- [ ] Jenkins mitigation dla dev zapisany w `~/projekty/mako/eshop-cicd/jenkinsfiles/BE/{eshop-dev-aws,eshop-dev-aws-scan-2}.jenkinsfile`; wymaga kontrolowanego testu
+- [ ] Jenkins mitigation dla dev zapisany w `~/projekty/mako/eshop-cicd/jenkinsfiles/BE/{eshop-dev-aws,eshop-dev-aws-scan-2}.jenkinsfile`; nocny test nie dotknął root/VPC, ale ECS/app rollout padł na `NotStabilized`
 - [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
 - [ ] Maspex standby: Terraform UAT plan blokuje stary/osierocony digest w `terraform-locks-969209893152`; safe recovery opisane w `02-active-context/now.md`
 - [ ] Maspex standby: `infra-maspex` ma lokalny patch observability/WAF niezaaplikowany: WAF admin allowlist + Athena/Glue per-path CloudFront logs
