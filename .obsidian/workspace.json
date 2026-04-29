@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠹ devops-knowledge"
+              "title": "Terminal: ⠇ devops-knowledge"
             }
           },
           {
@@ -77,8 +77,7 @@
               "title": "01-rollout-ai-cost-aware-contract"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -251,8 +250,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
     "40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",
     "10-areas/private/Subskrypcje.md",
@@ -271,7 +271,6 @@
     "100-ai-cost-optimization/prompts/04-model-tiering-for-vault.md",
     "100-ai-cost-optimization/prompts/03-optimize-context-packs.md",
     "100-ai-cost-optimization/prompts/02-audit-existing-contracts.md",
-    "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
     "100-ai-cost-optimization/prompts/05-ai-finops-readiness-notes.md",
     "00-start-here/Bez nazwy.md",
     "_system/AI_COST_AWARE_AGENT_CONTRACT.md",
