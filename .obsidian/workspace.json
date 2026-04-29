@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠴ devops-knowledge"
             }
           },
           {
@@ -91,8 +91,7 @@
               "title": "load-test-analysis-2026-04-29-1300-cest"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -265,7 +264,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "b2adb5567b96ab6e",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-29-1300-cest.md",
     "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
