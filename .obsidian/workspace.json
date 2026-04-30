@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Design production-grade FinOps reporting contract for devops-toolkit"
+              "title": "Terminal: ⠂ Design production-grade FinOps reporting contract for devops-toolkit"
             }
           },
           {
@@ -239,6 +239,11 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "60-toolkit/contracts/finops-reporting-contract.md",
+    "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
+    "docs/superpowers/specs",
+    "docs/superpowers",
+    "docs",
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.model.json",
     "artifacts/rshop-finops-2026-04/ce-trend-daily.json",
@@ -247,8 +252,6 @@
     "artifacts/rshop-finops-2026-04/ce-untagged-by-service.json",
     "artifacts/rshop-finops-2026-04/ce-untagged-by-usage-type.json",
     "artifacts/rshop-finops-2026-04/ce-by-environment.json",
-    "artifacts/rshop-finops-2026-04/ce-total.json",
-    "artifacts/rshop-finops-2026-04",
     "_chatgpt/context-packs/devops-toolkit.md",
     "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "20-projects/clients/mako/pbms/context.md",
@@ -267,14 +270,11 @@
     "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
     "40-runbooks/incidents/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
     "10-areas/private/Domeny.md",
-    "10-areas/private",
     "40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md",
     "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
     "_chatgpt/context-packs/maspex.md",
     "01-inbox/LLM_CONTEXT.md",
     "_chatgpt/context-packs/maspex-load-testing.md",
-    "100-ai-cost-optimization/prompts/wdrozenie.md",
-    "100-ai-cost-optimization/prompts/README.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
