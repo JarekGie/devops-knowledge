@@ -133,8 +133,7 @@
               "title": "README"
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "vertical"
@@ -307,8 +306,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "792d245c3269fde5",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
+    "README.md",
     "_chatgpt/context-packs/makolab-projects-vault-context.md",
     "40-runbooks/aws/cfn-sg-rollback-failed-iam.md",
     "40-runbooks/aws/cfn-alb-safe-tagging.md",
@@ -335,7 +335,6 @@
     "100-ai-cost-optimization/prompts/02-audit-existing-contracts.md",
     "100-ai-cost-optimization/prompts/05-ai-finops-readiness-notes.md",
     "00-start-here/Bez nazwy.md",
-    "_system/AI_COST_AWARE_AGENT_CONTRACT.md",
     "100-ai-cost-optimization/prompts",
     "100-ai-cost-optimization",
     "20-projects/clients/bmw/ai-taskforce/~$ai-taskforce-pl.xlsx",
