@@ -44,6 +44,13 @@ Zasady zapisu:
 | Implementacja / zmiana kodu | co zmieniono, branch, testy | `session-log.md` projektu |
 | Nowa konwencja lub standard | treść konwencji | `30-standards/` lub `CLAUDE.md` |
 | Koniec sesji roboczej | stan, następny krok | `now.md` + `session-log.md` |
+| Prośba o kontekst dla ChatGPT / „przygotuj kontekst" | zaktualizuj istniejący pack, nie generuj od zera | `_chatgpt/context-packs/<temat>.md` |
+
+**ChatGPT context packs — zasady:**
+- Zawsze sprawdź najpierw czy `_chatgpt/context-packs/<temat>.md` istnieje
+- Jeśli istnieje: zaktualizuj (data + delta) i podaj ścieżkę — nie generuj od nowa w odpowiedzi
+- Jeśli nie istnieje: utwórz według `_chatgpt/templates/context-pack-template.md`, zapisz, podaj ścieżkę
+- Pełny workflow: `_system/CHATGPT_WORKFLOW.md`
 
 **Zasada kontrolna:** po każdej odpowiedzi zawierającej decyzję, działanie lub wiedzę — sprawdź czy vault jest aktualny. Jeśli nie — zapisz przed następną odpowiedzią.
 
@@ -84,6 +91,8 @@ Mapowanie typów rozmów na katalogi:
 70-finops/           ← przeglądy kosztów, optymalizacja, oszczędności
 80-architecture/     ← ADR (decision-log), mapy systemów, zasady platformy
 90-reference/        ← commands/, snippets/, glossary/, vendors/
+_chatgpt/            ← context-packs/ (gotowe do wklejenia do ChatGPT), conversations/, templates/
+_system/             ← kontrakty LLM, polityki, granice domen
 templates/           ← kopiuj przed użyciem, nigdy nie edytuj oryginałów
 ```
 

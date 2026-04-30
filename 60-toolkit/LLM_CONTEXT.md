@@ -42,9 +42,9 @@ Dokumentacja projektu `devops-toolkit` — stateless CLI z architekturą plugin/
 
 ## Jak przygotować kontekst dla ChatGPT
 
-1. `architecture-overview.md` + relevant kontrakt z `contracts/`
-2. Dodaj konkretną komendę z `command-catalog.md`
-3. Kontrakty JSON są zwięzłe — można wkleić kilka naraz
+Gotowy context pack: `_chatgpt/context-packs/devops-toolkit.md` — zaktualizuj datę i delta, wklej do ChatGPT.
+
+Nie składaj ręcznie z plików — pack jest źródłem prawdy dla eksportów LLM.
 
 ---
 
