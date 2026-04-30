@@ -2,6 +2,45 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — PBMS jumphost-v5 wdrożony ✓
+
+```
+Stan:       ZAPISANE / PRZEŁĄCZAM NA MASPEX
+Aktywny:    maspex
+
+PBMS JUMPHOST — CO ZROBIONO:
+  Obraz:
+    - Dockerfile: infra-puzzler-b2b-final/Dockerfile (alpine:3.19 + sshd)
+    - Tag: jumphost-v5
+    - Push: infra-puzzler-b2b-app-dev:jumphost-v5 ✓
+    - Push: infra-puzzler-b2b-app-qa:jumphost-v5 ✓
+    - Digest: sha256:e34a3627...
+
+  tfvars zaktualizowane:
+    - envs/dev/terraform.tfvars: v1 → jumphost-v5
+    - envs/qa/terraform.tfvars:  jumphost + BLOCKER usunięty → jumphost-v5
+
+  Terraform apply dev (targeted — TYLKO jumphost):
+    - task definition: infra-puzzler-b2b-dev-jumphost rev 3 → nowa ✓
+    - ECS service: wskazuje na nową task def ✓
+    - Pominięte (state drift): delivery/notifier/sync mają wyższe rewizje w ECS niż w state
+      delivery: ecs:53 vs tf:30 | notifier: ecs:53 vs tf:30 | sync: ecs:10 vs tf:1
+
+  Secrets Manager fix:
+    - Sekret był: {"authorized_keys":"$(cat ~/.ssh/id_rsa.pub)"} — literalny string
+    - Poprawiono na: prawdziwy klucz id_rsa.pub
+    - Force redeploy: nowy task IP = 18.175.150.59 (zmienił się po restarcie!)
+
+  Scripts db-connect:
+    - db-connect.sh: dynamiczny (AWS CLI → ENI → public IP) — przetestowany ✓ tunel 27017 OK
+    - db-connect.ps1: zaktualizowany hardcoded IP na 52.56.205.122 (był 18.134.180.75)
+      uwaga: IP zmienia się przy każdym restarcie taska — dev ustawia przez $env:JUMPHOST_HOST
+    - db-connect.cmd: bez zmian (wrapper)
+
+  QA: tfvars OK, terraform apply QA nie wykonany.
+  State drift: NIE naprawiony (osobna sesja).
+```
+
 ## Update — 2026-04-30 — rshop działa ✓
 
 ```
@@ -1090,4 +1129,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-30 13:08 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-30 13:11 — sesja aktywna*
