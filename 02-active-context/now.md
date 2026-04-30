@@ -2,6 +2,52 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — rshop FinOps CE report odtworzony ✓
+
+```
+Stan:       ZAPISANE
+Aktywny:    rshop
+Zakres:     FinOps / AWS Cost Explorer / MTD 2026-04
+
+CO ZROBIONO:
+  Odtworzono raport FinOps dla konta rshop z AWS Cost Explorer.
+  Dane ograniczone do linked account:
+    account_id: 943111679945
+    profile:    mako-dc
+    period:     2026-04-01 -> 2026-05-01
+    metric:     UnblendedCost
+    currency:   USD
+
+WYNIK:
+  total_cost:       959.9595635723 USD
+  tagged_cost:      482.6346604088 USD
+  untagged_cost:    477.3249031635 USD
+  tagged coverage:  50.2766%
+  untagged:         49.7234%
+  reconciliation:   OK, difference = 0.0
+
+TREND / DELTA:
+  previous month:   1114.3550446539 USD
+  delta:            -154.3954810816 USD (-13.8551%)
+  avg daily 30d:    31.9986521191 USD
+  avg last 7d:      22.1434649561 USD
+  forecast 30d:     664.3039486830 USD
+
+ARTEFAKTY:
+  - artifacts/rshop-finops-2026-04/rshop-finops-2026-04.model.json
+  - artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md
+  - artifacts/rshop-finops-2026-04/ce-*.json
+
+UWAGA:
+  Cost Explorer zwrócił Estimated=true dla bieżącego okresu.
+  Komendy CE zostały doprecyzowane filtrem LINKED_ACCOUNT=943111679945,
+  bo profil mako-dc działa z poziomu management/org access.
+
+NASTĘPNY KROK RSHOP:
+  1. Jeśli raport idzie do klienta/LLZ, traktować kwiecień jako estimated do zamknięcia billing cycle.
+  2. Wrócić do ECS PropagateTags / EnableECSManagedTags jako osobnego zadania po stabilizacji deploy boundary.
+```
+
 ## Update — 2026-04-30 — devops-toolkit FinOps hardening + AI boundary guard
 
 ```

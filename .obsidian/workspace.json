@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠧ devops-knowledge"
             }
           },
           {
@@ -63,8 +63,7 @@
               "title": "rshop-finops-2026-04.report"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -238,7 +237,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "f6a0708be84c4de2",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.model.json",
