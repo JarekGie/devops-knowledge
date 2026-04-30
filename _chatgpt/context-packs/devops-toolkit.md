@@ -1,6 +1,6 @@
 # ChatGPT Context Pack — devops-toolkit
 
-Data aktualizacji: 2026-04-23
+Data aktualizacji: 2026-04-30
 
 Ten plik jest syntetycznym kontekstem do pracy z ChatGPT/Codex nad projektem
 `devops-toolkit`. Łączy informacje z vaulta `devops-knowledge` i z lokalnego repo
