@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Save context and switch to puzzler"
+              "title": "Terminal: ⠐ Save context and switch to puzzler"
             }
           }
         ]
@@ -222,7 +222,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "ea8eea0fdff7071a",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",
     "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
