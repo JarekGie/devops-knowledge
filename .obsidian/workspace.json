@@ -48,8 +48,51 @@
               "icon": "terminal",
               "title": "Terminal: npx ccstatusline@latest"
             }
+          },
+          {
+            "id": "7c26723e425838d3",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
+                  "focus": false,
+                  "profile": {
+                    "args": [
+                      "--login"
+                    ],
+                    "executable": "/bin/zsh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: ✳ Handle dynamic key naming in development"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -222,7 +265,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ea8eea0fdff7071a",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",
     "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
