@@ -8,6 +8,36 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-30 — preprod: cookie consent banner + iteracje zaslepka-v7–v9
+
+**Problem:** GTM ładował się bezwarunkowo w `<head>` i jako `<noscript>` iframe — tracking startował przed jakąkolwiek zgodą użytkownika.
+
+**Fix:** hotfix consent gate w czystym HTML/JS/CSS inline:
+- usunięto GTM ze `<head>` i `<noscript>`
+- dodano banner fixed bottom z przyciskami Akceptuj / Odrzuć
+- decyzja zapisywana w `localStorage('cookie_consent')`
+- `loadGTM()` wywoływane tylko po akceptacji
+- przy kolejnych wejściach respektuje zapisany wybór
+
+**Deploy flow (wzorzec do powtarzania):**
+1. `docker build --platform linux/amd64 -t .../maspex-frontend:zaslepka-vN .`
+2. `docker push`
+3. update tagu w `envs/preprod/main.tf`
+4. `terraform apply -target=module.service_admin_panel`
+5. `aws ecs update-service --task-definition maspex-preprod-admin-panel:<rev> --force-new-deployment`
+
+**Uwaga — `ignore_changes = [task_definition]` w module ECS:**
+Terraform rejestruje nową task def ale NIE przełącza serwisu. Krok 5 jest zawsze wymagany.
+
+**Historia tagów:**
+- `zaslepka-v7` — pierwsze wdrożenie z bannerem
+- `zaslepka-v8` — zmiana treści
+- `zaslepka-v9` — kolejna zmiana treści, aktualnie live (revision 11)
+
+**Status:** [x] resolved
+
+---
+
 ## 2026-04-30 — preprod: zaslepka-v6, splash-1.svg
 
 **Zrobione:**
