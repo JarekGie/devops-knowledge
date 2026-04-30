@@ -8,6 +8,32 @@ Aktywne problemy na górze. Rozwiązane zostają jako archiwum poniżej.
 
 ---
 
+## 2026-04-30 — preprod: zaslepka-v6, splash-1.svg
+
+**Zrobione:**
+- Dockerfile: dodano `COPY splash-1.svg` (był w repo, brakowało w obrazie)
+- zbudowano `zaslepka-v6` (`linux/amd64`) i wypchnięto do ECR
+- `envs/preprod/main.tf` zaktualizowany (service_admin_panel + service_bot)
+- `terraform apply -target` → nowe task definitions (admin-panel:8, bot:7)
+- `aws ecs update-service --force-new-deployment` → admin-panel live na revision 8
+
+**Uwaga — moduł ECS ma `ignore_changes = [task_definition]`:**
+Terraform rejestruje nową task definition ale NIE przełącza serwisu automatycznie.
+Po każdym `apply` trzeba ręcznie: `aws ecs update-service --task-definition <family>:<rev> --force-new-deployment`
+
+**Bot (maspex-preprod-bot) — pre-existing blocker:**
+Target group `maspex-preprod-bot` nie ma podpiętego ALB → `update-service` failuje.
+Do naprawy: sprawdzić `alb-routing` module czy reguła listenerowa dla bota istnieje.
+
+**Weryfikacja splash-1.svg:**
+- `https://twojkapsel.pl/splash-1.svg` → HTTP 200, `content-type: image/svg+xml`, CloudFront Miss
+- HTML zawiera `<img src="./splash-1.svg">` — infrastruktura OK
+- Jeśli klient nie widzi obrazka: problem z cache przeglądarki (`Ctrl+Shift+R`)
+
+**Status:** [x] resolved (infrastruktura) / bot ALB issue osobny problem
+
+---
+
 ## 2026-04-23 — UAT load test 3000 users / 1h: monitoring API path
 
 **Stan:** patch Terraform przygotowany, nieaplikowany.
