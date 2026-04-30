@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠴ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
             }
           }
         ]
@@ -225,6 +225,14 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
+    "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.model.json",
+    "artifacts/rshop-finops-2026-04/ce-trend-daily.json",
+    "artifacts/rshop-finops-2026-04/ce-by-service.json",
+    "artifacts/rshop-finops-2026-04/ce-previous-month-total.json",
+    "artifacts/rshop-finops-2026-04/ce-untagged-by-service.json",
+    "artifacts/rshop-finops-2026-04/ce-untagged-by-usage-type.json",
+    "artifacts/rshop-finops-2026-04/ce-by-environment.json",
     "artifacts/rshop-finops-2026-04/ce-total.json",
     "artifacts/rshop-finops-2026-04",
     "_chatgpt/context-packs/devops-toolkit.md",
@@ -253,14 +261,6 @@
     "_chatgpt/context-packs/maspex-load-testing.md",
     "100-ai-cost-optimization/prompts/wdrozenie.md",
     "100-ai-cost-optimization/prompts/README.md",
-    "100-ai-cost-optimization/prompts",
-    "100-ai-cost-optimization",
-    "20-projects/clients/bmw/ai-taskforce/~$ai-taskforce-pl.xlsx",
-    "20-projects/clients/bmw/ai-taskforce/ai-taskforce-pl.xlsx",
-    "20-projects/clients/bmw/ai-taskforce/~$ai-taskforce.xlsx",
-    "20-projects/clients/bmw/ai-taskforce/ai-taskforce.xlsx",
-    "20-projects/clients/bmw/ai-taskforce/ai-taskforce.pptx",
-    "20-projects/clients/puzzler-b2b",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

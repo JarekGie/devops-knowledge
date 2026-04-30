@@ -1,0 +1,65 @@
+{
+    "GroupDefinitions": [
+        {
+            "Type": "TAG",
+            "Key": "Environment"
+        }
+    ],
+    "ResultsByTime": [
+        {
+            "TimePeriod": {
+                "Start": "2026-04-01",
+                "End": "2026-05-01"
+            },
+            "Total": {},
+            "Groups": [
+                {
+                    "Keys": [
+                        "Environment$"
+                    ],
+                    "Metrics": {
+                        "UnblendedCost": {
+                            "Amount": "477.3249031635",
+                            "Unit": "USD"
+                        }
+                    }
+                },
+                {
+                    "Keys": [
+                        "Environment$dev"
+                    ],
+                    "Metrics": {
+                        "UnblendedCost": {
+                            "Amount": "95.424628104",
+                            "Unit": "USD"
+                        }
+                    }
+                },
+                {
+                    "Keys": [
+                        "Environment$prod"
+                    ],
+                    "Metrics": {
+                        "UnblendedCost": {
+                            "Amount": "386.9104338809",
+                            "Unit": "USD"
+                        }
+                    }
+                },
+                {
+                    "Keys": [
+                        "Environment$qa"
+                    ],
+                    "Metrics": {
+                        "UnblendedCost": {
+                            "Amount": "0.2995984239",
+                            "Unit": "USD"
+                        }
+                    }
+                }
+            ],
+            "Estimated": true
+        }
+    ],
+    "DimensionValueAttributes": []
+}

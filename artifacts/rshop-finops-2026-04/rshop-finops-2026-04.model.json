@@ -1,0 +1,944 @@
+{
+  "account": "rshop",
+  "account_id": "943111679945",
+  "region": "eu-central-1",
+  "profile": "mako-dc",
+  "period": {
+    "start": "2026-04-01",
+    "end": "2026-05-01",
+    "label": "MTD 2026-04-01 to 2026-04-30"
+  },
+  "metric": "UnblendedCost",
+  "currency": "USD",
+  "estimated": true,
+  "total_cost": 959.9595635723,
+  "tagged_cost": 482.6346604088,
+  "tagged_percent": 50.2766,
+  "untagged_percent": 49.7234,
+  "by_environment": [
+    {
+      "environment": "prod",
+      "cost": 386.9104338809,
+      "unit": "USD"
+    },
+    {
+      "environment": "dev",
+      "cost": 95.424628104,
+      "unit": "USD"
+    },
+    {
+      "environment": "qa",
+      "cost": 0.2995984239,
+      "unit": "USD"
+    }
+  ],
+  "by_service": [
+    {
+      "service": "Amazon Virtual Private Cloud",
+      "cost": 215.438439308,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Relational Database Service",
+      "cost": 214.5838889512,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Elastic Container Service",
+      "cost": 212.6681688452,
+      "unit": "USD"
+    },
+    {
+      "service": "Tax",
+      "cost": 179.51,
+      "unit": "USD"
+    },
+    {
+      "service": "AmazonCloudWatch",
+      "cost": 66.8312981775,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Elastic Load Balancing",
+      "cost": 39.5032951395,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS Cost Explorer",
+      "cost": 10.52,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Simple Storage Service",
+      "cost": 8.6679566765,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon GuardDuty",
+      "cost": 4.927701846,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Route 53",
+      "cost": 3.249999998,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS CloudTrail",
+      "cost": 1.9349062371,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon EC2 Container Registry (ECR)",
+      "cost": 1.0988045609,
+      "unit": "USD"
+    },
+    {
+      "service": "EC2 - Other",
+      "cost": 0.5031896488,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Simple Email Service",
+      "cost": 0.4325144966,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS Key Management Service",
+      "cost": 0.078126,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon CloudFront",
+      "cost": 0.0109446577,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS Lambda",
+      "cost": 0.0003111866,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS Secrets Manager",
+      "cost": 1.5e-05,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon DynamoDB",
+      "cost": 2.745e-06,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS CloudShell",
+      "cost": 9.77e-08,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS CloudFormation",
+      "cost": 0.0,
+      "unit": "USD"
+    },
+    {
+      "service": "AWS Glue",
+      "cost": 0.0,
+      "unit": "USD"
+    },
+    {
+      "service": "Amazon Simple Notification Service",
+      "cost": 0.0,
+      "unit": "USD"
+    }
+  ],
+  "untagged": {
+    "total": 477.3249031635,
+    "by_service": [
+      {
+        "service": "Tax",
+        "cost": 179.51,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon Elastic Container Service",
+        "cost": 108.9185301689,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon Virtual Private Cloud",
+        "cost": 107.3408975851,
+        "unit": "USD"
+      },
+      {
+        "service": "AmazonCloudWatch",
+        "cost": 61.6216671365,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS Cost Explorer",
+        "cost": 10.52,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon GuardDuty",
+        "cost": 4.927701846,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon Route 53",
+        "cost": 2.749999998,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon Simple Storage Service",
+        "cost": 1.1543660951,
+        "unit": "USD"
+      },
+      {
+        "service": "EC2 - Other",
+        "cost": 0.5031896488,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS Key Management Service",
+        "cost": 0.078126,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS Lambda",
+        "cost": 0.0003111866,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon CloudFront",
+        "cost": 9.84008e-05,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS Secrets Manager",
+        "cost": 1.5e-05,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS CloudShell",
+        "cost": 9.77e-08,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS CloudFormation",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS CloudTrail",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "service": "AWS Glue",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "service": "Amazon Simple Notification Service",
+        "cost": 0.0,
+        "unit": "USD"
+      }
+    ],
+    "by_usage_type": [
+      {
+        "usage_type": "NoUsageType",
+        "cost": 179.51,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Fargate-vCPU-Hours:perCPU",
+        "cost": 86.891238444,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-VpcEndpoint-Hours",
+        "cost": 61.776,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-PublicIPv4:InUseAddress",
+        "cost": 45.543161195,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:Canary-runs",
+        "cost": 36.56,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Fargate-GB-Hours",
+        "cost": 21.9831336543,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:MetricsUsage",
+        "cost": 16.0280555597,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USE1-APIRequest",
+        "cost": 10.52,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:GMD-Metrics",
+        "cost": 5.47207,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-PaidEventsAnalyzed",
+        "cost": 3.5113962,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "Health-Check-Option-Non-AWS",
+        "cost": 1.999999998,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:AlarmMonitorUsage",
+        "cost": 1.5672107276,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-PaidS3DataEventsAnalyzed",
+        "cost": 1.3966628,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:CompositeAlarmMonitorUsage",
+        "cost": 1.3278356397,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-TimedStorage-ByteHrs",
+        "cost": 0.9170452654,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "Health-Check-Non-AWS",
+        "cost": 0.75,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-EBS:SnapshotUsage",
+        "cost": 0.5031896488,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CW:AlarmMonitorUsage",
+        "cost": 0.4817361234,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Requests-Tier1",
+        "cost": 0.2513538,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-VendedLog-Bytes",
+        "cost": 0.1700910455,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "eu-central-1-KMS-Requests",
+        "cost": 0.078111,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-DataTransfer-Regional-Bytes",
+        "cost": 0.0441464158,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-PaidLambdaNetworkLogsAnalyzed-Bytes",
+        "cost": 0.019642846,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-VpcEndpoint-Bytes",
+        "cost": 0.0183182751,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-PublicIPv4:IdleAddress",
+        "cost": 0.003418115,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "Requests-Tier1",
+        "cost": 0.00042,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Lambda-Storage-GB-Second",
+        "cost": 0.0003111866,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Requests-Tier2",
+        "cost": 0.00020038,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-DataTransfer-Out-OBytes",
+        "cost": 9.00177e-05,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-AWSSecretsManagerAPIRequest",
+        "cost": 1.5e-05,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "us-east-1-KMS-Requests",
+        "cost": 1.5e-05,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "Requests-Tier2",
+        "cost": 1.04e-05,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "US-DataTransfer-Out-OBytes",
+        "cost": 8.1543e-06,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-USE1-AWS-Out-Bytes",
+        "cost": 5.5544e-06,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-USE2-AWS-Out-Bytes",
+        "cost": 4.7301e-06,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUN1-TimedStorage-ByteHrs",
+        "cost": 3.255e-06,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-APS3-AWS-Out-Bytes",
+        "cost": 8.335e-07,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "TimedStorage-ByteHrs",
+        "cost": 5.684e-07,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-EU-AWS-Out-Bytes",
+        "cost": 5.368e-07,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USE1-EUC1-AWS-Out-Bytes",
+        "cost": 4.669e-07,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CA-DataTransfer-Out-OBytes",
+        "cost": 2.288e-07,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-EUW2-AWS-Out-Bytes",
+        "cost": 9.77e-08,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "APN1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "APN2-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "APN3-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "APS1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "APS2-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "APS3-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CA-DataTransfer-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CA-Requests-HTTPS-Proxy",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CA-Requests-Tier1",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CA-Requests-Tier2-HTTPS",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "CAN1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "DashboardsUsageHour-Basic",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "DataTransfer-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "DataTransfer-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-DataTransfer-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-Requests-HTTP-Proxy",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-Requests-HTTPS-Proxy",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-Requests-Tier1",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EU-Requests-Tier2-HTTPS",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-APS3-AWS-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:MetricMonitorUsage",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CW:Requests",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Catalog-Request",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CloudFront-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-CloudFront-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-DataTransfer-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-DataTransfer-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-DataTransfer-xAZ-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-DataTransfer-xAZ-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-EU-AWS-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-EUW2-AWS-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Lambda-GB-Second",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Request",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-Resource-Operation-Count",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-USE1-AWS-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUC1-USE2-AWS-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUN1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUW2-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "EUW3-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "Global-Bucket-Hrs-FreeTier",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "SAE1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "US-DataTransfer-Out-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "US-Requests-HTTP-Proxy",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "US-Requests-HTTPS-Proxy",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "US-Requests-Tier1",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "US-Requests-Tier2-HTTPS",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USE1-Catalog-Request",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USE1-EUC1-AWS-In-Bytes",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USE1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USE2-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USW1-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      },
+      {
+        "usage_type": "USW2-FreeEventsRecorded",
+        "cost": 0.0,
+        "unit": "USD"
+      }
+    ]
+  },
+  "trend": [
+    {
+      "date": "2026-04-01",
+      "cost": 206.6055316961,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-02",
+      "cost": 28.3052807759,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-03",
+      "cost": 30.9821995391,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-04",
+      "cost": 30.2352994461,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-05",
+      "cost": 28.4876867949,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-06",
+      "cost": 28.7466404349,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-07",
+      "cost": 28.1366327091,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-08",
+      "cost": 26.5325040675,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-09",
+      "cost": 29.1233417185,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-10",
+      "cost": 27.3284685014,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-11",
+      "cost": 28.4505544184,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-12",
+      "cost": 27.6436100546,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-13",
+      "cost": 28.8054628627,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-14",
+      "cost": 27.6301987787,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-15",
+      "cost": 27.6172481119,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-16",
+      "cost": 27.6641501348,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-17",
+      "cost": 24.9884213689,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-18",
+      "cost": 25.3382375468,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-19",
+      "cost": 24.3014967796,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-20",
+      "cost": 23.7759312101,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-21",
+      "cost": 24.5803186412,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-22",
+      "cost": 25.2057994877,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-23",
+      "cost": 24.4702938007,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-24",
+      "cost": 25.1920575512,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-25",
+      "cost": 24.2728048172,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-26",
+      "cost": 24.2960649026,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-27",
+      "cost": 24.3453055754,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-28",
+      "cost": 24.7836976532,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-29",
+      "cost": 24.648733484,
+      "unit": "USD",
+      "estimated": true
+    },
+    {
+      "date": "2026-04-30",
+      "cost": 7.4655907091,
+      "unit": "USD",
+      "estimated": true
+    }
+  ],
+  "delta": {
+    "current_period_cost": 959.9595635723,
+    "previous_period": {
+      "start": "2026-03-01",
+      "end": "2026-04-01",
+      "cost": 1114.3550446539,
+      "estimated": false
+    },
+    "amount": -154.3954810816,
+    "percent": -13.8551
+  },
+  "daily": {
+    "avg_daily_30d": 31.998652119076667,
+    "avg_last_7d": 22.1434649561,
+    "forecast_30d_from_last_7d": 664.303948683,
+    "last_7d_dates": [
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30"
+    ]
+  },
+  "reconciliation": {
+    "total_cost": 959.9595635723,
+    "tagged_cost": 482.6346604088,
+    "untagged_cost": 477.3249031635,
+    "tagged_plus_untagged": 959.9595635723,
+    "difference": 0.0,
+    "ok": true
+  }
+}
