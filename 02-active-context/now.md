@@ -2,6 +2,22 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — Maspex /email/* CloudFront behavior ✓
+
+```
+Stan:       DONE / WDROŻONE
+Aktywny:    pbms
+
+MASPEX UAT — CO ZROBIONO:
+  Zmiana: nowy ordered_cache_behavior /email/* na dystrybucji E3J76RNXIE2YIG (kapsel.makotest.pl)
+  Pliki:
+    - terraform/envs/uat/terraform.tfvars: "/email/*" dodane do api_cloudfront_static_paths
+    - terraform/envs/uat/main.tf: "/email/*" dodane do static_path_origin_request_policy_ids
+  Policy reuse: static_assets cache policy (ab5d9518...) + Managed-AllViewer ORP (216adef6...)
+  Apply: 0 added, 1 changed, 0 destroyed — 33s
+  Weryfikacja: Miss → Hit from cloudfront, Age: 12 ✓
+```
+
 ## Update — 2026-04-30 — PBMS jumphost-v5 wdrożony ✓
 
 ```
@@ -1129,4 +1145,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-30 13:23 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-30 13:30 — sesja aktywna*
