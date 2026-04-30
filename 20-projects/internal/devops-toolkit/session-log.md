@@ -212,6 +212,40 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-30 — FinOps live mode + Operator UI + LLZ WAF readonly merged
+
+**Co zrobiono:**
+- Repo: `/Users/jaroslaw.golab/projekty/devops/devops-toolkit`
+- PR #58 zmergowany:
+  - Branch: `feat/finops-live-mode`
+  - Merge commit: `9745e9a`
+  - Zakres: `toolkit finops-report` dostał `--mode live|snapshot`, `--period custom`, `--start/--end`, wiring do `resolve_period()` i `build_finops_model()`, sekcję `Jakość danych`, Estimated=true jako warning, Tax jako non-operational cost
+  - Operator UI: formularz FinOps obsługuje `mtd`, `last-full-month`, `custom`, `mode=live|snapshot`, `start/end`, helper messages live/snapshot; backend przekazuje opcje do CLI
+  - Testy: `make contract-check` PASS; `pytest tests/unit/ -q -k "ui or finops or report"` PASS poza sandboxem; `tests/test_operator_console_v3.py` PASS
+- PR #59 zmergowany:
+  - Branch: `feat/llz-readonly-packs`
+  - Merge commit: `ff9cd46`
+  - Zakres: pack `llz-waf-readonly`, pluginy `llz-guardduty`, `llz-scp`, `llz-cloudtrail`, `llz-config`, `llz-tagging`, `llz-observability`, plugin `cfn-messaging-audit`, testy jednostkowe i plany superpowers
+  - Testy: `make contract-check` PASS; `pytest tests/unit/test_llz_waf_readonly_pack.py tests/unit/test_cfn_messaging_audit.py -q` → 149 passed
+
+**Stan na koniec sesji:**
+- Lokalny `main` w `devops-toolkit` zsynchronizowany z `origin/main`
+- `git status`: czysty względem tracked files (`## main...origin/main`)
+- Ostatnie commity:
+  - `ff9cd46 Merge pull request #59 from JarekGie/feat/llz-readonly-packs`
+  - `9745e9a Merge pull request #58 from JarekGie/feat/finops-live-mode`
+- Nie ma aktywnego brancha roboczego w toolkit — wszystko zmergowane do main
+
+**Następna sesja:**
+- Manualny smoke UI:
+  - `toolkit ui --project-root /path/to/project --port auto --no-open`
+  - FinOps tab → Custom range → mode Live → group by Service → format Markdown
+- Manualny smoke CLI z aktywnymi AWS credentials:
+  - `toolkit finops-report rshop --period custom --start 2026-04-01 --end 2026-05-01 --mode live --audience executive --group-by service --format md`
+- Opcjonalnie zweryfikować, czy pack `llz-waf-readonly` ma być dopięty do publicznej dokumentacji/command catalog.
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]

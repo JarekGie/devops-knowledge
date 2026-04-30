@@ -2,6 +2,51 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — devops-toolkit FinOps live/UI + LLZ WAF readonly merged ✓
+
+```
+Stan:       ZMERGOWANE / MAIN SYNC
+Repo:       ~/projekty/devops/devops-toolkit
+Branch:     main
+
+ZMERGOWANE PR:
+  #58 feat(finops): add live mode to reports and operator UI
+      merge commit: 9745e9a
+      - CLI: finops-report --mode live|snapshot
+      - CLI: --period custom + --start/--end
+      - pipeline: mode -> resolve_period() -> build_finops_model()
+      - report: Jakość danych, Estimated=true jako warning
+      - Tax: non-operational cost, poza top services
+      - UI: period mtd|last-full-month|custom, mode live|snapshot, helper messages
+
+  #59 feat(audit): add LLZ WAF read-only pack
+      merge commit: ff9cd46
+      - pack: llz-waf-readonly
+      - plugins: llz-guardduty, llz-scp, llz-cloudtrail, llz-config,
+        llz-tagging, llz-observability
+      - plugin: cfn-messaging-audit
+      - tests: llz pack + cfn messaging audit
+
+TESTY:
+  make contract-check: PASS
+  tests/unit/test_llz_waf_readonly_pack.py + test_cfn_messaging_audit.py: 149 passed
+  tests/test_operator_console_v3.py: 15 passed
+  tests/unit -k "ui or finops or report": PASS poza sandboxem
+
+STAN KOŃCOWY:
+  devops-toolkit main == origin/main
+  git pull: Already up to date
+  tracked worktree: clean
+
+NASTĘPNY KROK:
+  1. Manualny smoke UI:
+     toolkit ui --project-root /path/to/project --port auto --no-open
+     FinOps -> Custom range -> mode Live -> group by Service -> Markdown
+  2. Manualny smoke CLI z aktywnymi AWS credentials:
+     toolkit finops-report rshop --period custom --start 2026-04-01 --end 2026-05-01 --mode live --audience executive --group-by service --format md
+  3. Opcjonalnie dopiąć dokumentację/command catalog dla llz-waf-readonly.
+```
+
 ## Update — 2026-04-30 — devops-toolkit FinOps Reporting Contract [Task 4/8 DONE]
 
 ```
