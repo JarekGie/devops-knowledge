@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Fix semantic gap in non-operational classification"
+              "title": "Terminal: ⠐ Fix semantic gap in non-operational classification"
             }
           },
           {
@@ -77,8 +77,7 @@
               "title": "rshop-finops-2026-04.report"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -252,7 +251,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ec57d5983f4eb88d",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
     "docs/superpowers/plans/2026-04-30-finops-reporting-contract.md",
