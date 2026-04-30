@@ -119,7 +119,19 @@ Sekwencja błędów:
 **Uwaga — naprawa klucza deva (CRLF):**
 Windows SSH key z CRLF: `(Get-Content key -Raw) -replace "\`r\`n","\`n"` i zapisać przez `[System.IO.File]::WriteAllText()` (nie `Set-Content` — domyślnie UTF-16LE na PS5).
 
-**Status:** [x] resolved — jumphost-v7 wdrożony 2026-04-30
+**Status:** [x] resolved — jumphost-v10 wdrożony 2026-04-30
+
+**Historia tagów i iteracji:**
+- v5–v6: format klucza CRLF / UTF-16 (fix po stronie deva)
+- v7: `sed` zamiast `echo` dla AllowTcpForwarding — działało
+- v8–v9: dev przerobił obraz, wrócił do `echo` — AllowTcpForwarding znowu broken
+- v10: przywrócono `sed -i 's/AllowTcpForwarding no/.../g'`, usunięto zbędny `echo`
+
+**Właściwy klucz SSH do jumphostu: `~/.ssh/jumphost_dev` (ed25519)**
+`id_rsa` (RSA) nie działa — authorized_keys ma tylko ed25519.
+Dev musi używać klucza który wygenerował przez `ssh-keygen -t ed25519`.
+
+**IP jumphostu po ostatnim deploy: `18.135.17.131`**
 
 <!-- nowy wpis: -->
 <!-- ## YYYY-MM-DD — [symptom] -->
