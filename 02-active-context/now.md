@@ -2,6 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — rshop działa ✓
+
+```
+Stan:       OPERACYJNY
+Aktywny:    rshop
+Tryb:       mitigation CFN-MUT-001 potwierdzona, serwisy healthy
+
+RSHOP STATUS:
+  rshop-dev-api-svc:      running=1 healthy (image api.1252, task:1040)
+  rshop-dev-backoffice-svc: running=1 healthy (image backoffice.1252, task:1039)
+  frontends (svc1/svc2):  running=1 healthy
+  Mitigation ECSStack-only deploy: POTWIERDZONA — root stack dev nie dotknięty
+
+NASTĘPNY KROK RSHOP:
+  1. ECS PropagateTags CFN patch (BLOKER #1):
+     rshop-cloudformation: api.yml, backoffice.yml, frontend.yml, frontend2.yml
+     branch: feat/ecs-propagate-tags
+  2. Po deploy dev: weryfikacja ENI tagów
+  3. Deploy prod → re-enable Tag Policies (LLZ)
+
+Kontekst przeniesiony do shared vault (dc-devops-team-vault).
+```
+
 ## Update — 2026-04-30 — vault state saved, context switched to rshop
 
 ```
@@ -1067,4 +1090,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-30 10:17 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-30 10:32 — sesja aktywna*
