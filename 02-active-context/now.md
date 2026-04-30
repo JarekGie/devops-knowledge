@@ -2,6 +2,47 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — devops-toolkit FinOps Reporting Contract [Task 4/8 DONE]
+
+```
+Stan:       W TOKU — przerwane po Task 4
+Branch:     feat/finops-reporting-contract
+Repo:       ~/projekty/devops/devops-toolkit
+Spec:       docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md
+Plan:       docs/superpowers/plans/2026-04-30-finops-reporting-contract.md
+
+COMMITY NA BRANCHU:
+  73123fc feat(finops): add snapshot/live mode and billing_lag to ReportingPeriod
+  d24a291 feat(finops): surface CE Estimated flag in raw collect output
+  ccbe6ed fix(finops): use any() for estimated flag across multi-month CE results
+  d19d5ac feat(finops): add reconciliation module with R1-R5 rules and ReconciliationResult
+  087282e test(finops): assert R5 severity is data_quality not warning
+  68c84fc feat(finobs): wire operational_cost and R1-R5 reconciliation into build_finops_model
+  3fffd2e refactor(finobs): remove redundant tagging_cost_coverage override and stale comment
+
+ZROBIONE:
+  Task 1: periods.py — mode/billing_lag/settled_days + EMPTY_WINDOW guard ✓
+  Task 2: collect.py — Estimated flag detection (any() dla multi-month) ✓
+  Task 3: reconciliation.py (nowy) — R1-R5, compute_operational_cost, ReconciliationResult ✓
+  Task 4: normalize.py — operational_cost + non_operational_costs + reconciliation wired ✓
+
+POZOSTAŁO:
+  Task 5: report_model.py — data_quality_warnings + reconciliation_results sections
+  Task 6: config/finops.yaml — mode/billing_lag_days/r3_tolerance defaults
+  Task 7: commands/finobs_report.py — CLI flags, immutable snapshots, exit codes
+  Task 8: integration tests
+
+NASTĘPNY KROK:
+  Wznów od Task 5 — dispatcher gotowy do uruchomienia subagenta.
+  Metoda: subagent-driven-development (1 subagent per task + 2x review).
+
+WAŻNE KONTRAKTY:
+  cost_total    = AWS CE UnblendedCost INCLUDING Tax/Credit/Refund
+  operational_cost = derived = cost_total - non_op_subtotal
+  snapshot mode = End = today - billing_lag_days (default 2), deterministyczny
+  live mode     = real-time, explicitly non-deterministic
+```
+
 ## Update — 2026-04-30 — rshop FinOps CE report odtworzony ✓
 
 ```
