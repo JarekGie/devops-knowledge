@@ -9,7 +9,7 @@ Stateless by design — brak lokalnego state, brak bazy danych.
 
 ## Szybka nawigacja
 
-- [[context]] — aktualny stan projektu
+- [[20-projects/internal/devops-toolkit/context]] — aktualny stan projektu
 - [[decisions]] — decyzje architektoniczne
 - [[next-steps]] — co dalej
 - [[links]] — linki do repo, CI, docs

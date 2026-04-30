@@ -10,7 +10,7 @@ Wewnętrzna platforma DevOps — infrastruktura, standardy, moduły IaC do wielo
 
 ## Nawigacja
 
-- [[context]] — aktualny stan
+- [[20-projects/internal/devops-platform/context]] — aktualny stan
 - [[decisions]] — decyzje projektowe
 - [[next-steps]] — kolejne kroki
 - [[links]] — repozytoria i zasoby

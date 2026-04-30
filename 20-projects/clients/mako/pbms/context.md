@@ -4,6 +4,9 @@
 
 **Data:** 2026-04-22
 **Projekt:** Puzzler B2B — mikroserwisowa aplikacja .NET na ECS Fargate
+OrgAccountID: 233573821857
+Account ID: 698220459519
+Role: OrganizationAccountAccessRole
 
 ---
 

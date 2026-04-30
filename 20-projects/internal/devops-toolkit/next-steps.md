@@ -28,4 +28,4 @@
 
 ---
 
-*Powiązane: [[context]] | [[decisions]] | [[session-log]]*
+*Powiązane: [[20-projects/internal/devops-toolkit/context]] | [[decisions]] | [[session-log]]*

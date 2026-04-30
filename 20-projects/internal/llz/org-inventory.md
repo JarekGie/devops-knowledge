@@ -213,6 +213,6 @@ Priorytety:
 
 ## Powiązane
 
-- [[context]] — LLZ overview
+- [[20-projects/internal/llz/context]] — LLZ overview
 - [[ideas]] — IDEA-001 org-scope, IDEA-003 scope model
 - [[session-log]] — historia sesji

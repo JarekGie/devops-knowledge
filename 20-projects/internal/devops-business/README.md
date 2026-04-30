@@ -11,7 +11,7 @@ Model biznesowy, oferta i operacje DevOps-as-a-Service.
 
 ## Nawigacja
 
-- [[context]] — aktualny stan
+- [[20-projects/internal/devops-business/context]] — aktualny stan
 - [[decisions]] — decyzje biznesowe
 - [[next-steps]] — kolejne kroki
 - [[links]] — zasoby

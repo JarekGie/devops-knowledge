@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: claude"
+              "title": "Terminal: ✳ Claude Code"
             }
           },
           {
@@ -132,8 +132,23 @@
               "icon": "lucide-file",
               "title": "README"
             }
+          },
+          {
+            "id": "83700da86ba14357",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20-projects/clients/mako/pbms/context.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "context"
+            }
           }
-        ]
+        ],
+        "currentTab": 7
       }
     ],
     "direction": "vertical"
@@ -306,8 +321,11 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "ea8eea0fdff7071a",
+  "active": "83700da86ba14357",
   "lastOpenFiles": [
+    "20-projects/clients/mako/puzzler-b2b/context.md",
+    "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
+    "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "README.md",
     "_chatgpt/context-packs/makolab-projects-vault-context.md",
     "40-runbooks/aws/cfn-sg-rollback-failed-iam.md",
@@ -332,9 +350,6 @@
     "100-ai-cost-optimization/prompts/06-cross-vault-contract-primitives.md",
     "100-ai-cost-optimization/prompts/04-model-tiering-for-vault.md",
     "100-ai-cost-optimization/prompts/03-optimize-context-packs.md",
-    "100-ai-cost-optimization/prompts/02-audit-existing-contracts.md",
-    "100-ai-cost-optimization/prompts/05-ai-finops-readiness-notes.md",
-    "00-start-here/Bez nazwy.md",
     "100-ai-cost-optimization/prompts",
     "100-ai-cost-optimization",
     "20-projects/clients/bmw/ai-taskforce/~$ai-taskforce-pl.xlsx",
