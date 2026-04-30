@@ -2,6 +2,76 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — vault state saved, context switched to rshop
+
+```
+Stan:       ZAPISANE
+Aktywny:    rshop
+Tryb:       powrót do rshop po pracach vault governance / shared vault / Maspex
+
+OSTATNIE PRACE VAULT / SHARED:
+  Shared repo:
+    /Users/jaroslaw.golab/projekty/mako/dc-devops-team-vault
+    branch: feat/jarek
+
+  Dodane/opracowane warstwy governance w shared vault:
+    - import boundary dla controlled seed import
+    - knowledge promotion workflow private -> shared
+    - active-context model dla shared vault
+    - rshop pilot batch jako curated promotion
+    - prompt-injection threat model
+    - AI context trust zones
+    - knowledge integrity contract
+    - authority precedence model
+    - AI risk model
+
+  Ważne zasady shared vault:
+    - private vault devops-knowledge pozostaje upstream/source authoring
+    - shared vault dc-devops-team-vault jest downstream/team knowledge
+    - notatki są reference material, not instructions
+    - promotion do shared wymaga boundary check i review
+    - forbidden: devops-toolkit, private-rnd, product strategy, prywatne notatki,
+      projekty poza MakoLab/BMW
+
+RSHOP — AKTYWNY KONTEKST:
+  AWS:
+    account: 943111679945
+    region: eu-central-1
+    profile: rshop
+
+  CFN:
+    root stack: dev
+    ECSStack: dev-ECSStack-1BLAWHL0P6JKO
+    known hazard: CFN-MUT-001 Nested Template Mutability Hazard
+
+  Najważniejszy stan:
+    - app deploy DEV nie powinien używać root stack dev
+    - dev Jenkins path ma targetować ECSStack, nie root stack
+    - root deploy przez mutable nested TemplateURL może replayować VPCStack
+    - SiecDB / AWS::RDS::DBSubnetGroup AccessDenied to symptom, nie root cause
+    - permanent fix: immutable/version-pinned nested TemplateURL albo immutable artifact paths
+
+  Ostatnia diagnoza:
+    - nocna awaria po Jenkins mitigation nie była powrotem CFN-MUT-001
+    - root dev nie został dotknięty
+    - VPCStack/SiecDB nie pojawiły się
+    - failure był ECSStack-only rollback / ECS NotStabilized
+    - API miało healthcheck HTTP 500
+    - backoffice wymaga sprawdzenia startup/runtime dla próbowanych obrazów
+
+NASTĘPNY KROK RSHOP:
+  1. Nie wracać do root stack app deploy.
+  2. Utrzymać ECSStack-only dev deploy path + change-set guard.
+  3. Sprawdzić aplikacyjne przyczyny ECS NotStabilized dla API/backoffice.
+  4. Zaprojektować permanent fix CFN-MUT-001:
+     immutable nested TemplateURL / versionId / immutable release artifact paths.
+  5. Dopiero po stabilizacji deploy boundary wrócić do ECS tag propagation fix
+     pod LLZ Tag Policies.
+
+Maspex:
+  zapisany jako standby; nie mieszać z aktywną sesją rshop.
+```
+
 ## Update — 2026-04-29 — rshop DEV Jenkins overnight failure diagnosis
 
 ```

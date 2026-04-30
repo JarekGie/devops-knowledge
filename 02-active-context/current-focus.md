@@ -5,18 +5,35 @@
 ## Główny cel
 
 ```
-Przełączony kontekst roboczy: rshop Tag Policy remediation.
-Skupić się najpierw na odblokowaniu bezpiecznej granicy deployu CloudFormation:
-CFN-MUT-001 mutable nested TemplateURL powoduje ukrytą mutację VPCStack podczas app deploy.
-Mitigation wykonany w Jenkinsfiles BE dla dev:
+Przełączony kontekst roboczy: rshop.
+Stan vault zapisany 2026-04-30 po pracach shared vault / governance / Maspex.
+
+Główna oś rshop:
+  1. utrzymać bezpieczną granicę deployu CloudFormation,
+  2. nie wracać do root stack app deploy,
+  3. domknąć permanentną remediację CFN-MUT-001,
+  4. dopiero potem wrócić do ECS Tag Policy readiness.
+
+CFN-MUT-001:
+  mutable nested TemplateURL powoduje ukrytą mutację VPCStack podczas app deploy.
+  Mitigation wykonany w Jenkinsfiles BE dla dev:
   - dev targetuje dev-ECSStack-1BLAWHL0P6JKO zamiast root dev
   - dodany pre-execute change-set guard dla app-only scope
   - qa/uat bez zmiany zachowania
-Po usunięciu/obejściu tego ryzyka wrócić do CFN fix dla ECS PropagateTags /
-EnableECSManagedTags przed ponownym włączeniem Tag Policies LLZ.
-Wejście przez `40-runbooks/incidents/rshop-tag-policy-readiness.md` oraz
-`_chatgpt/context-packs/rshop-tag-policy.md`.
-Nowy wzorzec: `40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md`.
+
+Ostatnia awaria nocna:
+  - nie była powrotem CFN-MUT-001
+  - root dev nie został dotknięty
+  - VPCStack/SiecDB nie pojawiły się
+  - ECSStack-only rollback wynikał z ECS/application NotStabilized
+
+Wejście:
+  - `02-active-context/now.md`
+  - `40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md`
+  - `40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md`
+  - `40-runbooks/incidents/rshop-tag-policy-readiness.md`
+  - `_chatgpt/context-packs/rshop-tag-policy.md`
+
 Maspex zapisany i przesunięty do standby.
 ```
 
@@ -24,7 +41,7 @@ Maspex zapisany i przesunięty do standby.
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| rshop | aktywny | po nocnym ECSStack-only rollback sprawdzić app logs dla API 500/backoffice startup; nie wracać do root deploy; potem permanent fix nested `TemplateURL` i powrót do ECS PropagateTags CFN patch |
+| rshop | aktywny | sprawdzić app logs dla API 500/backoffice startup po ECSStack-only rollback; utrzymać zakaz root deploy; przygotować permanent fix nested `TemplateURL`; potem wrócić do ECS PropagateTags CFN patch |
 | maspex | standby | Load test report zapisany; Terraform observability/WAF patch przygotowany, ale nie apply; blokada: UAT remote state digest S3/DynamoDB wymaga kontrolowanej conditional korekty przed `terraform plan` |
 | puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
