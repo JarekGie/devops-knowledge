@@ -134,7 +134,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -307,8 +307,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "3af3e6bb94dbd437",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "20-projects/clients/mako/puzzler-b2b/context.md",
     "20-projects/clients/mako/pbms/context.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",
@@ -318,7 +319,6 @@
     "_chatgpt/context-packs/makolab-projects-vault-context.md",
     "README.md",
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
-    "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "40-runbooks/aws/cfn-alb-safe-tagging.md",
     "20-projects/clients/mako/planodkupow-finops-governance-audit-2026-04-25.md",
     "40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md",
