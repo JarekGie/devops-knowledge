@@ -1,6 +1,6 @@
 # ChatGPT Context Pack — devops-toolkit
 
-Data aktualizacji: 2026-04-30
+Data aktualizacji: 2026-04-30 (sesja wieczorna — FinOps hardening + AI boundary guard)
 
 Ten plik jest syntetycznym kontekstem do pracy z ChatGPT/Codex nad projektem
 `devops-toolkit`. Łączy informacje z vaulta `devops-knowledge` i z lokalnego repo
@@ -628,6 +628,53 @@ Twarde zasady:
 - `project.yaml` jest konfiguracją projektu i może być commitowany, ale bez sekretów
 - AWS credentials nie są przechowywane w toolkit
 
+### AI Boundary Guard (code-enforced od 2026-04-30)
+
+`toolkit/ai_boundary.py` zawiera enforcement na poziomie kodu (nie konwencji):
+
+```python
+ALLOWED_SUBDIRS = frozenset({"sanitized", "findings"})
+
+class BoundaryViolationError(RuntimeError):
+    """Raised when code attempts to pass raw or normalized data to AI."""
+
+def assert_ai_safe_path(path: Path) -> None:
+    # Uses Path.parts — exact path component, not substring match
+    parts = set(Path(path).parts)
+    if parts & ALLOWED_SUBDIRS:
+        return
+    raise BoundaryViolationError(...)
+```
+
+Guard jest podłączony do:
+- `engine/evaluate-rules.py` — `load_sanitized_findings`
+- `engine/rules-engine.py` — `load_sanitized_findings`
+- `toolkit/commands/finops_report.py` — `_read_latest_audit_findings`
+
+`BoundaryViolationError` musi być propagowany — nie może być tłumiony przez `except Exception: pass`.
+
+### CostRecord — canonical FinOps type (od 2026-04-30)
+
+`toolkit/finops/cost_record.py` to typowany bridge między legacy i modern pipeline:
+
+```python
+@dataclass
+class CostRecord:
+    service: str
+    usage_type: str
+    amount_usd: float
+    period: str
+    environment: str | None = None
+    tags: dict[str, str] = field(default_factory=dict)
+```
+
+Fabryki:
+- `from_legacy_summary(data, period)` — z formatu `cost-summary.json` (legacy `aws_cost_hotspots`)
+- `from_modern_service(services, period, environment)` — z formatu `cost_by_service` (modern pipeline)
+
+`normalize-cost.py` używa CostRecord wewnętrznie; JSON output (legacy schema) niezmieniony.
+`toolkit/finops/normalize.py` ma `to_cost_records()` przeliczający modern output → lista CostRecord.
+
 ## 10. Testy
 
 Repo ma rozbudowaną bazę testów:
@@ -736,8 +783,9 @@ Nie jest breaking change. v1 zostaje.
 
 Z vaulta `20-projects/internal/devops-toolkit/next-steps.md`:
 
-- cost normalization była oznaczona jako stub w starszym stanie
-- FinOps findings sanitization była oznaczona jako stub w starszym stanie
+- cost normalization — ZAIMPLEMENTOWANA (2026-04-17, PR #52)
+- FinOps findings sanitization — ZAIMPLEMENTOWANA (2026-04-17, PR #51)
+- CostRecord + AI boundary guard — ZAIMPLEMENTOWANE (2026-04-30, branch `feat/finops-hardening-ai-boundary`)
 - ALB scaffold fix: `alb_enable_https=false` + `alb_certificate_arn=null` z TODO
 - Terraform provider auto-detection ma edge cases
 - sprawdzić status `devops-toolkit-ui`

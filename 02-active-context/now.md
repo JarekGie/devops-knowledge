@@ -2,6 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-04-30 — devops-toolkit FinOps hardening + AI boundary guard
+
+```
+Stan:       BRANCH GOTOWY / CZEKA NA PR
+Branch:     feat/finops-hardening-ai-boundary
+Repo:       ~/projekty/devops/devops-toolkit
+
+CO ZROBIONO:
+  P0: CostRecord dataclass (toolkit/finops/cost_record.py)
+      - canonical typed model bridging legacy + modern FinOps pipeline
+      - from_legacy_summary() + from_modern_service() factory functions
+      - normalize-cost.py używa CostRecord wewnętrznie; JSON output niezmieniony
+      - toolkit/finops/normalize.py: dodano to_cost_records()
+  P1: AI boundary enforcement (toolkit/ai_boundary.py)
+      - BoundaryViolationError(RuntimeError) — enforcement, nie helper
+      - assert_ai_safe_path(path) — guard oparty na Path.parts
+      - whitelist: {"sanitized", "findings"} — kod zamiast konwencji
+      - guard podłączony do: evaluate-rules.py, rules-engine.py, finops_report.py
+  P2: [inspect]/[audit]/[apply] prefiksy w help= CLI (7 komend)
+  Testy: 175 nowych, 3451 pass, 9 fail pre-existing (test isolation na main)
+  make contract-check: PASS
+
+NASTĘPNY KROK:
+  1. Otworzyć PR: feat/finops-hardening-ai-boundary → main
+```
+
 ## Update — 2026-04-30 — Maspex /email/* CloudFront behavior ✓
 
 ```
@@ -1145,4 +1171,4 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-30 17:45 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-04-30 18:28 — sesja aktywna*

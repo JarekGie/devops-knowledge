@@ -174,6 +174,44 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-04-30 — FinOps hardening + AI boundary guard + CLI semantics (P0/P1/P2)
+
+**Co zrobiono:**
+- Branch: `feat/finops-hardening-ai-boundary`
+- **P0:** Canonical `CostRecord` dataclass (`toolkit/finops/cost_record.py`)
+  - `CostRecord(service, usage_type, amount_usd, period, environment, tags)` + `to_dict()`
+  - `from_legacy_summary()` i `from_modern_service()` — fabryki bridging oba pipeline'y
+  - `normalize-cost.py` używa CostRecord wewnętrznie; JSON output (legacy schema) niezmieniony
+  - `toolkit/finops/normalize.py` dostał `to_cost_records()` — przelicza modern output → lista CostRecord
+- **P1 (SECURITY):** AI boundary enforcement (`toolkit/ai_boundary.py`)
+  - `BoundaryViolationError(RuntimeError)` — propagowany, nie tłumiony
+  - `assert_ai_safe_path(path)` — guard oparty na `Path.parts`, whitelist: `{"sanitized", "findings"}`
+  - Guard podłączony do `engine/evaluate-rules.py`, `engine/rules-engine.py`, `toolkit/commands/finops_report.py`
+  - W `finops_report.py`: `except BoundaryViolationError: raise` przed `except Exception: pass` — nie tłumi enforcement
+- **P2:** Prefiksy `[inspect]`/`[audit]`/`[apply]` w `help=` CLI (tylko metadata, bez zmian logiki)
+- Testy: 175 nowych, łącznie 3451 pass, 9 fail (pre-existing na main — test isolation issue)
+- `make contract-check` PASS
+
+**8 commitów:**
+- `48f7d04` feat(finops): add CostRecord dataclass with factory functions
+- `3ded0e1` fix(finops): to_dict() returns tags copy, guard None top_services
+- `79f1105` refactor(finops): use CostRecord internally in legacy normalize-cost.py
+- `465173e` fix(finops): fix misleading comment and guard sys.path insert in normalize-cost
+- `bfd6a38` feat(finops): add to_cost_records() conversion helper
+- `2865aa2` feat(security): add AI boundary guard with BoundaryViolationError
+- `b73a44b` feat(security): wire AI boundary guard to findings read call-sites
+- `a3dd513` feat(cli): add semantic intent prefixes [inspect][audit][apply] to commands
+
+**Stan na koniec sesji:**
+- Branch gotowy do PR
+- AI boundary code-enforced (nie tylko konwencja)
+- CostRecord canonical typed model bridging legacy + modern FinOps pipeline
+
+**Następna sesja:**
+- Otworzyć PR: `feat/finops-hardening-ai-boundary` → main
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]
