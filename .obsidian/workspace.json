@@ -120,7 +120,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -293,7 +293,7 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "113cf89c634ea23e",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/pbms/context.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",

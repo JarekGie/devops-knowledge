@@ -93,6 +93,34 @@ Najmocniejszy trop z kodu:
 
 **Status:** [x] resolved — IaC gotowe; BLOCKER: zastąp `nginx:latest` docelowym URI ECR po zbudowaniu obrazów
 
+## 2026-04-30 — SSH tunnel dev: "administratively prohibited" / AllowTcpForwarding
+
+**Symptom:** Dev (michal.grzywacz) nie może otworzyć tunelu SSH do DocumentDB przez jumphost.
+Sekwencja błędów:
+1. `Load key "kluczMongo2": invalid format` — klucz miał Windows CRLF line endings
+2. `Permission denied (publickey)` — po naprawie klucza: brak klucza deva w authorized_keys
+3. `channel 2: open failed: administratively prohibited` — klucz OK, ale TCP forwarding wyłączone
+
+**Root cause:**
+- Alpine's domyślny `/etc/ssh/sshd_config` ma `AllowTcpForwarding no`
+- Dockerfile dołączał `echo "AllowTcpForwarding yes"` na końcu pliku — ignorowane, bo sshd bierze **pierwsze** wystąpienie dyrektywy
+- Klucz publiczny deva nie był w Secrets Manager (`jumphost_authorized_keys`)
+
+**Fix — trzy zmiany w `infra-puzzler-b2b-final`:**
+1. **Dockerfile** — zamiana `echo "AllowTcpForwarding yes" >>` na `sed -i 's/AllowTcpForwarding no/AllowTcpForwarding yes/'`
+2. **`authorized_keys`** — dodany klucz deva: `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIObTg8+N9LKADSloxkkhitNbWaTGm4aCQGlUrks482EA makolab-net\michal.grzywacz@s004411`
+3. **`envs/dev/terraform.tfvars`** — `jumphost_authorized_keys` zaktualizowane (heredoc z oboma kluczami), tag obrazu `jumphost-v7`
+
+**Deployment:**
+- ECR: `698220459519.dkr.ecr.eu-west-2.amazonaws.com/infra-puzzler-b2b-app-dev:jumphost-v7`
+- `terraform apply` — 1 added, 1 changed, 1 destroyed
+- Jumphost IP: `18.175.150.59` (niezmienione)
+
+**Uwaga — naprawa klucza deva (CRLF):**
+Windows SSH key z CRLF: `(Get-Content key -Raw) -replace "\`r\`n","\`n"` i zapisać przez `[System.IO.File]::WriteAllText()` (nie `Set-Content` — domyślnie UTF-16LE na PS5).
+
+**Status:** [x] resolved — jumphost-v7 wdrożony 2026-04-30
+
 <!-- nowy wpis: -->
 <!-- ## YYYY-MM-DD — [symptom] -->
 <!-- **Symptom:** -->
