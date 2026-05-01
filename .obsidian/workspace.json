@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Create ChatGPT context for vault system"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge/scripts"
             }
           }
         ]
@@ -235,6 +235,12 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "50-patterns/prompts/invocations/cloud-detective-planodkupow.md",
+    "scripts/new-cloud-detective-invocation.sh",
+    "50-patterns/prompts/invocations/cloud-detective-rshop.md",
+    "50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md",
+    "50-patterns/prompts/invocations/templates",
+    "50-patterns/prompts/invocations",
     "_system/TEMPLATES/chatgpt-context-template.md",
     "50-patterns/prompts/starter-pack/templater-config.md",
     "50-patterns/prompts/Bez nazwy.md",
@@ -261,16 +267,10 @@
     "50-patterns/migration-patterns.md",
     "50-patterns/prompts/starter-pack/aws-security-quick-check.md",
     "50-patterns/prompts/starter-pack/toolkit-audit-analysis.md",
-    "50-patterns/prompts/starter-pack/terraform-safe-review.md",
-    "50-patterns/prompts/starter-pack/finops-tagging-gap.md",
-    "50-patterns/prompts/starter-pack/ecs-alb-debug.md",
     "50-patterns/prompts/starter-pack",
     "50-patterns/prompts/TEMPLATES",
     "50-patterns/prompts",
     "20-projects/clients/TEMPLATES",
-    "20-projects/clients/mako/planodkupow",
-    "20-projects/clients/mako/rshop",
-    "docs/superpowers/plans",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

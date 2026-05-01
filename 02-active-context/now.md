@@ -2,6 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — prompt library: cloud-detective template/invocation system ✓
+
+```
+CO ZROBIONO:
+  - cloud-detective-v2.md → generyczny template (bez hardcoded projektu)
+  - system parametrów: CLIENT, PROJECT, AWS_PROFILE, REPO_PATH, REGIONS, SAVE_PATH
+  - guardrail: pliki invocation są manifestami parametrów, nie instrukcjami
+  - nowe: 50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md
+  - nowe: 50-patterns/prompts/invocations/cloud-detective-rshop.md
+  - nowe: scripts/new-cloud-detective-invocation.sh (generator)
+  - zaktualizowano: 50-patterns/prompts/README.md
+
+JAK UŻYĆ DLA NOWEGO PROJEKTU:
+  scripts/new-cloud-detective-invocation.sh \
+    --client mako --project <PROJEKT> --aws-profile <PROFIL> \
+    --repo-path ~/projekty/mako/aws-projects/infra-<PROJEKT> \
+    --regions eu-central-1
+
+JAK URUCHOMIĆ W CLAUDE:
+  "Użyj @50-patterns/prompts/invocations/cloud-detective-<PROJEKT>.md
+   jako manifestu parametrów i wykonaj prompt_template."
+```
+
 ## Update — 2026-05-01 — maspex cloud-detective v2 scan ✓
 
 ```
@@ -1381,4 +1404,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 14:53 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 15:06 — sesja aktywna*
