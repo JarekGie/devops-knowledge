@@ -1597,4 +1597,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 21:52 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 21:54 — sesja aktywna*

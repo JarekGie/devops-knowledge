@@ -90,6 +90,20 @@
               "icon": "terminal",
               "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
+          },
+          {
+            "id": "621753f84a715bc6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "aws-cloud-platform-context"
+            }
           }
         ]
       }
@@ -148,8 +162,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5,
-    "collapsed": true
+    "width": 415.5
   },
   "right": {
     "id": "689956fbc2be7514",
