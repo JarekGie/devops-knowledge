@@ -46,7 +46,7 @@ Klient / domena: `client-work`
 AWS profile: `rshop`  
 Account ID: `<UZUPEŁNIJ albo wykryj przez sts get-caller-identity>`  
 Regiony do sprawdzenia: `eu-west-1`  
-Repozytorium lokalne: `<UZUPEŁNIJ>`  
+Repozytorium lokalne: `~/projekty/mako/aws-projects/infra-maspex/` 
 IaC: `<Terraform / CloudFormation / mixed / unknown>`
 
 # Tryb pracy
@@ -152,13 +152,13 @@ Zakazane:
 
 Najpierw sprawdź, czy istnieje notatka projektu w:
 
-`20-projects/clients/<klient>/<projekt>/`
+`20-projects/clients/maspex/`
 
 Jeśli istnieje — zaktualizuj ją.
 
 Jeśli nie istnieje — utwórz:
 
-`20-projects/clients/<klient>/<projekt>/<projekt>-context.md`
+`20-projects/clients/maspex/maspex-context.md`
 
 Nie twórz duplikatów.
 

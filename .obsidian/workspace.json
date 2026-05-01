@@ -133,8 +133,7 @@
               "title": "cloude-detective"
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "vertical"
@@ -292,11 +291,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "50-patterns/prompts/starter-pack/cloude-detective.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla cloude-detective"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -320,10 +317,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "d61ba6357fb01211",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "20-projects/clients/mako/puzzler-b2b/context.md",
     "50-patterns/prompts/starter-pack/cloude-detective.md",
+    "20-projects/clients/mako/puzzler-b2b/context.md",
     "templates/frontmatter/client_context.md",
     "20-projects/clients/mako/planodkupow/Bez nazwy.md",
     "20-projects/clients/mako/planodkupow/#.md",
