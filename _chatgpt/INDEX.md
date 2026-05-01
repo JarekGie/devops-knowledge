@@ -15,6 +15,7 @@
 | `context-packs/planodkupow-ops-context-2026-04-24.md` | planodkupow operations | 2026-04-24 | Runbooki, RCA, RabbitMQ, CFN recovery, tagging/FinOps, decyzje architektoniczne |
 | `context-packs/rshop-tag-policy.md` | rshop Tag Policy | 2026-04-24 | TagPolicyViolation incydent, stan audytu CFN, plan remediacji, FinOps backlog |
 | `context-packs/makolab-projects-vault-context.md` | MakoLab projects + vault governance | 2026-04-29 | Zbiorczy kontekst dla ChatGPT: rshop, planodkupow, puzzler-b2b, maspex oraz kontrakty vault/agentów |
+| `context-packs/vault-llm-governance.md` | Vault governance + kontrakty LLM | 2026-05-01 | Budowa vault, zasady notatek, kontrakty agentów, cost-aware routing, granice domenowe — standalone, bez treści klientowskich |
 
 ## Podsumowania rozmów (`conversations/`)
 

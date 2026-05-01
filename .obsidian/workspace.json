@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: claude"
+              "title": "Terminal: ✳ Create ChatGPT context for vault system"
             }
           },
           {
@@ -237,8 +237,9 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/vault-llm-governance.md",
     "_system/TEMPLATES/chatgpt-context-template.md",
     "_system/BOUNDARY_REVIEW_REPORT.md",
     "20-projects/clients/mako/puzzler-b2b/context.md",
@@ -274,7 +275,6 @@
     "README.md",
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "40-runbooks/aws/cfn-alb-safe-tagging.md",
-    "40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
