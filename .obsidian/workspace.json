@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Update cloud detective invocation script with interactive mode"
+              "title": "Terminal: ✳ Update cloud detective invocation script with interactive mode"
             }
           },
           {
@@ -160,8 +160,23 @@
               "icon": "lucide-file",
               "title": "rshop-tagging-baseline-2026-04-24"
             }
+          },
+          {
+            "id": "744a41ef97528a15",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20-projects/clients/mako/rshop/rshop-context.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "rshop-context"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -218,8 +233,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5,
-    "collapsed": true
+    "width": 415.5
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -320,9 +334,11 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {},
+              "state": {
+                "file": "20-projects/clients/mako/rshop/rshop-context.md"
+              },
               "icon": "lucide-info",
-              "title": "Atrybuty"
+              "title": "Atrybuty dla rshop-context"
             }
           }
         ],
@@ -347,7 +363,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "744a41ef97528a15",
   "lastOpenFiles": [
     "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/rshop/rshop-context.md",

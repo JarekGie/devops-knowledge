@@ -2,6 +2,39 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — rshop cloud-detective snapshot v2 (re-scan) ✓
+
+```
+Projekt:    rshop (mako), account 943111679945, eu-central-1 + us-east-1 (ACM)
+Akcja:      cloud-detective v2 re-scan (pełny — nowy szablon z WAF/FinOps/LLZ/ACM)
+Wynik:      20-projects/clients/mako/rshop/rshop-context.md (zaktualizowany)
+
+POZIOM PEWNOŚCI: częściowa
+  - runtime prod/dev/akcesoria2: w pełni potwierdzony live AWS
+  - ALB listener rules, ECR/log group tagi, SSM: niezweryfikowane
+
+NOWE USTALENIA (vs poprzedni snapshot):
+  ⚠️  Cert *.skleprenault.pl wygasa za 12 dni (2026-05-13) — ELIGIBLE do auto-renewal
+  ⚠️  Cert dev.eshoprenault.lt EXPIRED us-east-1 (InUse=False — bezpieczny, do usunięcia)
+  ⚠️  0 WAF ACLs — brak WAF zarówno REGIONAL jak i CLOUDFRONT
+  ✅  Tagging prod: pełne LLZ tags (Owner/ManagedBy/CostCenter) ✅
+  ⚠️  Tagging dev CFN stacks: brak Owner/ManagedBy/CostCenter
+  ✅  ECS tag propagation: propagateTags=SERVICE potwierdzone
+  ✅  Wszystkie serwisy ECS (10/10): desired=running=1 — produkcja ZDROWA
+
+KORYGOWANE (vs poprzedni snapshot):
+  - dev stack rollback → reklasyfikacja CRITICAL → WYSOKI (rollback zakończony, nie blokada)
+  - 0 CloudWatch alarms → reklasyfikacja CRITICAL → WYSOKI (brak alarmów, nie aktywna awaria)
+  - ACM certs: teraz potwierdzono live (us-east-1), 5 certów, 1 EXPIRED
+
+NASTĘPNY KROK:
+  - Monitorować auto-renewal cert *.skleprenault.pl (deadline: 2026-05-13)
+  - Naprawić IAM jenkinsit: dodać rds:ModifyDBSubnetGroup
+  - Wdrożyć AWS WAF
+```
+
+---
+
 ## Update — 2026-05-01 — rshop cloud-detective snapshot ✓
 
 ```
@@ -1442,4 +1475,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 19:40 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 19:53 — sesja aktywna*
