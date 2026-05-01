@@ -161,8 +161,7 @@
               "title": "maspex-context"
             }
           }
-        ],
-        "currentTab": 8
+        ]
       }
     ],
     "direction": "vertical"
@@ -320,11 +319,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "20-projects/clients/maspex/maspex-context.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla maspex-context"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -348,7 +345,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "cad82aa75c99d2c4",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/maspex/maspex-context.md",
     "20-projects/clients/maspex",
