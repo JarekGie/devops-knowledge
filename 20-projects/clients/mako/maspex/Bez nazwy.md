@@ -1,5 +1,5 @@
 ---  
-title: <% tp.file.title %>  
+title: Bez nazwy  
 domain: client-work  
 use_case:  
 llm_target: any  
@@ -10,7 +10,7 @@ aws_mgm_provile: mako-dc
 repozytorium:  
 region: eu-central-1  
 environment: dev  
-tags: [prompt]
-created: <% tp.date.now("YYYY-MM-DD") %>
-updated: <% tp.date.now("YYYY-MM-DD") %>
+tags: [prompt]  
+created: 2026-05-01  
+updated: 2026-05-01  
 ---
