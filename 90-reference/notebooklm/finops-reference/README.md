@@ -7,7 +7,7 @@ Integruje istniejace zrodla:
 - [[70-finops/README]]
 - [[70-finops/reference-projects]]
 - [[70-finops/optimization-log]]
-- [[20-projects/clients/mako/finops-rshop]]
+- [[finops-rshop]]
 
 Zobacz:
 

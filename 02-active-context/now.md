@@ -1303,4 +1303,60 @@ RabbitMQ: template drift naprawiony minimalnie na child stacku; nie wracać do 3
 
 ---
 
-*Ostatnia aktualizacja: 2026-04-30 21:55 — sesja aktywna*
+## Gdzie skończyłem — rshop FinOps forensic
+
+```
+Aktywny projekt: rshop FinOps / tagging forensic
+Repo projektu:    /Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop
+Audit dir:        .devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/
+Account rshop:    943111679945
+Region:           eu-central-1
+Profile runtime:  rshop
+Profile billing:  mako-dc
+Mgmt account:     864277686382
+Okres:            2026-04-01 → 2026-05-01
+Boundary:         READ-ONLY ONLY
+```
+
+Najważniejszy wynik:
+- Classic CUR nie istnieje (`ReportDefinitions: []`), ale istnieje AWS BCM Data Export `test`
+- Export file: `s3://testdataexportjanmarchel/test/test/data/BILLING_PERIOD=2026-04/test-00001.csv.gz`
+- Local copy: `/tmp/rshop-cur-2026-04.csv.gz`
+- Nie użyto Athena i nie wykonano żadnych write operations w AWS
+
+Data Export forensic:
+- `TAGGED_IN_CUR`: `$488.287400` / 50.46%
+- `UNTAGGED_RESOURCE_IN_CUR`: `$257.860038` / 26.65%
+- `BILLING_ARTIFACT`: `$180.960000` / 18.70%
+- `NO_RESOURCE_ID`: `$40.517868` / 4.19%
+
+Runtime join top 100 `UNTAGGED_RESOURCE_IN_CUR`:
+- Scope: `$249.677894`
+- `A_live_tagged_billing_untagged`: `$61.776000` / 3 zasoby
+- `B_live_untagged`: `$13.969005` / 10 zasobów
+- `C_historical_or_ephemeral`: `$169.936491` / 83 zasoby
+- `D_no_runtime_lookup_possible`: `$3.996398` / 4 zasoby
+
+Werdykt:
+- Wysoki `Environment absent` to nie tylko aktualnie nietagowane zasoby
+- Duży udział mają billing artifacts, historyczne/ephemeral resource IDs oraz timing/propagation billing tags
+- Faktycznie live-untagged w top100 to mniejsza część: głównie jumphost ECS taski i część ENI/PublicIPv4
+- Trzy VPC endpoints teraz mają `Environment=dev`, ale billing line item nie miał Environment
+
+Artefakty:
+```
+/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop/.devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/data-export-cur-forensic-report.md
+/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop/.devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/normalized/data-export-cur-forensic-summary.json
+/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop/.devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/normalized/data-export-untagged-resource-ids.json
+/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop/.devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/normalized/data-export-runtime-join-summary.json
+/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop/.devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/data-export-runtime-join-report.md
+```
+
+Następne możliwe kroki read-only:
+- Rozszerzyć join z top100 na wszystkie `UNTAGGED_RESOURCE_IN_CUR`
+- Sprawdzić CloudTrail tag events/deployment history dla przypadków `A_live_tagged_billing_untagged`
+- Rozbić ECS task line items po timestampach/deploymentach, bez aktualizacji service
+
+---
+
+*Ostatnia aktualizacja: 2026-05-01 10:11 CEST — stan zapisany*

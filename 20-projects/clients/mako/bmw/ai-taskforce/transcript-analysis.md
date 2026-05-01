@@ -14,7 +14,7 @@ updated: 2026-04-24
 
 > Notatki i wnioski z analizy nagrań lub transkryptów spotkań BMW.
 > Nie przechowuj tutaj pełnych transkryptów — tylko analizy i kluczowe obserwacje.
-> Każdy wniosek który chcesz przenieść do innej domeny MUST przejść przez [[../../../../_system/DERIVATIVE_INSIGHT_RULES|Derived Insight Rules]].
+> Każdy wniosek który chcesz przenieść do innej domeny MUST przejść przez [[DERIVATIVE_INSIGHT_RULES|Derived Insight Rules]].
 
 ---
 

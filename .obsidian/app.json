@@ -1,4 +1,5 @@
 {
   "promptDelete": false,
-  "communityPlugins": true
+  "communityPlugins": true,
+  "alwaysUpdateLinks": true
 }

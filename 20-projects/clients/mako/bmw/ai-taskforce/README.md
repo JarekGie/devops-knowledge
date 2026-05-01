@@ -15,9 +15,9 @@ updated: 2026-04-24
 > [!warning] Granica domeny
 > Wszystkie materiały w tym folderze są klasyfikowane jako `client-work / confidential`.
 > MUST NOT być łączone z materiałami MakoLab (`internal-product-strategy`) ani prywatnymi projektami (`private-rnd`) w jednej sesji LLM.
-> MUST NOT być kopiowane do innych folderów vault bez jawnej anonimizacji zgodnie z [[../../../../_system/DERIVATIVE_INSIGHT_RULES|Derivative Insight Rules]].
+> MUST NOT być kopiowane do innych folderów vault bez jawnej anonimizacji zgodnie z [[DERIVATIVE_INSIGHT_RULES|Derivative Insight Rules]].
 
-Powiązane kontrakty bezpieczeństwa: [[../../../../_system/DOMAIN_ISOLATION_CONTRACT|Domain Isolation Contract]] | [[client-boundaries]]
+Powiązane kontrakty bezpieczeństwa: [[DOMAIN_ISOLATION_CONTRACT|Domain Isolation Contract]] | [[client-boundaries]]
 
 ---
 
@@ -37,12 +37,12 @@ Powiązane kontrakty bezpieczeństwa: [[../../../../_system/DOMAIN_ISOLATION_CON
 
 | Plik | Zawartość |
 |------|-----------|
-| [[LLM_CONTEXT]] | Kontekst do sesji LLM dotyczących BMW |
+| [[20-projects/clients/mako/bmw/ai-taskforce/LLM_CONTEXT]] | Kontekst do sesji LLM dotyczących BMW |
 | [[materials-index]] | Indeks materiałów otrzymanych od klienta |
 | [[meeting-notes]] | Notatki ze spotkań |
 | [[transcript-analysis]] | Analiza transkryptów |
 | [[presentation-analysis]] | Analiza prezentacji i dokumentów BMW |
-| [[open-questions]] | Pytania otwarte do klienta |
+| [[20-projects/clients/mako/bmw/ai-taskforce/open-questions]] | Pytania otwarte do klienta |
 | [[client-boundaries]] | Kontrakt granicy danych dla tego klienta |
 
 ---
@@ -64,4 +64,4 @@ Powiązane kontrakty bezpieczeństwa: [[../../../../_system/DOMAIN_ISOLATION_CON
 1. Każda sesja LLM z materiałami BMW MUST używać tylko materiałów BMW + `shared-concept`.
 2. Wnioski z analizy MUST pozostać w tej przestrzeni lub przejść przez procedurę derived insight.
 3. Materiały dostarczone przez BMW MUST mieć `source_of_truth: client-material`.
-4. Przed każdą sesją LLM: wypełnij [[../../../../_system/PROMPT_BOUNDARY_CHECKLIST|Prompt Boundary Checklist]].
+4. Przed każdą sesją LLM: wypełnij [[PROMPT_BOUNDARY_CHECKLIST|Prompt Boundary Checklist]].

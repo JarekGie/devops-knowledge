@@ -182,7 +182,7 @@ Projekty audytowane:
 
 ## Powiązane
 
-- [[session-log]] — historia sesji
+- [[20-projects/internal/llz/session-log]] — historia sesji
 - [[progress-tracker]] — stan onboardingu projektów
 - `60-toolkit/llz-audit.md` — scaffold conformance (szczegóły reguł A/B/C)
 - `60-toolkit/observability-ready.md` — observability readiness (szczegóły)

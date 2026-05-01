@@ -41,7 +41,7 @@ updated: 2026-04-24
 
 ## Co MAY być eksportowane jako derived insight
 
-Po przejściu przez procedurę [[../../../../_system/DERIVATIVE_INSIGHT_RULES|Derived Insight Rules]]:
+Po przejściu przez procedurę [[DERIVATIVE_INSIGHT_RULES|Derived Insight Rules]]:
 
 - Ogólne wzorce organizacyjne (bez identyfikacji BMW)
 - Statystyki uogólnione (bez konkretnych wartości)
@@ -70,7 +70,7 @@ Po przejściu przez procedurę [[../../../../_system/DERIVATIVE_INSIGHT_RULES|De
 > - `60-toolkit/` ani `30-research/ai4devops/` jako własne hipotezy,
 > - `_chatgpt/context-packs/` w mieszanym kontekście.
 >
-> Jedyna dopuszczalna ścieżka: anonimizacja + generalizacja + jawne oznaczenie `derived insight` zgodnie z [[../../../../_system/DERIVATIVE_INSIGHT_RULES|Derived Insight Rules]].
+> Jedyna dopuszczalna ścieżka: anonimizacja + generalizacja + jawne oznaczenie `derived insight` zgodnie z [[DERIVATIVE_INSIGHT_RULES|Derived Insight Rules]].
 
 ---
 

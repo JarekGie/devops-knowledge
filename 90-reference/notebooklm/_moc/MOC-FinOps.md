@@ -6,7 +6,7 @@
 - [[70-finops/reference-projects]]
 - [[70-finops/optimization-log]]
 - [[70-finops/savings-ideas]]
-- [[20-projects/clients/mako/finops-rshop]]
+- [[finops-rshop]]
 
 ## Notebook workspace
 

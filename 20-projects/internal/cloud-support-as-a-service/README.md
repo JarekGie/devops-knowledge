@@ -32,7 +32,7 @@ Powiązane kontrakty: [[../../../_system/DOMAIN_ISOLATION_CONTRACT|Domain Isolat
 
 | Plik | Zawartość |
 |------|-----------|
-| [[LLM_CONTEXT]] | Kontekst LLM dla sesji strategicznych |
+| [[20-projects/internal/cloud-support-as-a-service/LLM_CONTEXT]] | Kontekst LLM dla sesji strategicznych |
 | [[service-vision]] | Wizja usługi, propozycja wartości |
 | [[operating-model]] | Model operacyjny — kto, co, jak |
 | [[ai4devops-opportunities]] | Szanse AI w kontekście tej usługi |

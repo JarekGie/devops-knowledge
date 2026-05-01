@@ -46,35 +46,21 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: claude"
             }
           },
           {
-            "id": "f6a0708be84c4de2",
+            "id": "1c3acdb3dff451d0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
+                "file": "_system/TEMPLATES/chatgpt-context-template.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "rshop-finops-2026-04.report"
-            }
-          },
-          {
-            "id": "ec57d5983f4eb88d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "rshop-finops-2026-04.report"
+              "title": "chatgpt-context-template"
             }
           }
         ]
@@ -253,7 +239,21 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "_system/TEMPLATES/chatgpt-context-template.md",
+    "_system/BOUNDARY_REVIEW_REPORT.md",
+    "20-projects/clients/mako/puzzler-b2b/context.md",
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.report.md",
+    "20-projects/clients/mako/planodkupow/planodkupow-ce-audit-2026-04-26.md",
+    "20-projects/clients/TEMPLATES",
+    "20-projects/clients/mako/planodkupow/#.md",
+    "20-projects/clients/mako/planodkupow/planodkupow-runtime-verification-2026-04-26.md",
+    "20-projects/clients/mako/planodkupow/planodkupow-qa-tagging-audit-2026-04-25.md",
+    "20-projects/clients/mako/planodkupow/planodkupow-orphan-network-investigation-2026-04-24.md",
+    "20-projects/clients/mako/planodkupow/planodkupow-finops-governance-audit-2026-04-25.md",
+    "20-projects/clients/mako/planodkupow",
+    "20-projects/clients/mako/rshop/finops-rshop.md",
+    "20-projects/clients/mako/rshop/vpc-endpoints-tagging-audit-2026-04-24.md",
+    "20-projects/clients/mako/rshop",
     "docs/superpowers/plans/2026-04-30-finops-reporting-contract.md",
     "docs/superpowers/plans",
     "60-toolkit/contracts/finops-reporting-contract.md",
@@ -264,13 +264,8 @@
     "artifacts/rshop-finops-2026-04/rshop-finops-2026-04.model.json",
     "artifacts/rshop-finops-2026-04/ce-trend-daily.json",
     "artifacts/rshop-finops-2026-04/ce-by-service.json",
-    "artifacts/rshop-finops-2026-04/ce-previous-month-total.json",
-    "artifacts/rshop-finops-2026-04/ce-untagged-by-service.json",
-    "artifacts/rshop-finops-2026-04/ce-untagged-by-usage-type.json",
     "_chatgpt/context-packs/devops-toolkit.md",
     "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
-    "20-projects/clients/mako/pbms/context.md",
-    "20-projects/clients/mako/puzzler-b2b/context.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",
     "100-ai-cost-optimization/prompts/01-rollout-ai-cost-aware-contract.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-29-1300-cest.md",
@@ -279,16 +274,7 @@
     "README.md",
     "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
     "40-runbooks/aws/cfn-alb-safe-tagging.md",
-    "20-projects/clients/mako/planodkupow-finops-governance-audit-2026-04-25.md",
     "40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md",
-    "10-areas/private/Subskrypcje.md",
-    "40-runbooks/planodkupow-rabbitmq-cfn-refactor.md",
-    "40-runbooks/incidents/planodkupow-qa-cfn-sg-incident-2026-04-27.md",
-    "10-areas/private/Domeny.md",
-    "40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md",
-    "40-runbooks/incidents/planodkupow-remediation-runbook-2026-04-26.md",
-    "_chatgpt/context-packs/maspex.md",
-    "01-inbox/LLM_CONTEXT.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

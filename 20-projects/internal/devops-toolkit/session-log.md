@@ -246,6 +246,65 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-01 — rshop FinOps forensic: Data Export + runtime join read-only
+
+**Co zrobiono:**
+- Projekt: `/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop`
+- Account rshop: `943111679945`, region `eu-central-1`, profile `rshop`
+- Billing/management profile: `mako-dc`, account `864277686382`
+- Klasyczny CUR nie istnieje: `aws cur describe-report-definitions --profile mako-dc --region us-east-1` zwrócił `ReportDefinitions: []`
+- Znaleziono nowszy AWS BCM Data Export:
+  - Export: `test`
+  - ARN: `arn:aws:bcm-data-exports:us-east-1:864277686382:export/test-6deef56f-73db-49d9-926f-3c57ea271ffd`
+  - Status: `HEALTHY`
+  - LastRefreshedAt: `2026-04-30T19:04:34Z`
+  - Destination: `s3://testdataexportjanmarchel/test/test/data/BILLING_PERIOD=2026-04/test-00001.csv.gz`
+  - Format: `TEXT_OR_CSV`, `GZIP`
+  - `INCLUDE_RESOURCES=TRUE`, `TIME_GRANULARITY=MONTHLY`
+- Odczytano istniejący export read-only do `/tmp/rshop-cur-2026-04.csv.gz`; nie tworzono exportu, nie uruchamiano Athena, nie modyfikowano S3/Glue/tagów/AWS resources
+- Data Export ma wymagane kolumny line item (`line_item_resource_id`, `line_item_usage_type`, `line_item_product_code`, `line_item_unblended_cost`, `line_item_usage_account_id`, `line_item_usage_start_date`, `line_item_line_item_type`) oraz zbiorczą kolumnę JSON `resource_tags`; nie ma osobnych kolumn `resource_tags_user_environment/project`
+- Forensic Data Export dla rshop April 2026:
+  - `TAGGED_IN_CUR`: `$488.287400` / 50.46%
+  - `UNTAGGED_RESOURCE_IN_CUR`: `$257.860038` / 26.65%
+  - `BILLING_ARTIFACT`: `$180.960000` / 18.70%
+  - `NO_RESOURCE_ID`: `$40.517868` / 4.19%
+- Focus:
+  - Fargate/ECS: `$263.345090` total; `$109.077232` untagged resource in CUR; `$105.317858` tagged; `$48.95` tax
+  - VPC/PublicIPv4/VpcEndpoint: `$217.012576`; `$107.552401` untagged resource in CUR; `$109.460175` tagged
+  - CloudWatch: `$82.474224`; `$36.744759` untagged resource; `$25.044927` no resource id; `$15.43` tax; `$5.254538` tagged
+  - Tax: `$180.96`, expected billing artifact without `resource_id`
+- Wykonano read-only join top 100 `UNTAGGED_RESOURCE_IN_CUR` z live runtime tags:
+  - Zakres top 100: `$249.677894`
+  - `A_live_tagged_billing_untagged`: `$61.776000` / 24.74% / 3 zasoby
+  - `B_live_untagged`: `$13.969005` / 5.59% / 10 zasobów
+  - `C_historical_or_ephemeral`: `$169.936491` / 68.06% / 83 zasoby
+  - `D_no_runtime_lookup_possible`: `$3.996398` / 1.60% / 4 zasoby
+- Najważniejsze ustalenia:
+  - `rshop-prod-alb-heartbeat` Synthetics canary: `$36.56`, runtime `not_found` → historical/ephemeral
+  - VPC endpoints `vpce-055c1e81bc384fe77`, `vpce-04a529e00f650ba57`, `vpce-0adbca724b31df149`: razem `$61.776`, teraz istnieją i mają `Environment=dev`, ale Data Export line item nie miał Environment
+  - ECS/Fargate: `$97.469897` historyczne task ARN już niewidoczne runtime; `$6.914270` istniejące taski bez `Environment`, głównie jumphost dev/prod
+  - ENI/PublicIPv4: `$35.906594` ENI historyczne/not_found; `$7.054735` ENI live bez `Environment`
+
+**Artefakty:**
+- Base audit dir: `/Users/jaroslaw.golab/projekty/mako/aws-projects/infra-rshop/.devops-toolkit/manual-audits/finops-tagging-live-20260430-212856/`
+- Data Export report: `data-export-cur-forensic-report.md`
+- Data Export summary: `normalized/data-export-cur-forensic-summary.json`
+- Top 100 untagged IDs: `normalized/data-export-untagged-resource-ids.json`
+- Runtime join summary: `normalized/data-export-runtime-join-summary.json`
+- Runtime join report: `data-export-runtime-join-report.md`
+- Local source copy: `/tmp/rshop-cur-2026-04.csv.gz`
+
+**Stan na koniec sesji:**
+- Audyt zachował read-only boundary: żadnych zmian w AWS, żadnego tworzenia CUR/Data Export/Athena/S3/Glue, żadnego tagowania
+- Werdykt: wysoki `Environment absent` w CE/Data Export to mieszanka billing artifacts, historycznych/ephemeral resource IDs, line itemów bez runtime mapping oraz mniejszej liczby faktycznie live-untagged zasobów; CE "untagged" nie jest równoważne prostemu brakowi tagów na aktualnych zasobach runtime
+
+**Następna sesja:**
+- Jeśli potrzebny jest pełny coverage: rozszerzyć join z top 100 na wszystkie `UNTAGGED_RESOURCE_IN_CUR`
+- Opcjonalnie read-only: porównać przypadki `A_live_tagged_billing_untagged` z CloudTrail tag events/deployment history, jeśli logi są dostępne bez zmian
+- Opcjonalnie read-only: rozbić ECS task line items po timestampach/deploymentach, bez aktualizacji service
+
+---
+
 <!-- Template kolejnej sesji:
 
 ## YYYY-MM-DD — [opis zadania]

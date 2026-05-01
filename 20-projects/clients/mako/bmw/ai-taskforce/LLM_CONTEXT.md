@@ -43,14 +43,14 @@ Jarosław Gołąb, senior DevOps/SRE, MakoLab. Pracuję z BMW w ramach projektu 
 
 ## Pytania otwarte
 
-→ [[open-questions]]
+→ [[20-projects/clients/mako/bmw/ai-taskforce/open-questions]]
 
 ## Jak używać tego kontekstu
 
 1. Ładuj razem z materiałami BMW (z [[materials-index]]) i wzorcami z `30-research/ai4devops/`.
 2. NIE ładuj razem z kontekstem MakoLab ani devops-toolkit.
 3. Wyniki sesji zapisuj w tej przestrzeni — nie w globalnym vault.
-4. Przed sesją: [[../../../../_system/PROMPT_BOUNDARY_CHECKLIST|Prompt Boundary Checklist]].
+4. Przed sesją: [[PROMPT_BOUNDARY_CHECKLIST|Prompt Boundary Checklist]].
 
 ## Granice
 

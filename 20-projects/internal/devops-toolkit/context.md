@@ -111,4 +111,4 @@ Python 3.10+ wymagany. Resolver kolejność: `.venv` → `$VIRTUAL_ENV` → `pyt
 | `collectors/registry.yaml` | Rejestr collectorów |
 | `toolkit/plugins/` | Pluginy: finops_billing_gap, aws_logging_audit, llz_scaffold_conformance |
 
-→ [[decisions]] | [[next-steps]] | [[links]] | [[session-log]]
+→ [[decisions]] | [[next-steps]] | [[links]] | [[20-projects/internal/devops-toolkit/session-log]]
