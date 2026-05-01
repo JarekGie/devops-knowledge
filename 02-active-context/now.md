@@ -2,6 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — cloud-detective IAM cross-account module — DEPLOYED ✓
+
+```
+Projekt:    aws-cloud-platform (mako), management 864277686382, org o-5c4d5k6io1
+Akcja:      Terraform module security/cloud-detective/ — wdrożony i przetestowany
+Wynik:      25 zasobów IAM wdrożonych (apply complete)
+            12 profili ~/.aws/config wygenerowanych (cd-management + 11 member)
+
+ZWERYFIKOWANE:
+  ✅  cd-management → cloud-detective-agent (864277686382)
+  ✅  cd-rshop → CloudDetectiveReadOnly (943111679945)
+  ✅  cd-booking-online → CloudDetectiveReadOnly (128264038676)
+  ✅  Read (ecs list-clusters) działa, write (iam:CreateUser) AccessDenied
+
+RĘCZNY KROK (jeszcze nie wykonany):
+  Dodać do policy jgol_cli (lub grupy IAM):
+  { "Effect": "Allow", "Action": "sts:AssumeRole",
+    "Resource": "arn:aws:iam::864277686382:role/cloud-detective-agent" }
+  (mako-dc profile działa bo ma inne uprawnienia — jgol_cli CLI może potrzebować tej zmiany)
+
+NASTĘPNY KROK:
+  - awsume cd-rshop + cloud-detective v2 scan (cross-account read-only już gotowe)
+  - Wykonaj ręczny krok jgol_cli policy jeśli CLI awsume nie działa
+```
+
 ## Update — 2026-05-01 — aws-cloud-platform cloud-detective snapshot (NOWY) ✓
 
 ```
@@ -1597,4 +1622,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 22:36 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 23:02 — sesja aktywna*
