@@ -189,8 +189,7 @@
               "title": "cloud-detective-v2"
             }
           }
-        ],
-        "currentTab": 10
+        ]
       }
     ],
     "direction": "vertical"
@@ -348,11 +347,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "50-patterns/prompts/starter-pack/cloud-detective-v2.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla cloud-detective-v2"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -376,7 +373,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "3f27c9a09bd55081",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
     "50-patterns/prompts/starter-pack/cloude-detective.md",
