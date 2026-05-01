@@ -141,7 +141,7 @@
               "state": {
                 "file": "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
               "title": "monitoring-context"
