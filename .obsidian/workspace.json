@@ -175,8 +175,7 @@
               "title": "rshop-context"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -334,11 +333,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "20-projects/clients/mako/rshop/rshop-context.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla rshop-context"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -363,10 +360,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "744a41ef97528a15",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/rshop/rshop-context.md",
+    "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
     "50-patterns/prompts/invocations/cloud-detective-rshop.md",
     "20-projects/clients/mako/rshop/finops-rshop.md",

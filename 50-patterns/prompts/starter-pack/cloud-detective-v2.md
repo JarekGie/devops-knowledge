@@ -236,6 +236,38 @@ Przed sklasyfikowaniem problemu ECS wykonaj `describe-services` lub oznacz jako 
 
 Nie klasyfikuj jako problem bez `describe-services` lub `describe-target-health`.
 
+**Zakaz overconfidence — ECS status GO:**
+
+Nie oznaczaj ECS jako `GO` jeśli:
+- walidacja wykonana tylko na części serwisów lub klastrów
+- brak `describe-services` na wszystkich klastrach projektu
+
+Zamiast `GO` użyj `PARTIAL` z opisem zakresu:
+
+```md
+PARTIAL — describe-services wykonano na N/M klastrów. Pełna walidacja: brak.
+```
+
+Przykład: `"Bieżący scan potwierdził N klastrów. Klaster Y niezweryfikowany."`
+
+## ACM — multi-region awareness
+
+ACM jest usługą **regionalną**. Certyfikaty ALB i CloudFront są w różnych regionach.
+
+Agent musi:
+- rozdzielić certyfikaty ALB (region workload, np. `eu-central-1`) od certyfikatów CloudFront (`us-east-1`)
+- każdy region sprawdzić osobno przez `acm list-certificates --region <REGION>`
+- nie sugerować, że wyniki z dwóch regionów są "identyczne" bez jawnego wyjaśnienia
+
+Jeśli oba regiony zwróciły te same domeny: wyjaśnij explicite (np. certy istnieją w obu regionach — ALB + CF, lub listing obejmuje certy z domyślnego regionu profilu).
+
+Format w output:
+
+| Domena | Region | Użycie | Status | Wygasa |
+|--------|--------|--------|--------|--------|
+| example.com | eu-central-1 | ALB | ISSUED | YYYY-MM-DD |
+| example.com | us-east-1 | CloudFront | ISSUED | YYYY-MM-DD |
+
 ## ALB / CloudFront — wymaga potwierdzenia
 
 Jeśli nie sprawdzono listener rules (`describe-listeners`, `describe-rules`) lub origin mapping (`get-distribution-config`):
@@ -256,6 +288,23 @@ Możliwe alternatywne źródła sekretów (niezweryfikowane):
 - CI/CD credentials (np. Jenkins, GitLab CI)
 - hardcoded — do weryfikacji
 ```
+
+## WAF / Security readiness — klasyfikacja
+
+Brak AWS WAF **NIE jest automatycznie CRITICAL ani NO-GO**.
+
+| Stan | Klasyfikacja | Opis |
+|------|-------------|------|
+| Brak WAF, brak incydentu | `PARTIAL` / `GAP` | brak kontroli względem standardu governance |
+| Brak WAF + aktywny exploit / incydent | `CRITICAL` | ryzyko runtime, nie governance gap |
+| WAF obecny, brak reguł | `PARTIAL` | wymaga weryfikacji konfiguracji |
+| WAF obecny, reguły zarządzane | `GO` | |
+
+Agent musi jawnie rozróżniać:
+- **runtime risk** — aktywne zagrożenie, exploit, ruch atakujący wykryty
+- **governance gap** — brak kontroli względem standardu, brak incydentu
+
+Governance gap = maksymalnie `WYSOKI` w "Znane problemy", `GAP` lub `NO-GO` w tabeli Tagging/FinOps/WAF.
 
 ## CFN — blocker logic
 
@@ -420,6 +469,8 @@ repository: "<REPO_PATH>"
 created: "<YYYY-MM-DD>"
 updated: "<YYYY-MM-DD>"
 last_verified: "<YYYY-MM-DD>"
+scan_method: cloud-detective-v2
+last_verified_by: <agent_name>
 tags:
   - aws
   - <IAC_TYPE>
@@ -429,6 +480,8 @@ tags:
 ```
 
 `last_verified` = data snapshotu runtime; musi być zgodna z polem `**Data:**` w dokumencie.
+`scan_method` = zawsze `cloud-detective-v2` (statyczne).
+`last_verified_by` = nazwa agenta który wykonał scan (np. `claude`, `codex`, `gemini`).
 
 ---
 
