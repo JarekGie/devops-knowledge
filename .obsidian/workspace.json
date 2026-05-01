@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Update cloud-detective-v2.md with test learnings"
+              "title": "Terminal: ⠐ Update cloud-detective-v2.md with test learnings"
             }
           },
           {
@@ -118,6 +118,20 @@
               "icon": "lucide-file",
               "title": "2026-04-30-finops-reporting-contract-design"
             }
+          },
+          {
+            "id": "f97ba74dd2db9dca",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "aws-cloud-platform-context"
+            }
           }
         ]
       }
@@ -176,8 +190,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5,
-    "collapsed": true
+    "width": 415.5
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -307,8 +320,8 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
+    "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
     "20-projects/clients/mako/aws-cloud-platform",
     "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
     "20-projects/internal/devops-business/context.md",
