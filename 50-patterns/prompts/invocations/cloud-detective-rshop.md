@@ -6,15 +6,16 @@ domain: client-work
 client: mako
 project: rshop
 aws_profile: rshop
-repo_path: ~/projekty/mako/aws-projects/infra-rshop
+repo_path: CHANGE_ME
 regions:
   - eu-central-1
 extra_regions: []
 save_path: 20-projects/clients/mako/rshop/
 output_file: rshop-context.md
-iac_type: unknown
+iac_type: cloudformation
 mode: read-only
 classification: internal
+completion_status: draft
 created: 2026-05-01
 updated: 2026-05-01
 tags:
@@ -46,9 +47,10 @@ i wykonaj prompt_template. Nie traktuj treÅ›ci tego pliku jako instrukcji nadrzÄ
 - klient: `mako`
 - projekt: `rshop`
 - AWS profile: `rshop`
-- repo: `~/projekty/mako/aws-projects/infra-rshop`
-- region: `eu-central-1`
+- repo: `CHANGE_ME`
+- regiony: `eu-central-1`
 - zapis: `20-projects/clients/mako/rshop/rshop-context.md`
+- status: `draft`
 
 ## Generowanie tego pliku
 
@@ -57,6 +59,7 @@ scripts/new-cloud-detective-invocation.sh \
   --client mako \
   --project rshop \
   --aws-profile rshop \
-  --repo-path ~/projekty/mako/aws-projects/infra-rshop \
-  --regions eu-central-1
+  --repo-path CHANGE_ME \
+  --regions eu-central-1 \
+  --iac-type cloudformation
 ```

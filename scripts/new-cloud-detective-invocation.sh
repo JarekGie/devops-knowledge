@@ -167,6 +167,7 @@ OUTPUT_PATH="${INVOCATIONS_DIR}/cloud-detective-${PROJECT}.md"
 
 if [[ -f "$OUTPUT_PATH" ]] && [[ "$FORCE" == false ]]; then
   echo "ERROR: File already exists: ${OUTPUT_PATH}" >&2
+  echo "This does NOT affect project context files."
   echo "Use --force to overwrite." >&2
   exit 1
 fi
