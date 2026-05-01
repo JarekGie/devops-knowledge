@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Create ChatGPT context for vault system"
+              "title": "Terminal: ✳ Create ChatGPT context for vault system"
             }
           },
           {
@@ -333,6 +333,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/maspex/maspex-context.md",
     "20-projects/clients/maspex",
     "50-patterns/prompts/starter-pack/cloude-detective.md",
     "20-projects/clients/mako/puzzler-b2b/context.md",
@@ -368,7 +369,6 @@
     "20-projects/clients/mako/planodkupow",
     "20-projects/clients/mako/rshop",
     "docs/superpowers/plans",
-    "docs/superpowers/specs",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

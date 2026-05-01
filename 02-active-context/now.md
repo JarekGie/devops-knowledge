@@ -2,6 +2,26 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — maspex cloud-detective scan ✓
+
+```
+Projekt:    maspex (Kapsel, Maspex klient)
+Akcja:      cloud-detective read-only scan (IaC + live AWS)
+Wynik:      20-projects/clients/maspex/maspex-context.md (nowy plik)
+
+TOP USTALENIA:
+  - maspex-preprod-api: desired:3, running:0 — API nie startuje w preprod
+  - twojkapsel-admin.makolab.pro: cert PENDING_VALIDATION (eu-west-1 + us-east-1)
+  - maspex-uat-alb-unhealthy-hosts-bot alarm w ALARM od 23/04
+  - Container Insights retencja 1 dzień (za krótka)
+  - contest-service log groups bez serwisu ECS
+
+DO WERYFIKACJI:
+  - dlaczego preprod-api nie startuje (ecs list-tasks --desired-status STOPPED)
+  - stan prod env (IaC istnieje, live nieweryfikowane)
+  - walidacja DNS dla twojkapsel-admin.makolab.pro
+```
+
 ## Update — 2026-04-30 — devops-toolkit FinOps live/UI + LLZ WAF readonly merged ✓
 
 ```
@@ -1359,4 +1379,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 13:24 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 13:34 — sesja aktywna*
