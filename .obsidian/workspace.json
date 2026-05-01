@@ -46,49 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Update cloud detective invocation script with interactive mode"
-            }
-          },
-          {
-            "id": "8bfdcb8dc6fc3014",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "terminal:terminal",
-              "state": {
-                "terminal:terminal": {
-                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
-                  "focus": false,
-                  "profile": {
-                    "args": [
-                      "--login"
-                    ],
-                    "executable": "/bin/zsh",
-                    "followTheme": true,
-                    "name": "",
-                    "platforms": {
-                      "darwin": true
-                    },
-                    "pythonExecutable": "python3",
-                    "restoreHistory": false,
-                    "rightClickAction": "copyPaste",
-                    "successExitCodes": [
-                      "0",
-                      "SIGINT",
-                      "SIGTERM"
-                    ],
-                    "terminalOptions": {
-                      "documentOverride": null
-                    },
-                    "type": "integrated",
-                    "useWin32Conhost": true
-                  },
-                  "serial": null
-                }
-              },
-              "pinned": true,
-              "icon": "terminal",
-              "title": "Terminal: ./scripts/new-cloud-detective-invocation.sh"
+              "title": "Terminal: ⠂ Polish language prompt configuration task"
             }
           },
           {
@@ -131,48 +89,6 @@
               "pinned": true,
               "icon": "terminal",
               "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
-            }
-          },
-          {
-            "id": "cfcbe784cf0ff7f4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/maspex/maspex-context.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "maspex-context"
-            }
-          },
-          {
-            "id": "720493ca4a4cd18a",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "rshop-tagging-baseline-2026-04-24"
-            }
-          },
-          {
-            "id": "744a41ef97528a15",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/rshop/rshop-context.md",
-                "mode": "source",
-                "source": true
-              },
-              "icon": "lucide-file",
-              "title": "rshop-context"
             }
           }
         ]
@@ -362,9 +278,10 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "20-projects/clients/mako/rshop/rshop-context.md",
-    "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
+    "50-patterns/prompts/invocations/cloud-detective-booking-online.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
+    "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
+    "20-projects/clients/mako/rshop/rshop-context.md",
     "50-patterns/prompts/invocations/cloud-detective-rshop.md",
     "20-projects/clients/mako/rshop/finops-rshop.md",
     "20-projects/clients/mako/rshop/rshop-tagging-remediation-2026-04-24.md",
@@ -391,7 +308,6 @@
     "templates/frontmatter/test.md",
     "50-patterns/prompts/TEMPLATES/prompt_template.md",
     "templates/frontmatter/nowy-prompt.md",
-    "50-patterns/LLM_CONTEXT.md",
     "templates/frontmatter",
     "templates",
     "50-patterns/prompts/starter-pack",
