@@ -97,12 +97,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20-projects/clients/mako/booking-online/booking-online-context.md",
+                "file": "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "booking-online-context"
+              "title": "cloud-detective-v2"
             }
           }
         ],
@@ -265,10 +265,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "20-projects/clients/mako/booking-online/booking-online-context.md"
+                "file": "50-patterns/prompts/starter-pack/cloud-detective-v2.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla booking-online-context"
+              "title": "Atrybuty dla cloud-detective-v2"
             }
           }
         ],
