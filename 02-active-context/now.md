@@ -2,6 +2,34 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — AWS Health → GLPI integracja — WDROŻONA ✓
+
+```
+Projekt:    aws-cloud-platform (mako), monitoring-nagios-bot (814662658531)
+Akcja:      platform/health-notifications — pełna integracja GLPI email-based
+Wynik:      terraform apply complete (8 zasobów), operator docs zapisane
+
+WDROŻONE:
+  ✅  Lambda: nowy formatter [GLPI][AWS][HEALTH][<konto>][<region>][<usługa>][<kat>]
+              filtrowanie: tylko issue/investigation + statusCode=open
+              DedupKey w body (deduplikacja GLPI)
+  ✅  notification_email → notification_emails (lista, for_each)
+  ✅  SNS health-ops-alerts (us-east-1) — dla alarmów operacyjnych
+  ✅  3 CloudWatch alarmy: Lambda Errors, Throttles, EventBridge FailedInvocations
+  ✅  docs/operator/usage.md — instrukcja operacyjna z sekcją GLPI
+
+CZEKA NA DZIAŁANIE:
+  ⚠️  Potwierdź 2 emaile subskrypcji SNS:
+      - health-notifications (eu-central-1) → jaroslaw.golab@makolab.com
+      - health-ops-alerts (us-east-1) → jaroslaw.golab@makolab.com
+  📋  Gdy znany email GLPI — dodaj go:
+      terraform apply -var 'notification_emails=["jaroslaw.golab@makolab.com","glpi-aws-alerts@makolab.pl"]'
+
+NASTĘPNY KROK (opcjonalne):
+  - Test end-to-end: aws events put-events (komenda w docs/operator/usage.md)
+  - Dodać email GLPI do notification_emails
+```
+
 ## Update — 2026-05-01 — CloudTrail naprawiony + jgol_cli policy + monitoring scan ✓
 
 ```
@@ -1656,4 +1684,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 00:38 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 00:45 — sesja aktywna*
