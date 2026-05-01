@@ -147,8 +147,7 @@
               "title": "monitoring-context"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -306,11 +305,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla monitoring-context"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -335,7 +332,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "39f226ecf7d633de",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
