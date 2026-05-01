@@ -69,12 +69,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "50-patterns/prompts/starter-pack/Bez nazwy.md",
+                "file": "50-patterns/prompts/starter-pack/aws-security-quick-check.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Bez nazwy"
+              "title": "aws-security-quick-check"
             }
           }
         ],
@@ -237,10 +237,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "50-patterns/prompts/starter-pack/Bez nazwy.md"
+                "file": "50-patterns/prompts/starter-pack/aws-security-quick-check.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla Bez nazwy"
+              "title": "Atrybuty dla aws-security-quick-check"
             }
           }
         ],
@@ -263,10 +263,14 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "a26c2664307e0795",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "50-patterns/prompts/starter-pack/toolkit-audit-analysis.md",
+    "50-patterns/prompts/starter-pack/aws-security-quick-check.md",
+    "50-patterns/prompts/starter-pack/terraform-safe-review.md",
+    "50-patterns/prompts/starter-pack/finops-tagging-gap.md",
+    "50-patterns/prompts/starter-pack/ecs-alb-debug.md",
     "50-patterns/prompts/starter-pack/aws-audit-readonly.md",
-    "50-patterns/prompts/starter-pack/Bez nazwy.md",
     "50-patterns/prompts/starter-pack/cfn-rollback-analysis.md",
     "50-patterns/prompts/TEMPLATES/prompt_template.md",
     "50-patterns/prompts/starter-pack",
@@ -291,13 +295,9 @@
     "20-projects/clients/mako/planodkupow/planodkupow-runtime-verification-2026-04-26.md",
     "20-projects/clients/mako/planodkupow/planodkupow-qa-tagging-audit-2026-04-25.md",
     "20-projects/clients/mako/planodkupow/planodkupow-orphan-network-investigation-2026-04-24.md",
-    "20-projects/clients/mako/planodkupow/planodkupow-finops-governance-audit-2026-04-25.md",
     "20-projects/clients/mako/planodkupow",
-    "20-projects/clients/mako/rshop/finops-rshop.md",
-    "20-projects/clients/mako/rshop/vpc-endpoints-tagging-audit-2026-04-24.md",
     "20-projects/clients/mako/rshop",
     "docs/superpowers/plans",
-    "60-toolkit/contracts/finops-reporting-contract.md",
     "docs/superpowers/specs",
     "docs/superpowers",
     "docs",
