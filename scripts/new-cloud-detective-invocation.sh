@@ -3,22 +3,10 @@ set -euo pipefail
 
 # new-cloud-detective-invocation.sh
 # Generates a cloud-detective invocation file for a new project.
-#
-# Usage:
-#   scripts/new-cloud-detective-invocation.sh \
-#     --client mako \
-#     --project rshop \
-#     --aws-profile rshop \
-#     --repo-path ~/projekty/mako/aws-projects/infra-rshop \
-#     --regions eu-central-1 \
-#     [--extra-regions us-east-1] \
-#     [--iac-type terraform] \
-#     [--output-file rshop-context.md] \
-#     [--force]
+# Supports flag mode and interactive mode.
 
 VAULT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 INVOCATIONS_DIR="${VAULT_ROOT}/50-patterns/prompts/invocations"
-TEMPLATE="${VAULT_ROOT}/50-patterns/prompts/starter-pack/cloud-detective-v2.md"
 
 # --- Defaults ---
 CLIENT=""
@@ -30,7 +18,51 @@ EXTRA_REGIONS=""
 IAC_TYPE="unknown"
 OUTPUT_FILE=""
 FORCE=false
+INTERACTIVE=false
 TODAY="$(date +%Y-%m-%d)"
+
+DEFAULT_REPO_BASE="~/projekty/mako/aws-projects"
+
+# --- Help ---
+usage() {
+  cat <<'USAGE'
+Usage (flags):
+  scripts/new-cloud-detective-invocation.sh \
+    --client mako \
+    --project rshop \
+    --aws-profile rshop \
+    --repo-path ~/projekty/mako/aws-projects/infra-rshop \
+    --regions eu-central-1 \
+    [--extra-regions us-east-1] \
+    [--iac-type terraform] \
+    [--output-file rshop-context.md] \
+    [--force]
+
+Usage (interactive):
+  scripts/new-cloud-detective-invocation.sh
+  scripts/new-cloud-detective-invocation.sh --interactive
+
+  Prompts for all required parameters.
+  Partial flags reduce the number of prompts — only missing required values are asked.
+
+Options:
+  --client CLIENT          Client name (default: mako)
+  --project PROJECT        Project name (required)
+  --aws-profile PROFILE    AWS profile (default: project name)
+  --repo-path PATH         Full path or dir name under ~/projekty/mako/aws-projects
+  --regions REGION         Primary region (default: eu-central-1)
+  --extra-regions REGIONS  Comma-separated extra regions
+  --iac-type TYPE          IaC type (default: unknown)
+  --output-file FILE       Output filename (default: <project>-context.md)
+  --force                  Overwrite existing file
+  --interactive            Force full interactive mode
+  --help, -h               Show this help
+
+USAGE
+}
+
+# --- Detect no-args → interactive ---
+[[ $# -eq 0 ]] && INTERACTIVE=true
 
 # --- Argument parsing ---
 while [[ $# -gt 0 ]]; do
@@ -44,17 +76,105 @@ while [[ $# -gt 0 ]]; do
     --iac-type)      IAC_TYPE="$2";      shift 2 ;;
     --output-file)   OUTPUT_FILE="$2";   shift 2 ;;
     --force)         FORCE=true;         shift ;;
+    --interactive)   INTERACTIVE=true;   shift ;;
+    --help|-h)       usage; exit 0 ;;
     *)
       echo "ERROR: Unknown argument: $1" >&2
-      echo "Usage: $0 --client CLIENT --project PROJECT --aws-profile PROFILE --repo-path PATH --regions REGION [options]" >&2
+      echo "Run with --help for usage." >&2
       exit 1
       ;;
   esac
 done
 
+# --- Determine if we need interactive input ---
+NEED_INTERACTIVE=false
+if [[ "$INTERACTIVE" == true ]] || \
+   [[ -z "$CLIENT" || -z "$PROJECT" || -z "$AWS_PROFILE" || -z "$REPO_PATH" || -z "$REGIONS" ]]; then
+  NEED_INTERACTIVE=true
+fi
+
+# --- Interactive input ---
+if [[ "$NEED_INTERACTIVE" == true ]]; then
+  echo ""
+
+  # Client
+  if [[ "$INTERACTIVE" == true || -z "$CLIENT" ]]; then
+    _default="${CLIENT:-mako}"
+    read -r -p "Client [${_default}]: " _input
+    CLIENT="${_input:-$_default}"
+  fi
+
+  # Project (required, no default — loop until non-empty)
+  if [[ "$INTERACTIVE" == true || -z "$PROJECT" ]]; then
+    while true; do
+      if [[ -n "$PROJECT" ]]; then
+        read -r -p "Project [${PROJECT}]: " _input
+      else
+        read -r -p "Project: " _input
+      fi
+      PROJECT="${_input:-$PROJECT}"
+      [[ -n "$PROJECT" ]] && break
+      echo "  Project cannot be empty." >&2
+    done
+  fi
+
+  # AWS Profile (default = project name)
+  if [[ "$INTERACTIVE" == true || -z "$AWS_PROFILE" ]]; then
+    _default="${AWS_PROFILE:-$PROJECT}"
+    read -r -p "AWS profile [${_default}]: " _input
+    AWS_PROFILE="${_input:-$_default}"
+  fi
+
+  # Regions
+  if [[ "$INTERACTIVE" == true || -z "$REGIONS" ]]; then
+    _default="${REGIONS:-eu-central-1}"
+    read -r -p "Regions [${_default}]: " _input
+    REGIONS="${_input:-$_default}"
+  fi
+
+  # Extra regions (only in full interactive mode — optional param)
+  if [[ "$INTERACTIVE" == true ]]; then
+    read -r -p "Extra regions []: " _input
+    EXTRA_REGIONS="${_input:-}"
+  fi
+
+  # IaC type (only in full interactive mode — optional param)
+  if [[ "$INTERACTIVE" == true ]]; then
+    read -r -p "IaC type [${IAC_TYPE}]: " _input
+    IAC_TYPE="${_input:-$IAC_TYPE}"
+  fi
+
+  # Repo path
+  if [[ "$INTERACTIVE" == true || -z "$REPO_PATH" ]]; then
+    # Repo base (only shown in full interactive mode)
+    _repo_base="$DEFAULT_REPO_BASE"
+    if [[ "$INTERACTIVE" == true ]]; then
+      read -r -p "Repo base [${_repo_base}]: " _input
+      _repo_base="${_input:-$_repo_base}"
+    fi
+
+    # Repo dir or full path
+    read -r -p "Repo path or repo dir []: " _input
+    _repo_input="${_input:-}"
+    if [[ "$_repo_input" == /* ]] || [[ "$_repo_input" == ~* ]]; then
+      REPO_PATH="$_repo_input"
+    elif [[ -n "$_repo_input" ]]; then
+      REPO_PATH="${_repo_base}/${_repo_input}"
+    fi
+  fi
+
+  # Output file (only in full interactive mode — has a computed default)
+  if [[ "$INTERACTIVE" == true ]]; then
+    _default="${OUTPUT_FILE:-${PROJECT}-context.md}"
+    read -r -p "Output file [${_default}]: " _input
+    OUTPUT_FILE="${_input:-$_default}"
+  fi
+
+  echo ""
+fi
+
 # --- Validation ---
 MISSING=()
-[[ -z "$CLIENT" ]]      && MISSING+=("--client")
 [[ -z "$PROJECT" ]]     && MISSING+=("--project")
 [[ -z "$AWS_PROFILE" ]] && MISSING+=("--aws-profile")
 [[ -z "$REPO_PATH" ]]   && MISSING+=("--repo-path")
@@ -66,6 +186,7 @@ if [[ ${#MISSING[@]} -gt 0 ]]; then
 fi
 
 # --- Defaults dependent on params ---
+CLIENT="${CLIENT:-mako}"
 OUTPUT_FILE="${OUTPUT_FILE:-${PROJECT}-context.md}"
 SAVE_PATH="20-projects/clients/${CLIENT}/${PROJECT}/"
 OUTPUT_PATH="${INVOCATIONS_DIR}/cloud-detective-${PROJECT}.md"
@@ -78,7 +199,6 @@ if [[ -f "$OUTPUT_PATH" ]] && [[ "$FORCE" == false ]]; then
 fi
 
 # --- Build regions YAML list ---
-# Accepts comma-separated: eu-central-1,us-east-1
 REGIONS_YAML=""
 IFS=',' read -ra REGION_LIST <<< "$REGIONS"
 for r in "${REGION_LIST[@]}"; do
@@ -168,7 +288,6 @@ scripts/new-cloud-detective-invocation.sh \\
 \`\`\`
 EOF
 
-echo ""
 echo "Created: 50-patterns/prompts/invocations/cloud-detective-${PROJECT}.md"
 echo ""
 echo "Use with Claude:"
