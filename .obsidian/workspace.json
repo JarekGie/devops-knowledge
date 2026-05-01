@@ -125,12 +125,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20-projects/clients/mako/puzzler-b2b/context.md",
+                "file": "50-patterns/prompts/starter-pack/cloude-detective.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "context"
+              "title": "cloude-detective"
             }
           }
         ],
@@ -293,10 +293,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "20-projects/clients/mako/puzzler-b2b/context.md"
+                "file": "50-patterns/prompts/starter-pack/cloude-detective.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla context"
+              "title": "Atrybuty dla cloude-detective"
             }
           }
         ],
@@ -322,6 +322,8 @@
   },
   "active": "d61ba6357fb01211",
   "lastOpenFiles": [
+    "20-projects/clients/mako/puzzler-b2b/context.md",
+    "50-patterns/prompts/starter-pack/cloude-detective.md",
     "templates/frontmatter/client_context.md",
     "20-projects/clients/mako/planodkupow/Bez nazwy.md",
     "20-projects/clients/mako/planodkupow/#.md",
@@ -349,9 +351,7 @@
     "50-patterns/prompts/starter-pack",
     "_system/AGENT_BOOTSTRAP.md",
     "_system/PROMPT_LIBRARY_CONTRACT.md",
-    "50-patterns/prompts/README.md",
     "50-patterns/prompts/TEMPLATES",
-    "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
     "50-patterns/prompts",
     "20-projects/clients/TEMPLATES",
     "20-projects/clients/mako/planodkupow",
