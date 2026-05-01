@@ -2,6 +2,34 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — aws-cloud-platform cloud-detective snapshot (NOWY) ✓
+
+```
+Projekt:    aws-cloud-platform (mako), management account 864277686382
+Akcja:      cloud-detective v2 read-only scan — Organizations platform (pierwsze skanowanie)
+Wynik:      20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md (NOWY)
+
+POZIOM PEWNOŚCI: częściowa
+  - Management account: w pełni sprawdzone live (org, SCPs, CloudTrail, state backend)
+  - Monitoring account (814662658531): niezweryfikowane bezpośrednio (IaC/import blocks)
+
+🔥 CRITICAL:
+  CloudTrail org-baseline — delivery BROKEN od 2026-02-14 (2.5 mies.)
+  KMS key policy w LogArchiveNew nie pozwala na GenerateDataKey delivery roli AWS.
+  Logi organizacyjne NIE są persystowane.
+
+WYSOKI:
+  - LLZ SCPs (llz-quarantine-deny-all, llz-workloads-baseline) — NIE wdrożone w live AWS
+  - Tag Policies — NIE wdrożone (IaC gotowe)
+  - AWS Config / SecurityHub / GuardDuty — nie włączone w management account
+  - Brak delegated administrators
+
+NASTĘPNY KROK:
+  - Fix KMS key policy w LogArchiveNew — allow cloudtrail delivery principal
+  - Zbadaj: czy terraform apply dla organization/governance był kiedykolwiek odpalony?
+  - Wdrożyć governance module po fix
+```
+
 ## Update — 2026-05-01 — puzzler-b2b cloud-detective snapshot (nowy) ✓
 
 ```
@@ -1569,4 +1597,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 21:36 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 21:52 — sesja aktywna*
