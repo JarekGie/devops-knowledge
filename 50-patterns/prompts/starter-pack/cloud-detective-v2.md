@@ -522,6 +522,17 @@ Pewność: `wysoka` / `średnia` / `niska`
 
 Nie wypisuj wartości sekretów.
 
+Jeśli `list-secrets` zwróciła pustą listę → użyj poniższego formatu, nie pisz "Brak sekretów":
+
+```
+Secrets Manager: 0 sekretów w regionie <REGION> (sprawdzone live)
+Możliwe alternatywne źródła (niezweryfikowane):
+- SSM Parameter Store
+- CloudFormation parameters (NoEcho)
+- CI/CD credentials (np. Jenkins, GitLab CI)
+- hardcoded — do weryfikacji
+```
+
 | Secret | Przeznaczenie / zawartość logiczna | Źródło |
 |--------|------------------------------------|--------|
 
@@ -600,6 +611,20 @@ Ocena: `zgodne` / `rozbieżność` / `nieustalone` / `wymaga potwierdzenia`
 
 ---
 
+## Drift / niespójności architektury
+
+| Obszar | Typ driftu | Źródło | Opis |
+|--------|-----------|--------|------|
+
+Typy driftu:
+
+- `IaC vs runtime` — stan w kodzie różni się od stanu live AWS
+- `multi-repo` — kilka repozytoriów zarządza tym samym zasobem lub środowiskiem
+- `manual change` — zmiana wprowadzona ręcznie poza IaC (detectowalna przez CFN drift detection lub `terraform plan`)
+- `unknown` — niespójność wykryta, przyczyna nieustalona
+
+---
+
 ## Pewność ustaleń
 
 | Obszar | Pewność | Evidence | Uwagi |
@@ -665,6 +690,24 @@ terraform apply
 | <informacja> | live / historyczna / hipoteza | <live AWS / IaC / vault historyczny> | <uwagi> |
 
 Jeśli nie użyto danych historycznych z vault: `Nie użyto danych historycznych z vault.`
+
+---
+
+## Self-check przed zapisem
+
+Przed zapisaniem pliku odpowiedz na każde pytanie:
+
+- [ ] Czy oznaczyłem źródło (`live AWS` / `IaC` / `vault historyczny` / `hipoteza` / `nieustalone`) każdej kluczowej informacji?
+- [ ] Czy oddzieliłem fakty live od danych historycznych i hipotez?
+- [ ] Czy nie oznaczyłem CRITICAL bez potwierdzonego live impact?
+- [ ] Czy każde "brak" to faktycznie sprawdzone brak, a nie `niezweryfikowane`?
+- [ ] Czy `extra_regions` zostały sprawdzone — lub jawnie oznaczone jako `niezweryfikowane`?
+- [ ] Czy Secrets Manager pusty = użyłem fallback template zamiast "Brak sekretów"?
+- [ ] Czy przypisania domen do serwisów bez listener rules są oznaczone `wymaga potwierdzenia`?
+- [ ] Czy `UPDATE_ROLLBACK_COMPLETE` NIE jest oznaczony jako "blocker"?
+- [ ] Czy multi-repo jest opisany z podziałem zakresu per repo?
+- [ ] Czy sekcja "Snapshot metadata" jest wypełniona?
+- [ ] Czy sekcje "Źródła użyte" i "Fakty live vs historia vault" są uzupełnione?
 
 ---
 
