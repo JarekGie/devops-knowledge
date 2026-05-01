@@ -555,6 +555,27 @@ terraform apply
 
 ---
 
+## Źródła użyte
+
+| Źródło | Zakres | Status |
+|--------|--------|--------|
+| live AWS | <serwisy sprawdzone — ecs, alb, rds, cloudfront, cfn, s3, ecr, logs, cloudwatch, ec2> | sprawdzone / częściowe / niesprawdzone |
+| repo lokalne | <ścieżka do repo IaC> | sprawdzone / częściowe / niesprawdzone |
+| IaC | CloudFormation / Terraform — <jakie pliki/moduły> | sprawdzone / częściowe / niesprawdzone |
+| CFN stacks | <nazwy stacków opisanych przez API> | sprawdzone / częściowe / niesprawdzone |
+| vault historyczny | <notatki jeśli użyte, np. session-log.md, tagging-baseline.md> | użyte / nieużyte |
+| extra_regions | <us-east-1 lub inne — co sprawdzono> | sprawdzone / niesprawdzone |
+
+## Fakty live vs historia vault
+
+| Informacja | Status | Źródło | Uwagi |
+|------------|--------|--------|-------|
+| <informacja> | live / historyczna / hipoteza | <live AWS / IaC / vault historyczny> | <uwagi> |
+
+Jeśli nie użyto danych historycznych z vault: `Nie użyto danych historycznych z vault.`
+
+---
+
 ## Powiązane
 
 - [[...]]
@@ -575,6 +596,11 @@ terraform apply
 - **IAM principal**: nie wypisuj AccessKeyId, AIDA..., pełnych ARN jeśli nie są potrzebne.
 - **Nie łącz `terraform apply` z dokumentowaniem**.
 - **Nie usuwaj istniejących plików bez zgody** — przenieś zamiast kasować; merge zamiast replace.
+- **Każde ustalenie musi mieć źródło** — `live AWS`, `IaC`, `vault historyczny`, `hipoteza` lub `nieustalone`. Nie mieszaj historii z faktami live.
+- **CRITICAL tylko dla aktywnych problemów** — historyczne incydenty, braki governance i brak alarmów to maksymalnie `WYSOKI`.
+- **CFN `UPDATE_ROLLBACK_COMPLETE` ≠ blokada aktywna** — odróżniaj od `UPDATE_ROLLBACK_FAILED`.
+- **Regiony niezweryfikowane oznaczaj jawnie** — wpisz `niezweryfikowane`, nie pomijaj milcząco.
+- **Sekcje "Źródła użyte" i "Fakty live vs historia vault" są obowiązkowe** w pliku wynikowym.
 
 ---
 
