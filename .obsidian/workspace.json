@@ -69,12 +69,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CLAUDE.md",
+                "file": "50-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CLAUDE"
+              "title": "cloudformation-drift-reconciliation-vpc-endpoint-tags"
             }
           }
         ],
@@ -237,10 +237,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "CLAUDE.md"
+                "file": "50-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla CLAUDE"
+              "title": "Atrybuty dla cloudformation-drift-reconciliation-vpc-endpoint-tags"
             }
           }
         ],
@@ -263,10 +263,10 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "a26c2664307e0795",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
-    "CODEX.md",
     "CLAUDE.md",
+    "CODEX.md",
     "_system/AGENT_BOOTSTRAP.md",
     "_chatgpt/context-packs/vault-llm-governance.md",
     "_system/TEMPLATES/chatgpt-context-template.md",
