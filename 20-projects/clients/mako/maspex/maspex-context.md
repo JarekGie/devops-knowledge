@@ -1,6 +1,6 @@
 ---
 title: maspex-context
-client: maspex
+client: mako
 project: maspex
 domain: client-work
 document_type: runtime-context
@@ -17,6 +17,9 @@ iac: terraform
 repository: "~/projekty/mako/aws-projects/infra-maspex/"
 created: 2026-05-01
 updated: 2026-05-01
+last_verified: "2026-05-01"
+scan_method: cloud-detective-v2
+last_verified_by: claude
 tags:
   - aws
   - terraform
@@ -34,11 +37,46 @@ tags:
 **Typ dokumentu:** snapshot runtime / context wejściowy
 **Source of truth:** AWS live + IaC + Terraform state
 **Tryb skanowania:** read-only
+**Poziom pewności snapshotu:** częściowa — UAT potwierdzone live, preprod częściowe (API DOWN), prod nieweryfikowane
 **Projekt:** Platforma konkursowa Kapsel — Next.js API + admin panel + bot, CloudFront → ALB → ECS Fargate, Redis ElastiCache, Supabase/PostgREST jako downstream.
+**OrgAccountID:** nieustalone
 **Account ID:** `969209893152`
+**Role:** nieustalone
 **AWS profile:** `maspex-cli`
 **IAM principal:** `makolab-ci` (IAM user, uprawnienia CI)
 **Region główny:** `eu-west-1` (CloudFront / ACM dodatkowo w `us-east-1`)
+
+---
+
+## Snapshot metadata
+
+| Pole | Wartość |
+|------|---------|
+| scan_date | 2026-05-01 |
+| scan_scope | partial |
+| regions_checked | eu-west-1, us-east-1 (ACM only) |
+| repo_checked | częściowo — struktura, backend.hcl, git log, task-def :1 |
+| iac_checked | częściowo — envs/ struktura, modules/ lista, backend config |
+| runtime_checked | tak — ECS UAT/preprod, ALB target health, CW alarms, ACM, Secrets Manager |
+| extra_regions_checked | us-east-1 (ACM only) |
+
+---
+
+## Zakres snapshotu vs audytu
+
+| Obszar | Typ | Zakres | Źródło |
+|--------|-----|--------|--------|
+| Runtime health (ECS/ALB) | snapshot | live AWS — UAT + preprod | live AWS |
+| CFN stack status | nie dotyczy | projekt używa Terraform | — |
+| IaC analiza | snapshot | partial — struktura, backend.hcl, task-def revision :1 | IaC |
+| Tagging coverage | niezweryfikowane | resourcegroupstaggingapi nie uruchomiono | — |
+| FinOps / cost allocation | audit (external) | patrz [[finops-as-is-estimate]] i [[finops-uat-preprod-cost-estimate-2026-04]] | vault historyczny |
+| Security (WAF) | niezweryfikowane | list-web-acls nie wykonano | — |
+| ACM certs | snapshot | eu-west-1 + us-east-1 sprawdzone live | live AWS |
+| Secrets Manager | snapshot | list-secrets wykonano | live AWS |
+| CloudWatch alarms | snapshot | describe-alarms wykonano | live AWS |
+| Bot target health | snapshot | describe-target-health wykonano | live AWS |
+| Prod environment | niezweryfikowane | nie sprawdzano ECS prod live | — |
 
 ---
 
@@ -58,6 +96,17 @@ terraform/
   modules/     — alb, alb-routing, ecs, elasticache, cloudfront, …
 ```
 
+Ostatnie commity (live, 2026-05-01):
+```
+6f466af feat(uat): add ECS Application Auto Scaling for maspex-api
+6e6b4f1 aktualizacja cloudfront
+fd46bf3 Merge branch 'feat/preprod-zaslepka' into 'main'
+743d43e fix(preprod): scale api to 1 task, wire api log group to monitoring module
+168a569 fix(ecs): manage desired_count via Terraform (remove from lifecycle ignore_changes)
+```
+
+Uwaga: commit `743d43e` mówi "scale api to 1 task", ale runtime pokazuje `desired:3` — możliwy drift lub późniejsza zmiana poza commitem. Źródło: IaC + live AWS.
+
 ---
 
 ## Środowiska
@@ -66,10 +115,10 @@ terraform/
 |-----|--------|------------|--------|----------|---------|
 | shared | eu-west-1 | 969209893152 | IaC istnieje, brak klastra ECS | nieustalone | średnia — IaC + brak live cluster |
 | uat | eu-west-1 | 969209893152 | aktywny — 11 tasków running | 10.44.0.0/16 | wysoka — live AWS |
-| preprod | eu-west-1 | 969209893152 | częściowo — API 0/3 running | 10.44.0.0/16 | wysoka — live AWS |
+| preprod | eu-west-1 | 969209893152 | częściowo — API 0/3 running (IAM error) | 10.44.0.0/16 | wysoka — live AWS |
 | prod | eu-west-1 | 969209893152 | IaC istnieje, live nieweryfikowane | nieustalone | niska — tylko IaC |
 
-VPC: `vpc-0df07c64ea8a8b00e` (10.44.0.0/16), brak Name tagu.
+VPC: `vpc-0df07c64ea8a8b00e` (10.44.0.0/16), brak Name tagu. Źródło: live AWS.
 
 **Terraform state (S3 + DynamoDB, encrypt=true):**
 
@@ -79,7 +128,7 @@ VPC: `vpc-0df07c64ea8a8b00e` (10.44.0.0/16), brak Name tagu.
 | uat | terraform-state-969209893152 | maspex/uat/terraform.tfstate | terraform-locks-969209893152 |
 | prod | terraform-state-969209893152 | maspex/prod/terraform.tfstate | terraform-locks-969209893152 |
 
-Backend przez `-backend-config=backend.hcl` (wartości nie są hardcode'owane w `backend.tf`).
+Backend przez `-backend-config=backend.hcl` (wartości nie są hardcode'owane w `backend.tf`). Źródło: IaC.
 
 ---
 
@@ -99,17 +148,17 @@ Internet
         ▼
   ECS Fargate — cluster maspex-uat
     ├── maspex-api         (9/9 running)  ─── Redis ElastiCache maspex-uat :6379
-    ├── maspex-bot         (1/1 running)
+    ├── maspex-bot         (2 running / 1 desired) ⚠ wymaga weryfikacji (task replacement?)
     └── maspex-admin-panel (1/1 running)
                                          ─── Supabase/PostgREST (downstream, zewnętrzny)
 
   ECS Fargate — cluster maspex-preprod
-    ├── maspex-preprod-api         (0/3 running) ⚠ API nie startuje
+    ├── maspex-preprod-api         (0/3 running) 🔴 IAM error — execution role brak dostępu do secretu
     ├── maspex-preprod-bot         (1/1 running)
     └── maspex-preprod-admin-panel (1/1 running)
 ```
 
-Przypisanie CloudFront `E17VHHQJ29MVAB` (twojkapsel.pl) do preprod lub prod — **wymaga potwierdzenia**.
+Przypisanie CloudFront `E17VHHQJ29MVAB` (twojkapsel.pl) do preprod lub prod — **wymaga potwierdzenia** (listener rules niezweryfikowane).
 
 ---
 
@@ -117,14 +166,14 @@ Przypisanie CloudFront `E17VHHQJ29MVAB` (twojkapsel.pl) do preprod lub prod — 
 
 | Serwis | Cluster | Ingress | Service Discovery | ECS Exec | Desired | Running | Status |
 |--------|---------|---------|-------------------|----------|---------|---------|--------|
-| maspex-api | maspex-uat | ALB → CF | brak | nieustalone | 9 | 9 | ✓ ACTIVE |
-| maspex-bot | maspex-uat | ALB | brak | nieustalone | 1 | 1 | ✓ ACTIVE |
-| maspex-admin-panel | maspex-uat | ALB → CF | brak | nieustalone | 1 | 1 | ✓ ACTIVE |
-| maspex-preprod-api | maspex-preprod | ALB | brak | nieustalone | 3 | 0 | ⚠ API DOWN |
-| maspex-preprod-bot | maspex-preprod | ALB | brak | nieustalone | 1 | 1 | ✓ ACTIVE |
-| maspex-preprod-admin-panel | maspex-preprod | ALB | brak | nieustalone | 1 | 1 | ✓ ACTIVE |
+| maspex-api | maspex-uat | ALB → CF | brak | niezweryfikowane | 9 | 9 | ✓ ACTIVE |
+| maspex-bot | maspex-uat | ALB → CF | brak | niezweryfikowane | 1 | 2 | ⚠ PARTIAL — running>desired (task replacement cycle?), 1 target unhealthy |
+| maspex-admin-panel | maspex-uat | ALB → CF | brak | niezweryfikowane | 1 | 1 | ✓ ACTIVE |
+| maspex-preprod-api | maspex-preprod | ALB | brak | niezweryfikowane | 3 | 0 | 🔴 DOWN — IAM: brak dostępu do maspex/preprod/api |
+| maspex-preprod-bot | maspex-preprod | ALB | brak | niezweryfikowane | 1 | 1 | ✓ ACTIVE |
+| maspex-preprod-admin-panel | maspex-preprod | ALB | brak | niezweryfikowane | 1 | 1 | ✓ ACTIVE |
 
-Brak Cloud Map / Service Discovery. Brak EventBridge rules. Brak SQS.
+Brak Cloud Map / Service Discovery. Brak EventBridge rules. Brak SQS. Źródło: live AWS.
 
 ---
 
@@ -157,7 +206,15 @@ Nie wypisuj wartości sekretów.
 |--------|------------------------------------|--------|
 | maspex/uat/api | konfiguracja API UAT (klucze, connection strings) | live AWS |
 
-Uwaga: lista może być niekompletna — `list-secrets` zwrócił jeden wpis. Sekrety preprod/prod mogą być niewidoczne dla `makolab-ci` lub nie istnieją.
+Uwaga: `list-secrets` zwrócił 1 wpis. Jednak task-def `maspex-preprod-api:1` odwołuje się do `maspex/preprod/api` (secret istnieje — błąd to `AccessDeniedException`, nie `ResourceNotFoundException`) — secret preprod/api nie jest widoczny przez `makolab-ci`, mimo że istnieje. Sekrety prod mogą być niewidoczne z tych samych powodów.
+
+```
+Secrets Manager: 1 secret widoczny w eu-west-1 (sprawdzone live)
+Dodatkowe sekrety mogą istnieć (niezweryfikowane dla makolab-ci):
+- maspex/preprod/api — istnieje (potwierdzone przez AccessDeniedException w stopped task)
+- maspex/prod/api — nieustalone
+- SSM Parameter Store — niezweryfikowane
+```
 
 ---
 
@@ -168,8 +225,47 @@ Uwaga: lista może być niekompletna — `list-secrets` zwrócił jeden wpis. Se
 | kapsel-admin-uat.makotest.pl | eu-west-1 | ISSUED ✓ | admin UAT |
 | twojkapsel.pl | eu-west-1 | ISSUED ✓ | preprod/prod ALB |
 | twojkapsel.pl | us-east-1 | ISSUED ✓ | CloudFront (us-east-1 required) |
-| twojkapsel-admin.makolab.pro | eu-west-1 | **PENDING_VALIDATION ⚠** | brak walidacji DNS |
-| twojkapsel-admin.makolab.pro | us-east-1 | **PENDING_VALIDATION ⚠** | brak walidacji DNS |
+| twojkapsel-admin.makolab.pro | eu-west-1 | **PENDING_VALIDATION ⚠** | brak walidacji DNS — bez zmian od poprzedniego skanu |
+| twojkapsel-admin.makolab.pro | us-east-1 | **PENDING_VALIDATION ⚠** | brak walidacji DNS — bez zmian od poprzedniego skanu |
+
+---
+
+## Tagging / FinOps / LLZ / AWS WAF readiness
+
+**Źródło historyczne:** [[finops-as-is-estimate]] i [[finops-uat-preprod-cost-estimate-2026-04]] — jeśli zawierają audyt tagów.
+**Bieżący scan:** sample-based (0 zasobów sprawdzonych live przez resourcegroupstaggingapi — nie uruchomiono)
+
+| Obszar | Status | Uwagi |
+|--------|--------|-------|
+| FinOps — cost allocation tags (Project/Environment/CostCenter) | niezweryfikowane | resourcegroupstaggingapi nie uruchomiono |
+| LLZ tagging standard (Project/Environment/Owner/ManagedBy/CostCenter) | niezweryfikowane | nie uruchomiono |
+| ECS/Fargate — tag propagation do tasków (`propagate_tags`) | niezweryfikowane | nie sprawdzono w task-def ani describe-services |
+| ECR — tagi na repozytoriach | niezweryfikowane | nie sprawdzono |
+| S3 — tagi na bucketach | niezweryfikowane | nie sprawdzono |
+| CloudWatch Log Groups — tagi | niezweryfikowane | nie sprawdzono |
+| VPC / Endpoints — tagi | PARTIAL | VPC bez Name tagu (sprawdzone), pozostałe niezweryfikowane |
+| AWS WAF — obecność i przypisanie właściciela | niezweryfikowane | list-web-acls nie wykonano |
+
+### Wymagane tagi LLZ
+
+| Tag | Oczekiwana wartość | Status |
+|-----|--------------------|--------|
+| Project | maspex | nieustalone |
+| Environment | prod / uat / preprod | nieustalone |
+| Owner | team / e-mail | nieustalone |
+| ManagedBy | Terraform | nieustalone |
+| CostCenter | ID działu / projektu | nieustalone |
+
+### Wniosek
+
+Pokrycie tagów i gotowość WAF są niezweryfikowane w bieżącym skanie — nie uruchomiono `resourcegroupstaggingapi get-resources` ani `wafv2 list-web-acls`. Znany fakt: VPC nie ma Name tagu (co utrudnia nawigację). Pełna ocena wymaga osobnego skanu tagowania.
+
+### Następne kroki
+
+| Akcja | Priorytet | Kto |
+|-------|-----------|-----|
+| Uruchom `resourcegroupstaggingapi get-resources` i sprawdź pokrycie tagów | ŚREDNI | DevOps |
+| Sprawdź `wafv2 list-web-acls` | ŚREDNI | DevOps |
 
 ---
 
@@ -193,30 +289,45 @@ Uwaga: lista może być niekompletna — `list-secrets` zwrócił jeden wpis. Se
 | Task def bot preprod | maspex-preprod-bot:1 |
 | Task def admin-panel preprod | maspex-preprod-admin-panel:11 |
 | Auto-scaling (UAT API) | Target Tracking — CPU + Memory |
+| preprod-api image | 969209893152.dkr.ecr.eu-west-1.amazonaws.com/maspex-api:coreapp-uat-303 |
+| preprod-api secrets | maspex/preprod/api (ConnectionStrings__Redis) |
 
 ---
 
 ## Observability
 
+**Ważne:** CloudWatch alarms NIE są równoznaczne z aktualnym stanem runtime. Zawsze weryfikuj przez `describe-target-health` i `describe-tasks`.
+
 **Runtime health (live, 2026-05-01):**
 
 | Element | Status | Uwagi |
 |---------|--------|-------|
-| maspex-uat — serwisy | ✓ healthy | 11/11 tasków running |
-| maspex-preprod — api | ⚠ DOWN | 0/3 running |
+| maspex-uat — maspex-api | ✓ healthy | 9/9 tasków running |
+| maspex-uat — maspex-bot | ⚠ PARTIAL | running:2/desired:1; 1 target unhealthy (FailedHealthChecks), 1 w initial (RegistrationInProgress) |
+| maspex-uat — maspex-admin-panel | ✓ healthy | 1/1 |
+| maspex-preprod — maspex-preprod-api | 🔴 DOWN | 0/3 running — IAM: AccessDeniedException na secretsmanager:GetSecretValue |
 | maspex-preprod — bot, admin-panel | ✓ healthy | |
 | ALB UAT | ✓ active | |
 | ALB preprod | ✓ active | ALB działa, API tasks nie startują |
 | Redis UAT | ✓ available | cache.t3.medium |
 | Redis preprod | ✓ available | cache.t3.micro |
 
-**CloudWatch alarms:**
+**Bot target health (live, 2026-05-01 — describe-target-health):**
 
-| Alarm | Stan | Metric | Kontekst |
-|-------|------|--------|----------|
-| TargetTracking maspex-uat/maspex-api AlarmLow (Memory) | ALARM | MemoryUtilization < 67.5% | Auto-scaling scale-down — normalny po load teście, nie krytyczny |
-| TargetTracking maspex-uat/maspex-api AlarmLow (CPU) | ALARM | CPUUtilization < 54% | Auto-scaling scale-down — normalny po load teście, nie krytyczny |
-| maspex-uat-alb-unhealthy-hosts-bot | ALARM | UnHealthyHostCount > 0 | Alarm od 23/04/26 08:09 — stary, wymaga weryfikacji aktualności |
+| Target IP | Port | Health | Reason |
+|-----------|------|--------|--------|
+| 10.44.2.110 | 8080 | initial | Elb.RegistrationInProgress |
+| 10.44.3.17 | 8080 | unhealthy | Target.FailedHealthChecks |
+
+Interpretacja: stary task bota (10.44.3.17) niezdrowy, nowy task (10.44.2.110) w trakcie rejestracji. Możliwy normalny cykl zastępowania taska. CW alarm `maspex-uat-alb-unhealthy-hosts-bot` jest **aktualny** — nie stale.
+
+**CloudWatch alarms (live, 2026-05-01):**
+
+| Alarm | Stan | Metric | Kontekst / aktualny? |
+|-------|------|--------|----------------------|
+| TargetTracking maspex-uat/maspex-api AlarmLow (Memory) | ALARM | MemoryUtilization < 67.5% | Auto-scaling scale-down po load teście (ostatni punkt: 2026-04-28) — normalny, nie krytyczny |
+| TargetTracking maspex-uat/maspex-api AlarmLow (CPU) | ALARM | CPUUtilization < 54% | Auto-scaling scale-down po load teście (ostatni punkt: 2026-04-29) — normalny, nie krytyczny |
+| maspex-uat-alb-unhealthy-hosts-bot | ALARM | UnHealthyHostCount > 0 | **AKTUALNY** — potwierdzony describe-target-health (1 target unhealthy od 23/04/26 08:09) |
 | Pozostałe alarmy preprod | OK | — | |
 
 **Log groups:**
@@ -237,13 +348,14 @@ Uwaga: lista może być niekompletna — `list-secrets` zwrócił jeden wpis. Se
 
 | Problem | Priorytet | Evidence | Opis |
 |---------|-----------|----------|------|
-| maspex-preprod-api: 0/3 running | WYSOKI | `describe-services`: running:0, desired:3 | API w preprod nie startuje; task-def revision :1 (bardzo niska, możliwy config issue) |
-| twojkapsel-admin.makolab.pro PENDING_VALIDATION | ŚREDNI | ACM eu-west-1 + us-east-1 | Certyfikat dla admin preprod/prod bez walidacji DNS; blokuje HTTPS |
-| maspex-uat-alb-unhealthy-hosts-bot alarm | NISKI | CW alarm w ALARM od 23/04/26 | Nie potwierdzono target health — może być stale; wymaga `describe-target-health` |
-| Container Insights retencja 1 dzień | NISKI | `describe-log-groups` | `/aws/ecs/containerinsights/*/performance` — 1d retencja; utrudnia debugging |
-| contest-service log groups bez serwisu | INFO | `describe-log-groups` | Log groups dla UAT + preprod bez odpowiadającego serwisu ECS |
-| Sekrety: tylko 1 wpis widoczny | INFO | `list-secrets` | Możliwe ograniczenie uprawnień lub niekompletne pokrycie envów preprod/prod |
-| VPC bez Name tagu | INFO | `describe-vpcs`: name: null | Utrudnia nawigację; może być celowe |
+| maspex-preprod-api: 0/3 running — **przyczyna zidentyfikowana** | WYSOKI | `describe-tasks`: `ResourceInitializationError: AccessDeniedException: User: arn:aws:sts::969209893152:assumed-role/maspex-preprod-api-execution/... is not authorized to perform: secretsmanager:GetSecretValue on resource: ...maspex/preprod/api-STbBy3` | Execution role `maspex-preprod-api-execution` nie ma uprawnień do sekretu `maspex/preprod/api`. Naprawa: dodać policy `secretsmanager:GetSecretValue` na ARN `maspex/preprod/api-*` do roli. |
+| twojkapsel-admin.makolab.pro PENDING_VALIDATION | ŚREDNI | ACM eu-west-1 + us-east-1 — bez zmian od poprzedniego skanu | Certyfikat dla admin preprod/prod bez walidacji DNS; blokuje HTTPS na tej domenie. |
+| maspex-bot: 1 target unhealthy (AKTUALNY) | NISKI | `describe-target-health`: 10.44.3.17:8080 = unhealthy (FailedHealthChecks); running:2/desired:1 | Prawdopodobny cykl zastępowania taska. Jeśli nowy task (10.44.2.110) przejdzie health check — problem samoistnie zniknie. Monitorować. |
+| Container Insights retencja 1 dzień | NISKI | `describe-log-groups` | `/aws/ecs/containerinsights/*/performance` — 1d retencja; utrudnia debugging po incydencie. |
+| contest-service log groups bez serwisu | INFO | `describe-log-groups` | Log groups dla UAT + preprod bez odpowiadającego serwisu ECS — relikt lub niedokończona migracja. |
+| Sekrety: widoczny tylko 1 wpis dla makolab-ci | INFO | `list-secrets`: 1 wynik; `maspex/preprod/api` istnieje (AccessDeniedException nie ResourceNotFoundException) | IAM user makolab-ci nie ma dostępu do wszystkich sekretów — możliwe celowe ograniczenie. |
+| VPC bez Name tagu | INFO | `describe-vpcs`: name: null | Utrudnia nawigację; może być celowe. |
+| Drift desired_count preprod-api | INFO | commit `743d43e` "scale api to 1 task" vs runtime desired:3 | Commit sugeruje desired:1, runtime pokazuje desired:3 — możliwy późniejszy change poza commitem lub Terraform state drift. |
 
 ---
 
@@ -251,12 +363,24 @@ Uwaga: lista może być niekompletna — `list-secrets` zwrócił jeden wpis. Se
 
 | Obszar | IaC | Runtime AWS | Ocena |
 |--------|-----|-------------|-------|
-| preprod-api | task-def :1, desired nieustalone z IaC | desired:3, running:0 | **rozbieżność** — API nie startuje |
-| shared env | Terraform env istnieje (envs/shared/) | brak klastra ECS, log groups obecne | nieustalone — shared może być tylko VPC/networking |
-| prod env | Terraform env istnieje (envs/prod/) | stan live nieweryfikowany | **nieustalone** |
+| preprod-api execution role | IaC definiuje rolę execution (zakładane) | rola nie ma `secretsmanager:GetSecretValue` na `maspex/preprod/api-*` | **rozbieżność** — brak IAM permission |
+| preprod-api desired count | commit sugeruje 1 | desired:3 | **rozbieżność** — możliwy drift lub brak commitu |
+| preprod-api image | nieustalone z IaC | `maspex-api:coreapp-uat-303` (tag UAT w preprod env) | **wymaga potwierdzenia** — może być celowe |
+| shared env | Terraform env istnieje | brak klastra ECS, log groups obecne | nieustalone — shared może być tylko VPC/networking |
+| prod env | Terraform env istnieje | stan live nieweryfikowany | **nieustalone** |
 | Terraform backend | backend.hcl lokalnie, S3 bucket aktywny | bucket 969209893152 dostępny | zgodne |
 | Redis (UAT) | nieustalone z IaC (nie czytano modułu) | single-node (brak replication group) | wymaga potwierdzenia |
 | Auto-scaling API | zdefiniowane (target tracking CPU+MEM) | aktywne alarmy AlarmLow w ALARM | zgodne — alarmy są efektem ubocznym auto-scaling po load teście |
+
+---
+
+## Drift / niespójności architektury
+
+| Obszar | Typ driftu | Źródło | Opis |
+|--------|-----------|--------|------|
+| preprod-api execution role IAM | IaC vs runtime | live AWS (AccessDeniedException) | Rola `maspex-preprod-api-execution` nie ma `secretsmanager:GetSecretValue` na `maspex/preprod/api-*`. Możliwy brak modułu IAM w Terraform lub secret utworzony po deploymencie roli. |
+| preprod-api desired_count | IaC vs runtime | commit 743d43e vs describe-services | IaC commit mówi "scale to 1", runtime: desired:3. Możliwy drift Terraform state vs kod. |
+| preprod-api image tag | IaC vs runtime | task-def :1 | Obraz `coreapp-uat-303` w środowisku preprod — tag UAT użyty w preprod (celowe lub pomyłka). |
 
 ---
 
@@ -266,14 +390,17 @@ Uwaga: lista może być niekompletna — `list-secrets` zwrócił jeden wpis. Se
 |--------|---------|----------|-------|
 | Account ID, region, profil | wysoka | `sts get-caller-identity` | |
 | ECS UAT — serwisy i taski | wysoka | `describe-services` | |
-| ECS preprod — api down | wysoka | `describe-services` running:0 | przyczyna nieustalona |
+| ECS preprod — api down + przyczyna | wysoka | `describe-services` + `describe-tasks` | przyczyna: AccessDeniedException na secret |
+| Bot target health | wysoka | `describe-target-health` | 1 unhealthy, 1 initial — cykl zastępowania |
 | CloudFront distributions | wysoka | `list-distributions` | przypisanie prod/preprod wymaga potwierdzenia |
 | Redis endpointy | wysoka (UAT), średnia (preprod) | `describe-cache-clusters --show-cache-node-info` | preprod endpoint nie pobrany |
 | Terraform state backend | wysoka | `backend.hcl` z repozytorium | |
-| IaC (envs/prod, envs/shared) | średnia | pliki .tf w repo | live stan nieweryfikowany |
-| Secrets Manager pokrycie | niska | tylko 1 secret widoczny | możliwe ograniczenie uprawnień |
-| CloudWatch alarms jako health | średnia | alarmy ALARM ale kontekst czasowy | AlarmLow = auto-scaling artefakt; bot alarm stary |
-| contest-service | niska | log groups bez ECS service | relikt, feature flag lub niedokończona migracja — nieustalone |
+| IaC (envs/prod, envs/shared) | średnia | pliki .tf w repo — nieprzeczytane szczegółowo | live stan nieweryfikowany |
+| Secrets Manager pokrycie | niska | tylko 1 secret widoczny dla makolab-ci | secret preprod/api istnieje (AccessDeniedException potwierdza) |
+| CloudWatch alarms jako health | wysoka | alarmy zweryfikowane przez target-health | AlarmLow = auto-scaling artefakt; bot alarm aktualny |
+| contest-service | niska | log groups bez ECS service | relikt, feature flag lub niedokończona migracja |
+| Tagging / WAF | nieustalone | resourcegroupstaggingapi + wafv2 nie uruchomiono | wymaga osobnego skanu |
+| Prod environment | nieustalone | live scan nie wykonano | |
 
 ---
 
@@ -304,6 +431,11 @@ aws ecs describe-tasks \
   --profile maspex-cli --region eu-west-1 \
   --query 'tasks[0].{status:lastStatus,stop:stoppedReason,containers:containers[*].{name:name,reason:reason,exit:exitCode}}'
 
+# Naprawa: sprawdź IAM policy execution role preprod-api
+aws iam list-attached-role-policies \
+  --role-name maspex-preprod-api-execution \
+  --profile maspex-cli
+
 # Bot target health (zweryfikuj alarm)
 aws elbv2 describe-target-groups \
   --profile maspex-cli --region eu-west-1 \
@@ -322,9 +454,14 @@ aws secretsmanager list-secrets \
   --profile maspex-cli --region eu-west-1 \
   --query 'SecretList[*].{name:Name,description:Description}'
 
+# Tagging coverage (brakujący krok w bieżącym skanie)
+aws resourcegroupstaggingapi get-resources \
+  --profile maspex-cli --region eu-west-1 \
+  --query 'ResourceTagMappingList[?Tags[?Key==`Project`]==`[]`].ResourceARN'
+
 # OPCJONALNIE — tylko po świadomej decyzji operatora.
 # Nie jest częścią automatycznego cloud-detective read-only scan.
-# cd ~/projekty/mako/aws-projects/infra-maspex/terraform/envs/uat
+# cd ~/projekty/mako/aws-projects/infra-maspex/terraform/envs/preprod
 # terraform init -backend-config=backend.hcl
 # terraform plan -refresh=false
 ```
@@ -335,18 +472,36 @@ aws secretsmanager list-secrets \
 
 Ten context jest snapshotem na 2026-05-01. Po każdym `terraform apply` należy zaktualizować.
 
-Docelowy wzorzec:
 ```bash
 # po terraform apply:
-# uruchom ponownie cloud-detective (prompt: 50-patterns/prompts/starter-pack/cloud-detective-v2.md)
-# lub ręcznie zaktualizuj sekcje "Środowiska", "Mikroserwisy", "Zasoby kluczowe"
+# uruchom ponownie cloud-detective przez plik invocation:
+# @50-patterns/prompts/invocations/cloud-detective-maspex.md
 ```
 
-Proponowany przyszły target Makefile (bez wdrażania):
-```makefile
-docs-refresh:
-    # read-only scan runtime + update vault context
-```
+---
+
+## Źródła użyte
+
+| Źródło | Zakres | Status |
+|--------|--------|--------|
+| live AWS | ecs, elbv2, cloudwatch, acm, secretsmanager, sts | sprawdzone |
+| repo lokalne | `~/projekty/mako/aws-projects/infra-maspex/` — struktura, git log, backend.hcl, task-def :1 | częściowe |
+| IaC | Terraform — envs/ struktura, backend config | częściowe |
+| CFN stacks | nie dotyczy — projekt używa Terraform | — |
+| vault historyczny | [[finops-as-is-estimate]], [[finops-uat-preprod-cost-estimate-2026-04]], [[cloudfront-audit-2026-04-26]] | zlinkowane, nie duplikowane |
+| extra_regions | us-east-1 — ACM only | sprawdzone |
+
+## Fakty live vs historia vault
+
+| Informacja | Status | Źródło | Uwagi |
+|------------|--------|--------|-------|
+| ECS UAT healthy (9/9, 1/1, 1/1) | live | live AWS 2026-05-01 | |
+| ECS preprod-api DOWN (0/3) | live | live AWS 2026-05-01 | przyczyna: IAM — nowość vs poprzedni scan |
+| Bot target unhealthy | live | live AWS 2026-05-01 describe-target-health | poprzedni scan: alarm nieweryfikowany; teraz potwierdzone |
+| Account ID 969209893152 | live | sts get-caller-identity | |
+| ACM PENDING_VALIDATION twojkapsel-admin.makolab.pro | live | live AWS 2026-05-01 | bez zmian od poprzedniego skanu |
+| Finops estimates | historyczna | vault — finops-as-is-estimate | nie weryfikowane live |
+| CloudFront audit | historyczna | vault — cloudfront-audit-2026-04-26 | |
 
 ---
 
@@ -356,6 +511,8 @@ docs-refresh:
 - [[load-test-analysis-2026-04-29-1300-cest]]
 - [[cloudfront-audit-2026-04-26]]
 - [[troubleshooting]]
+- [[finops-as-is-estimate]]
+- [[finops-uat-preprod-cost-estimate-2026-04]]
 - [[maspex]] (`_chatgpt/context-packs/maspex.md`)
 - [[maspex-load-testing]] (`_chatgpt/context-packs/maspex-load-testing.md`)
 - [[now]]

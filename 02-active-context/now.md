@@ -2,6 +2,35 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — maspex cloud-detective snapshot v2 (re-scan) ✓
+
+```
+Projekt:    maspex (mako), account 969209893152, eu-west-1 + us-east-1 (ACM)
+Akcja:      cloud-detective v2 re-scan (ECS, ALB target health, CW alarms, ACM, Secrets)
+Wynik:      20-projects/clients/mako/maspex/maspex-context.md (zaktualizowany + brakujące sekcje dodane)
+
+POZIOM PEWNOŚCI: częściowa
+  - UAT: w pełni potwierdzony live (ECS, ALB bot target health, CW alarms)
+  - preprod: ECS potwierdzone, przyczyna preprod-api DOWN zidentyfikowana
+  - prod: niezweryfikowane
+
+NOWE USTALENIA (vs poprzedni snapshot):
+  🔴  preprod-api DOWN (0/3) — PRZYCZYNA: AccessDeniedException na secretsmanager:GetSecretValue
+      execution role `maspex-preprod-api-execution` brak policy na `maspex/preprod/api-STbBy3`
+      NAPRAWA: dodać policy secretsmanager:GetSecretValue do execution role
+  ⚠️  Bot UAT alarm AKTUALNY (nie stale): 1 target unhealthy (FailedHealthChecks),
+      1 w initial (RegistrationInProgress) — running:2/desired:1, możliwy cykl zastępowania
+  ⚠️  ACM PENDING_VALIDATION twojkapsel-admin.makolab.pro — bez zmian (eu-west-1 + us-east-1)
+  ⚠️  Tagging / WAF: niezweryfikowane (resourcegroupstaggingapi nie uruchomiono)
+
+NASTĘPNY KROK:
+  - Naprawić IAM: dodać secretsmanager:GetSecretValue do roli maspex-preprod-api-execution
+  - Sprawdzić bot target health po 30 min — czy nowy task zarejestrował się zdrowo
+  - Opcjonalnie: zwalidować DNS dla twojkapsel-admin.makolab.pro (PENDING_VALIDATION ACM)
+```
+
+---
+
 ## Update — 2026-05-01 — booking-online cloud-detective snapshot (nowy projekt) ✓
 
 ```
@@ -1510,4 +1539,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 20:45 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 21:10 — sesja aktywna*

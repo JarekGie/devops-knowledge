@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Access and execute cloud detective manifest"
+              "title": "Terminal: ✳ Access and execute cloud detective manifest"
             }
           },
           {
@@ -132,8 +132,23 @@
               "icon": "terminal",
               "title": "Terminal: aws sts get-caller-identity"
             }
+          },
+          {
+            "id": "8f427a375f4ce33e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20-projects/clients/mako/maspex/maspex-context.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "maspex-context"
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -291,9 +306,11 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {},
+              "state": {
+                "file": "20-projects/clients/mako/maspex/maspex-context.md"
+              },
               "icon": "lucide-info",
-              "title": "Atrybuty"
+              "title": "Atrybuty dla maspex-context"
             }
           }
         ],
@@ -318,7 +335,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "8f427a375f4ce33e",
   "lastOpenFiles": [
     "50-patterns/prompts/invocations/cloud-detective-maspex.md",
     "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
