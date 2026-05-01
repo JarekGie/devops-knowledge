@@ -2,6 +2,33 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-02 — AWS Health → GLPI format ujednolicony ✓
+
+```
+Projekt:    aws-cloud-platform (mako), monitoring-nagios-bot (814662658531)
+Akcja:      Lambda health-notify — ujednolicenie formatu emaili dla GLPI
+Wynik:      terraform apply (1 changed: Lambda source_code_hash)
+
+ZMIANY W LAMBDZIE:
+  ✅  SEVERITY_MAP: issue→high, investigation→medium, inne→low
+  ✅  Body: EventTypeCategory dodane jako osobne pole
+  ✅  Body: kolejność Account/AccountId/Region/Service/... — jeden blok bez pustych linii
+  ✅  Body: DedupKey przeniesiony przed Resources
+  ✅  Body: "Resource(s):" → "Resources:"
+  ✅  Body: "AWS Health -> ... -> Lambda" → "AWS Health → ... → Lambda health-notify"
+  ✅  docs/operator/usage.md: 2 komendy testowe (ISSUE + INVESTIGATION), em-dash→hyphen
+
+FORMAT SUBJECT:
+  [GLPI][AWS][HEALTH][<ACCOUNT_NAME>][<REGION>][<SERVICE>][ISSUE|INVESTIGATION] <EVENT_TYPE_CODE>
+
+CZEKA NA DZIAŁANIE:
+  ⚠️  Potwierdź 2 emaile subskrypcji SNS (jeśli jeszcze nie potwierdzone):
+      - health-notifications (eu-central-1) → jaroslaw.golab@makolab.com
+      - health-ops-alerts (us-east-1) → jaroslaw.golab@makolab.com
+  📋  Gdy znany email GLPI — dodaj go:
+      terraform apply -var 'notification_emails=["jaroslaw.golab@makolab.com","glpi-aws-alerts@makolab.pl"]'
+```
+
 ## Update — 2026-05-01 — AWS Health → GLPI integracja — WDROŻONA ✓
 
 ```
@@ -1684,4 +1711,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 01:15 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 01:22 — sesja aktywna*
