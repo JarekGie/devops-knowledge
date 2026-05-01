@@ -269,7 +269,7 @@ Profil `cd-management` i 11 profili `cd-<konto>` wygenerowane w ~/.aws/config (2
 | SCP: bilingi | `p-c6iuxb0c` (manual, **brak targets — unattached**) | live AWS | wysoka |
 | SCP: DEV | `p-yfwlx134` (manual → MakolabDev account) | live AWS | wysoka |
 | OAM sink (management) | `arn:aws:oam:eu-central-1:864277686382:sink/47f25adc-26a3-491c-9a06-1cfc23203f42` | live AWS | wysoka |
-| OAM sink (monitoring) | `arn:aws:oam:eu-central-1:814662658531:sink/dc0f8121-e9d4-4103-afb0-7d8031e72570` | IaC (import) | średnia |
+| OAM sink (monitoring) | `arn:aws:oam:eu-central-1:814662658531:sink/dc0f8121-e9d4-4103-afb0-7d8031e72570` | live AWS (2026-05-01) | wysoka |
 | EventBridge rule | `org-cloudwatch-alarms-to-sns` (management, Terraform) | live AWS | wysoka |
 | cloud-detective-agent role | `arn:aws:iam::864277686382:role/cloud-detective-agent` | live AWS | wysoka |
 
@@ -414,18 +414,18 @@ Konto management jest kontem platformowym bez workloadów HTTPS. Brak WAF jest n
 | Zasób | Konto | Region | Stan | Źródło |
 |-------|-------|--------|------|--------|
 | OAM Sink `org-observability-sink` | management (864277686382) | eu-central-1 | DEPLOYED, ManagedBy: Terraform, Project: Observability | live AWS |
-| OAM Sink `observabilitySink` | monitoring (814662658531) | eu-central-1 | najpewniej deployed (import block w IaC) | IaC import |
-| OAM Link rshop | RShop (943111679945) | eu-central-1 | najpewniej deployed | IaC import |
-| OAM Link booking | Booking_Online (128264038676) | eu-central-1 | najpewniej deployed | IaC import |
-| OAM Link planodkupow | planodkupow (333320664022) | eu-central-1 | najpewniej deployed | IaC import |
-| OAM Link dacia | dacia-asystent (074412166613) | eu-central-1 | najpewniej deployed | IaC resource |
+| OAM Sink `observabilitySink` | monitoring (814662658531) | eu-central-1 | DEPLOYED, confirmed live 2026-05-01 | live AWS |
+| OAM Link rshop | RShop (943111679945) | eu-central-1 | deployed (ARN w TF state: link/8287c5bd) | Terraform state |
+| OAM Link booking | Booking_Online (128264038676) | eu-central-1 | deployed (ARN w TF state: link/271113ad) | Terraform state |
+| OAM Link planodkupow | planodkupow (333320664022) | eu-central-1 | deployed (ARN w TF state: link/d37c0cfb) | Terraform state |
+| OAM Link dacia | dacia-asystent (074412166613) | eu-central-1 | deployed (IaC resource, bez import bloku) | IaC |
 | OAM Sink policy | management (864277686382) | eu-central-1 | AllowOrganization + PrincipalOrgID | live AWS |
 
-**Uwaga:** `org-observability-sink` w management account ma tagi `ManagedBy: Terraform` — jest zarządzany przez IaC (najpewniej `platform/monitoring/` lub osobny moduł). OAM sink w monitoring account (`814662658531`) to inny zasób.
+**Uwaga:** `org-observability-sink` w management account (tagi: ManagedBy: Terraform, Project: Observability) to OSOBNY zasób od `observabilitySink` w monitoring account. Oba istnieją live. `observabilitySink` potwierdzony live 2026-05-01. Szczegóły → [[monitoring-context]].
 
 ### Health Notifications (EventBridge + Lambda)
 
-Zasoby w koncie monitoring-nagios-bot. Niezweryfikowane bezpośrednio.
+Zasoby w koncie monitoring-nagios-bot — potwierdzone live 2026-05-01. Szczegóły → [[monitoring-context]].
 
 | Zasób | Konto | Region | IaC stan |
 |-------|-------|--------|----------|
@@ -446,11 +446,11 @@ Moduł `security/cloud-detective/` wdrożony. 25 zasobów IAM. Szczegóły w sek
 
 | Element | Status | Uwagi |
 |---------|--------|-------|
-| CloudTrail org-baseline | 🔥 DELIVERY BROKEN | IsLogging: True, LastDeliveryAttempt: 2026-05-01T21:10:49Z, LastDeliveryTime: 2026-02-14 — root cause: KMS policy incompatibility |
+| CloudTrail org-baseline | ✅ NAPRAWIONY 2026-05-01 | KMSKeyId dodany, KMS policy poprawiona (usunięto kms:GrantIsForAWSResource); LatestDeliveryError: null |
 | Terraform state backend (S3) | OK | bucket active, versioning enabled |
 | Terraform lock table (DynamoDB) | OK | ACTIVE, PAY_PER_REQUEST |
 | OAM sink management account | OK | deployed, Terraform managed |
-| OAM monitoring (monitoring account) | PARTIAL | IaC import potwierdza deployed; nie weryfikowane live |
+| OAM monitoring (monitoring account) | OK | Confirmed live 2026-05-01; Lambda Active, EventBridge ENABLED, SNS subscribed; szczegóły: [[monitoring-context]] |
 | SecurityHub | NIE WŁĄCZONY | management account — GAP |
 | GuardDuty | NIE WŁĄCZONY | management account — GAP |
 | AWS Config | NIE SKONFIGUROWANY | brak configuration recorder — GAP |

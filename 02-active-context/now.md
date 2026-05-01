@@ -2,6 +2,40 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — CloudTrail naprawiony + jgol_cli policy + monitoring scan ✓
+
+```
+Projekt:    aws-cloud-platform (mako)
+
+1. CloudTrail fix (CRITICAL → NAPRAWIONY):
+   - Przyczyna: kms:GrantIsForAWSResource:true w warunku AllowCloudTrailUseKey
+     → ten condition key jest tylko dla kms:CreateGrant, nie dla GenerateDataKey
+     → zawsze false przy bezpośrednich API calls → AccessDenied → S3 PutObject fail
+   - Naprawa:
+     a) KMS key policy w LogArchiveNew (771354139056) — usunięto błędny condition,
+        dodano kms:Decrypt dla management account root do czytania logów
+     b) aws cloudtrail update-trail --kms-key-id arn:aws:kms:eu-central-1:771354139056:key/a6ce6c61-...
+   - Status: LatestDeliveryError: null ✅ (pierwsze nowe logi pojawią się za ~15 min)
+
+2. jgol_cli policy:
+   - Dodano inline policy AssumeCloudDetectiveAgent:
+     sts:AssumeRole → arn:aws:iam::864277686382:role/cloud-detective-agent ✅
+
+3. Scan monitoring-nagios-bot (814662658531):
+   - Nowy plik: 20-projects/clients/mako/aws-cloud-platform/monitoring-context.md
+   - Lambda health-notify: Active / Successful
+   - EventBridge bus health-aggregation: ENABLED
+   - OAM sink observabilitySink: potwierdzony live (korekta: NIE w management account!)
+   - 4 OAM linki: rshop, booking, planodkupow, dacia (7 kont bez linków)
+   - 5 CloudWatch dashboards: llz-platform-overview, booking, dacia, rshop, bbmt
+   - Problemy: brak CW alarms na Lambda errors, partial OAM coverage, tagging NO-GO LLZ
+
+NASTĘPNY KROK (opcjonalne):
+  - Skan pozostałych kont member przez cd-<konto> (rshop, booking, dacia)
+  - Uzupełnić OAM linki dla cc, drp_tfs, planodkupowv1, admin_makolab, lab, log_archive
+  - Dodać CW alarm na Lambda errors/throttles w health-notify
+```
+
 ## Update — 2026-05-01 — cloud-detective IAM cross-account module — DEPLOYED ✓
 
 ```
@@ -1622,4 +1656,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 23:26 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 23:43 — sesja aktywna*
