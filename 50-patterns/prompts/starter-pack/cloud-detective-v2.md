@@ -188,6 +188,84 @@ Jeśli invocation ma `extra_regions` (np. `us-east-1` dla ACM / CloudFront):
 Jeśli region nie został sprawdzony, wpisz: `niezweryfikowane`
 Nie wyciągaj wniosków z regionu, którego nie sprawdziłeś.
 
+## Brak danych ≠ brak zasobu
+
+Jeśli coś nie zostało sprawdzone → oznacz jako `niezweryfikowane`, a nie jako brak zasobu.
+
+❌ złe: `"Brak CloudWatch alarms"`
+✅ dobre: `"CloudWatch alarms: niezweryfikowane (describe-alarms nie wykonano)"`
+✅ dobre: `"CloudWatch alarms: 0 alarmów (describe-alarms wykonano, lista pusta)"`
+
+Rozróżniaj:
+
+| Etykieta | Znaczenie |
+|----------|-----------|
+| `niezweryfikowane` | komenda nie była uruchomiona lub region nie był sprawdzony |
+| `brak` | komenda uruchomiona, odpowiedź pusta / zero zasobów |
+| `nieustalone` | komenda uruchomiona, wynik niejednoznaczny |
+
+## Multi-repo / multi-source-of-truth
+
+Jeśli istnieje więcej niż jedno repo IaC lub templates są na S3, jawnie opisz zakres każdego:
+
+```md
+IaC source of truth:
+- repo A <ścieżka>: <zakres>
+- repo B <ścieżka>: <zakres>
+- S3 templates: tak/nie — <bucket>
+```
+
+Nie zakładaj jednego repo jako jedynego source of truth jeśli:
+
+- templates są deployowane przez `TemplateURL` z S3
+- prod i dev są zarządzane z osobnych repozytoriów
+- CFN stack używa szablonów z lokalizacji innej niż lokalny checkout
+
+## ECS / runtime sanity
+
+Przed sklasyfikowaniem problemu ECS wykonaj `describe-services` lub oznacz jako `niezweryfikowane`:
+
+| Sygnał | Interpretacja | Wymagana weryfikacja |
+|--------|---------------|----------------------|
+| `desired > running` | potencjalny problem runtime | `list-tasks --desired-status STOPPED` |
+| `running = desired, pending = 0` | serwis stabilny | opcjonalnie `describe-target-health` |
+| `running = desired`, ALB unhealthy | serwis działa, ruch może nie docierać | `describe-target-health` |
+| brak ECS service | nie oznacza braku systemu | możliwy CloudFront-only, Lambda, inny pattern |
+
+Nie klasyfikuj jako problem bez `describe-services` lub `describe-target-health`.
+
+## ALB / CloudFront — wymaga potwierdzenia
+
+Jeśli nie sprawdzono listener rules (`describe-listeners`, `describe-rules`) lub origin mapping (`get-distribution-config`):
+
+→ każde przypisanie domeny do serwisu wpisz jako `wymaga potwierdzenia`
+
+Format: `Domena → CF/ALB → serwis: wymaga potwierdzenia (listener rules niezweryfikowane)`
+
+## Secrets Manager — fallback logic
+
+Jeśli `secretsmanager list-secrets` zwróciła pustą listę → NIE pisz "Brak sekretów", wpisz:
+
+```md
+Secrets Manager: 0 sekretów w regionie <REGION> (sprawdzone live)
+Możliwe alternatywne źródła sekretów (niezweryfikowane):
+- SSM Parameter Store
+- CloudFormation parameters (NoEcho)
+- CI/CD credentials (np. Jenkins, GitLab CI)
+- hardcoded — do weryfikacji
+```
+
+## CFN — blocker logic
+
+`CFN blocker = true` wyłącznie gdy:
+
+- status `UPDATE_ROLLBACK_FAILED` — stack aktywnie zablokowany, wymaga `continue-update-rollback`
+- LUB kolejny update nie przechodzi, potwierdzone przez próbę change set lub opis eventsów
+
+`UPDATE_ROLLBACK_COMPLETE`:
+→ wpisz: **"ryzyko przyszłych zmian"**, NIE blocker
+→ klasyfikacja: WYSOKI
+
 ---
 
 # Projekt
@@ -375,6 +453,20 @@ tags:
 **AWS profile:** `<AWS_PROFILE>`
 **IAM principal:** `<nazwa logiczna>` *(nie wypisuj AccessKeyId, AIDA..., pełnych ARN jeśli nie są potrzebne)*
 **Region główny:** `<REGIONS>`
+
+---
+
+## Snapshot metadata
+
+| Pole | Wartość |
+|------|---------|
+| scan_date | <YYYY-MM-DD> |
+| scan_scope | full / partial |
+| regions_checked | <lista regionów faktycznie odpytanych> |
+| repo_checked | tak / nie / częściowo |
+| iac_checked | tak / nie / częściowo |
+| runtime_checked | tak / nie / częściowo |
+| extra_regions_checked | <lista lub "nie dotyczy"> |
 
 ---
 
