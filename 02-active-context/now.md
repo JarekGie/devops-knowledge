@@ -2,31 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-02 — AWS Health → GLPI format ujednolicony ✓
+## Update — 2026-05-02 — AWS Health → GLPI — PRZETESTOWANE, PIPELINE DZIAŁA ✅
 
 ```
 Projekt:    aws-cloud-platform (mako), monitoring-nagios-bot (814662658531)
-Akcja:      Lambda health-notify — ujednolicenie formatu emaili dla GLPI
-Wynik:      terraform apply (1 changed: Lambda source_code_hash)
+Akcja:      Lambda health-notify — ujednolicenie formatu + test end-to-end
+Wynik:      email potwierdzony w skrzynce, format GLPI poprawny
 
-ZMIANY W LAMBDZIE:
+WDROŻONE I PRZETESTOWANE:
   ✅  SEVERITY_MAP: issue→high, investigation→medium, inne→low
-  ✅  Body: EventTypeCategory dodane jako osobne pole
-  ✅  Body: kolejność Account/AccountId/Region/Service/... — jeden blok bez pustych linii
-  ✅  Body: DedupKey przeniesiony przed Resources
-  ✅  Body: "Resource(s):" → "Resources:"
-  ✅  Body: "AWS Health -> ... -> Lambda" → "AWS Health → ... → Lambda health-notify"
-  ✅  docs/operator/usage.md: 2 komendy testowe (ISSUE + INVESTIGATION), em-dash→hyphen
+  ✅  Body: EventTypeCategory, DedupKey przed Resources, "Resources:", Source z →
+  ✅  Subject: [GLPI][AWS][HEALTH][RShop][eu-central-1][RDS][ISSUE] AWS_RDS_...
+  ✅  Email dotarł na jaroslaw.golab@makolab.com — format zgodny z oczekiwaniami GLPI
+  ✅  docs/operator/usage.md: poprawne komendy testowe (lambda invoke, nie put-events)
 
-FORMAT SUBJECT:
-  [GLPI][AWS][HEALTH][<ACCOUNT_NAME>][<REGION>][<SERVICE>][ISSUE|INVESTIGATION] <EVENT_TYPE_CODE>
+WAŻNE: aws events put-events z source "aws.*" jest zablokowane przez AWS na wszystkich
+       busach. Test robi się przez direct lambda invoke z OrganizationAccountAccessRole.
+       Komenda w docs/operator/usage.md.
 
-CZEKA NA DZIAŁANIE:
-  ⚠️  Potwierdź 2 emaile subskrypcji SNS (jeśli jeszcze nie potwierdzone):
-      - health-notifications (eu-central-1) → jaroslaw.golab@makolab.com
-      - health-ops-alerts (us-east-1) → jaroslaw.golab@makolab.com
+NASTĘPNY KROK:
   📋  Gdy znany email GLPI — dodaj go:
-      terraform apply -var 'notification_emails=["jaroslaw.golab@makolab.com","glpi-aws-alerts@makolab.pl"]'
+      cd platform/health-notifications
+      AWS_PROFILE=mako-dc terraform apply \
+        -var 'notification_emails=["jaroslaw.golab@makolab.com","glpi-aws-alerts@makolab.pl"]'
+  ⚠️  Subskrypcja health-ops-alerts (us-east-1) — sprawdź czy potwierdzona
 ```
 
 ## Update — 2026-05-01 — AWS Health → GLPI integracja — WDROŻONA ✓
@@ -1711,4 +1710,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 01:28 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 01:29 — sesja aktywna*

@@ -153,16 +153,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CLAUDE.md",
+                "file": "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CLAUDE"
+              "title": "cloud-detective-aws-cloud-platform"
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "vertical"
@@ -320,11 +319,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "CLAUDE.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla CLAUDE"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -349,13 +346,14 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "4744f5b70637c02c",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
+    "CLAUDE.md",
     "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
     "20-projects/clients/mako/aws-cloud-platform",
-    "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
     "20-projects/internal/devops-business/context.md",
     "20-projects/internal/devops-business/decisions.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
@@ -381,7 +379,6 @@
     "50-patterns/prompts/starter-pack/templater-config.md",
     "50-patterns/prompts/Bez nazwy.md",
     "templates/frontmatter/client_context.md",
-    "50-patterns/prompts/starter-pack/cloude-detective.md",
     "20-projects/clients/maspex",
     "templates/frontmatter",
     "templates",
