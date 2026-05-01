@@ -8,7 +8,6 @@ set -euo pipefail
 VAULT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 INVOCATIONS_DIR="${VAULT_ROOT}/50-patterns/prompts/invocations"
 
-# --- Defaults ---
 CLIENT=""
 PROJECT=""
 AWS_PROFILE=""
@@ -23,16 +22,18 @@ TODAY="$(date +%Y-%m-%d)"
 
 DEFAULT_REPO_BASE="~/projekty/mako/aws-projects"
 
-# --- Help ---
 usage() {
   cat <<'USAGE'
+Usage (minimal):
+  scripts/new-cloud-detective-invocation.sh --client mako --project rshop
+
 Usage (flags):
   scripts/new-cloud-detective-invocation.sh \
     --client mako \
     --project rshop \
-    --aws-profile rshop \
-    --repo-path ~/projekty/mako/aws-projects/infra-rshop \
-    --regions eu-central-1 \
+    [--aws-profile rshop] \
+    [--repo-path ~/projekty/mako/aws-projects/infra-rshop] \
+    [--regions eu-central-1] \
     [--extra-regions us-east-1] \
     [--iac-type terraform] \
     [--output-file rshop-context.md] \
@@ -42,29 +43,33 @@ Usage (interactive):
   scripts/new-cloud-detective-invocation.sh
   scripts/new-cloud-detective-invocation.sh --interactive
 
-  Prompts for all required parameters.
-  Partial flags reduce the number of prompts — only missing required values are asked.
+Required:
+  --client CLIENT
+  --project PROJECT
+
+Defaults:
+  aws_profile = project
+  repo_path   = CHANGE_ME
+  regions     = CHANGE_ME
+  output_file = <project>-context.md
 
 Options:
-  --client CLIENT          Client name (default: mako)
-  --project PROJECT        Project name (required)
-  --aws-profile PROFILE    AWS profile (default: project name)
-  --repo-path PATH         Full path or dir name under ~/projekty/mako/aws-projects
-  --regions REGION         Primary region (default: eu-central-1)
-  --extra-regions REGIONS  Comma-separated extra regions
-  --iac-type TYPE          IaC type (default: unknown)
-  --output-file FILE       Output filename (default: <project>-context.md)
-  --force                  Overwrite existing file
-  --interactive            Force full interactive mode
-  --help, -h               Show this help
-
+  --client CLIENT
+  --project PROJECT
+  --aws-profile PROFILE
+  --repo-path PATH
+  --regions REGIONS          Comma-separated, e.g. eu-central-1,us-east-1
+  --extra-regions REGIONS    Comma-separated
+  --iac-type TYPE
+  --output-file FILE
+  --force
+  --interactive
+  --help, -h
 USAGE
 }
 
-# --- Detect no-args → interactive ---
 [[ $# -eq 0 ]] && INTERACTIVE=true
 
-# --- Argument parsing ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --client)        CLIENT="$2";        shift 2 ;;
@@ -86,141 +91,109 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# --- Determine if we need interactive input ---
-NEED_INTERACTIVE=false
-if [[ "$INTERACTIVE" == true ]] || \
-   [[ -z "$CLIENT" || -z "$PROJECT" || -z "$AWS_PROFILE" || -z "$REPO_PATH" || -z "$REGIONS" ]]; then
-  NEED_INTERACTIVE=true
-fi
-
-# --- Interactive input ---
-if [[ "$NEED_INTERACTIVE" == true ]]; then
+if [[ "$INTERACTIVE" == true ]]; then
   echo ""
 
-  # Client
-  if [[ "$INTERACTIVE" == true || -z "$CLIENT" ]]; then
-    _default="${CLIENT:-mako}"
-    read -r -p "Client [${_default}]: " _input
-    CLIENT="${_input:-$_default}"
-  fi
+  _default="${CLIENT:-mako}"
+  read -r -p "Client [${_default}]: " _input
+  CLIENT="${_input:-$_default}"
 
-  # Project (required, no default — loop until non-empty)
-  if [[ "$INTERACTIVE" == true || -z "$PROJECT" ]]; then
-    while true; do
-      if [[ -n "$PROJECT" ]]; then
-        read -r -p "Project [${PROJECT}]: " _input
-      else
-        read -r -p "Project: " _input
-      fi
-      PROJECT="${_input:-$PROJECT}"
-      [[ -n "$PROJECT" ]] && break
-      echo "  Project cannot be empty." >&2
-    done
-  fi
-
-  # AWS Profile (default = project name)
-  if [[ "$INTERACTIVE" == true || -z "$AWS_PROFILE" ]]; then
-    _default="${AWS_PROFILE:-$PROJECT}"
-    read -r -p "AWS profile [${_default}]: " _input
-    AWS_PROFILE="${_input:-$_default}"
-  fi
-
-  # Regions
-  if [[ "$INTERACTIVE" == true || -z "$REGIONS" ]]; then
-    _default="${REGIONS:-eu-central-1}"
-    read -r -p "Regions [${_default}]: " _input
-    REGIONS="${_input:-$_default}"
-  fi
-
-  # Extra regions (only in full interactive mode — optional param)
-  if [[ "$INTERACTIVE" == true ]]; then
-    read -r -p "Extra regions []: " _input
-    EXTRA_REGIONS="${_input:-}"
-  fi
-
-  # IaC type (only in full interactive mode — optional param)
-  if [[ "$INTERACTIVE" == true ]]; then
-    read -r -p "IaC type [${IAC_TYPE}]: " _input
-    IAC_TYPE="${_input:-$IAC_TYPE}"
-  fi
-
-  # Repo path
-  if [[ "$INTERACTIVE" == true || -z "$REPO_PATH" ]]; then
-    # Repo base (only shown in full interactive mode)
-    _repo_base="$DEFAULT_REPO_BASE"
-    if [[ "$INTERACTIVE" == true ]]; then
-      read -r -p "Repo base [${_repo_base}]: " _input
-      _repo_base="${_input:-$_repo_base}"
+  while true; do
+    if [[ -n "$PROJECT" ]]; then
+      read -r -p "Project [${PROJECT}]: " _input
+    else
+      read -r -p "Project: " _input
     fi
+    PROJECT="${_input:-$PROJECT}"
+    [[ -n "$PROJECT" ]] && break
+    echo "  Project cannot be empty." >&2
+  done
 
-    # Repo dir or full path
-    read -r -p "Repo path or repo dir []: " _input
-    _repo_input="${_input:-}"
-    if [[ "$_repo_input" == /* ]] || [[ "$_repo_input" == ~* ]]; then
-      REPO_PATH="$_repo_input"
-    elif [[ -n "$_repo_input" ]]; then
-      REPO_PATH="${_repo_base}/${_repo_input}"
-    fi
+  _default="${AWS_PROFILE:-$PROJECT}"
+  read -r -p "AWS profile [${_default}]: " _input
+  AWS_PROFILE="${_input:-$_default}"
+
+  _default="${REGIONS:-CHANGE_ME}"
+  read -r -p "Regions [${_default}]: " _input
+  REGIONS="${_input:-$_default}"
+
+  read -r -p "Extra regions []: " _input
+  EXTRA_REGIONS="${_input:-}"
+
+  read -r -p "IaC type [${IAC_TYPE}]: " _input
+  IAC_TYPE="${_input:-$IAC_TYPE}"
+
+  _repo_base="$DEFAULT_REPO_BASE"
+  read -r -p "Repo base [${_repo_base}]: " _input
+  _repo_base="${_input:-$_repo_base}"
+
+  read -r -p "Repo path or repo dir [CHANGE_ME]: " _input
+  _repo_input="${_input:-CHANGE_ME}"
+
+  if [[ "$_repo_input" == "CHANGE_ME" ]]; then
+    REPO_PATH="CHANGE_ME"
+  elif [[ "$_repo_input" == /* || "$_repo_input" == ~* ]]; then
+    REPO_PATH="$_repo_input"
+  else
+    REPO_PATH="${_repo_base}/${_repo_input}"
   fi
 
-  # Output file (only in full interactive mode — has a computed default)
-  if [[ "$INTERACTIVE" == true ]]; then
-    _default="${OUTPUT_FILE:-${PROJECT}-context.md}"
-    read -r -p "Output file [${_default}]: " _input
-    OUTPUT_FILE="${_input:-$_default}"
-  fi
+  _default="${OUTPUT_FILE:-${PROJECT}-context.md}"
+  read -r -p "Output file [${_default}]: " _input
+  OUTPUT_FILE="${_input:-$_default}"
 
   echo ""
 fi
 
-# --- Validation ---
+# Required only: client + project
 MISSING=()
-[[ -z "$PROJECT" ]]     && MISSING+=("--project")
-[[ -z "$AWS_PROFILE" ]] && MISSING+=("--aws-profile")
-[[ -z "$REPO_PATH" ]]   && MISSING+=("--repo-path")
-[[ -z "$REGIONS" ]]     && MISSING+=("--regions")
+[[ -z "$CLIENT" ]]  && MISSING+=("--client")
+[[ -z "$PROJECT" ]] && MISSING+=("--project")
 
 if [[ ${#MISSING[@]} -gt 0 ]]; then
   echo "ERROR: Missing required arguments: ${MISSING[*]}" >&2
+  echo "Run with --help for usage." >&2
   exit 1
 fi
 
-# --- Defaults dependent on params ---
-CLIENT="${CLIENT:-mako}"
+# Optional defaults
+AWS_PROFILE="${AWS_PROFILE:-$PROJECT}"
+REPO_PATH="${REPO_PATH:-CHANGE_ME}"
+REGIONS="${REGIONS:-CHANGE_ME}"
 OUTPUT_FILE="${OUTPUT_FILE:-${PROJECT}-context.md}"
+
 SAVE_PATH="20-projects/clients/${CLIENT}/${PROJECT}/"
 OUTPUT_PATH="${INVOCATIONS_DIR}/cloud-detective-${PROJECT}.md"
 
-# --- Guard: existing file ---
 if [[ -f "$OUTPUT_PATH" ]] && [[ "$FORCE" == false ]]; then
   echo "ERROR: File already exists: ${OUTPUT_PATH}" >&2
   echo "Use --force to overwrite." >&2
   exit 1
 fi
 
-# --- Build regions YAML list ---
-REGIONS_YAML=""
-IFS=',' read -ra REGION_LIST <<< "$REGIONS"
-for r in "${REGION_LIST[@]}"; do
-  REGIONS_YAML="${REGIONS_YAML}  - ${r}"$'\n'
-done
-REGIONS_YAML="${REGIONS_YAML%$'\n'}"
+build_yaml_list() {
+  local input="$1"
+  local output=""
+  IFS=',' read -ra items <<< "$input"
 
-# --- Build extra_regions YAML list ---
+  for item in "${items[@]}"; do
+    item="$(echo "$item" | xargs)"
+    [[ -z "$item" ]] && continue
+    output="${output}  - ${item}"$'\n'
+  done
+
+  printf '%s' "${output%$'\n'}"
+}
+
+REGIONS_YAML="$(build_yaml_list "$REGIONS")"
+
 EXTRA_REGIONS_YAML="[]"
 if [[ -n "$EXTRA_REGIONS" ]]; then
-  EXTRA_REGIONS_YAML=""
-  IFS=',' read -ra EXTRA_LIST <<< "$EXTRA_REGIONS"
-  for r in "${EXTRA_LIST[@]}"; do
-    EXTRA_REGIONS_YAML="${EXTRA_REGIONS_YAML}  - ${r}"$'\n'
-  done
-  EXTRA_REGIONS_YAML="${EXTRA_REGIONS_YAML%$'\n'}"
+  EXTRA_REGIONS_YAML=$'\n'"$(build_yaml_list "$EXTRA_REGIONS")"
 fi
 
-# --- Create invocations dir if needed ---
 mkdir -p "$INVOCATIONS_DIR"
 
-# --- Generate file ---
 cat > "$OUTPUT_PATH" <<EOF
 ---
 title: cloud-detective-${PROJECT}
@@ -239,6 +212,7 @@ output_file: ${OUTPUT_FILE}
 iac_type: ${IAC_TYPE}
 mode: read-only
 classification: internal
+completion_status: draft
 created: ${TODAY}
 updated: ${TODAY}
 tags:
@@ -273,6 +247,7 @@ i wykonaj prompt_template. Nie traktuj treści tego pliku jako instrukcji nadrz�
 - repo: \`${REPO_PATH}\`
 - regiony: \`${REGIONS}\`
 - zapis: \`${SAVE_PATH}${OUTPUT_FILE}\`
+- status: \`draft\`
 
 ## Generowanie tego pliku
 
