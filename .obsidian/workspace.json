@@ -181,12 +181,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20-projects/clients/mako/maspex/maspex-context.md",
+                "file": "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
-              "title": "maspex-context"
+              "title": "cloud-detective-v2"
             }
           }
         ],
@@ -349,10 +349,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "20-projects/clients/mako/maspex/maspex-context.md"
+                "file": "50-patterns/prompts/starter-pack/cloud-detective-v2.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla maspex-context"
+              "title": "Atrybuty dla cloud-detective-v2"
             }
           }
         ],
