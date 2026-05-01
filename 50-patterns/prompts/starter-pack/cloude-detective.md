@@ -41,9 +41,9 @@ Wszystko zapisuj po polsku. Kod, komendy, ścieżki, nazwy zasobów AWS, ID i ou
 
 # Projekt
 
-Nazwa projektu: `rshop`  
+Nazwa projektu: `maspex`  
 Klient / domena: `client-work`  
-AWS profile: `rshop`  
+AWS profile: `maspex-cli`  
 Account ID: `<UZUPEŁNIJ albo wykryj przez sts get-caller-identity>`  
 Regiony do sprawdzenia: `eu-west-1`  
 Repozytorium lokalne: `~/projekty/mako/aws-projects/infra-maspex/` 
