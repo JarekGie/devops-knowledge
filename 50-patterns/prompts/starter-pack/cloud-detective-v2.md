@@ -230,11 +230,24 @@ Przed sklasyfikowaniem problemu ECS wykonaj `describe-services` lub oznacz jako 
 | Sygnał | Interpretacja | Wymagana weryfikacja |
 |--------|---------------|----------------------|
 | `desired > running` | potencjalny problem runtime | `list-tasks --desired-status STOPPED` |
+| `running > desired` + target `unhealthy` + target `initial` | prawdopodobny task replacement / deployment cycle | `ecs wait services-stable` |
 | `running = desired, pending = 0` | serwis stabilny | opcjonalnie `describe-target-health` |
 | `running = desired`, ALB unhealthy | serwis działa, ruch może nie docierać | `describe-target-health` |
 | brak ECS service | nie oznacza braku systemu | możliwy CloudFront-only, Lambda, inny pattern |
 
 Nie klasyfikuj jako problem bez `describe-services` lub `describe-target-health`.
+
+Jeśli `running > desired` i target health pokazuje jednocześnie jeden target `unhealthy` + drugi `initial`, oznacz jako `prawdopodobny task replacement / deployment cycle`, nie awaria. Dodaj next step:
+
+```bash
+aws ecs wait services-stable \
+  --cluster <cluster> \
+  --services <service> \
+  --profile <profile> \
+  --region <region>
+```
+
+Jeśli po wait service stabilizuje się i target healthy → problem tymczasowy. Jeśli nie stabilizuje się → podnieś priorytet.
 
 **Zakaz overconfidence — ECS status GO:**
 
@@ -254,12 +267,19 @@ Przykład: `"Bieżący scan potwierdził N klastrów. Klaster Y niezweryfikowany
 
 ACM jest usługą **regionalną**. Certyfikaty ALB i CloudFront są w różnych regionach.
 
-Agent musi:
-- rozdzielić certyfikaty ALB (region workload, np. `eu-central-1`) od certyfikatów CloudFront (`us-east-1`)
-- każdy region sprawdzić osobno przez `acm list-certificates --region <REGION>`
-- nie sugerować, że wyniki z dwóch regionów są "identyczne" bez jawnego wyjaśnienia
+Reguły:
+- Dla CloudFront sprawdzaj ACM w `us-east-1`. Dla ALB sprawdzaj ACM w regionie workloadu.
+- Nie pisz, że "obie listy zwróciły te same certyfikaty", chyba że potrafisz to udowodnić i wyjaśnić.
+- Rozdziel certyfikaty ALB (region workload, np. `eu-central-1`) od certyfikatów CloudFront (`us-east-1`).
+- Każdy region sprawdź osobno przez `acm list-certificates --region <REGION>`.
 
 Jeśli oba regiony zwróciły te same domeny: wyjaśnij explicite (np. certy istnieją w obu regionach — ALB + CF, lub listing obejmuje certy z domyślnego regionu profilu).
+
+Preferowane sformułowanie w output:
+
+```md
+Certyfikaty sprawdzono w `<workload-region>` i `us-east-1`. W tabeli ujęto certyfikaty istotne dla CloudFront (`us-east-1`). Certyfikaty ALB w `<workload-region>` wymagają osobnego potwierdzenia per listener.
+```
 
 Format w output:
 
@@ -304,11 +324,17 @@ Agent musi jawnie rozróżniać:
 - **runtime risk** — aktywne zagrożenie, exploit, ruch atakujący wykryty
 - **governance gap** — brak kontroli względem standardu, brak incydentu
 
-Governance gap = maksymalnie `WYSOKI` w "Znane problemy", `GAP` lub `NO-GO` w tabeli Tagging/FinOps/WAF.
+Governance gap = maksymalnie `WYSOKI` w "Znane problemy", `GAP` lub `NO-GO względem LLZ/WAF-readiness` w tabeli Tagging/FinOps/WAF.
+
+Preferowany opis braku WAF:
+
+```md
+Brak WAF względem LLZ/WAF-readiness; nie oznacza aktywnej awarii runtime.
+```
 
 ## Tagging / FinOps — separation of concerns
 
-Context ≠ audit.
+Context nie jest pełnym audytem tagów.
 
 Jeśli istnieje osobny dokument audytu tagowania lub FinOps (np. tagging baseline, finops review):
 
@@ -321,6 +347,20 @@ Format w sekcji `## Tagging / FinOps / LLZ / AWS WAF readiness`:
 ```md
 Źródło historyczne: [[nazwa-dokumentu-audytu]]
 Bieżący scan: sample-based (<N> zasobów sprawdzonych live)
+```
+
+Jeśli brak historycznego audytu, wpisz explicite:
+
+```md
+Brak osobnego audytu tagów — rekomendowane utworzenie dedicated tagging audit.
+```
+
+Nie oznaczaj ECS/Fargate tag propagation jako GO, jeśli bieżący scan sprawdził tylko sample.
+
+Przykład dla statusu częściowego:
+
+```md
+PARTIAL — bieżący scan potwierdził 1/10 serwisów; pełna walidacja pochodzi z audytu historycznego.
 ```
 
 Jeśli brak historycznego audytu: oznacz wszystko jako `niezweryfikowane` dla obszarów niesprawdzonych live.
@@ -837,6 +877,15 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - [ ] Czy certyfikaty ACM sprawdziłem per region (eu-central-1 osobno, us-east-1 osobno)?
 - [ ] Czy frontmatter zawiera `scan_method: cloud-detective-v2` i `last_verified_by`?
 - [ ] Czy jeśli istnieje historyczny dokument audytu — zlinkowano go zamiast duplikować?
+- [ ] Czy `regions` zawiera tylko regiony workloadu, a `extra_regions` regiony pomocnicze (np. us-east-1 tylko dla ACM/CloudFront)?
+- [ ] Czy nie użyłem "GO" dla sample-based validation — użyłem PARTIAL z opisem zakresu?
+- [ ] Czy AccessDenied do sekretu opisałem jako brak uprawnień, a nie jako potwierdzenie istnienia sekretu?
+- [ ] Czy komendy diagnostyczne są oznaczone `# Diagnoza:`, a nie `# Naprawa:`?
+- [ ] Czy każde delete/remove/destroy jest usunięte albo oznaczone jako `Proposed only, do not run from context`?
+- [ ] Czy problemy governance nie są błędnie oznaczone jako aktywny runtime incident (CRITICAL zamiast GAP/WYSOKI)?
+- [ ] Czy `running > desired` z targetem `initial` sprawdziłem pod kątem deployment cycle (nie awaria)?
+- [ ] Czy ECS tasks w publicznych subnetach oznaczyłem WYSOKI, nie CRITICAL?
+- [ ] Czy image tag mismatch opisałem jako ŚREDNI z "wymaga potwierdzenia", nie CRITICAL?
 
 ---
 
@@ -886,6 +935,16 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - **Nie duplikuj audytów** — jeśli istnieje osobny dokument (tagging baseline, finops review), zlinkuj go; nie kopiuj treści do context file.
 - **Determinizm outputu jest wymagany** — agent nie może: pomijać sekcji, zmieniać klasyfikacji bez nowych danych, nadpisywać `PARTIAL` na `GO` bez rozszerzenia zakresu walidacji. Ten sam stan środowiska → ten sam output strukturalny.
 - **`scan_method` i `last_verified_by`** muszą być wypełnione w frontmatter każdego pliku wynikowego.
+- **`regions` vs `extra_regions`**: `regions` = regiony workloadu; `extra_regions` = regiony pomocnicze (np. `us-east-1` dla ACM/CloudFront). Nie mieszaj.
+- **Diagnoza, nie Naprawa**: komendy read-only oznaczaj `# Diagnoza:`, nie `# Naprawa:`. Komendy write: zakomentowane, oznaczone `Proposed only, do not run from context`.
+- **AccessDeniedException ≠ potwierdzenie sekretu**: opisuj jako brak uprawnień uniemożliwiający weryfikację — nie jako "secret istnieje".
+- **`running > desired` może być deployment cycle**: jeśli jeden target `unhealthy` i drugi `initial`, oznacz jako `prawdopodobny task replacement`; uruchom `ecs wait services-stable` zamiast klasyfikować jako awaria.
+- **ECS public subnets**: WYSOKI, nie CRITICAL; rozróżnij deliberate architecture (NAT Gateway avoidance / FinOps tradeoff) od niezamierzonej security exposure.
+- **Image tag mismatch**: ŚREDNI z "wymaga potwierdzenia"; nie CRITICAL bez potwierdzonej aktywnej awarii.
+- **Brak WAF** = `GAP`; nie `NO-GO` ani `CRITICAL` bez wymagania compliance lub aktywnego incydentu; preferowany opis: `Brak WAF względem LLZ/WAF-readiness; nie oznacza aktywnej awarii runtime.`
+- **Partial tagging scan** = `PARTIAL`, nie `GO`; wskaż zakres; nie oznaczaj ECS/Fargate tag propagation jako GO jeśli sprawdzono tylko sample.
+- **Komendy destrukcyjne**: nie dodawaj `delete-*`, `remove-*`, `destroy` do context file bez wyraźnego oznaczenia `Proposed only, do not run from context. Requires explicit operator approval.`
+- **Governance ≠ runtime incident**: `CRITICAL` wyłącznie dla aktywnych awarii; problemy governance = `GAP` / `WYSOKI` / `NO-GO względem LLZ/FinOps readiness, nie runtime`.
 
 ---
 
