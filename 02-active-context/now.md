@@ -2,6 +2,44 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — rshop cloud-detective snapshot ✓
+
+```
+Projekt:    rshop (mako), account 943111679945, eu-central-1
+Akcja:      cloud-detective v2 read-only scan (IaC infra-rshop + live AWS)
+Wynik:      20-projects/clients/mako/rshop/rshop-context.md (nowy plik)
+
+POZIOM PEWNOŚCI: częściowa
+  - prod / dev / akcesoria2: potwierdzone live AWS
+  - qa / uat: nieaktywne, repo rshop-cloudformation nie załadowane
+
+🔥 KRYTYCZNE:
+  1. dev stack (root) UPDATE_ROLLBACK_COMPLETE od 2026-04-28
+     Root cause: jenkinsit brak rds:ModifyDBSubnetGroup
+     Zablokowane: VPCStack, IAMStack, S3Stack
+     Obejście: ECS deployowany bezpośrednio do dev-ECSStack (poza root)
+  2. BRAK CloudWatch alarms — zero alertingu
+
+POZOSTAŁE USTALENIA:
+  - prod: 4/4 ECS serwisy 1/1, ALB active, RDS available — ZDROWE
+  - dev: 4/4 ECS serwisy 1/1, ALB active — ZDROWE mimo rollback root stack
+  - akcesoria2-prod: 2/2 ECS serwisy 1/1 — ZDROWE
+  - RDS prod sqlserver-web t3.large; dev sqlserver-ex (Express Edition!) t3.small
+  - IaC drift dev RDS: root-dev.yml default sqlserver-ee, live sqlserver-ex
+  - 1-dniowa retencja logów prod (brak możliwości post-incident debugging)
+  - Brak MultiAZ RDS (prod i dev) — single point of failure
+  - Log group typos: /esc/backoffice, /ecs/jumhost-qa
+  - S3 temp buckets: rshop-temp, rshop-tmp (do cleanup)
+  - 2 Terraform state buckets (projekt CFN — skąd Terraform?)
+
+DO WERYFIKACJI:
+  - stan QA/UAT (klastry nie istnieją, repozytoria ECR tak)
+  - certyfikaty ACM (us-east-1 — niezweryfikowane)
+  - sekrety (SM puste — SSM? Jenkins?)
+  - prod templates (rshop-cloudformation repo — nie załadowane)
+  - jenkinsit IAM fix plan
+```
+
 ## Update — 2026-05-01 — prompt library: cloud-detective template/invocation system ✓
 
 ```
@@ -1404,4 +1442,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 15:16 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 15:56 — sesja aktywna*
