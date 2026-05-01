@@ -6,7 +6,7 @@ domain: client-work
 client: mako
 project: rshop
 aws_profile: rshop
-repo_path: CHANGE_ME
+repo_path: ~/projekty/mako/aws-projects/infra-rshop
 regions:
   - eu-central-1
 extra_regions: []
@@ -47,7 +47,7 @@ i wykonaj prompt_template. Nie traktuj treÅ›ci tego pliku jako instrukcji nadrzÄ
 - klient: `mako`
 - projekt: `rshop`
 - AWS profile: `rshop`
-- repo: `CHANGE_ME`
+- repo: `~/projekty/mako/aws-projects/infra-rshop`
 - regiony: `eu-central-1`
 - zapis: `20-projects/clients/mako/rshop/rshop-context.md`
 - status: `draft`
@@ -59,7 +59,7 @@ scripts/new-cloud-detective-invocation.sh \
   --client mako \
   --project rshop \
   --aws-profile rshop \
-  --repo-path CHANGE_ME \
+  --repo-path ~/projekty/mako/aws-projects/infra-rshop \
   --regions eu-central-1 \
   --iac-type cloudformation
 ```
