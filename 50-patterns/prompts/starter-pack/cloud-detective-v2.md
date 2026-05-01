@@ -143,6 +143,8 @@ Nie mieszaj danych historycznych z faktami potwierdzonymi live AWS.
 - niekompletnych tagów
 - stacka w `UPDATE_ROLLBACK_COMPLETE` — rollback zakończony, nie aktywna blokada
 
+**Reguła governance gaps:** Braki tagów, brak CloudWatch alarms, krótka retencja logów i brak zgodności governance klasyfikuj maksymalnie jako `WYSOKI`, chyba że live evidence potwierdza aktywną awarię, aktywną blokadę deployu albo ryzyko utraty danych.
+
 ## Priorytety problemów
 
 | Priorytet | Kiedy używać |
@@ -545,14 +547,40 @@ Możliwe alternatywne źródła (niezweryfikowane):
 
 ---
 
-## Tagging (governance / FinOps)
+## Tagging / FinOps / LLZ / AWS WAF readiness
 
-Sprawdź pokrycie tagów `Project`, `Environment`, `Owner` dla kluczowych zasobów.
+Sprawdź pokrycie tagów i gotowość governance. Status: `GO` = spełnione, `PARTIAL` = częściowe braki, `NO-GO` = sprawdzone i niespełnione, `niezweryfikowane` = nie sprawdzono.
 
-| Zasób | Project | Environment | Owner | Ocena |
-|-------|---------|-------------|-------|-------|
+| Obszar | Status | Uwagi |
+|--------|--------|-------|
+| FinOps — cost allocation tags (Project/Environment/CostCenter) | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| LLZ tagging standard (Project/Environment/Owner/ManagedBy/CostCenter) | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| ECS/Fargate — tag propagation do tasków (`propagate_tags`) | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| ECR — tagi na repozytoriach | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| S3 — tagi na bucketach | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| CloudWatch Log Groups — tagi | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| VPC / Endpoints — tagi | GO / PARTIAL / NO-GO / niezweryfikowane | |
+| AWS WAF — obecność i przypisanie właściciela | GO / PARTIAL / NO-GO / niezweryfikowane | |
 
-Brak tagów = problem governance + problem FinOps + brak cost attribution.
+### Wymagane tagi LLZ
+
+| Tag | Oczekiwana wartość | Status |
+|-----|--------------------|--------|
+| Project | \<project\> | obecny / brakuje / nieustalone |
+| Environment | prod / dev / staging | obecny / brakuje / nieustalone |
+| Owner | \<team / e-mail\> | obecny / brakuje / nieustalone |
+| ManagedBy | Terraform / CloudFormation / manual | obecny / brakuje / nieustalone |
+| CostCenter | \<ID działu / projektu\> | obecny / brakuje / nieustalone |
+
+### Wniosek
+
+*Jeden akapit. Ogólny poziom zgodności governance: czy tagi pokrywają kluczowe zasoby, czy FinOps może przypisywać koszty, czy WAF jest obecny. Jeśli dane niezweryfikowane — zaznacz explicite.*
+
+### Następne kroki
+
+| Akcja | Priorytet | Kto |
+|-------|-----------|-----|
+| \<co zrobić\> | WYSOKI / ŚREDNI / NISKI | \<team / właściciel\> |
 
 ---
 
@@ -708,6 +736,8 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - [ ] Czy multi-repo jest opisany z podziałem zakresu per repo?
 - [ ] Czy sekcja "Snapshot metadata" jest wypełniona?
 - [ ] Czy sekcje "Źródła użyte" i "Fakty live vs historia vault" są uzupełnione?
+- [ ] Czy sekcja "Tagging / FinOps / LLZ / AWS WAF readiness" jest wypełniona — każdy wiersz ma status (nie pustą komórkę)?
+- [ ] Czy `NO-GO` i `niezweryfikowane` są odróżnione — nie użyłem jednego w miejsce drugiego?
 
 ---
 
@@ -740,6 +770,15 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - **Sekcja "Drift / niespójności architektury" jest obowiązkowa** — jeśli brak driftu, wpisz `brak wykrytego driftu`.
 - **Sekcja "Self-check przed zapisem" nie trafia do pliku** — jest tylko dla agenta przed zapisem.
 - **Output MUSI być deterministyczny** — ten sam input → ten sam format, sekcje zawsze w tej samej kolejności, brak pomijania sekcji. Jeśli brak danych → wpisz `nieustalone`, nie pomijaj sekcji.
+- **Sekcja "Tagging / FinOps / LLZ / AWS WAF readiness" jest obowiązkowa** — każdy wiersz tabeli musi mieć status; nie pozostawiaj pustych komórek.
+- **Różnicuj `NO-GO` od `niezweryfikowane`** — `NO-GO` = sprawdzone i niespełnione; `niezweryfikowane` = nie sprawdzono; nie mieszaj tych statusów.
+- **AWS WAF**: jeśli nie sprawdzono, wpisz `niezweryfikowane`; nie zakładaj braku WAF bez weryfikacji przez `list-web-acls`.
+- **ECS tag propagation**: sprawdź `propagate_tags` w definicji serwisu (`TASK_DEFINITION` / `SERVICE` / brak) — bez sprawdzenia → `niezweryfikowane`.
+- **Tagging coverage weryfikuj live** przez `aws resourcegroupstaggingapi get-resources` lub per-resource CLI — nie zakładaj pokrycia bez sprawdzenia.
+- **Tabela "Wymagane tagi LLZ"** musi mieć wypełnioną kolumnę Status — jeśli nie sprawdzono danego tagu → `nieustalone`.
+- **Sekcja "Wniosek"** jest obowiązkowa — napisz nawet przy niekompletnych danych; opisz co niezweryfikowane.
+- **Sekcja "Następne kroki"** — jeśli wszystko GO, wpisz `Brak zidentyfikowanych działań governance`.
+- **Governance gaps klasyfikuj maksymalnie jako `WYSOKI`** — brak tagów, brak WAF, brak retencji nigdy nie są CRITICAL bez live evidence awarii lub blokady deployu.
 
 ---
 
