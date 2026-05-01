@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Update cloud-detective-v2.md with test learnings"
+              "title": "Terminal: ✳ Update cloud-detective-v2.md with test learnings"
             }
           },
           {
@@ -148,7 +148,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -278,6 +279,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/aws-cloud-platform",
     "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
     "20-projects/internal/devops-business/context.md",
     "20-projects/internal/devops-business/decisions.md",
@@ -308,7 +310,6 @@
     "20-projects/clients/maspex/maspex-context.md",
     "20-projects/clients/maspex",
     "20-projects/clients/mako/puzzler-b2b/context.md",
-    "20-projects/clients/mako/planodkupow/Bez nazwy.md",
     "templates/frontmatter",
     "templates",
     "50-patterns/prompts/starter-pack",
