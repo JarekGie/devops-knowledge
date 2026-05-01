@@ -179,7 +179,13 @@ CloudWatch alarms nie są równoważne aktualnemu runtime health.
 | ECS desired > running | potencjalny CRITICAL — weryfikuj przez describe-services |
 | ALB target unhealthy | potencjalny CRITICAL — weryfikuj przez describe-target-health |
 
-## Regiony dodatkowe
+## Regiony dodatkowe — regions vs extra_regions
+
+`regions` = regiony, gdzie działa workload (ECS, RDS, ALB, itp.).
+`extra_regions` = regiony pomocnicze, np. `us-east-1` dla ACM/CloudFront.
+
+Nie wkładaj `us-east-1` do `regions`, jeśli sprawdzono go tylko dla ACM/CloudFront.
+W `Snapshot metadata` opisz zakres per region, np. `us-east-1 (ACM only)`.
 
 Jeśli invocation ma `extra_regions` (np. `us-east-1` dla ACM / CloudFront):
 
@@ -378,6 +384,115 @@ Jeśli brak historycznego audytu: oznacz wszystko jako `niezweryfikowane` dla ob
 
 ---
 
+## Secrets Manager — AccessDenied vs ResourceNotFoundException
+
+Jeśli ECS task failure pokazuje wyjątek dotyczący Secrets Manager:
+
+| Wyjątek | Interpretacja |
+|---------|---------------|
+| `ResourceNotFoundException` | secret nie istnieje lub ARN/name błędny |
+| `AccessDeniedException` | brak uprawnień; secret najpewniej istnieje lub jest referencowany poprawnym ARN, ale brak uprawnień uniemożliwia potwierdzenie metadanych/zawartości |
+
+Nie pisz kategorycznie `secret istnieje` przy `AccessDeniedException`.
+
+Pisz ostrożniej:
+
+```md
+secret najpewniej istnieje albo jest referencowany poprawnym ARN; brak uprawnień uniemożliwia potwierdzenie metadanych/zawartości
+```
+
+Nigdy nie wypisuj wartości sekretów. Nigdy nie zapisuj wartości sekretów do vault.
+
+---
+
+## ECS — image tag / environment mismatch
+
+Jeśli runtime pokazuje obraz/tag z innego środowiska (np. `preprod` używa image tagu `*-uat-*`), oznacz jako znany problem w `Znane problemy / dług techniczny`:
+
+| Problem | Priorytet | Evidence | Opis |
+|---------|-----------|----------|------|
+| Image tag / environment mismatch | ŚREDNI | live AWS task definition | Obraz/tag sugeruje inne środowisko; może być celowe, ale wymaga potwierdzenia. |
+
+Reguły:
+- nie klasyfikuj jako CRITICAL bez aktywnej awarii
+- jeśli serwis nie działa i jednocześnie image tag jest podejrzany, wpisz jako osobny problem obok głównej przyczyny
+- status: `wymaga potwierdzenia`
+
+---
+
+## ECS — public subnets / internet exposure
+
+Jeśli ECS tasks działają w publicznych subnetach i mają public IP, dodaj do `Znane problemy / dług techniczny`:
+
+| Problem | Priorytet | Evidence | Opis |
+|---------|-----------|----------|------|
+| ECS tasks in public subnets | WYSOKI | IaC / runtime network config | Architecture risk / internet exposure. Może być celowe przy braku NAT Gateway, ale wymaga świadomej decyzji. |
+
+Reguły:
+- nie oznaczaj automatycznie jako CRITICAL
+- rozróżnij:
+  - **deliberate architecture** — brak NAT Gateway / FinOps tradeoff (zaakceptowane ryzyko)
+  - **security exposure** — brak świadomości lub regresja IaC
+  - **NAT Gateway avoidance / FinOps tradeoff** — koszt NAT vs security gap
+
+---
+
+## IAM diagnostics — słownictwo
+
+W sekcjach diagnostycznych nie używaj słowa `Naprawa` przy komendach read-only.
+
+Zamiast:
+```bash
+# Naprawa: sprawdź IAM policy execution role
+```
+
+użyj:
+```bash
+# Diagnoza: sprawdź IAM policy execution role
+```
+
+Reguły:
+- context file nie powinien sugerować wykonania zmian
+- jeśli podajesz komendę write, musi być zakomentowana i oznaczona jako `Proposed only, do not run from context`
+- preferuj wyłącznie komendy read-only
+
+---
+
+## Komendy destrukcyjne — hygiene
+
+W context file nie dodawaj komend typu `delete-*`, `remove-*`, `destroy`, nawet zakomentowanych, chyba że są oznaczone bardzo wyraźnie:
+
+```bash
+# Proposed only, do not run from context.
+# Requires explicit operator approval.
+# aws ...
+```
+
+Preferuj zamiast tego opis proponowanej akcji w tekście:
+
+```md
+Proposed action: remove expired orphaned certificate after confirming InUseBy=[]
+```
+
+---
+
+## Klasyfikacja — governance vs runtime
+
+Unikaj słów `krytyczny`, `CRITICAL`, `NO-GO` dla problemów governance bez aktywnego wpływu na runtime.
+
+Dla governance używaj:
+- `GAP`
+- `PARTIAL`
+- `WYSOKI`
+- `NO-GO względem LLZ/FinOps readiness, nie runtime`
+
+Przykład:
+```md
+Tagging jest NO-GO względem LLZ/FinOps readiness, ale nie oznacza aktywnej awarii runtime.
+```
+
+---
+
 # Projekt
 
 Nazwa projektu: `<PROJECT>`
@@ -523,6 +638,8 @@ aws_profile: <AWS_PROFILE>
 account_id: "<ACCOUNT_ID>"
 regions:
   - <REGIONS>
+extra_regions:
+  - <EXTRA_REGIONS>  # np. us-east-1 dla ACM/CloudFront; pomiń jeśli nie dotyczy
 iac: <IAC_TYPE>
 repository: "<REPO_PATH>"
 created: "<YYYY-MM-DD>"
@@ -580,7 +697,7 @@ tags:
 | repo_checked | tak / nie / częściowo |
 | iac_checked | tak / nie / częściowo |
 | runtime_checked | tak / nie / częściowo |
-| extra_regions_checked | <lista lub "nie dotyczy"> |
+| extra_regions_checked | <lista lub "nie dotyczy" — opisz zakres, np. `us-east-1 (ACM only)`> |
 
 ---
 
