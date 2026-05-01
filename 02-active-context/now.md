@@ -2,6 +2,36 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — puzzler-b2b cloud-detective snapshot (nowy) ✓
+
+```
+Projekt:    puzzler-b2b / PBMS (mako), account 698220459519, eu-west-2
+Akcja:      cloud-detective v2 read-only scan (IaC + live AWS — pierwsze skanowanie)
+Wynik:      20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md (NOWY)
+            context.md zachowany jako dokument historyczny (2026-04-22)
+
+POZIOM PEWNOŚCI: częściowa
+  - dev + QA: w pełni potwierdzone live (ECS, DocumentDB, SQS, alarms, ACM)
+  - UAT / prod: niezweryfikowane
+
+USTALENIA (vs context.md z 2026-04-22):
+  ✅  QA wdrożone! (poprzednio: CHANGE_ME) — 9 serwisów, DocumentDB, SQS, 22 CW alarmy
+  ✅  Brak alarmów w ALARM — środowisko OK
+  ✅  Scheduler potwierdzony: AppAutoScaling (nie EventBridge) — start 07:00, stop 19:00 Warsaw
+  ✅  Dev: 4 nowe serwisy vs poprzedni snapshot (builder, sync; front i worker zaktualizowane)
+  ⚠️  QA jumphost DOWN — ECR image `infra-puzzler-b2b-app-qa:jumphost` not found w ECR
+  ⚠️  Worker desired:0 (dev + QA) — nie objęty schedulerem; celowe czy błąd nieustalone
+  ⚠️  CloudFront bez custom domain alias (dev only, brak aliasu CNAME)
+  ⚠️  Tagging / WAF: niezweryfikowane
+
+NASTĘPNY KROK:
+  - Build + push ECR image jumphost dla QA
+  - Wyjaśnić czy worker desired:0 jest celowe (brak obrazu? feature flag?)
+  - Sprawdź ALB target health po 07:00 (po starcie schedulera)
+```
+
+---
+
 ## Update — 2026-05-01 — maspex cloud-detective snapshot v2 (re-scan) ✓
 
 ```
@@ -1539,4 +1569,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 21:10 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 21:26 — sesja aktywna*
