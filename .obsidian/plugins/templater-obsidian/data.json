@@ -15,7 +15,7 @@
   "enable_folder_templates": true,
   "folder_templates": [
     {
-      "folder": "templates",
+      "folder": "templates/frontmatter",
       "template": "templates/frontmatter/prompt.md"
     }
   ],

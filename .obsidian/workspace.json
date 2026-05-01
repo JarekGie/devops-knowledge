@@ -69,12 +69,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "templates/frontmatter/Bez nazwy.md",
+                "file": "templates/frontmatter/prompt.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Bez nazwy"
+              "title": "prompt"
             }
           }
         ],
@@ -237,10 +237,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "templates/frontmatter/Bez nazwy.md"
+                "file": "templates/frontmatter/prompt.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla Bez nazwy"
+              "title": "Atrybuty dla prompt"
             }
           }
         ],
@@ -264,11 +264,12 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "a26c2664307e0795",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
-    "templates/frontmatter/nowy-prompt.md",
-    "templates/frontmatter/Bez nazwy.md",
+    "templates/frontmatter/test.md",
     "templates/frontmatter/prompt.md",
+    "50-patterns/prompts/TEMPLATES/prompt_template.md",
+    "templates/frontmatter/nowy-prompt.md",
     "50-patterns/LLM_CONTEXT.md",
     "templates/frontmatter",
     "templates/Bez nazwy.md",
@@ -282,7 +283,6 @@
     "50-patterns/prompts/starter-pack/ecs-alb-debug.md",
     "50-patterns/prompts/starter-pack/aws-audit-readonly.md",
     "50-patterns/prompts/starter-pack/cfn-rollback-analysis.md",
-    "50-patterns/prompts/TEMPLATES/prompt_template.md",
     "50-patterns/prompts/starter-pack",
     "_system/AGENT_BOOTSTRAP.md",
     "_system/PROMPT_LIBRARY_CONTRACT.md",
@@ -296,7 +296,6 @@
     "CODEX.md",
     "_chatgpt/context-packs/vault-llm-governance.md",
     "_system/TEMPLATES/chatgpt-context-template.md",
-    "_system/BOUNDARY_REVIEW_REPORT.md",
     "20-projects/clients/TEMPLATES",
     "20-projects/clients/mako/planodkupow",
     "20-projects/clients/mako/rshop",
