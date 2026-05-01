@@ -2,6 +2,41 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-01 — booking-online cloud-detective snapshot (nowy projekt) ✓
+
+```
+Projekt:    booking-online (mako), account 128264038676, eu-central-1 + us-east-1 (ACM)
+Akcja:      cloud-detective v2 read-only scan (IaC infra-booking-online + live AWS)
+Wynik:      20-projects/clients/mako/booking-online/booking-online-context.md (NOWY)
+
+POZIOM PEWNOŚCI: częściowa
+  - ECS prod: w pełni potwierdzony live (describe-services, describe-clusters)
+  - ALB prod backend TG: target health healthy
+  - ACM prod cert: ISSUED do 2026-10-30 (SANs: umowjazde.dacia.pl/renault.pl)
+  - uat/qa/dev: potwierdzony cluster level, services level, Redis — bez per-TG target health
+
+USTALENIA:
+  ✅  4 env (prod/uat/qa/dev) — wszystkie 4 ECS clusters ACTIVE, 4/4 serwisy running/healthy
+  ✅  CloudFront prod: Deployed + Enabled, cert ISSUED do 2026-10-30
+  ⚠️  Redis stacks UPDATE_ROLLBACK_COMPLETE — WSZYSTKIE 4 środowiska (ryzyko przyszłych zmian)
+  ⚠️  Log retention: 1 dzień we wszystkich env (hardcoded w ECS.yml)
+  ⚠️  0 CloudWatch alarms — brak alertingu
+  ⚠️  Tagging NO-GO — ECS/ALB/clusters bez tagów, tylko Env na ElastiCache
+  ⚠️  0 WAF ACLs (Regional + CloudFront) — governance gap
+  ⚠️  Redis 5.0.6 EOL, single node, brak backup
+  ⚠️  ECS tasks w public subnets (brak NAT Gateway)
+  ⚠️  Expired orphaned cert us-east-1 (EXPIRED 2022, InUseBy=[] — bezpieczny, do usunięcia)
+  ⚠️  Prod stack name typo: bokingonline-prod (zamiast bookingonline-prod)
+
+NASTĘPNY KROK:
+  - Zbadać przyczynę Redis UPDATE_ROLLBACK_COMPLETE (describe-stack-events Redis stacks)
+  - Wdrożyć log retention (minimum 30 dni dla prod)
+  - Dodać tagi CFN: ECS.yml (Cluster, Service), ALB.yml (LoadBalancer, TG)
+  - Rozważyć WAF dla CloudFront (prod)
+```
+
+---
+
 ## Update — 2026-05-01 — rshop cloud-detective snapshot v2 (re-scan) ✓
 
 ```
@@ -1475,4 +1510,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-01 20:08 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-01 20:45 — sesja aktywna*
