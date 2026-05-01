@@ -736,6 +736,10 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - **CFN `UPDATE_ROLLBACK_COMPLETE` ≠ blokada aktywna** — odróżniaj od `UPDATE_ROLLBACK_FAILED`.
 - **Regiony niezweryfikowane oznaczaj jawnie** — wpisz `niezweryfikowane`, nie pomijaj milcząco.
 - **Sekcje "Źródła użyte" i "Fakty live vs historia vault" są obowiązkowe** w pliku wynikowym.
+- **Sekcja "Snapshot metadata" jest obowiązkowa** — uzupełnij `scan_scope`, `regions_checked`, flagi `*_checked`.
+- **Sekcja "Drift / niespójności architektury" jest obowiązkowa** — jeśli brak driftu, wpisz `brak wykrytego driftu`.
+- **Sekcja "Self-check przed zapisem" nie trafia do pliku** — jest tylko dla agenta przed zapisem.
+- **Output MUSI być deterministyczny** — ten sam input → ten sam format, sekcje zawsze w tej samej kolejności, brak pomijania sekcji. Jeśli brak danych → wpisz `nieustalone`, nie pomijaj sekcji.
 
 ---
 
