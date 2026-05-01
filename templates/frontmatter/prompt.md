@@ -4,10 +4,11 @@ domain: client-work
 use_case:
 llm_target: any
 aws_profile:
-repozytorium:
+repozytorium: ~/projekty/mako/aws-projects/CHANGE_ME
 region: eu-central-1
 environment: dev
-tags: [prompt]
+tags:
+  - prompt
 created: <% tp.date.now("YYYY-MM-DD") %>
 updated: <% tp.date.now("YYYY-MM-DD") %>
 ---

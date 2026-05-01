@@ -40,3 +40,5 @@ Ctrl+P → Templater: Replace templates in the active file
 - Ścieżka w Folder Templates: bez leading slash, bez trailing slash (`50-patterns/prompts` nie `/50-patterns/prompts/`)
 - Template folder musi wskazywać na korzeń drzewa szablonów (`templates`), nie na podfolder (`templates/frontmatter`)
 - Trigger Templater on new file creation jest domyślnie OFF — to najczęstsza przyczyna problemu
+- Core plugin "Szablony" (Templates) w polskiej wersji Obsidian — wyłącz, bo blokuje Templater; łatwo przeoczyć bo nazwa różni się od angielskiej "Templates"
+- Konfiguracja zweryfikowana jako działająca: 2026-05-01
