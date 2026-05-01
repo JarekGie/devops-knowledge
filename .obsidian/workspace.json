@@ -76,8 +76,37 @@
               "icon": "lucide-file",
               "title": "templater-config"
             }
+          },
+          {
+            "id": "c440b7dca8afaf91",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "50-patterns/prompts/Bez nazwy.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Bez nazwy"
+            }
+          },
+          {
+            "id": "251d139e65ed6ed1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "templates/frontmatter/client_context.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "client_context"
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -235,9 +264,11 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {},
+              "state": {
+                "file": "templates/frontmatter/client_context.md"
+              },
               "icon": "lucide-info",
-              "title": "Atrybuty"
+              "title": "Atrybuty dla client_context"
             }
           }
         ],
@@ -261,11 +292,13 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "251d139e65ed6ed1",
   "lastOpenFiles": [
+    "templates/frontmatter/prompt.md",
+    "templates/frontmatter/client_context.md",
+    "50-patterns/prompts/Bez nazwy.md",
     "90-reference/obsidian-templater-setup.md",
     "50-patterns/prompts/starter-pack/templater-config.md",
-    "templates/frontmatter/prompt.md",
     "templates/frontmatter/test.md",
     "50-patterns/prompts/TEMPLATES/prompt_template.md",
     "templates/frontmatter/nowy-prompt.md",
@@ -292,8 +325,6 @@
     "docs/superpowers/plans/2026-04-30-finops-reporting-contract.md",
     "50-patterns/cloudformation-drift-reconciliation-vpc-endpoint-tags.md",
     "CLAUDE.md",
-    "CODEX.md",
-    "_chatgpt/context-packs/vault-llm-governance.md",
     "20-projects/clients/TEMPLATES",
     "20-projects/clients/mako/planodkupow",
     "20-projects/clients/mako/rshop",
