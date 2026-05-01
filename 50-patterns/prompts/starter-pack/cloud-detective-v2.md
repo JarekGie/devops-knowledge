@@ -108,6 +108,88 @@ Source of truth zawsze:
 
 ---
 
+# Data Governance — reguły źródeł i priorytetów
+
+## Data lineage
+
+Każde istotne ustalenie musi mieć oznaczone źródło:
+
+- `live AWS` — zweryfikowane przez CLI podczas bieżącego skanu
+- `IaC` — odczytane z lokalnego repozytorium
+- `Terraform state` — odczytane z pliku stanu lub backendu
+- `CloudFormation stack` — odczytane z CFN API (describe-stacks / events)
+- `vault historyczny` — pochodzi z wcześniejszych notatek projektu, nie z bieżącego skanu
+- `hipoteza` — wniosek bez bezpośredniego potwierdzenia
+- `nieustalone` — brak danych
+
+Jeśli informacja pochodzi z wcześniejszych notatek vault, oznacz ją **zawsze** jako `Źródło: vault historyczny`.
+Nie mieszaj danych historycznych z faktami potwierdzonymi live AWS.
+
+## Definicja CRITICAL
+
+`🔥 CRITICAL` oznacza **wyłącznie** problem, który:
+
+- aktualnie wpływa na działanie usługi (service degraded lub down)
+- blokuje bezpieczną zmianę infrastruktury — potwierdzone live evidence
+- jest aktywną awarią lub brakiem działania komponentu (desired > running, target unhealthy)
+- powoduje bezpośrednie ryzyko utraty danych lub produkcyjnego outage
+
+**Nie oznaczaj jako CRITICAL:**
+
+- historycznych incydentów bez aktualnego wpływu
+- ogólnych braków governance (tagi, nazewnictwo)
+- braku alarmów, jeśli nie ma aktywnej awarii
+- krótkiej retencji logów (chyba że uniemożliwia debugging trwającego incydentu)
+- niekompletnych tagów
+- stacka w `UPDATE_ROLLBACK_COMPLETE` — rollback zakończony, nie aktywna blokada
+
+## Priorytety problemów
+
+| Priorytet | Kiedy używać |
+|-----------|--------------|
+| 🔥 CRITICAL | aktywna awaria, service down, desired > running, target unhealthy, blokada deploy potwierdzona live, ryzyko utraty danych |
+| WYSOKI | istotne ryzyko operacyjne, brak monitoringu, krótka retencja logów prod, drift IaC/runtime, stack w `UPDATE_ROLLBACK_COMPLETE` blokujący przyszłe update'y |
+| ŚREDNI | niespójności, orphaned resources, niekompletne tagi, temp buckets, log group typos |
+| NISKI | naming, konwencje, kosmetyka |
+| INFO | obserwacje bez pilnej akcji |
+
+## Status CloudFormation
+
+| Status | Znaczenie | Klasyfikacja |
+|--------|-----------|--------------|
+| `UPDATE_ROLLBACK_FAILED` | stack zablokowany, wymaga `continue-update-rollback` | 🔥 CRITICAL jeśli blokuje produkcję |
+| `UPDATE_ROLLBACK_COMPLETE` | rollback zakończony; problem historyczny lub ryzyko przyszłych update'ów | WYSOKI (nie aktywna blokada) |
+| `ROLLBACK_COMPLETE` | pierwszy deploy nie przeszedł | WYSOKI |
+| `UPDATE_COMPLETE` | stack stabilny | OK |
+| `UPDATE_IN_PROGRESS` / `ROLLBACK_IN_PROGRESS` | aktywna operacja | INFO / monitoruj |
+
+Nie pisz "stack zablokowany", jeśli status to `UPDATE_ROLLBACK_COMPLETE`, chyba że live evidence potwierdza, że kolejny update nie przechodzi.
+
+## CloudWatch alarms
+
+CloudWatch alarms nie są równoważne aktualnemu runtime health.
+
+| Sygnał | Klasyfikacja |
+|--------|--------------|
+| alarm w `ALARM` — potwierdzony live i aktualny | weryfikuj przez ECS / ALB / RDS health |
+| alarm w `ALARM` — historyczny / stale | INFO / wymaga weryfikacji aktualności |
+| brak alarmów | WYSOKI (observability gap), nie CRITICAL |
+| ECS desired > running | potencjalny CRITICAL — weryfikuj przez describe-services |
+| ALB target unhealthy | potencjalny CRITICAL — weryfikuj przez describe-target-health |
+
+## Regiony dodatkowe
+
+Jeśli invocation ma `extra_regions` (np. `us-east-1` dla ACM / CloudFront):
+
+- sprawdź ACM certificates w `us-east-1`
+- sprawdź CloudFront jako globalny service (nie regionalny)
+- inne zasoby regionalne zgodnie ze specyfiką projektu
+
+Jeśli region nie został sprawdzony, wpisz: `niezweryfikowane`
+Nie wyciągaj wniosków z regionu, którego nie sprawdziłeś.
+
+---
+
 # Projekt
 
 Nazwa projektu: `<PROJECT>`
