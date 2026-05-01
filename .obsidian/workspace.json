@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Update cloud detective invocation script with interactive mode"
+              "title": "Terminal: ⠐ Update cloud detective invocation script with interactive mode"
             }
           },
           {
@@ -161,8 +161,7 @@
               "title": "rshop-tagging-baseline-2026-04-24"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -219,7 +218,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -320,11 +320,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla rshop-tagging-baseline-2026-04-24"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -349,13 +347,13 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "720493ca4a4cd18a",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/rshop/rshop-context.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
     "50-patterns/prompts/invocations/cloud-detective-rshop.md",
     "20-projects/clients/mako/rshop/finops-rshop.md",
-    "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/rshop/rshop-tagging-remediation-2026-04-24.md",
     "50-patterns/prompts/invocations/cloud-detective-test-validation.md",
     "50-patterns/prompts/invocations/cloud-detective-planodkupow.md",
