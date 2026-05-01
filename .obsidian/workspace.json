@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Polish language prompt configuration task"
+              "title": "Terminal: ⠐ Access and execute cloud detective manifest"
             }
           },
           {
@@ -133,8 +133,7 @@
               "title": "Terminal: aws sts get-caller-identity"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -319,7 +318,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "5c2af729f0be491f",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "50-patterns/prompts/invocations/cloud-detective-maspex.md",
     "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
