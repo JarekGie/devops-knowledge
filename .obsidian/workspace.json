@@ -130,25 +130,10 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: aws sts get-caller-identity"
-            }
-          },
-          {
-            "id": "8f427a375f4ce33e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/maspex/maspex-context.md",
-                "mode": "source",
-                "source": true
-              },
-              "icon": "lucide-file",
-              "title": "maspex-context"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -306,11 +291,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "20-projects/clients/mako/maspex/maspex-context.md"
-              },
+              "state": {},
               "icon": "lucide-info",
-              "title": "Atrybuty dla maspex-context"
+              "title": "Atrybuty"
             }
           }
         ],
@@ -335,14 +318,15 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "8f427a375f4ce33e",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
+    "20-projects/clients/mako/maspex/maspex-context.md",
     "50-patterns/prompts/invocations/cloud-detective-maspex.md",
     "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
     "20-projects/clients/mako/booking-online/booking-online-context.md",
     "20-projects/clients/mako/booking-online",
     "50-patterns/prompts/invocations/cloud-detective-booking-online.md",
-    "20-projects/clients/mako/maspex/maspex-context.md",
     "20-projects/clients/mako/rshop/rshop-tagging-baseline-2026-04-24.md",
     "20-projects/clients/mako/rshop/rshop-context.md",
     "50-patterns/prompts/invocations/cloud-detective-rshop.md",
@@ -367,7 +351,6 @@
     "templates/frontmatter/prompt.md",
     "20-projects/clients/mako/maspex/Bez nazwy.md",
     "90-reference/obsidian-templater-setup.md",
-    "templates/frontmatter/test.md",
     "templates/frontmatter",
     "templates",
     "50-patterns/prompts/starter-pack",
