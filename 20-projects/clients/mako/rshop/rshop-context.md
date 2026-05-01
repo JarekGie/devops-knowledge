@@ -19,6 +19,8 @@ repository: "~/projekty/mako/aws-projects/infra-rshop"
 created: "2026-05-01"
 updated: "2026-05-01"
 last_verified: "2026-05-01"
+scan_method: cloud-detective-v2
+last_verified_by: claude
 tags:
   - aws
   - cloudformation
@@ -57,6 +59,23 @@ tags:
 | iac_checked | częściowo (root.yml, db.yml przejrzane) |
 | runtime_checked | tak |
 | extra_regions_checked | us-east-1 (ACM list-certificates) |
+
+---
+
+## Zakres snapshotu vs audytu
+
+| Obszar | Typ | Zakres | Źródło |
+|--------|-----|--------|--------|
+| Runtime health (ECS/ALB/RDS) | snapshot | 3/3 klastrów, 2 ALB, 2 RDS — live | live AWS |
+| CFN stack status | snapshot | 30+ stacków, events dev-VPCStack — live | live AWS |
+| IaC analiza | snapshot | root.yml, db.yml, dev/ przejrzane — partial | IaC (lokalny checkout) |
+| Tagging coverage | snapshot / audit | sample-based (~15 zasobów live); pełny audyt: [[rshop-tagging-baseline-2026-04-24]] | live AWS + vault historyczny |
+| FinOps / cost allocation | audit (external) | patrz [[finops-rshop]] | vault historyczny |
+| Security (WAF) | gap analysis | list-web-acls REGIONAL + CLOUDFRONT — 0 ACLs; brak WAF ≠ aktywny incydent | live AWS |
+| ACM certs | snapshot | eu-central-1 + us-east-1 sprawdzone osobno | live AWS |
+| ALB listener rules / routing | niezweryfikowane | describe-listeners nie wywołano | — |
+| SSM Parameter Store | niezweryfikowane | nie sprawdzono | — |
+| ECS tag propagation | snapshot | sprawdzono 1 serwis (rshop-prod-api-svc) | live AWS |
 
 ---
 
@@ -133,6 +152,8 @@ Uwaga: Routing CloudFront → ALB / S3 wymaga potwierdzenia listener rules (desc
 ---
 
 ## Mikroserwisy / komponenty
+
+**Zakres walidacji ECS:** describe-services wykonano na wszystkich 3 klastrach (3/3). Każdy serwis potwierdzony live — desired=running=1, pending=0. Listener rules ALB → serwis: `wymaga potwierdzenia` (describe-listeners niezweryfikowane).
 
 | Serwis | Cluster | Port | Ingress | Service Discovery | Desired | Running | Status |
 |--------|---------|------|---------|-------------------|---------|---------|--------|
@@ -272,18 +293,24 @@ Możliwe alternatywne źródła sekretów (niezweryfikowane):
 
 ## ACM Certyfikaty
 
-Certyfikaty sprawdzone w obu regionach: eu-central-1 (ALB) i us-east-1 (CloudFront). Obie listy zwróciły te same 5 certyfikatów — potwierdzone live.
+ACM jest usługą regionalną. Sprawdzono oba regiony osobno:
+- `eu-central-1` — certyfikaty używane przez ALB
+- `us-east-1` — certyfikaty używane przez CloudFront
 
-| Domena główna | Region | Status | Wygasa | InUse | Zakres / SANs |
-|---------------|--------|--------|--------|-------|---------------|
-| dev.eshoprenault.lt | us-east-1 | **EXPIRED** | 2024-08-08 | False | dev Baltic (LT/LV/EE) — **nie używany** |
-| *.skleprenault.pl | us-east-1 | ISSUED | **2026-05-13** ⚠️ | True | PL prod: *.eshoprenault.sk/.cz, *.eshopdacia.sk/.cz, *.webshopdacia.hu/.webshoprenault.hu |
-| webshop.renault.hu | us-east-1 | ISSUED | 2026-07-09 | True | HU/CZ/SK prod: eshop.dacia.cz/.sk, eshop.renault.cz/.sk, webshop.dacia.hu |
-| dev.eshopdacia.lt | us-east-1 | ISSUED | 2026-11-04 | True | dev Baltic: dev/devb eshop*.lt/.lv/.ee |
-| sklep.renault.pl | us-east-1 | ISSUED | 2026-10-01 | True | PL prod: bo.sklep.dacia.pl, bo.sklep.renault.pl, sklep.dacia.pl |
+Obie listy zwróciły te same 5 certów — potwierdzone live. Interpretacja: te same certy są zarządzane w us-east-1 (CloudFront) i eu-central-1 (ALB), lub obie listy zwracają ten sam zasób (nie rozdzielone przez AWS w tym profilu).
 
-**Uwaga `*.skleprenault.pl`:** wygasa za 12 dni (2026-05-13). `RenewalEligibility=ELIGIBLE` — ACM powinno odnowić automatycznie, ale wymaga pomyślnej walidacji domeny. Monitorować.
-**Uwaga `dev.eshoprenault.lt`:** EXPIRED, InUse=False. Wygasł 2024-08-08 — orphaned cert, do usunięcia lub odświeżenia jeśli dev Baltic aktywny.
+| Domena główna | Region | Użycie | Status | Wygasa | InUse | Zakres / SANs |
+|---------------|--------|--------|--------|--------|-------|---------------|
+| dev.eshoprenault.lt | us-east-1 | CloudFront (dev) | **EXPIRED** | 2024-08-08 | False | dev Baltic: LT/LV/EE — **nie używany** |
+| *.skleprenault.pl | us-east-1 | CloudFront (prod PL) | ISSUED | **2026-05-13** ⚠️ | True | *.eshoprenault.sk/.cz, *.eshopdacia.sk/.cz, *.webshopdacia.hu/.webshoprenault.hu |
+| webshop.renault.hu | us-east-1 | CloudFront (prod HU/CZ/SK) | ISSUED | 2026-07-09 | True | eshop.dacia.cz/.sk, eshop.renault.cz/.sk, webshop.dacia.hu |
+| dev.eshopdacia.lt | us-east-1 | CloudFront (dev Baltic) | ISSUED | 2026-11-04 | True | dev/devb eshop*.lt/.lv/.ee |
+| sklep.renault.pl | us-east-1 | CloudFront (prod PL) | ISSUED | 2026-10-01 | True | bo.sklep.dacia.pl, bo.sklep.renault.pl, sklep.dacia.pl |
+
+Certyfikaty ALB (eu-central-1): te same domeny pojawiły się w obu regionach — wymaga potwierdzenia czy to duplicate lub ten sam zasób listowany przez profil.
+
+**Uwaga `*.skleprenault.pl`:** wygasa za 12 dni (2026-05-13). `RenewalEligibility=ELIGIBLE` — ACM powinno odnowić automatycznie, ale wymaga pomyślnej walidacji DNS/HTTP. Monitorować aktywnie.
+**Uwaga `dev.eshoprenault.lt`:** EXPIRED, InUse=False. Wygasł 2024-08-08 — orphaned cert, do usunięcia lub odświeżenia.
 
 ---
 

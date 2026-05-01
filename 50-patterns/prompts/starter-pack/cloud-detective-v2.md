@@ -306,6 +306,25 @@ Agent musi jawnie rozróżniać:
 
 Governance gap = maksymalnie `WYSOKI` w "Znane problemy", `GAP` lub `NO-GO` w tabeli Tagging/FinOps/WAF.
 
+## Tagging / FinOps — separation of concerns
+
+Context ≠ audit.
+
+Jeśli istnieje osobny dokument audytu tagowania lub FinOps (np. tagging baseline, finops review):
+
+- agent **MUSI go zlinkować** w sekcji "Powiązane" i w sekcji Tagging/FinOps/LLZ
+- agent **NIE może** duplikować treści audytu w tym pliku
+- bieżący scan musi być oznaczony jako: `partial / sample-based`
+
+Format w sekcji `## Tagging / FinOps / LLZ / AWS WAF readiness`:
+
+```md
+Źródło historyczne: [[nazwa-dokumentu-audytu]]
+Bieżący scan: sample-based (<N> zasobów sprawdzonych live)
+```
+
+Jeśli brak historycznego audytu: oznacz wszystko jako `niezweryfikowane` dla obszarów niesprawdzonych live.
+
 ## CFN — blocker logic
 
 `CFN blocker = true` wyłącznie gdy:
@@ -525,6 +544,24 @@ tags:
 
 ---
 
+## Zakres snapshotu vs audytu
+
+Agent musi jawnie rozdzielić: co jest snapshotem (live), co audytem (historycznym), co hipotezą.
+
+| Obszar | Typ | Zakres | Źródło |
+|--------|-----|--------|--------|
+| Runtime health (ECS/ALB/RDS) | snapshot | live AWS | live AWS |
+| CFN stack status | snapshot | live AWS | live AWS |
+| IaC analiza | snapshot | partial (lokalny checkout) | IaC |
+| Tagging coverage | snapshot / audit | sample-based lub patrz osobny dokument | live AWS / vault historyczny |
+| FinOps / cost allocation | audit (external) | patrz osobny dokument jeśli istnieje | vault historyczny |
+| Security (WAF) | gap analysis | sprawdzono live: brak ≠ incydent | live AWS |
+| ACM certs | snapshot | per region sprawdzone | live AWS |
+
+Uzupełnij tabelę zgodnie z faktycznym zakresem skanu. Wpisz `niezweryfikowane` dla obszarów niepokrytych.
+
+---
+
 ## Repozytorium kodu
 
 - lokalna ścieżka: `<REPO_PATH>`
@@ -602,7 +639,10 @@ Możliwe alternatywne źródła (niezweryfikowane):
 
 ## Tagging / FinOps / LLZ / AWS WAF readiness
 
-Sprawdź pokrycie tagów i gotowość governance. Status: `GO` = spełnione, `PARTIAL` = częściowe braki, `NO-GO` = sprawdzone i niespełnione, `niezweryfikowane` = nie sprawdzono.
+Sprawdź pokrycie tagów i gotowość governance. Status: `GO` = spełnione, `PARTIAL` = częściowe braki, `NO-GO` = sprawdzone i niespełnione, `GAP` = brak kontroli względem standardu (governance gap bez aktywnego incydentu), `niezweryfikowane` = nie sprawdzono.
+
+**Źródło historyczne:** `[[<tagging-baseline / finops-review jeśli istnieje>]]` — jeśli brak: `Brak historycznego audytu.`
+**Bieżący scan:** sample-based (`<N>` zasobów sprawdzonych live) / pełny
 
 | Obszar | Status | Uwagi |
 |--------|--------|-------|
@@ -791,6 +831,12 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - [ ] Czy sekcje "Źródła użyte" i "Fakty live vs historia vault" są uzupełnione?
 - [ ] Czy sekcja "Tagging / FinOps / LLZ / AWS WAF readiness" jest wypełniona — każdy wiersz ma status (nie pustą komórkę)?
 - [ ] Czy `NO-GO` i `niezweryfikowane` są odróżnione — nie użyłem jednego w miejsce drugiego?
+- [ ] Czy sekcja "Zakres snapshotu vs audytu" jest wypełniona i rozdziela snapshot / audit / hipotezę?
+- [ ] Czy nie oznaczyłem GO bez pełnej walidacji — użyłem PARTIAL tam gdzie zakres był niepełny?
+- [ ] Czy brak WAF oznaczyłem jako GAP/WYSOKI a nie CRITICAL?
+- [ ] Czy certyfikaty ACM sprawdziłem per region (eu-central-1 osobno, us-east-1 osobno)?
+- [ ] Czy frontmatter zawiera `scan_method: cloud-detective-v2` i `last_verified_by`?
+- [ ] Czy jeśli istnieje historyczny dokument audytu — zlinkowano go zamiast duplikować?
 
 ---
 
@@ -832,6 +878,14 @@ Przed zapisaniem pliku odpowiedz na każde pytanie:
 - **Sekcja "Wniosek"** jest obowiązkowa — napisz nawet przy niekompletnych danych; opisz co niezweryfikowane.
 - **Sekcja "Następne kroki"** — jeśli wszystko GO, wpisz `Brak zidentyfikowanych działań governance`.
 - **Governance gaps klasyfikuj maksymalnie jako `WYSOKI`** — brak tagów, brak WAF, brak retencji nigdy nie są CRITICAL bez live evidence awarii lub blokady deployu.
+- **Nie oznaczaj statusu jako GO bez pełnej walidacji zakresu** — jeśli sprawdzono sample, wpisz `PARTIAL` z opisem zakresu (N/M klastrów, N zasobów).
+- **Nie oznaczaj statusu jako CRITICAL dla problemów historycznych lub governance** — wyłącznie aktywna awaria, blokada deployu lub ryzyko utraty danych.
+- **Brak danych = `niezweryfikowane`, nie `brak`** — "brak" oznacza sprawdzone i puste; "niezweryfikowane" = komenda nie była uruchomiona.
+- **Oddziel snapshot runtime od audytu historycznego** — sekcja "Zakres snapshotu vs audytu" jest obowiązkowa.
+- **Dane z vault = `vault historyczny`** — jeśli informacja pochodzi z poprzedniej notatki lub audytu, oznacz ją jawnie i nie mieszaj z faktami live.
+- **Nie duplikuj audytów** — jeśli istnieje osobny dokument (tagging baseline, finops review), zlinkuj go; nie kopiuj treści do context file.
+- **Determinizm outputu jest wymagany** — agent nie może: pomijać sekcji, zmieniać klasyfikacji bez nowych danych, nadpisywać `PARTIAL` na `GO` bez rozszerzenia zakresu walidacji. Ten sam stan środowiska → ten sam output strukturalny.
+- **`scan_method` i `last_verified_by`** muszą być wypełnione w frontmatter każdego pliku wynikowego.
 
 ---
 
