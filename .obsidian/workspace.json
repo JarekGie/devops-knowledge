@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Update cloud-detective-v2.md with test learnings"
+              "title": "Terminal: ⠂ Update cloud-detective-v2.md with test learnings"
             }
           },
           {
@@ -88,11 +88,10 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ./scripts/new-cloud-detective-invocation.sh"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -277,8 +276,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "5c2af729f0be491f",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
     "20-projects/internal/devops-business/context.md",
     "20-projects/internal/devops-business/decisions.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
@@ -309,7 +309,6 @@
     "20-projects/clients/maspex",
     "20-projects/clients/mako/puzzler-b2b/context.md",
     "20-projects/clients/mako/planodkupow/Bez nazwy.md",
-    "20-projects/clients/mako/planodkupow/#.md",
     "templates/frontmatter",
     "templates",
     "50-patterns/prompts/starter-pack",
