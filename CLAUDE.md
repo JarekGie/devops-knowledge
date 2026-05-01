@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## BOOTSTRAP (mandatory)
+
+Przed wykonaniem jakiejkolwiek operacji zastosuj `_system/AGENT_BOOTSTRAP.md`.
+
 Ten plik zawiera instrukcje dla Claude Code (claude.ai/code) podczas pracy z tym repozytorium.
 
 ## Czym jest to repo

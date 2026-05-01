@@ -1,5 +1,7 @@
 # CODEX.md
+## BOOTSTRAP (mandatory)
 
+Przed wykonaniem jakiejkolwiek operacji zastosuj `_system/AGENT_BOOTSTRAP.md`.
 Ten plik zawiera instrukcje dla Codexa podczas pracy z tym repozytorium.
 
 ## Czym jest to repo

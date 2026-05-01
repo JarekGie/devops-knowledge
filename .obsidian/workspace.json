@@ -230,14 +230,25 @@
               "icon": "git-pull-request",
               "title": "Source Control"
             }
+          },
+          {
+            "id": "99c0820ff6209068",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {
+                "file": "CLAUDE.md"
+              },
+              "icon": "lucide-info",
+              "title": "Atrybuty dla CLAUDE"
+            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -252,8 +263,11 @@
       "terminal:Open terminal": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "a26c2664307e0795",
   "lastOpenFiles": [
+    "CODEX.md",
+    "CLAUDE.md",
+    "_system/AGENT_BOOTSTRAP.md",
     "_chatgpt/context-packs/vault-llm-governance.md",
     "_system/TEMPLATES/chatgpt-context-template.md",
     "_system/BOUNDARY_REVIEW_REPORT.md",
@@ -287,9 +301,6 @@
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-29-1300-cest.md",
     "40-runbooks/aws/cfn-sg-rollback-failed-iam.md",
     "_chatgpt/context-packs/makolab-projects-vault-context.md",
-    "README.md",
-    "20-projects/clients/mako/maspex/cloudfront-slogan-cache-impl.md",
-    "40-runbooks/aws/cfn-alb-safe-tagging.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
