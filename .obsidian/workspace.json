@@ -69,12 +69,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "50-patterns/prompts/starter-pack/aws-audit-readonly.md",
+                "file": "50-patterns/prompts/starter-pack/Bez nazwy.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "aws-audit-readonly"
+              "title": "Bez nazwy"
             }
           }
         ],
@@ -237,10 +237,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "50-patterns/prompts/starter-pack/aws-audit-readonly.md"
+                "file": "50-patterns/prompts/starter-pack/Bez nazwy.md"
               },
               "icon": "lucide-info",
-              "title": "Atrybuty dla aws-audit-readonly"
+              "title": "Atrybuty dla Bez nazwy"
             }
           }
         ],
@@ -265,8 +265,10 @@
   },
   "active": "a26c2664307e0795",
   "lastOpenFiles": [
-    "50-patterns/prompts/TEMPLATES/prompt_template.md",
     "50-patterns/prompts/starter-pack/aws-audit-readonly.md",
+    "50-patterns/prompts/starter-pack/Bez nazwy.md",
+    "50-patterns/prompts/starter-pack/cfn-rollback-analysis.md",
+    "50-patterns/prompts/TEMPLATES/prompt_template.md",
     "50-patterns/prompts/starter-pack",
     "_system/AGENT_BOOTSTRAP.md",
     "_system/PROMPT_LIBRARY_CONTRACT.md",
@@ -299,8 +301,6 @@
     "docs/superpowers/specs",
     "docs/superpowers",
     "docs",
-    "_chatgpt/context-packs/devops-toolkit.md",
-    "20-projects/clients/mako/puzzler-b2b/troubleshooting.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
