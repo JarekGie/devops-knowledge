@@ -2,6 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-02 — GuardDuty org-wide: DEPLOYED ✅ (12/12 kont)
+
+```
+Projekt:    aws-cloud-platform (mako) — LLZ
+Akcja:      security/guardduty/ — terraform apply, org-wide enrollment
+Status:     LIVE — pierwszy raz w historii org
+
+WDROŻONE:
+  ✅  Delegated admin: monitoring-nagios-bot (814662658531)
+  ✅  auto_enable_organization_members = ALL (12 kont enrolled)
+  ✅  Baseline: CLOUD_TRAIL + DNS_LOGS + FLOW_LOGS na każdym koncie
+  ✅  Commit: 813697b
+
+WAŻNE — SIDE EFFECT:
+  ⚠️  RShop + Booking miały premium features (S3, EBS, RDS, Lambda) od 2026-02-09
+      → Po enrollment jako org members: ZRESETOWANE DO DISABLED (AWS behaviour)
+      → Jeśli te features były potrzebne → przywróć per-konto lub przez org feature config
+
+ROLLBACK:
+  terraform destroy (security/guardduty/)
+
+NASTĘPNY KROK: AWS Config org-wide (FTR 4 — ostatni blocker FTR)
+```
+
 ## Update — 2026-05-02 — SCP Security Baseline: WDROŻONY ✅ (Sandbox + NonProd + Prod)
 
 ```
@@ -1734,4 +1758,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 20:48 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 20:56 — sesja aktywna*

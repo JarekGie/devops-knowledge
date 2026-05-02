@@ -196,18 +196,18 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | Cost Optimization | **2** | **4** | **5** | **~40%** ↑ |
 | Sustainability | 0 | 4 | 2 | ~40% |
 | Organizations Governance | **2** | **4** | **14** | **~20%** ↑ |
-| FTR Partner Readiness | **2** | 6 | 7 | **~35%** ↑ |
+| FTR Partner Readiness | **3** | 6 | 6 | **~40%** ↑ |
 
-**Overall WAF (6 pillarów): ~33%** ↑  
-**FTR Partner Readiness: BLOKOWANE** przez GuardDuty + Config + Security Hub — szacowany czas do FTR: 3-4 tygodnie po Faza B EPIC 3+4+5
+**Overall WAF (6 pillarów): ~35%** ↑  
+**FTR Partner Readiness: BLOKOWANE** przez Config + Security Hub — szacowany czas do FTR: 2-3 tygodnie po EPIC 5 (Config) + Security Hub
 
-> Zmiany 2026-05-02: COST 1 → ✅ (budgets applied), COST 3 → ✅ (anomaly detection applied), FTR 12 → ✅, ORG 10 → ✅ (tag policies), **ORG 16 → ✅ (SCP security-baseline deployed: Sandbox+NonProd+Prod)**
+> Zmiany 2026-05-02: COST 1 → ✅ (budgets), COST 3 → ✅ (anomaly detection), FTR 12 → ✅, ORG 10 → ✅ (tag policies), ORG 16 → ✅ (SCP), **SEC 4 → ✅, ORG 11 → ✅, FTR 3 → ✅ (GuardDuty org-wide)**
 
 ---
 
 ## High Risk Issues (HRI) — do rozwiązania priorytetowo
 
-1. **ORG 11 / SEC 4** — GuardDuty wyłączony org-wide → zagrożenia niewykrywane + **blokuje FTR**
+1. ~~**ORG 11 / SEC 4** — GuardDuty~~ **RESOLVED 2026-05-02** ✅ (org-wide, 12/12 kont)
 2. ~~**ORG 16 / SEC 1** — SCP security-baseline~~ **RESOLVED 2026-05-02** ✅ (deployed Sandbox+NonProd+Prod)
 3. **ORG 1** — Wszystkie konta w Root → SCP nie działają (nie ma gdzie ich podpiąć)
 4. **REL 13** — Brak formalnego DR plan mimo istnienia konta DRP
