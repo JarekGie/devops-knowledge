@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Update cloud-detective-v2.md with test learnings"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           },
           {
@@ -338,7 +338,6 @@
       "graph:Otwórz podgląd grafu": false,
       "canvas:Stwórz nową tablicę": false,
       "daily-notes:Otwórz dzisiejszy dziennik": false,
-      "templates:Wstaw szablon": false,
       "command-palette:Otwórz listę poleceń": false,
       "bases:Stwórz nową bazę danych": false,
       "obsidian-git:Open Git source control": false,
