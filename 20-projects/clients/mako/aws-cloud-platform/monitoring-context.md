@@ -135,10 +135,11 @@ Org member accounts (us-east-1) — 12 kont (incl. makolab_dc od 2026-05-02)
        ├─ CloudWatch dashboards (5 szt.)
        │   llz-platform-overview, booking-production,
        │   dacia-production, rshop-production, bbmt-environments
-       └─ CloudWatch SLO alarms (6 szt.) [live 2026-05-02]
+       └─ CloudWatch SLO alarms (8 szt.) [live 2026-05-02]
            slo-rshop-error-rate, slo-rshop-latency-p99,
            slo-booking-error-rate, slo-booking-latency-p99,
-           slo-dacia-error-rate, slo-dacia-latency-p99
+           slo-dacia-error-rate, slo-dacia-latency-p99,
+           slo-bbmt-uat-error-rate, slo-bbmt-uat-latency-p99
 ```
 
 ---
@@ -282,7 +283,29 @@ Brak ECS. Konto zawiera wyłącznie Lambda + EventBridge + SNS + OAM.
 | SNS subscription (email) | confirmed | jaroslaw.golab@makolab.com |
 | OAM sink `observabilitySink` | aktywny | eu-central-1 |
 
-**CloudWatch alarms:** 0 alarmów w eu-central-1 (describe-alarms wykonano, lista pusta).
+**CloudWatch SLO alarms (eu-central-1, live 2026-05-02):**
+
+| Alarm | Account | SLO | Trigger | Stan |
+|-------|---------|-----|---------|------|
+| slo-rshop-error-rate | RShop (prod) | 5xx < 1% | 3/5 min | INSUFFICIENT_DATA→OK |
+| slo-rshop-latency-p99 | RShop (prod) | p99 < 2s | 2/3 min | INSUFFICIENT_DATA→OK |
+| slo-booking-error-rate | Booking_Online (prod) | 5xx < 1% | 3/5 min | INSUFFICIENT_DATA→OK |
+| slo-booking-latency-p99 | Booking_Online (prod) | p99 < 3s | 2/3 min | INSUFFICIENT_DATA→OK |
+| slo-dacia-error-rate | dacia-asystent (prod) | 5xx < 1% | 3/5 min | INSUFFICIENT_DATA→OK |
+| slo-dacia-latency-p99 | dacia-asystent (prod) | p99 < 3s | 2/3 min | INSUFFICIENT_DATA→OK |
+| slo-bbmt-uat-error-rate | planodkupow (prod-on-uat) | 5xx < 1% | 3/5 min | live 2026-05-02 |
+| slo-bbmt-uat-latency-p99 | planodkupow (prod-on-uat) | p99 < 3s | 2/3 min | live 2026-05-02 |
+
+**SLO Coverage — Workloads/Production OU:**
+
+| Account | OAM Link | SLO Alarms | Klasyfikacja |
+|---------|----------|------------|--------------|
+| RShop (943111679945) | ✅ live | ✅ 2 alarmy | prod — publiczny ALB |
+| Booking_Online (128264038676) | ✅ live | ✅ 2 alarmy | prod — publiczny ALB |
+| dacia-asystent (074412166613) | ✅ live | ✅ 2 alarmy | prod — publiczny ALB |
+| planodkupow (333320664022) | ✅ live | ✅ 2 alarmy (live 2026-05-02) | PRODUCTION_WORKLOAD_ON_UAT — bbmt_uat ALB |
+| planodkupowv1 (292464762806) | ✅ live | ❌ brak | NONPROD_EXCLUDED — tymczasowa klasyfikacja |
+| CC (943696080604) | ✅ live | ❌ brak | NO_ALB_FOUND — tylko pusty klaster ECS |
 
 **Log groups:**
 

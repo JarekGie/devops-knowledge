@@ -25,7 +25,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | OPS 5 | IaC, code review, CI/CD dla infrastruktury | ⚠️ | Terraform w repo, brak Atlantis/CI pipeline dla IaC |
 | OPS 6 | Redukcja ryzyka deploymentu (blue/green, canary, rollback) | ⚠️ | ECS rolling update, brak formalnego runbooka rollback |
 | OPS 7 | Readiness review przed produkcją (checklist, testy) | ❌ | Brak formalnego procesu |
-| OPS 8 | Workload observability używana operacyjnie | ⚠️ | CloudWatch SLO alarms (error rate + latency p99) dla rshop/booking/dacia **live 2026-05-02** ✅; brak centralnej korelacji |
+| OPS 8 | Workload observability używana operacyjnie | ⚠️ | SLO alarms: rshop/booking/dacia/planodkupow(bbmt-uat) **live 2026-05-02** ✅ (8 alarmów, 4 workloady prod); planodkupowv1 excluded (NONPROD); CC: no ALB; brak centralnej korelacji |
 | OPS 9 | Health operacji monitorowany (dashboard ops) | ⚠️ | Health notifications 12/12 kont ✅, EventBridge DLQ z CW alarm (failures widoczne) ✅, brak ops dashboard |
 | OPS 10 | Zarządzanie eventami operacyjnymi (incydenty, eskalacje) | ⚠️ | Runbooki incydentowe w vault, brak formalnego procesu eskalacji |
 | OPS 11 | Ciągłe doskonalenie operacji (retrospektywy, postmortem) | ⚠️ | Postmortem planodkupow-qa ✅, niesystematyczne |
