@@ -19,6 +19,7 @@ repository: "~/projekty/mako/aws-projects/aws-cloud-platform"
 created: "2026-05-01"
 updated: "2026-05-02"
 last_verified: "2026-05-02"
+# last major update: 2026-05-02 — SLO alarms + OAM links planodkupowv1+CC
 scan_method: cloud-detective-v2
 last_verified_by: claude
 tags:
