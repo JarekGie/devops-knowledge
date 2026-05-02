@@ -439,6 +439,34 @@ llz:
 
 ---
 
+## 2026-05-02 — EventBridge DLQ: centralna kolejka dla wszystkich 13 targetów
+
+**Co zrobiono:**
+- Zaimplementowano plan `2026-05-02-eventbridge-dlq.md` (wcześniej napisany, teraz wykonany)
+- Dodano do `main.tf`: `aws_sqs_queue.health_eventbridge_dlq` (health-eventbridge-dlq, us-east-1, 14d, 60s visibility), `aws_sqs_queue_policy.health_eventbridge_dlq` (Principal: events.amazonaws.com, Condition: aws:SourceAccount = all 12 org accounts), `aws_cloudwatch_metric_alarm.eventbridge_dlq_visible` → ops_alerts SNS
+- Dodano `dead_letter_config` do `aws_cloudwatch_event_target.health_to_lambda` (central rule → Lambda)
+- Dodano `dead_letter_config` do wszystkich 12 forwarding targets w `forwarding.tf`
+- Commit: `35bb3e7` feat(health): add EventBridge DLQ for all forwarding and central targets
+- Wygenerowano 2 targeted terraform plany (bez apply per user constraint):
+  - `tfplan-eb-dlq-infra` → **3 to add**: SQS queue + queue policy + CW alarm
+  - `tfplan-eb-dlq-targets` → **13 to change** (dead_letter_config) + 1 to add (queue dependency)
+
+**Uwaga apply:**
+Przy apply: najpierw `terraform apply tfplan-eb-dlq-infra` → po tym regeneruj targets plan (bo tfplan-eb-dlq-targets zawiera queue jako `+ create` — po infra apply queue już istnieje → plan byłby stale). Alternatywnie: jeden `terraform apply -var='notification_emails=["..."]'` bez targetowania.
+
+**Stan na koniec:**
+- Pipeline AWS Health → EventBridge → Lambda: w pełni zabezpieczony DLQ na każdym etapie
+  - 12 source account rules → DLQ (health-eventbridge-dlq, centralna)
+  - 1 central rule (health-to-lambda) → DLQ (health-eventbridge-dlq)
+  - Lambda async invocations → DLQ (health-notify-dlq, osobna)
+- Kod w main branch aws-cloud-platform, gotowy do apply
+
+**Następna sesja:**
+- `terraform apply "tfplan-eb-dlq-infra"` → potem regeneruj i apply targets plan
+- Post-apply weryfikacja per plan (checklist weryfikacyjna w planie)
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
