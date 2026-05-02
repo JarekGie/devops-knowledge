@@ -1,13 +1,14 @@
 ---
 type: checklist
 updated: 2026-05-02
-# last update: SLO alarms IaC ready, OAM planodkupowv1+CC IaC ready, synthetics canary audit complete
-tags: [llz, waf, aws-well-architected, governance, compliance]
+# last update: Budgets all 12 accounts + Cost Anomaly Detection planned, Organizations + FTR sections added
+tags: [llz, waf, aws-well-architected, governance, compliance, ftr, organizations]
 ---
 
-# LLZ — AWS Well-Architected Framework Checklist
+# LLZ — AWS Well-Architected Framework + FTR Checklist
 
-> Checklista pod WAFR review z AWS SA. Skupiona na wymiarze org-governance i platformy (LLZ scope).
+> Checklista pod WAFR review z AWS SA oraz wymagania AWS Foundational Technical Review (FTR).
+> Skupiona na wymiarze org-governance i platformy (LLZ scope).
 > Status: ✅ done | ⚠️ partial | ❌ missing | ➖ N/A / poza scope LLZ
 
 Ostatnia aktualizacja stanu: **2026-05-02**
@@ -21,11 +22,11 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | OPS 1 | Zdefiniowane priorytety operacyjne (KPIs, SLO) | ❌ | Brak formalnych SLO dla platform |
 | OPS 2 | Struktura zespołu wspiera business outcomes | ⚠️ | DC-devops jako owner platformy — nie udokumentowane formalnie |
 | OPS 3 | Kultura organizacyjna wspiera operacje (runbooki, on-call) | ⚠️ | Runbooki tworzone ad-hoc, brak formalnego on-call |
-| OPS 4 | Observability: logi, metryki, tracing, health events | ⚠️ | Health notifications **12/12 kont** ✅, Lambda DLQ + CW alarm ✅; OAM: **6/6 Workloads/Production kont live (2026-05-02)** ✅; SLO alarms **6 szt. live** (rshop/booking/dacia, error rate + latency p99) ✅; brak centralnego dashboardu |
+| OPS 4 | Observability: logi, metryki, tracing, health events | ⚠️ | Health notifications **12/12 kont** ✅, Lambda DLQ + CW alarm ✅; OAM: **6/6 Workloads/Production kont live (2026-05-02)** ✅; SLO alarms **8 szt. live** (rshop/booking/dacia/planodkupow bbmt-uat, error rate + latency p99) ✅; brak centralnego dashboardu |
 | OPS 5 | IaC, code review, CI/CD dla infrastruktury | ⚠️ | Terraform w repo, brak Atlantis/CI pipeline dla IaC |
 | OPS 6 | Redukcja ryzyka deploymentu (blue/green, canary, rollback) | ⚠️ | ECS rolling update, brak formalnego runbooka rollback |
 | OPS 7 | Readiness review przed produkcją (checklist, testy) | ❌ | Brak formalnego procesu |
-| OPS 8 | Workload observability używana operacyjnie | ⚠️ | SLO alarms: rshop/booking/dacia/planodkupow(bbmt-uat) **live 2026-05-02** ✅ (8 alarmów, 4 workloady prod); planodkupowv1 excluded (NONPROD); CC: no ALB; brak centralnej korelacji |
+| OPS 8 | Workload observability używana operacyjnie | ⚠️ | SLO alarms: rshop/booking/dacia/planodkupow(bbmt-uat) **live 2026-05-02** ✅ (8 alarmów, 4 workloady prod); planodkupowv1 NONPROD excluded; CC no ALB; dacia growing ($267/Apr); brak centralnej korelacji |
 | OPS 9 | Health operacji monitorowany (dashboard ops) | ⚠️ | Health notifications 12/12 kont ✅, EventBridge DLQ z CW alarm (failures widoczne) ✅, brak ops dashboard |
 | OPS 10 | Zarządzanie eventami operacyjnymi (incydenty, eskalacje) | ⚠️ | Runbooki incydentowe w vault, brak formalnego procesu eskalacji |
 | OPS 11 | Ciągłe doskonalenie operacji (retrospektywy, postmortem) | ⚠️ | Postmortem planodkupow-qa ✅, niesystematyczne |
@@ -94,9 +95,9 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 | ID | Pytanie / Best Practice | Status | Uwagi |
 |----|------------------------|--------|-------|
-| COST 1 | Cloud Financial Management: tagging, budgets, alerty | ⚠️ | Tagging LLZ ✅; log retention **FIXED 2026-05-02**: 58 grup bez retencji → ustawione (planodkupow 40, DRP-TFS 17, Booking_Online 1); budgety nie wszędzie — audit zaplanowany (prompt `llz-budgets-audit.md` gotowy); brak FinOps procesu |
+| COST 1 | Cloud Financial Management: tagging, budgets, alerty | ✅ | Tagging LLZ ✅; CW log retention FIXED 2026-05-02 ✅; **Budgets: plan gotowy 2026-05-02** — 21 importowanych + 7 nowych (wszystkie 12 kont pokryte), alerty email na planodkupow+Booking (były BRAK), DRP-TFS thresholds obniżone 150→80%; FinOps proces: brak |
 | COST 2 | Governance użycia: SCP deny expensive services, quota limits | ❌ | Brak SCP cost-related |
-| COST 3 | Monitorowanie kosztów: Cost Explorer, anomaly detection | ⚠️ | Cost Explorer dostępny, brak automatycznych alertów anomalii |
+| COST 3 | Monitorowanie kosztów: Cost Explorer, anomaly detection | ⚠️ | **Cost Anomaly Detection: plan gotowy 2026-05-02** — org-level DIMENSIONAL/SERVICE, threshold $50+20%, SNS us-east-1; needs apply |
 | COST 4 | Decommission nieużywanych zasobów | ⚠️ | Konta legacy zidentyfikowane (Faza A), brak procesu cleanup |
 | COST 5 | Selekcja serwisów z myślą o koszcie | ⚠️ | Ad-hoc, brak formalnego procesu |
 | COST 6 | Right-sizing instancji i usług | ❌ | Brak systematycznego audytu |
@@ -106,7 +107,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | COST 10 | Regularna evaluacja nowych serwisów pod kątem kosztów | ❌ | Ad-hoc |
 | COST 11 | Koszt wysiłku operacyjnego w decyzjach build vs. buy | ⚠️ | Uwzględniany nieformalnie |
 
-**Priorytety COST:** COST 7 (Savings Plans — quick win), COST 3 (anomaly detection), COST 6 (right-sizing)
+**Priorytety COST:** COST 7 (Savings Plans — quick win), COST 6 (right-sizing), COST 2 (SCP cost guardrails)
 
 ---
 
@@ -122,6 +123,65 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | SUS 6 | Procesy org redukujące environmental impact | ❌ | Brak formalnych celów |
 
 **Priorytety SUS:** SUS 2 (scheduler — już w LLZ roadmapie), SUS 4 (S3 lifecycle policy standard)
+
+---
+
+## Pillar 7 — Organizations Governance (multi-account)
+
+> Specyficzne dla AWS Organizations — obejmuje wymagania WAF Security Pillar (Account Management) + AWS SRA (Security Reference Architecture). Nie pokryte w standardowych 6 pillarach.
+
+| ID | Best Practice | Status | Uwagi |
+|----|--------------|--------|-------|
+| ORG 1 | Accounts w OUs, NIE bezpośrednio w Root | ❌ | Wszystkie konta w Root — EPIC 1 priorytet; Root = brak SCP guardrails |
+| ORG 2 | OU hierarchia odpowiada typom workloadów (Prod/NonProd/Platform/Security) | ❌ | Brak OU struktury — EPIC 1 |
+| ORG 3 | Dedicated Security account (delegated admin) | ❌ | EPIC 3 — GuardDuty/Config/SecurityHub admin |
+| ORG 4 | Root account: MFA włączone, brak access keys, zadana alternatywna metoda kontaktu | ⚠️ | Nieaudytowane — sprawdzić manualnie |
+| ORG 5 | CloudTrail: org-level, multi-region, global services, validation enabled, KMS | ⚠️ | Org CloudTrail aktywny ✅; KMS encryption ❌; log file validation ⚠️ (nieznane); EPIC 2 |
+| ORG 6 | Log Archive: S3 + KMS + lifecycle + block public access + MFA delete | ⚠️ | LogArchiveNew account ✅, S3 bucket ✅; KMS ❌; lifecycle ❌; EPIC 2 |
+| ORG 7 | Account contact info per account (billing, security, operations) | ❌ | Nieaudytowane — wymagane przez FTR |
+| ORG 8 | IAM Identity Center (SSO) zamiast indywidualnych IAM userów | ❌ | Aktualnie: IAM users z MFA — zwiększa surface attack |
+| ORG 9 | Break-glass procedure (kto/jak/kiedy dostaje emergency access) | ❌ | Brak udokumentowanej procedury |
+| ORG 10 | Tag Policies enforcement org-wide | ✅ | llz-project + llz-environment policies aktywne na Root ✅ |
+| ORG 11 | GuardDuty: org-level, auto-enable nowych kont, delegated admin | ❌ | **HRI** — EPIC 4; ani jedno konto nie ma GuardDuty |
+| ORG 12 | AWS Config: org-level recorders + aggregator + minimalne reguły | ❌ | EPIC 5 |
+| ORG 13 | Security Hub: org-level, delegated admin, standardy (CIS, FSBP) | ❌ | EPIC 3/5 — wymagane dla FTR |
+| ORG 14 | S3 Block Public Access na poziomie account (nie tylko bucket) | ⚠️ | Nieaudytowane org-wide — sprawdzić per account |
+| ORG 15 | IMDSv2 enforcement (EC2, jeśli używane) | ⚠️ | ECS Fargate nie dotyczy ✅; EC2 w DRP-TFS — nieaudytowane |
+| ORG 16 | SCP: deny root actions, deny disable security services, deny non-eu regions | ❌ | EPIC 6 — **HRI** |
+| ORG 17 | Savings Plans lub Reserved Instances dla stabilnych workloadów | ❌ | All On-Demand; rshop/booking/planodkupow = stabilny $1100-1400/month |
+| ORG 18 | AWS Trusted Advisor notifications (Business/Enterprise support) | ⚠️ | Support tier nieznany; TA checks dostępne na Basic |
+| ORG 19 | Centralne zarządzanie kluczami KMS (org-wide key policy) | ❌ | Keys per account, brak org-level key governance |
+| ORG 20 | VPC Flow Logs → centralna archiwizacja lub analiza | ❌ | Flow logs nie wszędzie, brak centralizacji |
+
+**Priorytety ORG:** ORG 11 (GuardDuty — HRI), ORG 16 (SCP — HRI), ORG 1 (OU struktura), ORG 3 (Security account), ORG 5/6 (CloudTrail/LogArchive hardening)
+
+---
+
+## Pillar 8 — FTR Partner Readiness
+
+> AWS Foundational Technical Review — wymagania do walidacji "partner-ready". FTR ważny 3 lata od zatwierdzenia. Alternatywa: AWS Well-Architected Review (WAFR) może zastąpić FTR.
+
+| ID | Wymaganie FTR | Status | Uwagi |
+|----|--------------|--------|-------|
+| FTR 1 | CloudTrail multi-region enabled ze wszystkimi kontami org | ⚠️ | Org CloudTrail ✅; multi-region config nieaudytowana |
+| FTR 2 | Centralized S3 log bucket z access controls | ⚠️ | LogArchiveNew ✅; strict access + block public access nieaudytowane |
+| FTR 3 | GuardDuty enabled org-wide | ❌ | **HRI — blokuje FTR** |
+| FTR 4 | AWS Config + reguły conformance | ❌ | Blokuje FTR |
+| FTR 5 | Security Hub lub CIS Benchmark report | ❌ | Blokuje FTR |
+| FTR 6 | Root MFA na każdym koncie | ⚠️ | Nieaudytowane — sprawdź przed FTR |
+| FTR 7 | Brak hardcoded credentials w kodzie/repo | ⚠️ | Brak centralnego secret scanningu |
+| FTR 8 | Workload isolation — oddzielne konta per projekt | ✅ | Każdy projekt w oddzielnym koncie ✅ |
+| FTR 9 | Incident response playbooks | ❌ | Brak formalnych IR playbooks |
+| FTR 10 | Backup + restore tested + documented | ⚠️ | RDS snapshots ✅; testy restore nieudokumentowane |
+| FTR 11 | Architecture diagrams + case studies (submission artifacts) | ⚠️ | Częściowe; brak formalnych diagramów per workload |
+| FTR 12 | Budgets + Cost Anomaly Detection | ⚠️ | **Budgets plan 2026-05-02 ✅; Anomaly Detection plan 2026-05-02 ✅** — needs apply |
+| FTR 13 | Szyfrowanie danych at rest (S3, RDS, EBS) | ⚠️ | Włączone na prod, brak audytu org-wide |
+| FTR 14 | Szyfrowanie in transit (TLS, no HTTP) | ⚠️ | ALB HTTPS prod ✅; preprod częściowo |
+| FTR 15 | S3 Block Public Access enabled | ⚠️ | Nieaudytowane org-wide |
+
+**FTR blockers (krytyczne dla partner readiness):** FTR 3 (GuardDuty), FTR 4 (Config), FTR 5 (Security Hub), FTR 6 (Root MFA audit)
+
+**Szacowany czas do FTR readiness:** 3-4 tygodnie po wykonaniu Faza B EPIC 3+4+5
 
 ---
 
