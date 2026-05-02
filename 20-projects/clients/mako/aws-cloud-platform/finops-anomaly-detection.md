@@ -36,6 +36,10 @@ Cost Explorer (org-level)
                  └─ Email: var.notification_emails
 ```
 
+### DAILY vs IMMEDIATE — dlaczego IMMEDIATE
+
+AWS nie pozwala na SNS subscriber przy `frequency = "DAILY"` lub `"WEEKLY"` — tylko `EMAIL` subscriber. SNS wymaga `frequency = "IMMEDIATE"`. Dual threshold ($50 AND 20%) zapewnia niski szum — alert i tak pojawi się dopiero gdy anomalia przekroczy oba progi.
+
 ### Dlaczego SERVICE, nie LINKED_ACCOUNT
 
 `SERVICE` dimension = wykrywa anomalie per usługa AWS, aggreguje po całej organizacji.  
@@ -77,37 +81,25 @@ CE resources (monitor, subscription) są globalne — używają default provider
 
 ### SNS topic policy
 
-Policy zastępuje domyślną — zawiera 2 statements:
-1. `AllowOwnerAccess` — management account root ma SNS:* (zachowanie domyślnego zachowania)
-2. `AllowCostAnomalyDetectionToPublish` — `costalerts.amazonaws.com` może publishować, z condition `aws:SourceAccount` = 864277686382 (anti-confused-deputy)
+Policy zawiera 1 statement (tylko cross-service permission — same-account access przez IAM):
+1. `AllowCostAnomalyDetectionToPublish` — `costalerts.amazonaws.com` może publishować, z condition `aws:SourceAccount` = 864277686382 (anti-confused-deputy)
+
+**Uwaga:** `SNS:*` ani lista akcji w `AllowOwnerAccess` powoduje błąd AWS `Policy statement action out of service scope!` — SNS topic policy akceptuje tylko akcje scoped do konkretnego topicu. Rozwiązanie: pominąć statement dla owner (same-account IAM + root = wystarczający dostęp).
 
 ---
 
-## Plan Terraform (2026-05-02)
+## Apply (2026-05-02)
 
 ```
-Plan: 5 to add, 0 to change, 0 to destroy
+Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
 ```
 
 Zasoby:
-- `aws_ce_anomaly_monitor.org`
-- `aws_ce_anomaly_subscription.org`
-- `aws_sns_topic.cost_anomaly` (us-east-1)
-- `aws_sns_topic_policy.cost_anomaly`
-- `aws_sns_topic_subscription.cost_anomaly_email["jaroslaw.golab@makolab.com"]`
-
----
-
-## Zastosowanie
-
-```bash
-cd platform/finops
-AWS_PROFILE=mako-dc terraform apply \
-  -var 'notification_emails=["jaroslaw.golab@makolab.com"]' \
-  tfplan-anomaly
-```
-
-Po apply: sprawdź email — SNS wyśle confirmation request, trzeba potwierdzić subskrypcję.
+- `aws_ce_anomaly_monitor.org` ✅
+- `aws_ce_anomaly_subscription.org` ✅
+- `aws_sns_topic.cost_anomaly` (us-east-1) ✅
+- `aws_sns_topic_policy.cost_anomaly` ✅
+- `aws_sns_topic_subscription.cost_anomaly_email["jaroslaw.golab@makolab.com"]` ✅ (confirmed 2026-05-02)
 
 ---
 
