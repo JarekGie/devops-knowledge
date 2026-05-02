@@ -118,4 +118,4 @@ Apply complete! Resources: 21 imported, 7 added, 18 changed, 0 destroyed.
 |---|---|---|
 | dacia budget tuning | Kwota 600 USD — dostosować po stabilizacji workloadu | Średni |
 | adminml budget tuning | Kwota 150 USD — dostosować po zakończeniu projektu | Niski |
-| planodkupow_monthly_v2 | Usunięty z konfiguracji — **wymaga ręcznego usunięcia z AWS Console** (nazwa: "Plan-odkupow Account Monthly Budget", account 333320664022) | Wysoki |
+| planodkupow_monthly_v2 | ✅ Usunięty przez Terraform (import → destroy 2026-05-02) — nie istnieje w AWS | Zamknięte |
