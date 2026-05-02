@@ -100,31 +100,15 @@ Kwoty oparte na danych Cost Explorer (Feb-Apr 2026). `dynamic notification` akty
 
 ---
 
-## Stan planu Terraform (2026-05-02)
+## Apply (2026-05-02)
 
 ```
-Plan: 21 to import, 7 to add, 18 to change, 0 to destroy
+Apply complete! Resources: 21 imported, 7 added, 18 changed, 0 destroyed.
 ```
 
-**18 zmian (wszystkie bezpieczne):**
-- 9x: nowe powiadomienia na planodkupow + Booking (intentional)
-- 3x: DRP-TFS thresholds 150/200 → 80/100 (intentional)
-- 5x: `billing_view_arn → null` + `metrics = ["UnblendedCost"] → []` — provider v6 auto-populated fields, harmless
-- 11x: `cost_filter` (Terraform) ↔ `filter_expression` (computed) — równoważna reprezentacja w provider v6
-- 1x: cc_monthly `planned_limit` z 2021 — historyczne monthly limits, wszystkie $15 = ta sama wartość
+**Status:** ✅ ZAAPLIKOWANY
 
 **Known permanent drift:** `billing_view_arn` i `metrics` wracają po każdym planie. Suppress przez `lifecycle { ignore_changes = [billing_view_arn, metrics] }` jeśli uciążliwe.
-
----
-
-## Zastosowanie
-
-```bash
-cd platform/budgets
-AWS_PROFILE=mako-dc terraform apply \
-  -var 'budget_notification_emails=["jaroslaw.golab@makolab.com"]' \
-  tfplan-budgets
-```
 
 ---
 
@@ -135,4 +119,3 @@ AWS_PROFILE=mako-dc terraform apply \
 | dacia budget tuning | Kwota 600 USD — dostosować po stabilizacji workloadu | Średni |
 | adminml budget tuning | Kwota 150 USD — dostosować po zakończeniu projektu | Niski |
 | planodkupow_monthly_v2 | Usunięty z konfiguracji — **wymaga ręcznego usunięcia z AWS Console** (nazwa: "Plan-odkupow Account Monthly Budget", account 333320664022) | Wysoki |
-| Cost Anomaly Detection | Nie skonfigurowane nigdzie w org — rozważyć jako uzupełnienie budżetów | Niski |

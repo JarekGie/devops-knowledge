@@ -22,7 +22,7 @@ tags:
 **Data implementacji:** 2026-05-02  
 **Moduł Terraform:** `platform/finops/`  
 **Backend:** `864277686382-terraform-state-bucket / platform/finops/terraform.tfstate`  
-**Status:** plan gotowy, NIE zaaplikowany
+**Status:** ✅ ZAAPLIKOWANY (2026-05-02)
 
 ---
 
@@ -31,7 +31,7 @@ tags:
 ```
 Cost Explorer (org-level)
   └─ Anomaly Monitor: DIMENSIONAL / SERVICE
-       └─ Subscription: DAILY, threshold >= $50 AND >= 20%
+       └─ Subscription: IMMEDIATE, threshold >= $50 AND >= 20%
             └─ SNS: cost-anomaly-alerts (us-east-1, management account)
                  └─ Email: var.notification_emails
 ```
