@@ -17,8 +17,8 @@ extra_regions:
 iac: terraform
 repository: "~/projekty/mako/aws-projects/aws-cloud-platform"
 created: "2026-05-01"
-updated: "2026-05-01"
-last_verified: "2026-05-01"
+updated: "2026-05-02"
+last_verified: "2026-05-02"
 scan_method: cloud-detective-v2
 last_verified_by: claude
 tags:
@@ -105,19 +105,27 @@ Lock table: `terraform-state-lock`
 ## Architektura
 
 ```text
-Org member accounts (us-east-1)
-  └─ EventBridge rule "health-forward" (11 kont)
+Org member accounts (us-east-1) — 12 kont (incl. makolab_dc od 2026-05-02)
+  └─ EventBridge rule "health-to-monitoring" (per konto)
        │  aws.health events (open, issue/investigation)
+       │  dead_letter_config → SQS health-eventbridge-dlq
        ▼
    monitoring-nagios-bot (814662658531)
    ├─ us-east-1:
    │   ├─ EventBridge bus "health-aggregation"
    │   │   └─ rule "health-to-lambda" → Lambda "health-notify"
-   │   └─ Lambda "health-notify" (python3.12, 30s timeout)
-   │       └─ SNS Publish → sns:eu-central-1:health-notifications
+   │   ├─ Lambda "health-notify" (python3.12, 30s timeout)
+   │   │   ├─ dead_letter_config → SQS health-notify-dlq
+   │   │   └─ SNS Publish → sns:eu-central-1:health-notifications
+   │   ├─ SQS "health-notify-dlq" (14 dni)
+   │   ├─ SQS "health-eventbridge-dlq" (14 dni) ← EventBridge forwarding DLQ
+   │   └─ CW alarms: health-notify-errors, health-notify-throttles,
+   │                  health-to-lambda-failed-invocations,
+   │                  health-eventbridge-dlq-messages → SNS health-ops-alerts
    │
    └─ eu-central-1:
        ├─ SNS "health-notifications" → email: jaroslaw.golab@makolab.com
+       ├─ SNS "health-ops-alerts" → email (ops alarms)
        ├─ OAM sink "observabilitySink"
        │   ← OAM links z: rshop, dacia, planodkupow, booking
        │   (metryki CloudWatch + LogGroups + XRay)
@@ -149,6 +157,9 @@ Brak ECS/Fargate. Konto ma charakter platformowy, nie aplikacyjny.
 | IAM role | `health-eventbridge-forward` (eu-central-1) | live AWS | wysoka |
 | IAM role | `OrganizationAccountAccessRole` (created 2023-05-16) | live AWS | wysoka |
 | IAM role | `CloudDetectiveReadOnly` (created 2026-05-01) | live AWS | wysoka |
+| SQS queue | `health-notify-dlq` (us-east-1, 14 dni retencji) — Lambda DLQ | IaC (2026-05-02) | wysoka |
+| SNS topic | `health-ops-alerts` (us-east-1) — CW alarms → ops notifications | IaC (2026-05-02) | wysoka |
+| CW alarm | `health-notify-errors`, `health-notify-throttles`, `health-to-lambda-failed-invocations`, `health-eventbridge-dlq-messages` (us-east-1) | IaC (2026-05-02) | wysoka |
 
 ---
 
@@ -179,8 +190,8 @@ Lambda `health-notify`:
 - runtime: python3.12, timeout 30s, memory 128MB, code 832B
 - stan: **Active / LastUpdateStatus: Successful**
 
-Konta objęte health forwarding (11):
-drp_tfs, planodkupowv1, admin_makolab, booking_online, rshop, dacia, nagios_bot, planodkupow, lab, log_archive, cc
+Konta objęte health forwarding (**12**, od 2026-05-02):
+drp_tfs, planodkupowv1, admin_makolab, booking_online, rshop, dacia, nagios_bot, planodkupow, lab, log_archive, cc, **makolab_dc** (management account, provider `management_use1`, bez AssumeRole)
 
 ---
 
@@ -278,11 +289,11 @@ Brak ECS. Konto zawiera wyłącznie Lambda + EventBridge + SNS + OAM.
 
 | Problem | Priorytet | Evidence | Opis |
 |---------|-----------|----------|------|
-| Brak CloudWatch alarms na Lambda errors / EventBridge | WYSOKI | describe-alarms: 0 wyników | Brak alertu gdy Lambda failuje lub EventBridge przestaje dostarczać zdarzenia; obserwability gap |
+| ~~Brak CloudWatch alarms na Lambda errors / EventBridge~~ | ~~WYSOKI~~ | **RESOLVED 2026-05-02** | Alarmy wdrożone: `health-notify-errors`, `health-notify-throttles`, `health-to-lambda-failed-invocations`, `health-eventbridge-dlq-messages` → SNS `health-ops-alerts` |
 | Partial OAM links — tylko 4/12 kont | WYSOKI | TF state: 4 linki; konta bez linku: cc, drp_tfs, planodkupowv1, admin_makolab, lab, log_archive_new | Dashboardy pokazują niepełny obraz organizacji |
 | Niespójne tagi (NO-GO LLZ) | ŚREDNI | live AWS: brak Environment, Owner, CostCenter | platform/health-notifications i platform/monitoring mają niekompletne default_tags |
 | Niespójność Project tag | NISKI | OAM sink: Project=platform; SNS: Project=aws-cloud-platform | Dwa moduły używają różnych wartości Project |
-| Brak mechanizmu retry/DLQ dla Lambda | NISKI | IaC: brak dead_letter_config | Lambda bez DLQ — nieudane procesowanie zdarzeń zdrowotnych przepadnie bez śladu |
+| ~~Brak mechanizmu retry/DLQ dla Lambda~~ | ~~NISKI~~ | **RESOLVED 2026-05-02** | SQS `health-notify-dlq` (14 dni) + `dead_letter_config` na Lambda + CW alarm `health-eventbridge-dlq-messages` |
 
 ---
 

@@ -16,8 +16,8 @@ extra_regions: []
 iac: terraform
 repository: "~/projekty/mako/aws-projects/aws-cloud-platform"
 created: "2026-05-01"
-updated: "2026-05-01"
-last_verified: "2026-05-01"
+updated: "2026-05-02"
+last_verified: "2026-05-02"
 scan_method: cloud-detective-v2
 last_verified_by: claude
 tags:
@@ -93,11 +93,20 @@ tags:
 
 IaC source of truth:
 - `organization/governance/` — SCPs + Tag Policies (org-level governance)
-- `platform/health-notifications/` — AWS Health event aggregation (monitoring account)
+- `platform/health-notifications/` — AWS Health event aggregation (monitoring account); 12 kont, Lambda DLQ, CW alarmy (stan: 2026-05-02)
 - `platform/monitoring/` — CloudWatch OAM cross-account observability (monitoring account)
 - `security/cloud-detective/` — cross-account read-only IAM roles (wdrożone 2026-05-01)
 - `monitoring/org-dashboards/` — CloudWatch dashboards org-level
 - `bootstrap/`, `networking/`, `security/`, `workloads/` — scaffolding (puste katalogi)
+
+Dokumentacja operacyjna:
+- `docs/operator/usage.md` — health-notifications (uruchomienie, GLPI, testowanie)
+- `docs/operator/cloudwatch-log-retention.md` — polityka retencji logów, skrypt remediacji (dodane 2026-05-02)
+
+Skrypty operacyjne:
+- `scripts/fix-log-retention.sh` — remediacja retencji CloudWatch Logs (prod: 90d, nonprod: 30d)
+- `scripts/accounts-llz.yaml` — lista kont LLZ z env assignment
+- `scripts/generate-cloud-detective-profiles.sh` — generowanie profili AWS CLI
 
 ---
 
@@ -137,7 +146,7 @@ Terraform state backend:
 |-----------|---------------------|
 | `monitoring/org-dashboards/terraform.tfstate` | 2025-11-12 |
 | `organization/governance/terraform.tfstate` | 2026-04-20 |
-| `platform/health-notifications/terraform.tfstate` | 2026-04-20 |
+| `platform/health-notifications/terraform.tfstate` | 2026-05-02 |
 | `platform/monitoring/terraform.tfstate` | 2026-04-18 |
 | `security/cloud-detective/terraform.tfstate` | 2026-05-01 |
 
@@ -432,7 +441,8 @@ Zasoby w koncie monitoring-nagios-bot — potwierdzone live 2026-05-01. Szczegó
 | EventBridge bus `health-aggregation` | monitoring (814662658531) | us-east-1 | IaC |
 | Lambda `health_notify` | monitoring (814662658531) | us-east-1 | IaC |
 | SNS topic `health-notifications` | monitoring (814662658531) | eu-central-1 | IaC |
-| EventBridge forwarding rules (per konto) | 11 kont | us-east-1 | IaC |
+| EventBridge forwarding rules (per konto) | **12 kont** (incl. makolab_dc od 2026-05-02) | us-east-1 | IaC |
+| SQS DLQ `health-eventbridge-dlq` | monitoring (814662658531) | us-east-1 | IaC (2026-05-02) |
 
 ### Cloud Detective IAM (nowe, 2026-05-01)
 
@@ -458,7 +468,7 @@ Moduł `security/cloud-detective/` wdrożony. 25 zasobów IAM. Szczegóły w sek
 **CloudWatch alarms:** 0 alarmów w eu-central-1 (describe-alarms wykonano, lista pusta).
 EventBridge rule `org-cloudwatch-alarms-to-sns` istnieje (Terraform) — brak alarmów do forwarding.
 
-**Log groups:** niezweryfikowane.
+**Log groups:** retencja ustawiona org-wide 2026-05-02 — 58 grup bez retencji → naprawione skryptem `scripts/fix-log-retention.sh` (prod: 90d, nonprod: 30d). Skrypt w repozytorium: `scripts/fix-log-retention.sh`, konfiguracja kont: `scripts/accounts-llz.yaml`.
 
 ---
 
