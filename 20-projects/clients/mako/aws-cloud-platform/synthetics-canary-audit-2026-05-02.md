@@ -6,6 +6,14 @@ tags: [aws, cloudwatch, synthetics, canary, cleanup, monitoring, llz]
 
 # CloudWatch Synthetics Canary Audit — 2026-05-02
 
+## Interpretation
+
+The current state is consistent with previous partial manual decommissioning of CloudWatch Synthetics canaries.
+
+No active canaries were found, but orphaned log groups and artifact storage remain. These resources are likely leftovers from earlier manual cleanup after a cost increase was observed.
+
+---
+
 ## Wynik audytu
 
 **Wszystkie canaries zostały już wcześniej ręcznie usunięte** ze wszystkich kont Workloads/Production OU.
@@ -47,6 +55,14 @@ Wszystkie grupy dostały retencję 90 dni (2026-05-02). Dane wygasną automatycz
 /aws/synthetics/cwsyn-booking-prod-alb-hear-*   827 MB  (retencja 90d ustawiona)
 s3://synthetics-artifacts                        PUSTY   (brak lifecycle)
 ```
+
+---
+
+## Operational Decision
+
+- `planodkupow` cwsyn log groups: keep until natural expiration via 90d retention.
+- `Booking_Online` 827 MB cwsyn log group: candidate for manual deletion after final confirmation.
+- `Booking_Online` empty `synthetics-artifacts` bucket: candidate for deletion after confirming no active canaries or external references.
 
 ---
 
