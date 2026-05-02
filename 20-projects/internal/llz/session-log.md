@@ -93,7 +93,14 @@ AWS_PROFILE=mako-dc terraform apply tfplan
 - `forwarding.tf`: 4 zasoby makolab_dc (identyczny wzorzec jak inne konta)
 - `lambda.tf`: SQS DLQ `health-notify-dlq` + `dead_letter_config` + IAM `DlqSend` + CW alarm
 
-**Waiting for:** terraform plan (user) → terraform apply (user po akceptacji)
+**Zaimplementowano (2026-05-02):**
+- Commit 1: `f65533c` — GLPI-prep foundation (lambda formatter, multi-email SNS, CW alarms, ops-alerts topic)
+- Commit 2: `4d86cb3` — makolab_dc forwarding (locals.tf + providers.tf + forwarding.tf)
+- Commit 3: `4aff2a1` — Lambda DLQ (SQS health-notify-dlq, 14 dni, CW alarm, IAM DlqSend)
+
+**Saved tfplans:** `tfplan-makolab-dc` (4 add, 1 change), `tfplan-dlq` (2 add, 2 change)
+
+**Waiting for:** `terraform apply tfplan-makolab-dc && terraform apply tfplan-dlq` (user)
 
 ---
 
