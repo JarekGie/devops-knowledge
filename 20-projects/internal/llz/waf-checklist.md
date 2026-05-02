@@ -193,38 +193,49 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | Security | 0 | 5 | 6 | ~25% |
 | Reliability | 0 | 7 | 6 | ~30% |
 | Performance Efficiency | 0 | 4 | 1 | ~40% |
-| Cost Optimization | 0 | 4 | 7 | ~20% |
+| Cost Optimization | **1** | **5** | **5** | **~35%** ↑ |
 | Sustainability | 0 | 4 | 2 | ~40% |
+| Organizations Governance | **1** | 4 | 15 | **~15%** |
+| FTR Partner Readiness | **1** | 7 | 7 | **~30%** |
 
-**Overall: ~30% WAF-ready**
+**Overall WAF (6 pillarów): ~32%** ↑ (było ~30%)  
+**FTR Partner Readiness: BLOKOWANE** przez GuardDuty + Config + Security Hub — szacowany czas do FTR: 3-4 tygodnie po Faza B EPIC 3+4+5
+
+> Zmiany 2026-05-02: COST 1 → ✅ (budgets all 12 kont), COST 3 → ⚠️ (anomaly detection plan ready), ORG 10 → ✅ (tag policies)
 
 ---
 
 ## High Risk Issues (HRI) — do rozwiązania priorytetowo
 
-1. **SEC 4** — GuardDuty wyłączony org-wide → zagrożenia niewykrywane
-2. **SEC 1** — Brak SCP (preventive controls) → każde konto może wyłączyć security tooling
-3. **REL 13** — Brak formalnego DR plan mimo istnienia konta DRP
-4. **SEC 10** — Brak IR plan → brak procedury na incydent bezpieczeństwa
+1. **ORG 11 / SEC 4** — GuardDuty wyłączony org-wide → zagrożenia niewykrywane + **blokuje FTR**
+2. **ORG 16 / SEC 1** — Brak SCP → każde konto może wyłączyć security tooling, używać dowolnego regionu
+3. **ORG 1** — Wszystkie konta w Root → SCP nie działają (nie ma gdzie ich podpiąć)
+4. **REL 13** — Brak formalnego DR plan mimo istnienia konta DRP
+5. **SEC 10 / FTR 9** — Brak IR plan → brak procedury na incydent bezpieczeństwa
 
 ---
 
 ## Szybkie wygrane (quick wins)
 
-1. **Włączyć GuardDuty org-wide** — Faza B, 1-2 dni, eliminuje HRI
-2. **AWS Cost Anomaly Detection** — 30 minut konfiguracji, alert na anomalie kosztowe
-3. **Savings Plans** — analiza 1h, redukcja kosztów ~20-30% na stałym ruchu
-4. **Config Aggregator** — Faza B, widoczność compliance org-wide
-5. **SCP baseline (4 deny policies)** — Faza B, eliminuje HRI SEC 1
+1. **Apply platform/finops (anomaly detection)** — gotowe, 5 minut, eliminuje COST 3 ❌
+2. **Apply platform/budgets** — gotowe, 5 minut, wszystkie konta z budżetami
+3. **Root MFA audit** — sprawdzić manualnie, 15 minut, odblokuje FTR 6
+4. **S3 Block Public Access audit** — AWS CLI, 30 minut, odblokuje FTR 15 / ORG 14
+5. **Savings Plans zakup** — analiza Cost Explorer 1h, ~20-30% oszczędności dla rshop/booking/planodkupow (stabilny $1100-1400/month każdy)
+6. **Faza B kick-off** — GuardDuty + Config + Security Hub = FTR unblocked w 3-4 tygodnie
 
 ---
 
 ## Powiązania z LLZ Faza B
 
-| Faza B Epic | WAF checks które adresuje |
-|-------------|--------------------------|
-| EPIC 3 — Security Account | SEC 1, SEC 4, REL 10 |
-| EPIC 4 — GuardDuty org | SEC 4 (HRI) |
-| EPIC 5 — Config + Aggregator | SEC 1, OPS 4, REL 6 |
-| EPIC 6 — SCP baseline | SEC 1 (HRI), COST 2 |
-| EPIC 1 — OU + owners | OPS 2, SEC 3 |
+| Faza B Epic | WAF / ORG / FTR checks które adresuje |
+|-------------|--------------------------------------|
+| EPIC 1 — OU + owners | OPS 2, SEC 3, **ORG 1, ORG 2** |
+| EPIC 2 — CloudTrail/LogArchive hardening | **ORG 5, ORG 6, FTR 1, FTR 2** |
+| EPIC 3 — Security Account | SEC 1, SEC 4, REL 10, **ORG 3, ORG 13, FTR 5** |
+| EPIC 4 — GuardDuty org | SEC 4 (HRI), **ORG 11 (HRI), FTR 3 (blocker)** |
+| EPIC 5 — Config + Aggregator | SEC 1, OPS 4, REL 6, **ORG 12, FTR 4 (blocker)** |
+| EPIC 6 — SCP baseline | SEC 1 (HRI), COST 2, **ORG 16 (HRI)** |
+| EPIC 7 — Legacy decommission | COST 4, **ORG 1** |
+| — (brak epiku) | IAM Identity Center | **ORG 8** — poza obecnym scope LLZ |
+| — (brak epiku) | Savings Plans | **ORG 17** — 1-2 dni, quick win |
