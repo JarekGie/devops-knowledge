@@ -88,11 +88,10 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Analyze rshop P99 latency spike in production"
+              "title": "Terminal: ✳ Analyze rshop P99 latency spike in production"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -276,7 +275,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "261bc7f5f8745839",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/rshop/rshop-context.md",
     "20-projects/internal/llz/waf-checklist.md",

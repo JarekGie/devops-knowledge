@@ -42,7 +42,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | SEC 1 | Bezpieczna operacja: SCP, Config, CloudTrail aktywne | ⚠️ | CloudTrail ✅, Config ⚠️ (bez aggregatora), **SCP security-baseline DEPLOYED 2026-05-02 ✅** (Sandbox+NonProd+Prod OUs) |
 | SEC 2 | Uwierzytelnianie: MFA, SSO, brak shared credentials | ⚠️ | MFA na IAM userach, brak SSO/IdP centralnego |
 | SEC 3 | Zarządzanie uprawnieniami: least privilege, role per workload | ⚠️ | OrganizationAccountAccessRole używane zbyt szeroko |
-| SEC 4 | Detekcja zagrożeń: GuardDuty, CloudTrail alerts | ❌ | GuardDuty wyłączony — **HIGH RISK** |
+| SEC 4 | Detekcja zagrożeń: GuardDuty, CloudTrail alerts | ✅ | **GuardDuty DEPLOYED 2026-05-02 ✅** — org-wide, delegated admin (monitoring), 12/12 kont, CLOUD_TRAIL+DNS+FLOW_LOGS baseline |
 | SEC 5 | Ochrona sieci: VPC, SG, NACLs, VPC Flow Logs | ⚠️ | VPC Flow Logs nie wszędzie, brak centralizacji |
 | SEC 6 | Ochrona compute: IMDSv2, no public SSH, patch mgmt | ⚠️ | Bez audytu — wymaga sprawdzenia |
 | SEC 7 | Klasyfikacja danych (PII, confidential, public) | ❌ | Brak formalnej klasyfikacji |
@@ -142,7 +142,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | ORG 8 | IAM Identity Center (SSO) zamiast indywidualnych IAM userów | ❌ | Aktualnie: IAM users z MFA — zwiększa surface attack |
 | ORG 9 | Break-glass procedure (kto/jak/kiedy dostaje emergency access) | ❌ | Brak udokumentowanej procedury |
 | ORG 10 | Tag Policies enforcement org-wide | ✅ | llz-project + llz-environment policies aktywne na Root ✅ |
-| ORG 11 | GuardDuty: org-level, auto-enable nowych kont, delegated admin | ❌ | **HRI** — EPIC 4; ani jedno konto nie ma GuardDuty |
+| ORG 11 | GuardDuty: org-level, auto-enable nowych kont, delegated admin | ✅ | **GuardDuty DEPLOYED 2026-05-02 ✅** — delegated admin: monitoring-nagios-bot, auto_enable=ALL, 12/12 kont enrolled |
 | ORG 12 | AWS Config: org-level recorders + aggregator + minimalne reguły | ❌ | EPIC 5 |
 | ORG 13 | Security Hub: org-level, delegated admin, standardy (CIS, FSBP) | ❌ | EPIC 3/5 — wymagane dla FTR |
 | ORG 14 | S3 Block Public Access na poziomie account (nie tylko bucket) | ⚠️ | Nieaudytowane org-wide — sprawdzić per account |
@@ -165,7 +165,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 |----|--------------|--------|-------|
 | FTR 1 | CloudTrail multi-region enabled ze wszystkimi kontami org | ⚠️ | Org CloudTrail ✅; multi-region config nieaudytowana |
 | FTR 2 | Centralized S3 log bucket z access controls | ⚠️ | LogArchiveNew ✅; strict access + block public access nieaudytowane |
-| FTR 3 | GuardDuty enabled org-wide | ❌ | **HRI — blokuje FTR** |
+| FTR 3 | GuardDuty enabled org-wide | ✅ | **DEPLOYED 2026-05-02 ✅** — org-wide, 12/12 kont, delegated admin, auto-enable ALL |
 | FTR 4 | AWS Config + reguły conformance | ❌ | Blokuje FTR |
 | FTR 5 | Security Hub lub CIS Benchmark report | ❌ | Blokuje FTR |
 | FTR 6 | Root MFA na każdym koncie | ⚠️ | Nieaudytowane — sprawdź przed FTR |
@@ -190,7 +190,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | Pillar | ✅ Done | ⚠️ Partial | ❌ Missing | Ocena |
 |--------|---------|-----------|-----------|-------|
 | Operational Excellence | 0 | 8 | 3 | ~40% |
-| Security | 0 | 5 | 6 | ~25% |
+| Security | **2** | **4** | **5** | **~35%** ↑ |
 | Reliability | 0 | 7 | 6 | ~30% |
 | Performance Efficiency | 0 | 4 | 1 | ~40% |
 | Cost Optimization | **2** | **4** | **5** | **~40%** ↑ |

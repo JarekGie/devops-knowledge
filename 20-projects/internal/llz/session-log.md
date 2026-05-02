@@ -439,6 +439,44 @@ llz:
 
 ---
 
+## 2026-05-02 — GuardDuty org-wide: DEPLOYED ✅ (wszystkie 12 kont)
+
+**Co zrobiono:**
+- `security/guardduty/` — nowy Terraform moduł
+- **Delegated admin:** monitoring-nagios-bot (814662658531)
+- **Management detector:** 3beeb6f0e64e43d8840df232702ad7bc
+- **Admin detector:** 3ecef4fd34e833c4821cb0c835343048
+- `auto_enable_organization_members = ALL` — 10 member accounts enrolled
+- Baseline features: CLOUD_TRAIL + DNS_LOGS + FLOW_LOGS (always-on, każde konto)
+- Premium features: celowo NIE włączone na poziomie org
+
+**Discovery — stary stan:**
+- RShop + Booking: miały standalone detektory z WSZYSTKIMI premium features (od 2026-02-09)
+- Po enrollment jako org members: premium features ZRESETOWANE DO DISABLED (AWS behaviour)
+- Nowy stan: jednolity baseline na wszystkich kontach
+
+**Konta z detektorami (wszystkie ENABLED):**
+  - makolab_dc: 3beeb6f0e64e43d8840df232702ad7bc (management)
+  - monitoring: 3ecef4fd34e833c4821cb0c835343048 (delegated admin)
+  - lab: c2cef501136080f2f7c31c99521bdf81
+  - dacia: 1acef50112e4838d27a127433545e69a
+  - booking: fcce215547695e3307ab9e069742b477 (stary, preserved)
+  - planodkupow-v1: 9ecef50102ab1483c181572de168ceac
+  - planodkupow: becef50103d26cea6fabde5c1b16b3b0
+  - drp-tfs: 26cef50102a54c881a36e5f0e54be627
+  - admin-ml: 12cef50112c9b003c990629be191a181
+  - log-archive: 5acef501043ddb4ceffbdfe3cb76f6b4
+  - rshop: 8cce2155899db5703056357306f21b62 (stary, preserved)
+  - CC: 16cef501130b2cc9df1065f7aa1972fc
+
+**WAF impact:** SEC 4 → ✅, ORG 11 → ✅, FTR 3 → ✅ (BLOKERY FTR usunięte!)
+
+**Commit:** 813697b
+
+**Następny krok:** AWS Config org-wide (EPIC 5 — FTR 4 blocker)
+
+---
+
 ## 2026-05-02 — SCP Security Baseline: FULLY DEPLOYED ✅ (Sandbox + NonProd + Prod)
 
 **Co zrobiono:**
