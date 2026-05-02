@@ -93,7 +93,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 | ID | Pytanie / Best Practice | Status | Uwagi |
 |----|------------------------|--------|-------|
-| COST 1 | Cloud Financial Management: tagging, budgets, alerty | ⚠️ | Tagging LLZ ✅, budgety nie wszędzie — audit zaplanowany (prompt `llz-budgets-audit.md` gotowy); log retention audit 2026-05-02: planodkupow 40/60 grup, DRP-TFS 17/18 grup bez retencji — skrypt fix gotowy; brak FinOps procesu |
+| COST 1 | Cloud Financial Management: tagging, budgets, alerty | ⚠️ | Tagging LLZ ✅; log retention **FIXED 2026-05-02**: 58 grup bez retencji → ustawione (planodkupow 40, DRP-TFS 17, Booking_Online 1); budgety nie wszędzie — audit zaplanowany (prompt `llz-budgets-audit.md` gotowy); brak FinOps procesu |
 | COST 2 | Governance użycia: SCP deny expensive services, quota limits | ❌ | Brak SCP cost-related |
 | COST 3 | Monitorowanie kosztów: Cost Explorer, anomaly detection | ⚠️ | Cost Explorer dostępny, brak automatycznych alertów anomalii |
 | COST 4 | Decommission nieużywanych zasobów | ⚠️ | Konta legacy zidentyfikowane (Faza A), brak procesu cleanup |
@@ -116,7 +116,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | SUS 1 | Selekcja regionów z myślą o carbon footprint | ➖ | Regiony wybierane biznesowo (eu-west-1, eu-central-1) |
 | SUS 2 | Zasoby cloud dopasowane do popytu (auto-scaling, idle removal) | ⚠️ | Auto-scaling ✅, dev/qa scheduler planowany w LLZ |
 | SUS 3 | Wzorce architektoniczne wspierające sustainability (serverless, managed) | ⚠️ | ECS Fargate (managed) ✅, Lambda ✅ |
-| SUS 4 | Data management policies (lifecycle, tiering, TTL) | ⚠️ | S3 lifecycle częściowo, brak standardu; CloudTrail S3 bucket bez lifecycle — remediation Terraform gotowe; log retention audit 2026-05-02: `fix-log-retention.sh` gotowy, nie zaaplikowany; CloudWatch log groups: 57% bez retencji org-wide |
+| SUS 4 | Data management policies (lifecycle, tiering, TTL) | ⚠️ | S3 lifecycle częściowo, brak standardu; CloudTrail S3 bucket bez lifecycle — remediation Terraform gotowe; CW log groups: retencja ustawiona org-wide 2026-05-02 ✅ (58 grup naprawionych); skrypt `fix-log-retention.sh` w aws-cloud-platform/scripts/ |
 | SUS 5 | Hardware i serwisy efektywne energetycznie (Graviton, managed DB) | ⚠️ | RDS managed ✅, bez Graviton |
 | SUS 6 | Procesy org redukujące environmental impact | ❌ | Brak formalnych celów |
 
