@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠋ devops-knowledge"
+              "title": "Terminal: ⠴ devops-knowledge"
             }
           },
           {
@@ -89,6 +89,20 @@
               "pinned": true,
               "icon": "terminal",
               "title": "Terminal: ✳ Analyze rshop P99 latency spike in production"
+            }
+          },
+          {
+            "id": "e6c6c03f5b480bb6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "CODEX.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "CODEX"
             }
           }
         ]
@@ -277,6 +291,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "CODEX.md",
     "40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md",
     "20-projects/clients/mako/rshop/rshop-context.md",
     "20-projects/internal/llz/waf-checklist.md",
@@ -304,7 +319,6 @@
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
-    "50-patterns/prompts/invocations/cloud-detective-maspex.md",
     "20-projects/clients/mako/booking-online",
     "scripts/new-cloud-detective-invocation.sh",
     "50-patterns/prompts/invocations/templates",
