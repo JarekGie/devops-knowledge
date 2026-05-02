@@ -39,7 +39,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 | ID | Pytanie / Best Practice | Status | Uwagi |
 |----|------------------------|--------|-------|
-| SEC 1 | Bezpieczna operacja: SCP, Config, CloudTrail aktywne | ⚠️ | CloudTrail ✅, Config ⚠️ (bez aggregatora), **SCP security-baseline: moduł gotowy 2026-05-02, canary deploy pending** |
+| SEC 1 | Bezpieczna operacja: SCP, Config, CloudTrail aktywne | ⚠️ | CloudTrail ✅, Config ⚠️ (bez aggregatora), **SCP security-baseline DEPLOYED 2026-05-02 ✅** (Sandbox+NonProd+Prod OUs) |
 | SEC 2 | Uwierzytelnianie: MFA, SSO, brak shared credentials | ⚠️ | MFA na IAM userach, brak SSO/IdP centralnego |
 | SEC 3 | Zarządzanie uprawnieniami: least privilege, role per workload | ⚠️ | OrganizationAccountAccessRole używane zbyt szeroko |
 | SEC 4 | Detekcja zagrożeń: GuardDuty, CloudTrail alerts | ❌ | GuardDuty wyłączony — **HIGH RISK** |
@@ -147,7 +147,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | ORG 13 | Security Hub: org-level, delegated admin, standardy (CIS, FSBP) | ❌ | EPIC 3/5 — wymagane dla FTR |
 | ORG 14 | S3 Block Public Access na poziomie account (nie tylko bucket) | ⚠️ | Nieaudytowane org-wide — sprawdzić per account |
 | ORG 15 | IMDSv2 enforcement (EC2, jeśli używane) | ⚠️ | ECS Fargate nie dotyczy ✅; EC2 w DRP-TFS — nieaudytowane |
-| ORG 16 | SCP: deny root actions, deny disable security services, deny non-eu regions | ⚠️ | **SCP security-baseline NAPISANY 2026-05-02** — DenyDisableSecurityServices + DenyRootUserActions, canary deploy pending (Step 1: Sandbox); region restrictions ❌ (future phase) |
+| ORG 16 | SCP: deny root actions, deny disable security services, deny non-eu regions | ✅ | **SCP security-baseline DEPLOYED 2026-05-02 ✅** — DenyDisableSecurityServices + DenyRootUserActions live na Sandbox+NonProd+Prod OUs; region restrictions ❌ (future phase) |
 | ORG 17 | Savings Plans lub Reserved Instances dla stabilnych workloadów | ❌ | All On-Demand; rshop/booking/planodkupow = stabilny $1100-1400/month |
 | ORG 18 | AWS Trusted Advisor notifications (Business/Enterprise support) | ⚠️ | Support tier nieznany; TA checks dostępne na Basic |
 | ORG 19 | Centralne zarządzanie kluczami KMS (org-wide key policy) | ❌ | Keys per account, brak org-level key governance |
@@ -195,20 +195,20 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | Performance Efficiency | 0 | 4 | 1 | ~40% |
 | Cost Optimization | **2** | **4** | **5** | **~40%** ↑ |
 | Sustainability | 0 | 4 | 2 | ~40% |
-| Organizations Governance | **1** | **5** | **14** | **~17%** ↑ |
+| Organizations Governance | **2** | **4** | **14** | **~20%** ↑ |
 | FTR Partner Readiness | **2** | 6 | 7 | **~35%** ↑ |
 
 **Overall WAF (6 pillarów): ~33%** ↑  
 **FTR Partner Readiness: BLOKOWANE** przez GuardDuty + Config + Security Hub — szacowany czas do FTR: 3-4 tygodnie po Faza B EPIC 3+4+5
 
-> Zmiany 2026-05-02: COST 1 → ✅ (budgets applied), COST 3 → ✅ (anomaly detection applied), FTR 12 → ✅ (oba applied), ORG 10 → ✅ (tag policies), ORG 16 → ⚠️ (SCP security-baseline written, deploy pending)
+> Zmiany 2026-05-02: COST 1 → ✅ (budgets applied), COST 3 → ✅ (anomaly detection applied), FTR 12 → ✅, ORG 10 → ✅ (tag policies), **ORG 16 → ✅ (SCP security-baseline deployed: Sandbox+NonProd+Prod)**
 
 ---
 
 ## High Risk Issues (HRI) — do rozwiązania priorytetowo
 
 1. **ORG 11 / SEC 4** — GuardDuty wyłączony org-wide → zagrożenia niewykrywane + **blokuje FTR**
-2. **ORG 16 / SEC 1** — SCP security-baseline napisany 2026-05-02, **canary deploy pending** (terraform init → apply Step 1: Sandbox)
+2. ~~**ORG 16 / SEC 1** — SCP security-baseline~~ **RESOLVED 2026-05-02** ✅ (deployed Sandbox+NonProd+Prod)
 3. **ORG 1** — Wszystkie konta w Root → SCP nie działają (nie ma gdzie ich podpiąć)
 4. **REL 13** — Brak formalnego DR plan mimo istnienia konta DRP
 5. **SEC 10 / FTR 9** — Brak IR plan → brak procedury na incydent bezpieczeństwa
@@ -217,7 +217,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 ## Szybkie wygrane (quick wins)
 
-1. **SCP security-baseline deploy (Step 1)** — `terraform init && terraform apply` w `organization/scp/`, 10 min, adresuje ORG 16 + SEC 1 (HRI); plan: `docs/superpowers/plans/2026-05-02-scp-security-baseline.md`
+1. ~~**SCP security-baseline deploy**~~ **DONE ✅ 2026-05-02** — llz-security-baseline live (Sandbox+NonProd+Prod)
 2. **Root MFA audit** — sprawdzić manualnie, 15 minut, odblokuje FTR 6
 3. **S3 Block Public Access audit** — AWS CLI, 30 minut, odblokuje FTR 15 / ORG 14
 4. **Savings Plans zakup** — analiza Cost Explorer 1h, ~20-30% oszczędności dla rshop/booking/planodkupow (stabilny $1100-1400/month każdy)

@@ -439,6 +439,36 @@ llz:
 
 ---
 
+## 2026-05-02 — SCP Security Baseline: FULLY DEPLOYED ✅ (Sandbox + NonProd + Prod)
+
+**Co zrobiono:**
+- `organization/scp/` — terraform apply w 3 krokach (canary rollout)
+- **Policy:** `llz-security-baseline` (ID: `p-8wat7tjs`)
+  - `DenyDisableSecurityServices`: cloudtrail/guardduty/config/securityhub destructive ops
+  - `DenyRootUserActions`: `Action: *` gdzie `aws:PrincipalArn` = `arn:aws:iam::*:root`
+- **Step 1 APPLIED:** Sandbox OU (`ou-z8np-dqtp5qcx`, lab `052845428574`) ✅
+- **Step 2 APPLIED:** NonProduction OU (`ou-z8np-ydx42f96`, DRP-TFS `613448424242`) ✅
+- **Step 3 APPLIED:** Production OU (`ou-z8np-jomloow3`, wszystkie 6 proj accounts) ✅
+
+**Walidacja (wszystkie etapy):**
+  - Zero AccessDenied w każdym koncie
+  - Role assumption + read-only ops (CloudTrail, GuardDuty, Config) działają wszędzie
+  - GuardDuty aktywny w rshop — reads nienaruszone
+  - Pre-check root API: zero root activity w prod accounts
+
+**WAF impact:** ORG 16 → ✅, SEC 1 (SCP część) → ✅
+
+**Commits:** `11515ec` (Step 1), `1c6e1ba` (Step 2), `7e0738e` (Step 3)
+
+**Rollback per OU:**
+  - Sandbox: `aws organizations detach-policy --policy-id p-8wat7tjs --target-id ou-z8np-dqtp5qcx`
+  - NonProd: `aws organizations detach-policy --policy-id p-8wat7tjs --target-id ou-z8np-ydx42f96`
+  - Prod: `aws organizations detach-policy --policy-id p-8wat7tjs --target-id ou-z8np-jomloow3`
+
+**Root OU: NIE podpięty** — wymaga explicite decyzji
+
+---
+
 ## 2026-05-02 — SCP Security Baseline: PLAN WRITTEN + moduł gotowy do deploy
 
 **Co zrobiono:**
