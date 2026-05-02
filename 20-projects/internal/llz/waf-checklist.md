@@ -1,6 +1,7 @@
 ---
 type: checklist
 updated: 2026-05-02
+# last update: SLO alarms IaC ready, OAM planodkupowv1+CC IaC ready, synthetics canary audit complete
 tags: [llz, waf, aws-well-architected, governance, compliance]
 ---
 
@@ -20,11 +21,11 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | OPS 1 | Zdefiniowane priorytety operacyjne (KPIs, SLO) | ❌ | Brak formalnych SLO dla platform |
 | OPS 2 | Struktura zespołu wspiera business outcomes | ⚠️ | DC-devops jako owner platformy — nie udokumentowane formalnie |
 | OPS 3 | Kultura organizacyjna wspiera operacje (runbooki, on-call) | ⚠️ | Runbooki tworzone ad-hoc, brak formalnego on-call |
-| OPS 4 | Observability: logi, metryki, tracing, health events | ⚠️ | Health notifications **12/12 kont** (incl. makolab_dc) ✅, Lambda DLQ + CW alarm ✅; OAM audit 2026-05-02: 4/9 workload kont podłączone do sink, **5 kont bez OAM link** (DRP-TFS, planodkupowv1, Admin-MakoLab, lab, CC) — remediation plan gotowy; 3 konta bez log groups; brak centralnego dashboardu |
+| OPS 4 | Observability: logi, metryki, tracing, health events | ⚠️ | Health notifications **12/12 kont** ✅, Lambda DLQ + CW alarm ✅; OAM: 4 linki live + **planodkupowv1, CC IaC gotowe (apply pending)** — zostają DRP-TFS, Admin-MakoLab, lab poza scope monitoring; SLO alarms (6 szt. dla rshop/booking/dacia) IaC gotowe (apply pending); brak centralnego dashboardu |
 | OPS 5 | IaC, code review, CI/CD dla infrastruktury | ⚠️ | Terraform w repo, brak Atlantis/CI pipeline dla IaC |
 | OPS 6 | Redukcja ryzyka deploymentu (blue/green, canary, rollback) | ⚠️ | ECS rolling update, brak formalnego runbooka rollback |
 | OPS 7 | Readiness review przed produkcją (checklist, testy) | ❌ | Brak formalnego procesu |
-| OPS 8 | Workload observability używana operacyjnie | ⚠️ | CloudWatch alarms na projektach, brak centralnej korelacji |
+| OPS 8 | Workload observability używana operacyjnie | ⚠️ | CloudWatch SLO alarms (error rate + latency p99) dla rshop/booking/dacia IaC gotowe (apply pending); brak centralnej korelacji |
 | OPS 9 | Health operacji monitorowany (dashboard ops) | ⚠️ | Health notifications 12/12 kont ✅, EventBridge DLQ z CW alarm (failures widoczne) ✅, brak ops dashboard |
 | OPS 10 | Zarządzanie eventami operacyjnymi (incydenty, eskalacje) | ⚠️ | Runbooki incydentowe w vault, brak formalnego procesu eskalacji |
 | OPS 11 | Ciągłe doskonalenie operacji (retrospektywy, postmortem) | ⚠️ | Postmortem planodkupow-qa ✅, niesystematyczne |
