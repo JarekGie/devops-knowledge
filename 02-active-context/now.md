@@ -2,6 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-02 — rshop p99 latency investigation: ZAKOŃCZONA ✅
+
+```
+Projekt:    rshop PROD (943111679945) — SRE investigation
+Akcja:      READ-ONLY — analiza degradacji latency ALB p99
+Status:     Root cause zidentyfikowany, raport zapisany
+
+ROOT CAUSE (2 niezależne problemy):
+  1. /api/Services/* → external Renault DMS API bez timeout/cache → 12.4s cold start
+  2. /api/Accessories/* → ORDER BY NEWID() → full table scan na każdy request
+
+KLASYFIKACJA: Nie incydent (brak 5xx), SLO breach (p99 >2s)
+RAPORT: 40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md
+
+REKOMENDOWANE NEXT STEPS:
+  1. Cache na /api/Services/categories (TTL 60s)
+  2. HTTP timeout na DMS calls (max 10s)
+  3. Zastąpić ORDER BY NEWID() shuffle w aplikacji
+  4. ECS desired=2 dla rshop-prod-api-svc
+```
+
 ## Update — 2026-05-02 — GuardDuty org-wide: DEPLOYED ✅ (12/12 kont)
 
 ```
@@ -1758,4 +1779,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 20:56 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 21:27 — sesja aktywna*

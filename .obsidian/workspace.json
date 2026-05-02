@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Execute last prompt again"
+              "title": "Terminal: ✳ Execute last prompt again"
             }
           },
           {
@@ -277,6 +277,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md",
     "20-projects/clients/mako/rshop/rshop-context.md",
     "20-projects/internal/llz/waf-checklist.md",
     "20-projects/clients/mako/rshop/finops-rshop.md",
@@ -304,7 +305,6 @@
     "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
     "50-patterns/prompts/invocations/cloud-detective-maspex.md",
-    "50-patterns/prompts/starter-pack/cloud-detective-v2.md",
     "20-projects/clients/mako/booking-online",
     "scripts/new-cloud-detective-invocation.sh",
     "50-patterns/prompts/invocations/templates",
