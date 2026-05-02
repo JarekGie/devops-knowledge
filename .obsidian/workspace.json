@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
+              "title": "Terminal: ✳ Audit AWS Health Events forwarding to monitoring account"
             }
           },
           {
@@ -63,8 +63,7 @@
               "title": "aws-cloud-platform-context"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -121,7 +120,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -248,7 +248,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "e2fb4439b61f0249",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
