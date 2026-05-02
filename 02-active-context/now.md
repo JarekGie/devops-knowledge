@@ -2,6 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-02 — SCP Security Baseline: PLAN GOTOWY, DEPLOY PENDING
+
+```
+Projekt:    aws-cloud-platform (mako) — LLZ
+Akcja:      organization/scp/ — nowy Terraform moduł SCP security baseline
+Status:     KOD NAPISANY, NIE APPLY'owany
+
+GOTOWE:
+  ✅  scp-security-baseline.json: DenyDisableSecurityServices + DenyRootUserActions
+  ✅  scp.tf: policy + Step 1 (Sandbox OU) attachment, Steps 2/3 zakomentowane
+  ✅  locals.tf: OU IDs, backend.tf, versions.tf, outputs.tf
+  ✅  Plan: docs/superpowers/plans/2026-05-02-scp-security-baseline.md
+
+NASTĘPNY KROK (repo: ~/projekty/mako/aws-projects/aws-cloud-platform):
+  cd organization/scp
+  git checkout -b feat/scp-security-baseline
+  terraform init
+  terraform plan -out=tfplan-step1-sandbox
+  terraform apply tfplan-step1-sandbox
+  → weryfikacja: aws organizations list-policies-for-target --target-id ou-z8np-dqtp5qcx
+  → CloudTrail watch 24h, potem Step 2 (NonProduction)
+
+⚠️  DenyRootUserActions — pre-check root API w prod kontach PRZED Step 3
+```
+
 ## Update — 2026-05-02 — AWS Health → GLPI — PRZETESTOWANE, PIPELINE DZIAŁA ✅
 
 ```
@@ -1710,4 +1735,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 19:23 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 19:36 — sesja aktywna*

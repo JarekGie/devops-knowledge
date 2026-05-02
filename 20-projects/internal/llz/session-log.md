@@ -439,6 +439,33 @@ llz:
 
 ---
 
+## 2026-05-02 — SCP Security Baseline: PLAN WRITTEN + moduł gotowy do deploy
+
+**Co zrobiono:**
+- `organization/scp/` — nowy Terraform root module (security-only SCP baseline)
+- `scp-security-baseline.json`: 2 statements
+  - `DenyDisableSecurityServices`: cloudtrail:StopLogging/DeleteTrail/UpdateTrail, guardduty:DeleteDetector/DisableOrganizationAdminAccount/StopMonitoringMembers, config:StopConfigurationRecorder/DeleteConfigurationRecorder, securityhub:DisableSecurityHub/BatchDisableStandards
+  - `DenyRootUserActions`: Deny * where aws:PrincipalArn like *:root
+- `scp.tf`: policy resource + Step 1 (Sandbox OU) attachment aktywny; Steps 2/3 (NonProd, Prod) zakomentowane
+- OU IDs w `locals.tf`, S3 backend, outputs
+- **Plan implementacji**: `docs/superpowers/plans/2026-05-02-scp-security-baseline.md`
+
+**Canary deployment strategy (3 kroki):**
+  Step 1: Sandbox OU (lab, 052845428574) → terraform apply → 24h CloudTrail watch
+  Step 2: NonProduction OU (DRP-TFS) → odkomentuj + apply → 24h watch
+  Step 3: Production OU → root API pre-check per konto → apply
+
+**Hard rules zachowane:**
+  ✅ Brak deny na create actions  
+  ✅ Brak enforcement tagowania  
+  ✅ Brak region restrictions  
+  ✅ Rollback: terraform destroy lub aws organizations detach-policy
+
+**Status modułu:** terraform init NIE wykonany, NIE committed, NIE applied
+**Następny krok:** git checkout -b feat/scp-security-baseline → terraform init → plan → apply Step 1
+
+---
+
 ## 2026-05-02 — FinOps: Budgets + Cost Anomaly Detection APPLIED
 
 **Co zrobiono:**
