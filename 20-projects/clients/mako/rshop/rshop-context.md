@@ -8,17 +8,17 @@ context_type: cloud-detective-snapshot
 classification: internal
 source_of_truth: false
 runtime_snapshot: true
-aws_profile: rshop
+aws_profile: cd-rshop
 account_id: "943111679945"
 regions:
   - eu-central-1
 extra_regions:
   - us-east-1
 iac: cloudformation
-repository: "~/projekty/mako/aws-projects/infra-rshop"
-created: "2026-05-01"
-updated: "2026-05-01"
-last_verified: "2026-05-01"
+repository: ~/projekty/mako/aws-projects/infra-rshop
+created: 2026-05-01
+updated: 2026-05-01
+last_verified: 2026-05-01
 scan_method: cloud-detective-v2
 last_verified_by: claude
 tags:
