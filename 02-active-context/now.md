@@ -2,29 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-02 — SCP Security Baseline: PLAN GOTOWY, DEPLOY PENDING
+## Update — 2026-05-02 — SCP Security Baseline: WDROŻONY ✅ (Sandbox + NonProd + Prod)
 
 ```
 Projekt:    aws-cloud-platform (mako) — LLZ
-Akcja:      organization/scp/ — nowy Terraform moduł SCP security baseline
-Status:     KOD NAPISANY, NIE APPLY'owany
+Akcja:      organization/scp/ — terraform apply x3 (canary rollout COMPLETE)
+Status:     LIVE — zero production impact
 
-GOTOWE:
-  ✅  scp-security-baseline.json: DenyDisableSecurityServices + DenyRootUserActions
-  ✅  scp.tf: policy + Step 1 (Sandbox OU) attachment, Steps 2/3 zakomentowane
-  ✅  locals.tf: OU IDs, backend.tf, versions.tf, outputs.tf
-  ✅  Plan: docs/superpowers/plans/2026-05-02-scp-security-baseline.md
+WDROŻONE:
+  ✅  llz-security-baseline (ID: p-8wat7tjs) — wszystkie 3 OU pokryte
+  ✅  Sandbox OU (lab 052845428574) — commit 11515ec
+  ✅  NonProduction OU (DRP-TFS 613448424242) — commit 1c6e1ba
+  ✅  Production OU (rshop/booking/planodkupow/dacia/planodkupowv1/CC) — commit 7e0738e
+  ✅  Zero AccessDenied we wszystkich kontach
+  ✅  GuardDuty reads nienaruszone (rshop ma aktywny GD)
 
-NASTĘPNY KROK (repo: ~/projekty/mako/aws-projects/aws-cloud-platform):
-  cd organization/scp
-  git checkout -b feat/scp-security-baseline
-  terraform init
-  terraform plan -out=tfplan-step1-sandbox
-  terraform apply tfplan-step1-sandbox
-  → weryfikacja: aws organizations list-policies-for-target --target-id ou-z8np-dqtp5qcx
-  → CloudTrail watch 24h, potem Step 2 (NonProduction)
+Root OU: NIE podpięty — wymaga osobnej decyzji
 
-⚠️  DenyRootUserActions — pre-check root API w prod kontach PRZED Step 3
+ROLLBACK (emergency):
+  aws organizations detach-policy --policy-id p-8wat7tjs --target-id <OU_ID>
+  lub: terraform destroy (organization/scp/)
+
+NASTĘPNY KROK: Faza B → GuardDuty org-wide (odblokowuje FTR 3)
 ```
 
 ## Update — 2026-05-02 — AWS Health → GLPI — PRZETESTOWANE, PIPELINE DZIAŁA ✅
@@ -1735,4 +1734,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 19:36 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 20:19 — sesja aktywna*
