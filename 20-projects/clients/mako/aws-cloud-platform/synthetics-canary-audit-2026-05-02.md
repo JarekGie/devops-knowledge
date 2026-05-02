@@ -188,6 +188,8 @@ unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 - [x] Log retention ustawiona (90d) na wszystkich orphan log groups
 - [x] Terraform: OAM links dla planodkupowv1 + CC
 - [x] Terraform: SLO alarms (alarms.tf)
-- [ ] Terraform apply `platform/monitoring` — do wykonania
-- [ ] Usunąć pusty S3 bucket `synthetics-artifacts` w Booking_Online
-- [ ] (opcjonalne) Ręczne usunięcie log groups przed wygaśnięciem
+- [x] **Terraform apply `platform/monitoring` — DONE 2026-05-02** (10 added, 0 changed, 0 destroyed)
+- [x] OAM links: wszystkie 6 kont Workloads/Production podłączone do sink ✅
+- [x] SLO alarms: 6 alarmów aktywnych (INSUFFICIENT_DATA → przejdą w OK po zebraniu danych) ✅
+- [ ] Usunąć pusty S3 bucket `synthetics-artifacts` w Booking_Online (wymaga potwierdzenia)
+- [ ] (opcjonalne) Ręczne usunięcie 827 MB cwsyn log group w Booking_Online przed wygaśnięciem

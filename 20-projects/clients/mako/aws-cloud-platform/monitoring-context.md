@@ -127,15 +127,15 @@ Org member accounts (us-east-1) — 12 kont (incl. makolab_dc od 2026-05-02)
    └─ eu-central-1:
        ├─ SNS "health-notifications" → email: jaroslaw.golab@makolab.com
        ├─ SNS "health-ops-alerts" → email (ops alarms)
-       ├─ SNS "slo-alerts" → email (SLO alarms) [IaC ready, apply pending]
+       ├─ SNS "slo-alerts" → email (SLO alarms) [live 2026-05-02]
        ├─ OAM sink "observabilitySink"
-       │   ← OAM links z: rshop, dacia, planodkupow, booking (live)
-       │   ← OAM links z: planodkupowv1, cc [IaC ready, apply pending]
+       │   ← OAM links z: rshop, dacia, planodkupow, booking, planodkupowv1, cc
+       │   (metryki CloudWatch + LogGroups + XRay) — wszystkie 6 kont live ✅
        │   (metryki CloudWatch + LogGroups + XRay)
        ├─ CloudWatch dashboards (5 szt.)
        │   llz-platform-overview, booking-production,
        │   dacia-production, rshop-production, bbmt-environments
-       └─ CloudWatch SLO alarms (6 szt.) [IaC ready, apply pending]
+       └─ CloudWatch SLO alarms (6 szt.) [live 2026-05-02]
            slo-rshop-error-rate, slo-rshop-latency-p99,
            slo-booking-error-rate, slo-booking-latency-p99,
            slo-dacia-error-rate, slo-dacia-latency-p99
@@ -297,7 +297,7 @@ Brak ECS. Konto zawiera wyłącznie Lambda + EventBridge + SNS + OAM.
 | Problem | Priorytet | Evidence | Opis |
 |---------|-----------|----------|------|
 | ~~Brak CloudWatch alarms na Lambda errors / EventBridge~~ | ~~WYSOKI~~ | **RESOLVED 2026-05-02** | Alarmy wdrożone: `health-notify-errors`, `health-notify-throttles`, `health-to-lambda-failed-invocations`, `health-eventbridge-dlq-messages` → SNS `health-ops-alerts` |
-| Partial OAM links — tylko 4/6 kont Workloads/Production | WYSOKI | TF state: 4 linki (rshop, booking, planodkupow, dacia); **planodkupowv1, CC — IaC gotowe (apply pending)**; DRP-TFS, Admin-MakoLab, lab, LogArchiveNew — poza scope | Dashboardy pokazują niepełny obraz organizacji |
+| ~~Partial OAM links~~ | ~~WYSOKI~~ | **RESOLVED 2026-05-02** — wszystkie 6 kont Workloads/Production podłączone (rshop, booking, planodkupow, dacia, planodkupowv1, CC) | ✅ |
 | Niespójne tagi (NO-GO LLZ) | ŚREDNI | live AWS: brak Environment, Owner, CostCenter | platform/health-notifications i platform/monitoring mają niekompletne default_tags |
 | Niespójność Project tag | NISKI | OAM sink: Project=platform; SNS: Project=aws-cloud-platform | Dwa moduły używają różnych wartości Project |
 | ~~Brak mechanizmu retry/DLQ dla Lambda~~ | ~~NISKI~~ | **RESOLVED 2026-05-02** | SQS `health-notify-dlq` (14 dni) + `dead_letter_config` na Lambda + CW alarm `health-eventbridge-dlq-messages` |
