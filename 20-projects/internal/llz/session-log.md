@@ -80,6 +80,23 @@ AWS_PROFILE=mako-dc terraform apply tfplan
 
 ---
 
+## 2026-05-02 — Plan: health-notifications makolab_dc + DLQ
+
+**Co zrobiono:**
+- Przeanalizowano uncommitted changes w `platform/health-notifications/` (GLPI-prep z poprzedniej sesji)
+- Napisano implementation plan: Task 0 (commit foundation) + Task 1 (makolab_dc forwarding) + Task 2 (Lambda DLQ)
+- Plan: `docs/superpowers/plans/2026-05-02-health-makolab-dc-dlq.md` w aws-cloud-platform
+
+**Zakres planu:**
+- `locals.tf`: dodaj `makolab_dc = { id = "864277686382", name = "makolab_dc" }` → automatycznie fix ACCOUNT_NAMES w Lambda
+- `providers.tf`: dodaj `management_use1` (us-east-1, profile=mako-dc, bez assume_role — konto zarządzające)
+- `forwarding.tf`: 4 zasoby makolab_dc (identyczny wzorzec jak inne konta)
+- `lambda.tf`: SQS DLQ `health-notify-dlq` + `dead_letter_config` + IAM `DlqSend` + CW alarm
+
+**Waiting for:** terraform plan (user) → terraform apply (user po akceptacji)
+
+---
+
 ## 2026-05-02 — Audit AWS Health / Events monitoring coverage
 
 **Co zrobiono:**
