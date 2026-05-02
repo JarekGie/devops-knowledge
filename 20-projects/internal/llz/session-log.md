@@ -80,6 +80,28 @@ AWS_PROFILE=mako-dc terraform apply tfplan
 
 ---
 
+## 2026-05-02 — Audit AWS Health / Events monitoring coverage
+
+**Co zrobiono:**
+- Przeprowadzono pełny read-only audit pokrycia AWS Health eventów we wszystkich kontach organizacji
+- Sprawdzono reguły EventBridge, targety, IAM role, central event bus, Lambda, SNS na każdym aktywnym koncie
+
+**Wyniki:**
+- 11/12 aktywnych kont: OK — reguła `health-to-monitoring` ENABLED, target → `health-aggregation` bus
+- 1 konto BRAKUJE: `makolab_dc` (864277686382, Root OU, konto zarządzające) — brak reguły, brak roli
+- Lambda `health-notify` brak DLQ
+- SNS `health-ops-alerts` (us-east-1) istnieje ale nieużywany przez Lambda
+- GLPI nie podpięte — tylko email na razie
+
+**Pełny raport:** `reports/aws-events-monitoring-coverage.md`
+
+**Następne kroki:**
+1. Dodać health forwarding na makolab_dc (skopiować moduł Terraform z innego konta)
+2. Dodać DLQ do Lambda
+3. Wyjaśnić przeznaczenie health-ops-alerts topic
+
+---
+
 ## 2026-04-18 — Architektura LLZ: idee i backlog
 
 **Co omówiono:**

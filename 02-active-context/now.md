@@ -1710,4 +1710,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-02 01:29 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-02 09:52 — sesja aktywna*

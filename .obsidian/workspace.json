@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Audit AWS Health Events forwarding to monitoring account"
+              "title": "Terminal: ✳ Audit AWS Health Events forwarding to monitoring account"
             }
           },
           {
@@ -134,8 +134,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5,
-    "collapsed": true
+    "width": 415.5
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -264,6 +263,8 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "reports/aws-events-monitoring-coverage.md",
+    "reports",
     "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
@@ -294,12 +295,10 @@
     "_system/TEMPLATES/chatgpt-context-template.md",
     "50-patterns/prompts/starter-pack/templater-config.md",
     "50-patterns/prompts/Bez nazwy.md",
-    "templates/frontmatter/client_context.md",
     "20-projects/clients/maspex",
     "templates/frontmatter",
     "templates",
     "50-patterns/prompts/starter-pack",
-    "50-patterns/prompts/TEMPLATES",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
