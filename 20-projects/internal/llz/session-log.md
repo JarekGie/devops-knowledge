@@ -100,7 +100,10 @@ AWS_PROFILE=mako-dc terraform apply tfplan
 
 **Saved tfplans:** `tfplan-makolab-dc` (4 add, 1 change), `tfplan-dlq` (2 add, 2 change)
 
-**Waiting for:** `terraform apply tfplan-makolab-dc && terraform apply tfplan-dlq` (user)
+**APPLIED (2026-05-02):**
+- Apply 1: makolab_dc (4 added, 1 changed) — rule ENABLED, rola health-eventbridge-forward w 864277686382
+- Apply 2: DLQ (2 added, 2 changed) — SQS health-notify-dlq, Lambda dead_letter_config aktywny, ACCOUNT_NAMES = 12 kont
+- Status: DONE — wszystkie 12 aktywnych kont pokryte
 
 ---
 
