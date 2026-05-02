@@ -127,12 +127,18 @@ Org member accounts (us-east-1) — 12 kont (incl. makolab_dc od 2026-05-02)
    └─ eu-central-1:
        ├─ SNS "health-notifications" → email: jaroslaw.golab@makolab.com
        ├─ SNS "health-ops-alerts" → email (ops alarms)
+       ├─ SNS "slo-alerts" → email (SLO alarms) [IaC ready, apply pending]
        ├─ OAM sink "observabilitySink"
-       │   ← OAM links z: rshop, dacia, planodkupow, booking
+       │   ← OAM links z: rshop, dacia, planodkupow, booking (live)
+       │   ← OAM links z: planodkupowv1, cc [IaC ready, apply pending]
        │   (metryki CloudWatch + LogGroups + XRay)
-       └─ CloudWatch dashboards (5 szt.)
-           llz-platform-overview, booking-production,
-           dacia-production, rshop-production, bbmt-environments
+       ├─ CloudWatch dashboards (5 szt.)
+       │   llz-platform-overview, booking-production,
+       │   dacia-production, rshop-production, bbmt-environments
+       └─ CloudWatch SLO alarms (6 szt.) [IaC ready, apply pending]
+           slo-rshop-error-rate, slo-rshop-latency-p99,
+           slo-booking-error-rate, slo-booking-latency-p99,
+           slo-dacia-error-rate, slo-dacia-latency-p99
 ```
 
 ---
