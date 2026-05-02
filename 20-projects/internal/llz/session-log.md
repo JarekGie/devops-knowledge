@@ -439,6 +439,26 @@ llz:
 
 ---
 
+## 2026-05-02 — FinOps: Budgets + Cost Anomaly Detection APPLIED
+
+**Co zrobiono:**
+- `platform/budgets/` apply: **21 imported, 7 added, 18 changed, 0 destroyed**
+  - Wszystkie 12 kont org pokryte budżetami (w tym management + 6 nowych baseline)
+  - planodkupow + Booking: dodano powiadomienia email (były BRAK)
+  - DRP-TFS: thresholds obniżone 150/200% → 80/100%
+  - Legacy budget "Plan-odkupow Account Monthly Budget" (950 USD) usunięty przez Terraform (import → destroy → clean)
+- `platform/finops/` apply: **5 added, 0 changed, 0 destroyed**
+  - `aws_ce_anomaly_monitor.org` — DIMENSIONAL/SERVICE, org-level
+  - `aws_ce_anomaly_subscription.org` — IMMEDIATE (nie DAILY — AWS nie pozwala SNS przy DAILY), threshold $50+20% AND
+  - `aws_sns_topic.cost_anomaly` (us-east-1), policy (costalerts.amazonaws.com), email subskrypcja potwierdzona
+- SNS policy fix: `SNS:*` odrzucane przez AWS — resource policy akceptuje tylko topic-scoped actions; rozwiązanie: wyłącznie statement dla costalerts.amazonaws.com (same-account access przez IAM wystarczy)
+
+**WAF impact:** COST 1 ✅ + COST 3 ✅ (były ⚠️), FTR 12 ✅
+
+**Stan na koniec:** FinOps baseline kompletny. Następne: Faza B (GuardDuty, Config, SecurityHub) — odblokowuje FTR.
+
+---
+
 ## 2026-05-02 — EventBridge DLQ: centralna kolejka dla wszystkich 13 targetów
 
 **Co zrobiono:**

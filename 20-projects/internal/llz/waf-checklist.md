@@ -95,9 +95,9 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 | ID | Pytanie / Best Practice | Status | Uwagi |
 |----|------------------------|--------|-------|
-| COST 1 | Cloud Financial Management: tagging, budgets, alerty | ✅ | Tagging LLZ ✅; CW log retention FIXED 2026-05-02 ✅; **Budgets: plan gotowy 2026-05-02** — 21 importowanych + 7 nowych (wszystkie 12 kont pokryte), alerty email na planodkupow+Booking (były BRAK), DRP-TFS thresholds obniżone 150→80%; FinOps proces: brak |
+| COST 1 | Cloud Financial Management: tagging, budgets, alerty | ✅ | Tagging LLZ ✅; CW log retention FIXED 2026-05-02 ✅; **Budgets: APPLIED 2026-05-02 ✅** — 21 importowanych + 7 nowych (wszystkie 12 kont), alerty email na planodkupow+Booking, DRP-TFS thresholds 150→80%; legacy budget 950 USD usunięty; FinOps proces: brak |
 | COST 2 | Governance użycia: SCP deny expensive services, quota limits | ❌ | Brak SCP cost-related |
-| COST 3 | Monitorowanie kosztów: Cost Explorer, anomaly detection | ⚠️ | **Cost Anomaly Detection: plan gotowy 2026-05-02** — org-level DIMENSIONAL/SERVICE, threshold $50+20%, SNS us-east-1; needs apply |
+| COST 3 | Monitorowanie kosztów: Cost Explorer, anomaly detection | ✅ | **Cost Anomaly Detection: APPLIED 2026-05-02 ✅** — org-level DIMENSIONAL/SERVICE, IMMEDIATE, threshold $50+20%, SNS us-east-1, email subskrypcja potwierdzona |
 | COST 4 | Decommission nieużywanych zasobów | ⚠️ | Konta legacy zidentyfikowane (Faza A), brak procesu cleanup |
 | COST 5 | Selekcja serwisów z myślą o koszcie | ⚠️ | Ad-hoc, brak formalnego procesu |
 | COST 6 | Right-sizing instancji i usług | ❌ | Brak systematycznego audytu |
@@ -174,7 +174,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | FTR 9 | Incident response playbooks | ❌ | Brak formalnych IR playbooks |
 | FTR 10 | Backup + restore tested + documented | ⚠️ | RDS snapshots ✅; testy restore nieudokumentowane |
 | FTR 11 | Architecture diagrams + case studies (submission artifacts) | ⚠️ | Częściowe; brak formalnych diagramów per workload |
-| FTR 12 | Budgets + Cost Anomaly Detection | ⚠️ | **Budgets plan 2026-05-02 ✅; Anomaly Detection plan 2026-05-02 ✅** — needs apply |
+| FTR 12 | Budgets + Cost Anomaly Detection | ✅ | **Budgets APPLIED 2026-05-02 ✅; Anomaly Detection APPLIED 2026-05-02 ✅** — wszystkie 12 kont pokryte |
 | FTR 13 | Szyfrowanie danych at rest (S3, RDS, EBS) | ⚠️ | Włączone na prod, brak audytu org-wide |
 | FTR 14 | Szyfrowanie in transit (TLS, no HTTP) | ⚠️ | ALB HTTPS prod ✅; preprod częściowo |
 | FTR 15 | S3 Block Public Access enabled | ⚠️ | Nieaudytowane org-wide |
@@ -193,15 +193,15 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | Security | 0 | 5 | 6 | ~25% |
 | Reliability | 0 | 7 | 6 | ~30% |
 | Performance Efficiency | 0 | 4 | 1 | ~40% |
-| Cost Optimization | **1** | **5** | **5** | **~35%** ↑ |
+| Cost Optimization | **2** | **4** | **5** | **~40%** ↑ |
 | Sustainability | 0 | 4 | 2 | ~40% |
 | Organizations Governance | **1** | 4 | 15 | **~15%** |
-| FTR Partner Readiness | **1** | 7 | 7 | **~30%** |
+| FTR Partner Readiness | **2** | 6 | 7 | **~35%** ↑ |
 
-**Overall WAF (6 pillarów): ~32%** ↑ (było ~30%)  
+**Overall WAF (6 pillarów): ~33%** ↑  
 **FTR Partner Readiness: BLOKOWANE** przez GuardDuty + Config + Security Hub — szacowany czas do FTR: 3-4 tygodnie po Faza B EPIC 3+4+5
 
-> Zmiany 2026-05-02: COST 1 → ✅ (budgets all 12 kont), COST 3 → ⚠️ (anomaly detection plan ready), ORG 10 → ✅ (tag policies)
+> Zmiany 2026-05-02: COST 1 → ✅ (budgets applied), COST 3 → ✅ (anomaly detection applied), FTR 12 → ✅ (oba applied), ORG 10 → ✅ (tag policies)
 
 ---
 
@@ -217,12 +217,10 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 ## Szybkie wygrane (quick wins)
 
-1. **Apply platform/finops (anomaly detection)** — gotowe, 5 minut, eliminuje COST 3 ❌
-2. **Apply platform/budgets** — gotowe, 5 minut, wszystkie konta z budżetami
-3. **Root MFA audit** — sprawdzić manualnie, 15 minut, odblokuje FTR 6
-4. **S3 Block Public Access audit** — AWS CLI, 30 minut, odblokuje FTR 15 / ORG 14
-5. **Savings Plans zakup** — analiza Cost Explorer 1h, ~20-30% oszczędności dla rshop/booking/planodkupow (stabilny $1100-1400/month każdy)
-6. **Faza B kick-off** — GuardDuty + Config + Security Hub = FTR unblocked w 3-4 tygodnie
+1. **Root MFA audit** — sprawdzić manualnie, 15 minut, odblokuje FTR 6
+2. **S3 Block Public Access audit** — AWS CLI, 30 minut, odblokuje FTR 15 / ORG 14
+3. **Savings Plans zakup** — analiza Cost Explorer 1h, ~20-30% oszczędności dla rshop/booking/planodkupow (stabilny $1100-1400/month każdy)
+4. **Faza B kick-off** — GuardDuty + Config + Security Hub = FTR unblocked w 3-4 tygodnie
 
 ---
 
