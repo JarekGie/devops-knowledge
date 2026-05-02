@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Audit AWS Health Events forwarding to monitoring account"
+              "title": "Terminal: ✳ Audit AWS Health Events forwarding to monitoring account"
             }
           },
           {
@@ -278,6 +278,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/llz-observability-audit-2026-05-02.md",
     "50-patterns/prompts/starter-pack/llz-observability-audit.md",
     "50-patterns/prompts/invocations/cloud-detective-test-rola2.md",
     "50-patterns/prompts/invocations/cloud-detective-test-rola.md",
@@ -307,7 +308,6 @@
     "50-patterns/prompts/invocations/cloud-detective-test-validation.md",
     "50-patterns/prompts/invocations/cloud-detective-planodkupow.md",
     "scripts/new-cloud-detective-invocation.sh",
-    "50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md",
     "50-patterns/prompts/invocations/templates",
     "50-patterns/prompts/invocations",
     "20-projects/clients/maspex",
