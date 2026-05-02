@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Audit AWS Health Events forwarding to monitoring account"
+              "title": "Terminal: ⠐ Audit AWS Health Events forwarding to monitoring account"
             }
           },
           {
@@ -61,6 +61,20 @@
               },
               "icon": "lucide-file",
               "title": "aws-cloud-platform-context"
+            }
+          },
+          {
+            "id": "ba0f5d7cd8bbc889",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "monitoring-context"
             }
           }
         ]
@@ -250,9 +264,9 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
-    "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
     "CLAUDE.md",
     "20-projects/clients/mako/aws-cloud-platform",
