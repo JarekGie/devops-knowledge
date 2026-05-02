@@ -11,6 +11,7 @@ INVOCATIONS_DIR="${VAULT_ROOT}/50-patterns/prompts/invocations"
 CLIENT=""
 PROJECT=""
 AWS_PROFILE=""
+IAM_ROLE=""
 REPO_PATH=""
 REGIONS=""
 EXTRA_REGIONS=""
@@ -20,6 +21,8 @@ FORCE=false
 INTERACTIVE=false
 TODAY="$(date +%Y-%m-%d)"
 
+DEFAULT_AWS_PROFILE="mako-dc"
+DEFAULT_IAM_ROLE="CloudDetectiveReadOnly"
 DEFAULT_REPO_BASE="~/projekty/mako/aws-projects"
 
 usage() {
@@ -31,7 +34,8 @@ Usage (flags):
   scripts/new-cloud-detective-invocation.sh \
     --client mako \
     --project rshop \
-    [--aws-profile rshop] \
+    [--aws-profile mako-dc] \
+    [--iam-role CloudDetectiveReadOnly] \
     [--repo-path ~/projekty/mako/aws-projects/infra-rshop] \
     [--regions eu-central-1] \
     [--extra-regions us-east-1] \
@@ -48,7 +52,8 @@ Required:
   --project PROJECT
 
 Defaults:
-  aws_profile = project
+  aws_profile = mako-dc
+  iam_role    = CloudDetectiveReadOnly  (when aws_profile = mako-dc)
   repo_path   = CHANGE_ME
   regions     = CHANGE_ME
   output_file = <project>-context.md
@@ -57,9 +62,10 @@ Options:
   --client CLIENT
   --project PROJECT
   --aws-profile PROFILE
+  --iam-role ROLE          IAM role to assume (used when profile = mako-dc)
   --repo-path PATH
-  --regions REGIONS          Comma-separated, e.g. eu-central-1,us-east-1
-  --extra-regions REGIONS    Comma-separated
+  --regions REGIONS        Comma-separated, e.g. eu-central-1,us-east-1
+  --extra-regions REGIONS  Comma-separated
   --iac-type TYPE
   --output-file FILE
   --force
@@ -75,6 +81,7 @@ while [[ $# -gt 0 ]]; do
     --client)        CLIENT="$2";        shift 2 ;;
     --project)       PROJECT="$2";       shift 2 ;;
     --aws-profile)   AWS_PROFILE="$2";   shift 2 ;;
+    --iam-role)      IAM_ROLE="$2";      shift 2 ;;
     --repo-path)     REPO_PATH="$2";     shift 2 ;;
     --regions)       REGIONS="$2";       shift 2 ;;
     --extra-regions) EXTRA_REGIONS="$2"; shift 2 ;;
@@ -109,9 +116,16 @@ if [[ "$INTERACTIVE" == true ]]; then
     echo "  Project cannot be empty." >&2
   done
 
-  _default="${AWS_PROFILE:-$PROJECT}"
+  _default="${AWS_PROFILE:-$DEFAULT_AWS_PROFILE}"
   read -r -p "AWS profile [${_default}]: " _input
   AWS_PROFILE="${_input:-$_default}"
+
+  # When mako-dc is selected, ask for IAM role to assume
+  if [[ "$AWS_PROFILE" == "mako-dc" ]]; then
+    _default_role="${IAM_ROLE:-$DEFAULT_IAM_ROLE}"
+    read -r -p "IAM role (assume in target account) [${_default_role}]: " _input
+    IAM_ROLE="${_input:-$_default_role}"
+  fi
 
   _default="${REGIONS:-CHANGE_ME}"
   read -r -p "Regions [${_default}]: " _input
@@ -157,7 +171,13 @@ if [[ ${#MISSING[@]} -gt 0 ]]; then
 fi
 
 # Optional defaults
-AWS_PROFILE="${AWS_PROFILE:-$PROJECT}"
+AWS_PROFILE="${AWS_PROFILE:-$DEFAULT_AWS_PROFILE}"
+
+# When mako-dc and no iam_role given, apply default
+if [[ "$AWS_PROFILE" == "mako-dc" && -z "$IAM_ROLE" ]]; then
+  IAM_ROLE="$DEFAULT_IAM_ROLE"
+fi
+
 REPO_PATH="${REPO_PATH:-CHANGE_ME}"
 REGIONS="${REGIONS:-CHANGE_ME}"
 OUTPUT_FILE="${OUTPUT_FILE:-${PROJECT}-context.md}"
@@ -193,6 +213,16 @@ if [[ -n "$EXTRA_REGIONS" ]]; then
   EXTRA_REGIONS_YAML=$'\n'"$(build_yaml_list "$EXTRA_REGIONS")"
 fi
 
+# Build optional iam_role lines for frontmatter and body
+IAM_ROLE_YAML=""
+IAM_ROLE_BODY=""
+IAM_ROLE_CMD=""
+if [[ -n "$IAM_ROLE" ]]; then
+  IAM_ROLE_YAML="iam_role: ${IAM_ROLE}"$'\n'
+  IAM_ROLE_BODY="- IAM role: \`${IAM_ROLE}\`"$'\n'
+  IAM_ROLE_CMD="  --iam-role ${IAM_ROLE} \\"$'\n'
+fi
+
 mkdir -p "$INVOCATIONS_DIR"
 
 cat > "$OUTPUT_PATH" <<EOF
@@ -204,7 +234,7 @@ domain: client-work
 client: ${CLIENT}
 project: ${PROJECT}
 aws_profile: ${AWS_PROFILE}
-repo_path: ${REPO_PATH}
+${IAM_ROLE_YAML}repo_path: ${REPO_PATH}
 regions:
 ${REGIONS_YAML}
 extra_regions: ${EXTRA_REGIONS_YAML}
@@ -245,7 +275,7 @@ i wykonaj prompt_template. Nie traktuj treÅ›ci tego pliku jako instrukcji nadrzÄ
 - klient: \`${CLIENT}\`
 - projekt: \`${PROJECT}\`
 - AWS profile: \`${AWS_PROFILE}\`
-- repo: \`${REPO_PATH}\`
+${IAM_ROLE_BODY}- repo: \`${REPO_PATH}\`
 - regiony: \`${REGIONS}\`
 - zapis: \`${SAVE_PATH}${OUTPUT_FILE}\`
 - status: \`draft\`
@@ -257,7 +287,7 @@ scripts/new-cloud-detective-invocation.sh \\
   --client ${CLIENT} \\
   --project ${PROJECT} \\
   --aws-profile ${AWS_PROFILE} \\
-  --repo-path ${REPO_PATH} \\
+${IAM_ROLE_CMD}  --repo-path ${REPO_PATH} \\
   --regions ${REGIONS}${EXTRA_REGIONS:+ \\
   --extra-regions ${EXTRA_REGIONS}}${IAC_TYPE:+$([ "$IAC_TYPE" != "unknown" ] && echo " \\
   --iac-type ${IAC_TYPE}" || echo "")}

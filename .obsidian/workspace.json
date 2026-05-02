@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Audit AWS Health Events forwarding to monitoring account"
+              "title": "Terminal: ⠐ Audit AWS Health Events forwarding to monitoring account"
             }
           },
           {
@@ -278,6 +278,9 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "50-patterns/prompts/starter-pack/llz-observability-audit.md",
+    "50-patterns/prompts/invocations/cloud-detective-test-rola2.md",
+    "50-patterns/prompts/invocations/cloud-detective-test-rola.md",
     "reports/aws-events-monitoring-coverage.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
@@ -307,9 +310,6 @@
     "50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md",
     "50-patterns/prompts/invocations/templates",
     "50-patterns/prompts/invocations",
-    "_system/TEMPLATES/chatgpt-context-template.md",
-    "50-patterns/prompts/starter-pack/templater-config.md",
-    "50-patterns/prompts/Bez nazwy.md",
     "20-projects/clients/maspex",
     "templates/frontmatter",
     "templates",
