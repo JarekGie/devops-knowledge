@@ -57,10 +57,20 @@
               "state": {
                 "file": "10-areas/private/Subskrypcje.md",
                 "mode": "source",
-                "source": true
+                "source": false
               },
               "icon": "lucide-file",
               "title": "Subskrypcje"
+            }
+          },
+          {
+            "id": "10924020adc3e0af",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Nowa karta"
             }
           }
         ],
@@ -250,6 +260,7 @@
   },
   "active": "e49264e7ae504377",
   "lastOpenFiles": [
+    "40-runbooks/aws/config-compliance-check.md",
     "10-areas/private/Subskrypcje.md",
     "CODEX.md",
     "40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md",
@@ -277,7 +288,6 @@
     "20-projects/internal/devops-business/context.md",
     "20-projects/internal/devops-business/decisions.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
-    "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
     "20-projects/clients/mako/booking-online",
     "scripts/new-cloud-detective-invocation.sh",
     "50-patterns/prompts/invocations/templates",
