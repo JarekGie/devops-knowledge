@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Remove root access key from Admin-MakoLab"
+              "title": "Terminal: ⠐ Remove root access key from Admin-MakoLab"
             }
           },
           {
@@ -143,8 +143,7 @@
               "title": "dual-vault-architecture"
             }
           }
-        ],
-        "currentTab": 7
+        ]
       }
     ],
     "direction": "vertical"
@@ -328,7 +327,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "0e21ac5eeeb3b839",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "_chatgpt/context-packs/dual-vault-architecture.md",
     "20-projects/clients/mako/aws-cloud-platform/monitoring-dashboards-guide.md",
