@@ -2,6 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-03 — AWS Config Phase 3: BASELINE RULES WDROŻONE ✅
+
+```
+Projekt:    aws-cloud-platform (mako) — LLZ
+Akcja:      platform/security/config/ — terraform apply
+Status:     LIVE — 5 reguł aktywnych na 11/11 kont member
+
+WDROŻONE:
+  ✅  cloudtrail-enabled (CLOUD_TRAIL_ENABLED)
+  ✅  iam-root-access-key-check (IAM_ROOT_ACCESS_KEY_CHECK)
+  ✅  multi-region-cloud-trail-enabled (MULTI_REGION_CLOUD_TRAIL_ENABLED)
+  ✅  s3-bucket-public-read-prohibited (S3_BUCKET_PUBLIC_READ_PROHIBITED)
+  ✅  s3-bucket-public-write-prohibited (S3_BUCKET_PUBLIC_WRITE_PROHIBITED)
+  ✅  Commit: 7d14579
+  ✅  terraform.tfvars persisted (ochrona przed destroy StackSet)
+
+TRYB: detect-only, bez auto-remediation
+SCP: bez zmian, StackSet: bez zmian
+Initial NON_COMPLIANT findings = discovery, nie incydenty
+
+NEXT (brak pilnego):
+  - Compliance results za ~15 min
+  - Management account recorder (odłożone)
+  - Optional rules (ec2-ssm, rds-encrypted) — po akceptacji baseline
+```
+
 ## Update — 2026-05-03 — AWS Config Phase 2: WERYFIKACJA ZAKOŃCZONA ✅
 
 ```
@@ -1802,4 +1828,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-03 08:27 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-03 08:32 — sesja aktywna*

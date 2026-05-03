@@ -582,6 +582,39 @@ Przy apply: najpierw `terraform apply tfplan-eb-dlq-infra` → po tym regeneruj 
 
 ---
 
+## 2026-05-03 — AWS Config Phase 3: Baseline rules — WDROŻONE ✅
+
+**Co zrobiono:**
+- Dodano `terraform.tfvars` z `enable_recorder_stackset=true` + `enable_config_rules=true` (ochrona przed przypadkowym destroy StackSet)
+- Wdrożono 5 org-wide Config rules w 11 kontach member (konto management wykluczone — brak recordera)
+- Napotkano 2 błędy i rozwiązano je:
+  1. `OrganizationAccessDeniedException` → zmiana `provider` z `aws.monitoring` na `aws.management` (org rules wymagają management account lub `config-multiaccountsetup.amazonaws.com` delegated admin)
+  2. `NoAvailableConfigurationRecorder` na 864277686382 → dodano `excluded_accounts = ["864277686382"]`
+- Commit: `7d14579`
+
+**Wdrożone reguły (detect-only, bez auto-remediation):**
+| Reguła | AWS Identifier |
+|---|---|
+| cloudtrail-enabled | CLOUD_TRAIL_ENABLED |
+| iam-root-access-key-check | IAM_ROOT_ACCESS_KEY_CHECK |
+| multi-region-cloud-trail-enabled | MULTI_REGION_CLOUD_TRAIL_ENABLED |
+| s3-bucket-public-read-prohibited | S3_BUCKET_PUBLIC_READ_PROHIBITED |
+| s3-bucket-public-write-prohibited | S3_BUCKET_PUBLIC_WRITE_PROHIBITED |
+
+**Wynik weryfikacji:** 11/11 kont `CREATE_SUCCESSFUL`, konto management nieobecne (expected).
+
+**Stan na koniec:**
+- Config Phase 3 = STABLE
+- Wyniki compliance pojawią się w ciągu 5–15 min (initial NON_COMPLIANT to discovery, nie incydenty)
+- StackSet niezmieniony, SCP bez zmian
+
+**Następna sesja:**
+- Sprawdzić wyniki compliance po ~15 min (describe-aggregate-compliance-by-config-rules)
+- Opcjonalnie: management account Config recorder (osobne zadanie)
+- Opcjonalnie: enable_optional_rules (ec2-ssm, rds-encrypted) — po zaakceptowaniu baseline
+
+---
+
 ## 2026-05-03 — AWS Config Phase 2: Weryfikacja nagrywania — STABILNA ✅
 
 **Co zrobiono:**
