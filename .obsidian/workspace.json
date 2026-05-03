@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Build budget alert enrichment Lambda with SNS"
+              "title": "Terminal: ✳ Remove root access key from Admin-MakoLab"
             }
           },
           {
@@ -259,8 +259,8 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "20-projects/internal/llz/config-compliance-baseline-2026-05-03.md",
     "10-areas/private/Subskrypcje.md",
+    "20-projects/internal/llz/config-compliance-baseline-2026-05-03.md",
     "40-runbooks/aws/config-compliance-check.md",
     "CODEX.md",
     "40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md",
