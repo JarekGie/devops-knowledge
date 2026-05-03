@@ -101,8 +101,7 @@
               "title": "confluence-page"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -286,7 +285,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "ee76267bb3e93e26",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
