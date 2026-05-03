@@ -301,6 +301,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/aws-cloud-platform/monitoring-dashboards-guide.md",
     "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "20-projects/internal/llz/root-access-governance.md",
@@ -327,7 +328,6 @@
     "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "docs/superpowers/specs/2026-04-30-finops-reporting-contract-design.md",
     "50-patterns/prompts/invocations/cloud-detective-aws-cloud-platform.md",
-    "CLAUDE.md",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
     "scripts/new-cloud-detective-invocation.sh",
