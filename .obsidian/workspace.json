@@ -57,7 +57,7 @@
               "state": {
                 "file": "10-areas/private/Subskrypcje.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
               "title": "Subskrypcje"
