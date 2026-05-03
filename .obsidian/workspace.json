@@ -73,7 +73,8 @@
               "title": "Nowa karta"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -257,7 +258,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "e49264e7ae504377",
   "lastOpenFiles": [
     "10-areas/private/Subskrypcje.md",
     "20-projects/internal/llz/config-compliance-baseline-2026-05-03.md",
