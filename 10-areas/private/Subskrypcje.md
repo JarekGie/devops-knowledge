@@ -22,7 +22,7 @@
 | ---------------- | --------------- | ------- | ----- | ------ | ------- | ------------ |
 | OpenAI           |                 | monthly | 85    | PLN    | aktywna |              |
 | Claude Code      |                 | monthly | 85    | PLN    | aktywna |              |
-| Zoho Mail        |                 | annual  | 21,60 | EUR    | aktywna |              |
+| Zoho Mail        |                 | annual  | 21,60 | EUR    | aktywna | 09.04.2027   |
 | Zoho Booking     |                 | annual  | free  |        | aktywna |              |
 | Google Wokrspace | 01.05           | monthly | 134   | PLN    | aktywna | do usunięcia |
 |                  |                 | Razem   |       |        |         |              |
