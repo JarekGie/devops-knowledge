@@ -687,6 +687,29 @@ Przy apply: najpierw `terraform apply tfplan-eb-dlq-infra` → po tym regeneruj 
 
 ---
 
+## 2026-05-03 — Root access recovery: email zidentyfikowany, czeka na dostęp do skrzynki
+
+**Co zrobiono:**
+- Zidentyfikowano root email dla Admin-MakoLab (647075515164): `admin@makolab.pl`
+- Potwierdzono przez `aws organizations describe-account --profile cd-management`
+- Credential report pokazuje: root password last used 2026-03-11 (ktoś miał dostęp 7 tygodni temu!)
+- MFA enabled (potwierdzono)
+- Root access key wciąż aktywny (created 2016-02-11, last used 2016-02-15)
+- Konto dołączyło do org jako INVITED (2026-03-02) — nie jest tworzonym z poziomu org
+
+**Stan na koniec:**
+- Phase 1 COMPLETE: root email = `admin@makolab.pl`
+- Phase 2 PENDING: weryfikacja dostępu do skrzynki `admin@makolab.pl`
+- Kto logował się jako root 2026-03-11? — kluczowe pytanie dla recovery
+
+**Następna sesja:**
+- Uzyskać dostęp do `admin@makolab.pl` (IT admin / Office 365)
+- Wykonać password reset przez AWS Console (Forgot password)
+- Usunąć root access key
+- Udokumentować procedurę break-glass
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]

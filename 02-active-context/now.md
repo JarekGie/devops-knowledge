@@ -2,6 +2,25 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-03 — Root recovery: email znaleziony, czeka na dostęp do skrzynki
+
+```
+Projekt:    Admin-MakoLab (647075515164) — FTR blocker
+Akcja:      Root access recovery — Phase 1 DONE
+
+ROOT EMAIL: admin@makolab.pl  ← CONFIRMED via Organizations API
+Root password last used: 2026-03-11 (7 tygodni temu — kto logował się?)
+MFA: enabled
+
+BLOKER: brak dostępu do skrzynki admin@makolab.pl
+
+NEXT ACTION:
+  1. Uzyskaj dostęp do admin@makolab.pl (IT admin / Office365 / Google Workspace)
+  2. Wykonaj password reset przez AWS Console (Forgot password)
+  3. Usuń root access key
+  4. Udokumentuj break-glass procedure
+```
+
 ## Update — 2026-05-03 — Config Compliance Baseline: 98% ⚠️ 1 CRITICAL FINDING
 
 ```
@@ -1848,4 +1867,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-03 11:20 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-03 12:08 — sesja aktywna*
