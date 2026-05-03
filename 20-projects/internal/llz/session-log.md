@@ -739,10 +739,30 @@ FSBP i SNS wyłączone domyślnie (enable_fsbp=false, enable_sns_placeholder=fal
 - 5 początkowych findings: 1 CRITICAL (Config.1), 4 LOW (CIS log metric filters)
 
 **Następna sesja:**
-- Włączyć FSBP: `enable_fsbp = true` + plan + apply
-- Zdecydować o CIS: importować do TF czy zostawić poza zarządem
 - Zmerge feat/security-hub → main
 - Phase 4: Security Hub → EventBridge → Lambda → GLPI (prepare only)
+- Opcjonalnie: tune CIS controls jeśli szum za duży
+
+## 2026-05-03 — Security Hub standards: FSBP + CIS zaimportowane do TF state
+
+**Co zrobiono:**
+- Zaimportowano pre-existing standards z monitoring-nagios-bot (814662658531)
+- FSBP v1.0.0: import ID = `arn:aws:securityhub:eu-central-1:814662658531:subscription/aws-foundational-security-best-practices/v/1.0.0`
+- CIS v1.2.0: import ID = `arn:aws:securityhub:eu-central-1:814662658531:subscription/cis-aws-foundations-benchmark/v/1.2.0`
+- `enable_fsbp` default → true; dodano `enable_cis` default true
+- Final plan: **No changes** (zero drift)
+- Commit: `90d9e8c`
+
+Decyzja dot. CIS: zostawione włączone — już aktywne, wyłączenie straciłoby historię findings. Tuning CIS controls osobno jeśli szum problematyczny.
+
+**Stan na koniec:**
+- TF state = live state, zero drift
+- Wszystkie 6 zasobów Security Hub pod TF zarządem
+- Branch `feat/security-hub` gotowy do merge
+
+**Następna sesja:**
+- Merge feat/security-hub → main (PR lub direct)
+- Phase 4: EventBridge → Lambda → GLPI pipeline (prepare only)
 
 **Co zrobiono:**
 -
