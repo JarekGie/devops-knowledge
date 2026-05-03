@@ -2,6 +2,26 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-03 — Config Compliance Baseline: 98% ⚠️ 1 CRITICAL FINDING
+
+```
+Projekt:    aws-cloud-platform (mako) — LLZ
+Akcja:      READ-ONLY — compliance check po Config Phase 3
+Status:     98% compliant — 1 blocker przed FTR
+
+❌ CRITICAL — FTR BLOCKER:
+  Admin-MakoLab (647075515164): aktywny root access key
+  AccountAccessKeysPresent=1 (potwierdzone)
+  MFA: włączone (3 urządzenia) — mitigacja częściowa
+
+SCORE: 52/53 = 98%
+
+NEXT ACTION:
+  Usunąć root access key z Admin-MakoLab przed FTR
+  Sprawdzić czy key jest używany przed usunięciem
+  Raport: 20-projects/internal/llz/config-compliance-baseline-2026-05-03.md
+```
+
 ## Update — 2026-05-03 — AWS Config Phase 3: BASELINE RULES WDROŻONE ✅
 
 ```
@@ -1828,4 +1848,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-03 08:32 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-03 09:41 — sesja aktywna*

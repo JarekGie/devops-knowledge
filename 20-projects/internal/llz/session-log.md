@@ -582,6 +582,34 @@ Przy apply: najpierw `terraform apply tfplan-eb-dlq-infra` → po tym regeneruj 
 
 ---
 
+## 2026-05-03 — Config Compliance Baseline Report: 98% (1 critical finding) ⚠️
+
+**Co zrobiono:**
+- Zebrano pierwsze dane compliance z org-aggregator (monitoring-nagios-bot)
+- Zbudowano macierz per-konto dla 5 reguł baseline
+- Zidentyfikowano 1 critical finding: Admin-MakoLab ma aktywny root access key
+
+**Wyniki:**
+- 52/53 = 98% compliance (po wykluczeniu NO_DATA)
+- NON_COMPLIANT: `iam-root-access-key-check` na Admin-MakoLab (647075515164)
+- NO_DATA: s3 rules na monitoring-nagios-bot (brak bucketów — oczekiwane)
+- Wszystko inne: COMPLIANT ✅
+
+**Critical finding:**
+- Admin-MakoLab `AccountAccessKeysPresent: 1` — potwierdzony przez `iam get-account-summary`
+- MFA włączone (3 urządzenia) — mitigacja częściowa
+- **Akcja: usunąć root access key z 647075515164 PRZED FTR**
+
+**Raport:** `20-projects/internal/llz/config-compliance-baseline-2026-05-03.md`
+**Runbook:** `40-runbooks/aws/config-compliance-check.md`
+
+**Następna sesja:**
+- Usunąć root access key z Admin-MakoLab
+- Sprawdzić czy key jest aktywnie używany przed usunięciem
+- Po naprawie: re-run compliance check, oczekiwany wynik 100%
+
+---
+
 ## 2026-05-03 — AWS Config Phase 3: Baseline rules — WDROŻONE ✅
 
 **Co zrobiono:**
