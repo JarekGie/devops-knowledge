@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Remove root access key from Admin-MakoLab"
+              "title": "Terminal: ⠐ Remove root access key from Admin-MakoLab"
             }
           },
           {
@@ -115,8 +115,7 @@
               "title": "confluence-page"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -300,7 +299,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "21108de2f4b91bce",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
