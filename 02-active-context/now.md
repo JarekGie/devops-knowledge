@@ -2,6 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-03 — AWS Config Phase 2: WERYFIKACJA ZAKOŃCZONA ✅
+
+```
+Projekt:    aws-cloud-platform (mako) — LLZ
+Akcja:      READ-ONLY — weryfikacja nagrywania AWS Config we wszystkich aktywnych kontach
+Status:     STABLE — 11/11 member accounts recording=true, SUCCESS
+
+WYNIK:
+  ✅  11 member accounts: recording=true, lastStatus=SUCCESS (wszystkie)
+  ✅  StackSet: 22 CURRENT, 10 OUTDATED (suspended konta - oczekiwane)
+  ⚠️  management account (864277686382): brak recordera (expected — StackSet exclusion by design)
+  ✅  SCP exceptions: brak
+  ✅  Żadnych akcji naprawczych — wszystko działało automatycznie
+
+DECYZJA ODŁOŻONA:
+  Management account Config recorder (wymaga osobnego TF resource)
+
+NASTĘPNY KROK (czeka na zatwierdzenie):
+  Phase 3 — Config rules (baseline): cloudtrail-enabled, iam-root-access-key-check,
+  multi-region-cloud-trail-enabled, s3-bucket-public-read-prohibited, s3-bucket-public-write-prohibited
+  Plik: platform/security/config/ → enable_config_rules = true
+```
+
 ## Update — 2026-05-02 — rshop p99 latency investigation: ZAKOŃCZONA ✅
 
 ```
@@ -1779,4 +1802,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-03 07:49 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-03 08:01 — sesja aktywna*

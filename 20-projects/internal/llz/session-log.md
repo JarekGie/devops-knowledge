@@ -582,6 +582,50 @@ Przy apply: najpierw `terraform apply tfplan-eb-dlq-infra` → po tym regeneruj 
 
 ---
 
+## 2026-05-03 — AWS Config Phase 2: Weryfikacja nagrywania — STABILNA ✅
+
+**Co zrobiono:**
+- Zweryfikowano stan nagrywania AWS Config dla wszystkich 12 aktywnych kont przez `describe-configuration-recorder-status`
+- Zweryfikowano StackSet `aws-config-org-recorder` — wszystkie CURRENT/OUTDATED zgodnie z oczekiwaniami
+- Zidentyfikowano konto management jako bez recordera (oczekiwane — SERVICE_MANAGED StackSet nie deployuje do management account)
+
+**Wyniki weryfikacji — 11 member accounts:**
+| Konto | ID | Recording | Status |
+|---|---|---|---|
+| planodkupowv1 | 292464762806 | ✅ true | SUCCESS |
+| DRP-TFS | 613448424242 | ✅ true | SUCCESS |
+| Admin-MakoLab | 647075515164 | ✅ true | SUCCESS |
+| Booking_Online | 128264038676 | ✅ true | SUCCESS |
+| RShop | 943111679945 | ✅ true | SUCCESS |
+| dacia-asystent | 074412166613 | ✅ true | SUCCESS |
+| monitoring-nagios-bot | 814662658531 | ✅ true | SUCCESS |
+| planodkupow | 333320664022 | ✅ true | SUCCESS |
+| lab | 052845428574 | ✅ true | SUCCESS |
+| LogArchiveNew | 771354139056 | ✅ true | SUCCESS |
+| CC | 943696080604 | ✅ true | SUCCESS |
+
+**Management account (864277686382 / makolab_dc):** brak recordera — by design. SERVICE_MANAGED StackSets nie deployują do management account. Wymaga osobnego zasobu Terraform jeśli potrzebne (decyzja odłożona).
+
+**StackSet `aws-config-org-recorder`:**
+- CURRENT: 11 kont × 2 regiony (eu-central-1 + us-east-1) = 22 instancje ✅
+- OUTDATED: 5 suspended kont × 2 regiony = 10 instancji — wszystkie z reason "account is suspended" ✅
+- INOPERABLE/FAILED: 0 ✅
+- SCP exceptions: brak ✅
+
+**Stan na koniec:**
+- AWS Config Phase 2 = STABLE
+- 11/11 member accounts recording=true, lastStatus=SUCCESS
+- Wszystkie nagrywacze uruchomione automatycznie przez CloudFormation (2026-05-03 ~07:08-07:45)
+- Żadnych akcji naprawczych nie było potrzebnych
+- Gotowe do Phase 3 (Config rules) po zatwierdzeniu
+
+**Następna sesja:**
+- Czeka na zatwierdzenie Phase 3: `enable_config_rules = true` w `platform/security/config/`
+- Reguły baseline z pliku: cloudtrail-enabled, iam-root-access-key-check, multi-region-cloud-trail-enabled, s3-bucket-public-read-prohibited, s3-bucket-public-write-prohibited
+- Opcjonalnie po baseline: ec2-instance-managed-by-systems-manager, rds-storage-encrypted
+
+---
+
 <!-- Template:
 
 ## YYYY-MM-DD — [opis]
