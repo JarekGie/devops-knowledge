@@ -36,15 +36,15 @@
 
 ## Koszty życia (stałe)
 
-| Nazwa        | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi                  |
-|--------------|-----------------|---------|-------|--------|---------|------------------------|
-| Przedszkole  |                 | monthly | 1600  | PLN    | aktywna |                        |
-| Szkoła       |                 | monthly | 1600  | PLN    | aktywna |                        |
-| Karma psy    |                 | monthly | 500   | PLN    | aktywna |                        |
-| Nikotyna     |                 | monthly | 1200  | PLN    | aktywna |                        |
-| Bolt         |                 | monthly | 1470  | PLN    | aktywna | głównie poranki dzieci |
-| Komunikacja  |                 | monthly | 50    | PLN    | aktywna |                        |
-|              |                 | Razem   | 6420  | PLN    |         |                        |
+| Nazwa       | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi                  |
+| ----------- | --------------- | ------- | ----- | ------ | ------- | ---------------------- |
+| Przedszkole |                 | monthly | 1600  | PLN    | aktywna |                        |
+| Szkoła      |                 | monthly | 1600  | PLN    | aktywna |                        |
+| Karma psy   |                 | monthly | 500   | PLN    | aktywna |                        |
+| Nikotyna    |                 | monthly | 1200  | PLN    | aktywna |                        |
+| Bolt        |                 | monthly | 1470  | PLN    | aktywna | głównie poranki dzieci |
+| Komunikacja |                 | monthly | 50    | PLN    | aktywna |                        |
+|             |                 | Razem   | 6420  | PLN    |         |                        |
 
 ---
 
