@@ -761,8 +761,20 @@ Decyzja dot. CIS: zostawione włączone — już aktywne, wyłączenie straciło
 - Branch `feat/security-hub` gotowy do merge
 
 **Następna sesja:**
-- Merge feat/security-hub → main (PR lub direct)
+- Zmerge MR !1 → main po review
 - Phase 4: EventBridge → Lambda → GLPI pipeline (prepare only)
+
+## 2026-05-03 — Repo cleanup, push, MR !1
+
+**Co zrobiono:**
+- Push main → origin (21 commitów)
+- Push feat/security-hub → origin
+- GitLab MR !1 utworzony: https://gitlab.makolab.net/admin-makolab/dc/aws-cloud-platform/-/merge_requests/1
+- Tytuł: feat(security-hub): deploy Security Hub org-wide (LLZ Phase B)
+
+**Stan na koniec:**
+- Wszystko wypchniete, MR aktywny
+- Zero uncommitted changes na obu branchach
 
 **Co zrobiono:**
 -
