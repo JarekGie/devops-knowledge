@@ -353,3 +353,114 @@ Per konto (11 aktywnych):
   ├── AWS Config recorder (StackSet z management)
   └── Security Hub member (auto-enrolled)
 ```
+
+---
+
+## 10. Security Operations Model
+
+Detekcja → agregacja → powiadomienie → naprawa — bez auto-remediacji.
+
+| Krok | Źródło / narzędzie | Gdzie |
+|------|--------------------|-------|
+| Detekcja | GuardDuty, AWS Config (NON_COMPLIANT), Security Hub (FSBP/CIS), AWS Health | org-wide → monitoring account |
+| Agregacja | Security Hub delegated admin | monitoring-nagios-bot (814662658531) |
+| Powiadomienie | SNS email (current) · GLPI ticket (faza następna) | `glpi-aws-alerts@makolab.pl` |
+| Reakcja | Platform / DevOps team | ręczna analiza findings |
+| Naprawa | Terraform apply lub ręczna akcja w konsoli | brak auto-remediacji (by design) |
+| Zamknięcie | Weryfikacja przez Config compliance lub re-check Security Hub | `describe-compliance-by-config-rule` |
+
+---
+
+## 11. Model odpowiedzialności
+
+**Platform team (DevOps/SRE MakoLab) — owns:**
+- AWS Organizations, OU, konta member
+- SCP (guardrails org-wide)
+- GuardDuty, AWS Config, Security Hub (org-level)
+- CloudTrail, log archival (LogArchiveNew)
+- IAM baseline: `cloud-detective-agent`, `CloudDetectiveReadOnly`, `OrganizationAccountAccessRole`
+- Terraform state backend, moduły platformowe
+- Monitoring cross-account (OAM, health notifications)
+
+**Application teams — own:**
+- IAM roles i policies dla własnych workloadów
+- bezpieczeństwo aplikacji (OWASP, secrets management)
+- patching AMI / kontenerów
+- klasyfikacja i ochrona danych
+- reagowanie na Security Hub findings dotyczące własnych zasobów
+
+Granica: platform team zapewnia guardrails i visibility — nie zarządza zasobami aplikacyjnymi.
+
+---
+
+## 12. Własność findingów i eskalacja
+
+| Typ findingu | Właściciel | SLA triage | Eskalacja |
+|-------------|-----------|-----------|-----------|
+| Security Hub CRITICAL/HIGH | Platform team | 24h | CTO + właściciel konta |
+| Security Hub MEDIUM/LOW | Platform team | 72h | backlog sprint |
+| Config NON_COMPLIANT | Platform team | 48h | właściciel konta jeśli workload-specific |
+| GuardDuty finding | Platform team (triage) | 24h | właściciel konta jeśli workload-specific |
+| AWS Health issue/investigation | Właściciel workloadu + platform CC | natychmiast | eskalacja do CTO jeśli konto produkcyjne |
+
+**Workflow:**
+1. Finding pojawia się w Security Hub / GuardDuty / AWS Health
+2. SNS email → `ops@makolab.com` + `glpi-aws-alerts@makolab.pl`
+3. Platform team ocenia severity i przypisuje właściciela
+4. Naprawa przez Terraform lub ręczną akcję (brak auto-remediacji)
+5. Zamknięcie finding po weryfikacji compliance
+
+---
+
+## 13. FTR Controls Mapping
+
+| FTR Control | Komponent | Status |
+|-------------|-----------|--------|
+| FTR-1 — CloudTrail enabled | `security/cloudtrail` (org-baseline-cloudtrail) | ✅ COMPLIANT |
+| FTR-3 — Threat detection | `security/guardduty` (org-wide, delegated admin) | ✅ COMPLIANT |
+| FTR-4 — Config compliance | `platform/security/config` (5 reguł baseline) | ✅ COMPLIANT |
+| FTR-5 — Security posture mgmt | `platform/security/security-hub` (FSBP + CIS) | ✅ COMPLIANT |
+| FTR-12 — Cost controls | `platform/budgets` + `platform/finops` | ✅ (pending apply) |
+
+**FTR blockers resolved:**
+- Root access key (Admin-MakoLab) usunięty 2026-05-03 — `IAM_ROOT_ACCESS_KEY_CHECK` COMPLIANT
+
+---
+
+## 14. Znane problemy i ryzyka
+
+| Gap | Typ | Priorytet |
+|-----|-----|-----------|
+| Brak dedykowanego konta Security — tooling w monitoring account | tymczasowy | NISKI (akceptowalny przy obecnej skali) |
+| Brak automatycznego workflow incydentów (GLPI integration planned) | tymczasowy | ŚREDNI |
+| Root access process częściowo manualny (KeePass + break-glass bez automation) | tymczasowy | ŚREDNI |
+| Brak auto-remediacji Config/Security Hub | **celowy** | — |
+| Control Tower częściowo usunięty — artefakty SCP orphaned (aws-guardrails-WCOddW) | ryzyko | NISKI |
+| Tag Policies zdefiniowane w IaC, nie wdrożone | backlog | WYSOKI |
+| Quarantine OU bez deny-all SCP | backlog | ŚREDNI |
+| monitoring account bez Config service-linked role (Config.1 CRITICAL) | backlog | ŚREDNI |
+
+---
+
+## 15. Architecture Decision Record
+
+### ADR-001: Security tooling w monitoring account zamiast dedykowanego Security account
+
+**Data:** 2026-05-03  
+**Status:** ACCEPTED
+
+**Kontekst:**
+AWS rekomenduje osobne konto Security dla narzędzi takich jak Security Hub, GuardDuty, Config. MakoLab ma istniejące konto `monitoring-nagios-bot` (814662658531), które już pełni rolę centrum widoczności operacyjnej (OAM, CloudWatch, health alerts).
+
+**Decyzja:**
+Używamy `monitoring-nagios-bot` jako delegated admin dla Security Hub, GuardDuty i AWS Config zamiast tworzenia osobnego konta Security.
+
+**Uzasadnienie:**
+- Brak budżetu i zasobów na zarządzanie dodatkowym kontem
+- monitoring-nagios-bot już ma OAM sink i CloudWatch dashboardy — konsolidacja widoczności
+- Przy obecnej skali organizacji (11 kont, brak regulacji compliance wymagających separacji) ryzyko jest akceptowalne
+
+**Konsekwencje:**
+- Jeśli konto monitoring zostanie skompromitowane — visibility + security tooling tracone jednocześnie
+- Przyszła migracja do osobnego Security account jest możliwa przez zmianę delegated admin (bez utraty historii findingów)
+- Znany gap: zarejestrowany w Risk Register jako NISKI priorytet
