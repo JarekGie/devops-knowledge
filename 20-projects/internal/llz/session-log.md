@@ -732,15 +732,17 @@ Zasoby w planie:
 FSBP i SNS wyłączone domyślnie (enable_fsbp=false, enable_sns_placeholder=false).
 
 **Stan na koniec:**
-- Plan zapisany: `.worktrees/feat-security-hub/platform/security/security-hub/tfplan-security-hub`
-- Gotowy do `terraform apply` — czeka na zielone światło
-- FSBP można włączyć ustawiając `enable_fsbp = true` w tfvars
+- Security Hub wdrożony i zweryfikowany
+- Commit: `b44634e` na branchu `feat/security-hub`
+- Pre-existing: CIS v1.2.0 + FSBP już aktywne w monitoring account (były przed TF management)
+- TF zarządza: account enrollment + org config. Standards — poza TF na razie (pre-existing)
+- 5 początkowych findings: 1 CRITICAL (Config.1), 4 LOW (CIS log metric filters)
 
 **Następna sesja:**
-- Uruchomić `terraform apply tfplan-security-hub`
-- Zweryfikować: SHub enabled w management + monitoring, org auto-enable aktywne
 - Włączyć FSBP: `enable_fsbp = true` + plan + apply
-- Phase 7: sprawdzić findings w monitoring account
+- Zdecydować o CIS: importować do TF czy zostawić poza zarządem
+- Zmerge feat/security-hub → main
+- Phase 4: Security Hub → EventBridge → Lambda → GLPI (prepare only)
 
 **Co zrobiono:**
 -
