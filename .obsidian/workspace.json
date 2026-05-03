@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Build budget alert enrichment Lambda with SNS"
+              "title": "Terminal: ⠐ Build budget alert enrichment Lambda with SNS"
             }
           },
           {
@@ -57,7 +57,7 @@
               "state": {
                 "file": "10-areas/private/Subskrypcje.md",
                 "mode": "source",
-                "source": true
+                "source": false
               },
               "icon": "lucide-file",
               "title": "Subskrypcje"
@@ -73,8 +73,7 @@
               "title": "Nowa karta"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -258,10 +257,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "e49264e7ae504377",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "40-runbooks/aws/config-compliance-check.md",
     "10-areas/private/Subskrypcje.md",
+    "40-runbooks/aws/config-compliance-check.md",
     "CODEX.md",
     "40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md",
     "20-projects/clients/mako/rshop/rshop-context.md",

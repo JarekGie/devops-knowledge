@@ -33,3 +33,27 @@
 - `Cykl`: `monthly` albo `annual`
 - `Kwota`: sama liczba, bez waluty
 - `Status`: `aktywna`, `do przeglądu`, `do anulowania`, `anulowana`
+
+## Koszty życia (stałe)
+
+| Nazwa        | Data odnowienia | Cykl    | Kwota | Waluta | Status  | Uwagi                  |
+|--------------|-----------------|---------|-------|--------|---------|------------------------|
+| Przedszkole  |                 | monthly | 1600  | PLN    | aktywna |                        |
+| Szkoła       |                 | monthly | 1600  | PLN    | aktywna |                        |
+| Karma psy    |                 | monthly | 500   | PLN    | aktywna |                        |
+| Nikotyna     |                 | monthly | 1200  | PLN    | aktywna |                        |
+| Bolt         |                 | monthly | 1470  | PLN    | aktywna | głównie poranki dzieci |
+| Komunikacja  |                 | monthly | 50    | PLN    | aktywna |                        |
+|              |                 | Razem   | 6420  | PLN    |         |                        |
+
+---
+
+## Podsumowanie całości
+
+| Kategoria            |                   Kwota |
+| -------------------- | ----------------------: |
+| Subskrypcje domowe   |                    ~245 |
+| Subskrypcje zawodowe |                    ~178 |
+| Koszty życia         |                    6420 |
+|                      |                         |
+| **RAZEM**            | **~6843 PLN / miesiąc** |
