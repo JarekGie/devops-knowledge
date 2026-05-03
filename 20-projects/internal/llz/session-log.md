@@ -714,6 +714,34 @@ Przy apply: najpierw `terraform apply tfplan-eb-dlq-infra` → po tym regeneruj 
 
 ## YYYY-MM-DD — [opis]
 
+## 2026-05-03 — Security Hub: moduł Terraform gotowy, plan zweryfikowany
+
+**Co zrobiono:**
+- Cleanup repo: usunięto 27 lokalnych plików tfplan*, dodano `tfplan-*` do .gitignore
+- Zacommitowano pending changes: monitoring module, budgets, finops, docs, scripts
+- Utworzono worktree `.worktrees/feat-security-hub` na branchu `feat/security-hub`
+- Zaimplementowano moduł `platform/security/security-hub/` (6 plików TF)
+- `terraform init` + `terraform plan` — CLEAN: 4 to add, 0 to change, 0 to destroy
+
+Zasoby w planie:
+- `aws_securityhub_account.management` — enable_default_standards=false
+- `aws_securityhub_organization_admin_account.this` → 814662658531
+- `aws_securityhub_account.monitoring` — enable_default_standards=false
+- `aws_securityhub_organization_configuration.this` — auto_enable=true, auto_enable_standards="NONE"
+
+FSBP i SNS wyłączone domyślnie (enable_fsbp=false, enable_sns_placeholder=false).
+
+**Stan na koniec:**
+- Plan zapisany: `.worktrees/feat-security-hub/platform/security/security-hub/tfplan-security-hub`
+- Gotowy do `terraform apply` — czeka na zielone światło
+- FSBP można włączyć ustawiając `enable_fsbp = true` w tfvars
+
+**Następna sesja:**
+- Uruchomić `terraform apply tfplan-security-hub`
+- Zweryfikować: SHub enabled w management + monitoring, org auto-enable aktywne
+- Włączyć FSBP: `enable_fsbp = true` + plan + apply
+- Phase 7: sprawdzić findings w monitoring account
+
 **Co zrobiono:**
 -
 
