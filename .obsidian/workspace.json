@@ -69,12 +69,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20-projects/clients/mako/maspex/maspex-context.md",
+                "file": "_system/AGENT_BOOTSTRAP.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "maspex-context"
+              "title": "AGENT_BOOTSTRAP"
             }
           }
         ],
@@ -262,8 +262,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "0f9921ea6dd530c7",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "CLAUDE.md",
+    "20-projects/clients/mako/maspex/maspex-context.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
     "10-areas/private/Subskrypcje.md",
     "_chatgpt/context-packs/dual-vault-architecture.md",
@@ -288,9 +290,7 @@
     "50-patterns/prompts/starter-pack/llz-observability-audit.md",
     "50-patterns/prompts/invocations/cloud-detective-test-rola2.md",
     "50-patterns/prompts/invocations/cloud-detective-test-rola.md",
-    "reports/aws-events-monitoring-coverage.md",
     "reports",
-    "20-projects/clients/mako/aws-cloud-platform/monitoring-context.md",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
     "scripts/new-cloud-detective-invocation.sh",
