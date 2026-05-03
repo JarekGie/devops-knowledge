@@ -2,17 +2,25 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-03 — Root recovery: email znaleziony, czeka na dostęp do skrzynki
+## Update — 2026-05-03 — Root governance established for Admin-MakoLab ✅
 
 ```
 Projekt:    Admin-MakoLab (647075515164) — FTR blocker
-Akcja:      Root access recovery — Phase 1 DONE
+Akcja:      Root governance udokumentowana, klucz usunięty
 
-ROOT EMAIL: admin@makolab.pl  ← CONFIRMED via Organizations API
-Root password last used: 2026-03-11 (7 tygodni temu — kto logował się?)
-MFA: enabled
+ROOT EMAIL: admin@makolab.pl
+ROOT KEY:   ❌ USUNIĘTY 2026-05-03 (był z 2016, nieużywany 10 lat)
+MFA:        enabled (3 urządzenia)
+GOVERNANCE: break-glass only, KeePass, log każdego użycia w vault
 
-BLOKER: brak dostępu do skrzynki admin@makolab.pl
+DOKUMENTACJA: 20-projects/internal/llz/root-access-governance.md
+
+OTWARTE:
+  [FILL] Kto posiada 3 urządzenia MFA?
+  [FILL] Właściciel dostępu (imię/rola)
+  [FILL] Dostęp awaryjny (backup osoba)
+
+NEXT: Security Hub org-wide rollout (Phase 4)
 
 NEXT ACTION:
   1. Uzyskaj dostęp do admin@makolab.pl (IT admin / Office365 / Google Workspace)
@@ -1867,4 +1875,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-03 12:08 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-03 13:18 — sesja aktywna*
