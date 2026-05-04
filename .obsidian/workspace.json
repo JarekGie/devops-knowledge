@@ -291,6 +291,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/llz-compliance-audit-2026-05-04.md",
     "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "20-projects/clients/mako/booking-online/booking-online-context.md",
@@ -316,7 +317,6 @@
     "20-projects/clients/mako/aws-cloud-platform/synthetics-canary-audit-2026-05-02.md",
     "50-patterns/prompts/starter-pack/llz-budgets-audit.md",
     "20-projects/internal/llz/llz-observability-audit-2026-05-02.md",
-    "20-projects/internal/llz/ideas.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
