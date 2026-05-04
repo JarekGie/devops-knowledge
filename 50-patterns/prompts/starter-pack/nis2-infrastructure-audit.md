@@ -1,5 +1,5 @@
 ---
-title: NIS2 Infrastructure Audit
+title: NIS2 Infrastructure Audit — Live AWS CLI
 type: prompt-template
 domain: security-compliance
 use_case: nis2-aws-technical-assessment
@@ -9,185 +9,102 @@ tags:
   - security
   - compliance
   - aws
+  - live-audit
 created: 2026-05-04
 updated: 2026-05-04
 ---
 
-# NIS2 Infrastructure Audit — AWS Technical Layer
+# NIS2 Infrastructure Audit — AWS Technical Layer (Live CLI)
 
 ## Jak używać
 
-Wklej ten prompt do LLM. W sekcji `CONTEXT` zastąp przykładową strukturę realnym stanem infra.
+Podaj do LLM jako instrukcję wykonawczą. Agent przeprowadza live discovery przez AWS CLI i generuje raport evidence-based.
 
-Powiązane invocations: brak (użyj bezpośrednio z kontekstem projektu, np. `_chatgpt/context-packs/llz.md`).
+Wymagane profile: `mako-dc` (management), `monitoring-tbd` (monitoring/delegated admin).
 
 ---
 
 ## Prompt
 
 ```
-You are a senior AWS cloud security auditor.
+Zrób evidence-based audyt techniczny AWS pod NIS2, ale najpierw pobierz aktualny stan z AWS CLI.
 
-Your task is to assess ONLY AWS infrastructure (technical layer) against NIS2 technical expectations.
+Zasady:
+- Nie używaj starych notatek jako source of truth.
+- Nie zgaduj.
+- Jeśli czegoś nie da się sprawdzić przez CLI, oznacz jako UNVERIFIED.
+- Nie oceniaj procesów, dokumentacji ani polityk — tylko AWS infrastructure.
+- Pracuj read-only.
+- Nie wykonuj żadnych write operations.
+- Nie zmieniaj zasobów.
+- Wszystkie komendy AWS mają być read-only.
 
----
+Profile:
+- management account: mako-dc
+- monitoring account: monitoring-tbd
+- pozostałe konta wykryj przez AWS Organizations z profilu mako-dc
 
-## STRICT RULES
+Najpierw wykonaj discovery kont:
+aws organizations list-accounts --profile mako-dc
 
-* DO NOT assess processes, documentation, policies, or procedures
-* DO NOT assume anything not explicitly provided
-* DO NOT infer missing data as "missing capability"
-* If something is unknown → mark as "UNVERIFIED", not "MISSING"
-* DO NOT generate generic compliance advice
-* FOCUS ONLY on AWS configuration, services, and capabilities
-* Be evidence-based and precise
+Dla każdego ACTIVE account sprawdź:
 
----
+1. IAM/root:
+   - aws iam get-account-summary
+   - AccountMFAEnabled
+   - AccountAccessKeysPresent
 
-## CONTEXT (REAL STATE — DO NOT OVERRIDE)
+2. CloudTrail:
+   - aws cloudtrail describe-trails --include-shadow-trails
+   - aws cloudtrail get-trail-status
+   - KMSKeyId
+   - LogFileValidationEnabled
+   - IsOrganizationTrail
+   - IsMultiRegionTrail
 
-Paste actual state here.
+3. GuardDuty:
+   - aws guardduty list-detectors
+   - aws guardduty get-detector
+   - data sources / features
 
-Example structure (replace with real data):
+4. Security Hub:
+   - aws securityhub describe-hub
+   - aws securityhub get-enabled-standards
+   - aws securityhub get-findings --filters RecordState=ACTIVE WorkflowStatus=NEW SeverityLabel=CRITICAL,HIGH
 
-AWS Organization:
+5. AWS Config:
+   - aws configservice describe-configuration-recorders
+   - aws configservice describe-configuration-recorder-status
+   - aws configservice describe-aggregate-compliance-by-config-rules jeśli aggregator dostępny
 
-* Multi-account: YES
-* Accounts: 12
-* OU structure: Platform, Security, Workloads
+6. Inspector:
+   - aws inspector2 batch-get-account-status
+   - aws inspector2 list-coverage
 
-Security baseline:
+7. Logging:
+   - VPC Flow Logs: aws ec2 describe-flow-logs
+   - ALB access logs: aws elbv2 describe-load-balancers + describe-load-balancer-attributes
+   - CloudFront logging: aws cloudfront list-distributions
 
-* GuardDuty: org-wide ENABLED (all accounts)
-* Security Hub: org-wide ENABLED
-* AWS Config: org-wide ENABLED (aggregator active)
-* CloudTrail: org trail ENABLED (multi-region)
+8. Governance:
+   - aws organizations list-policies --filter SERVICE_CONTROL_POLICY
+   - aws organizations list-targets-for-policy
+   - sprawdź czy llz-security-baseline jest podpięty do Platform OU, Security OU, Workloads OU, Sandbox OU
 
-Identity:
+9. Backup / resilience:
+   - aws backup list-backup-vaults
+   - aws backup list-backup-plans
+   - aws backup list-protected-resources
 
-* SSO (SAML/Entra): ENABLED
-* Root MFA: ENABLED (at least monitoring account)
-* Root access keys: REMOVED
-* Root MFA coverage (all accounts): UNVERIFIED
+Wynik zapisz lokalnie jako:
+nis2-aws-live-state-<YYYY-MM-DD>.md
 
-Governance:
+Raport ma mieć sekcje:
+- ACTIVE GAPS
+- RESOLVED / NOT A GAP
+- UNVERIFIED
+- FALSE POSITIVES
 
-* SCP: PARTIAL (missing on Platform OU and Security OU)
-* Tag policies: ENABLED
-
-Observability:
-
-* CloudWatch: PARTIAL
-* OAM: 6/12 accounts connected
-* Central logging: CloudTrail → S3 (log archive account)
-
-Logging coverage:
-
-* VPC Flow Logs: PARTIAL
-* ALB logs: PARTIAL
-* CloudFront logs: PARTIAL
-
-Threat detection:
-
-* GuardDuty: ENABLED
-* GuardDuty extended protections: DISABLED
-* AWS Inspector: DISABLED
-
-Resilience (IMPORTANT):
-
-* DR exists operationally (DO NOT mark missing)
-* AWS Backup policies: UNVERIFIED
-* Cross-account backup: UNVERIFIED
-
----
-
-## TASK
-
-Evaluate AWS infrastructure ONLY against NIS2 technical expectations.
-
----
-
-## OUTPUT FORMAT (STRICT)
-
-### 1. SUMMARY
-
-Provide status per dimension:
-
-* Detection
-* Logging
-* Identity
-* Governance
-* Observability
-* Resilience
-
-Use ONLY:
-✔ OK
-⚠ PARTIAL
-❌ MISSING
-❓ UNVERIFIED
-
-Each must include 1-line evidence.
-
----
-
-### 2. CRITICAL GAPS (TOP 5)
-
-List only REAL infrastructure gaps.
-
-Each item must include:
-
-* Gap name
-* Technical impact (what breaks / risk)
-* NIS2 relevance (1 sentence max)
-
-DO NOT include:
-
-* processes
-* documentation
-* assumptions
-
----
-
-### 3. FULL GAP LIST (AWS ONLY)
-
-Group strictly by:
-
-* Identity & Access
-* Logging & Monitoring
-* Threat Detection
-* Governance
-* Resilience
-
-Rules:
-
-* Only AWS-level gaps
-* If data is missing → mark UNVERIFIED
-* No speculation
-* No generic text
-
----
-
-### 4. FALSE POSITIVES CHECK
-
-List items that:
-
-* may look like gaps
-* but are valid AWS design or confirmed acceptable
-
----
-
-## STYLE
-
-* concise
-* technical
-* no fluff
-* no "organizations should..."
-* no policy language
-* no process references
-
----
-
-## FINAL RULE
-
-If evidence is insufficient → mark UNVERIFIED, not MISSING.
+W raporcie NIE wolno pisać, że coś jest MISSING, jeśli nie zostało sprawdzone live przez AWS CLI.
+Jeśli Security Hub/Config pokazuje finding, ale live IAM pokazuje stan naprawiony, oznacz finding jako POSSIBLY STALE.
 ```
