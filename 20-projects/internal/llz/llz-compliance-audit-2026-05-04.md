@@ -71,19 +71,20 @@ Management account (`864277686382`) niewidoczny w żadnej regule (brak recordera
 
 ---
 
-## 5. Security Hub — Status: FAIL ❌
+## 5. Security Hub — Status: OK ✅ (naprawione 2026-05-04)
 
 | | |
 |---|---|
 | Delegated admin | `814662658531` ✅ |
 | AutoEnable new members | true ✅ |
 | AutoEnableStandards | ⚠️ NONE |
-| **Members enrolled** | ❌ **0 / 11** |
+| **Members enrolled** | ✅ **11 / 11** |
 
-Weryfikacja per-konto: Booking Online, lab = `no such resource found` (nie enrolled).  
-Management account (`864277686382`) — Security Hub włączony 2026-05-03, ale jako samodzielna instancja, NIE połączona z delegated admin.
+Enrollment wykonany 2026-05-04 via `create-members` z konta delegated admin.  
+Wszystkie 11 kont: MemberStatus=Enabled, `get-administrator-account` → `814662658531 Enabled` ✅  
+Standards w member accounts: `[]` — brak duplikatów CIS/FSBP ✅
 
-**Konsekwencja:** Findings płyną wyłącznie z monitoring account. 10 pozostałych kont = blind spot.
+> ℹ️ Initial findings sync z nowo-enrolled kont: kilka minut do 24h na pełny initial scan.
 
 ---
 

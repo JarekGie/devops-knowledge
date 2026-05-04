@@ -801,6 +801,25 @@ Decyzja dot. CIS: zostawione włączone — już aktywne, wyłączenie straciło
 - Blokery audytu AWS: Security Hub enrollment + root MFA w monitoring
 
 **Następna sesja:**
-- Enrolled Security Hub members (11 kont) via delegated admin
-- Włączyć MFA root w monitoring account
-- Usunąć root access keys w Admin MakoLab
+- Włączyć MFA root w monitoring account `814662658531`
+- Usunąć root access keys w Admin MakoLab `647075515164`
+- Config recorder w management account (opcjonalnie)
+
+---
+
+## 2026-05-04 — Security Hub enrollment: 11/11 kont
+
+**Co zrobiono:**
+- Phase 1 discovery: 1/11 kont miało Security Hub (tylko management 864277686382, standalone)
+- Phase 2+3: `create-members` z delegated admin (monitoring-tbd) — 1 komenda, UnprocessedAccounts=[]
+- Wynik: 11/11 members Enabled, standards=[] (brak duplikatów), `get-administrator-account` potwierdzone z 4 kont
+- Initial findings sync w toku (do 24h na pełny scan member accounts)
+
+**Stan na koniec:**
+- Security Hub org-wide OPERATIONAL
+- Findings zaczną napływać z 11 kont w ciągu kilku minut/godzin
+
+**Następna sesja:**
+- Weryfikacja findings po 24h (czy napływają z wszystkich kont)
+- MFA root w monitoring account
+- Root access keys w Admin MakoLab
