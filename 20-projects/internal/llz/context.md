@@ -9,7 +9,7 @@ llm_exposure: restricted
 cross_domain_export: summary-only
 tags: [llz, terraform, cloudformation, governance, observability, platform, mako]
 created: 2026-04-18
-updated: 2026-04-24
+updated: 2026-05-04
 ---
 
 # LLZ — Light Landing Zone
@@ -162,23 +162,45 @@ toolkit check  # uruchamia full dry-run sanity pipeline
 
 ---
 
-## Stan obecny (2026-04-18)
+## Stan obecny (2026-05-04) — po Fazie B
 
 ```
 Toolkit LLZ:              zaimplementowany (wszystkie 3 wymiary)
-Onboarding org:           nie rozpoczęty
+Onboarding org:           nie rozpoczęty (Terraform projekty niezbadane)
+
 Projekty audytowane:
   mako/rshop (CFN):       tagging DONE (dev 11/14, prod 12/13 compliant)
                           observability: 9 findings (ALB, CF, VPC — backlog)
   Terraform projekty:     niezbadane — wymaga inwentaryzacji
 ```
 
+### Org security baseline — stan po Fazie B (2026-05-02/04)
+
+| Kontrola | Status | Data |
+|----------|--------|------|
+| SCP llz-security-baseline | ✅ LIVE | 2026-05-02 |
+| GuardDuty org-wide | ✅ LIVE (12/12 kont) | 2026-05-02 |
+| CloudTrail org multi-region | ✅ LIVE | pre-existing |
+| AWS Config (OrgConfigRules + aggregator + StackSet) | ✅ LIVE | 2026-05-02 |
+| Security Hub org-wide (11/11 kont enrolled) | ✅ LIVE | 2026-05-04 |
+
+### Otwarte CRITICAL (post-audit 2026-05-04)
+
+| Problem | Konto | Działanie |
+|---------|-------|-----------|
+| Root user bez MFA | 814662658531 (monitoring, delegated admin) | ręcznie w konsoli |
+| Root access keys aktywne | 647075515164 (Admin MakoLab) | ręcznie w konsoli |
+| Config recorder brak | 864277686382 (management) | oddzielny StackSet lub ręcznie |
+
+Raport audytu: [[llz-compliance-audit-2026-05-04]]
+
 ## Cele
 
-1. Zinwentaryzować wszystkie projekty Terraform w organizacji → uruchomić `llz-basic`
-2. Dla każdego projektu CFN: `audit-pack tagging` + `audit-pack aws-logging`
-3. Zintegrować LLZ check w CI/CD (Jenkins/Atlantis)
-4. Dokumentacja procesu onboardingu dla devopsów (Confluence)
+1. Zamknąć CRITICAL: root MFA + root access keys (blokery FTR)
+2. Zinwentaryzować projekty Terraform → uruchomić `llz-basic`
+3. Dla każdego projektu CFN: `audit-pack tagging` + `audit-pack aws-logging`
+4. Zintegrować LLZ check w CI/CD (Jenkins/Atlantis)
+5. Dokumentacja procesu onboardingu dla devopsów (Confluence)
 
 ## Powiązane
 

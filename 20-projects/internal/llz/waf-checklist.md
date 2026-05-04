@@ -1,7 +1,7 @@
 ---
 type: checklist
-updated: 2026-05-02
-# last update: Budgets all 12 accounts + Cost Anomaly Detection planned, Organizations + FTR sections added
+updated: 2026-05-04
+# last update: AWS Config org-wide ✅, Security Hub 11/11 enrolled ✅, CloudTrail audit confirmed ✅
 tags: [llz, waf, aws-well-architected, governance, compliance, ftr, organizations]
 ---
 
@@ -11,7 +11,7 @@ tags: [llz, waf, aws-well-architected, governance, compliance, ftr, organization
 > Skupiona na wymiarze org-governance i platformy (LLZ scope).
 > Status: ✅ done | ⚠️ partial | ❌ missing | ➖ N/A / poza scope LLZ
 
-Ostatnia aktualizacja stanu: **2026-05-02**
+Ostatnia aktualizacja stanu: **2026-05-04**
 
 ---
 
@@ -39,7 +39,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 | ID | Pytanie / Best Practice | Status | Uwagi |
 |----|------------------------|--------|-------|
-| SEC 1 | Bezpieczna operacja: SCP, Config, CloudTrail aktywne | ⚠️ | CloudTrail ✅, Config ⚠️ (bez aggregatora), **SCP security-baseline DEPLOYED 2026-05-02 ✅** (Sandbox+NonProd+Prod OUs) |
+| SEC 1 | Bezpieczna operacja: SCP, Config, CloudTrail aktywne | ✅ | CloudTrail ✅ (org, multi-region, logging active); **Config ✅ DEPLOYED 2026-05-02** (OrgConfigRules+aggregator+StackSet, 11/12 kont — brak management account recordera); **SCP ✅ DEPLOYED 2026-05-02** (Sandbox+NonProd+Prod OUs) |
 | SEC 2 | Uwierzytelnianie: MFA, SSO, brak shared credentials | ⚠️ | MFA na IAM userach, brak SSO/IdP centralnego |
 | SEC 3 | Zarządzanie uprawnieniami: least privilege, role per workload | ⚠️ | OrganizationAccountAccessRole używane zbyt szeroko |
 | SEC 4 | Detekcja zagrożeń: GuardDuty, CloudTrail alerts | ✅ | **GuardDuty DEPLOYED 2026-05-02 ✅** — org-wide, delegated admin (monitoring), 12/12 kont, CLOUD_TRAIL+DNS+FLOW_LOGS baseline |
@@ -51,7 +51,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | SEC 10 | Incident response plan: playbooki, izolacja, forensics | ❌ | Brak formalnego IR plan |
 | SEC 11 | Application security: SAST, secret scanning, dependency scan | ❌ | Brak centralnego narzędzia |
 
-**Priorytety SEC:** SEC 4 (GuardDuty — HRI!), SEC 1 (SCP — Faza B), SEC 3 (least privilege audit), SEC 10 (IR plan)
+**Priorytety SEC:** SEC 2 (root MFA brak w monitoring account — CRITICAL), SEC 3 (least privilege audit), SEC 10 (IR plan)
 
 ---
 
@@ -135,16 +135,16 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | ORG 1 | Accounts w OUs, NIE bezpośrednio w Root | ❌ | Wszystkie konta w Root — EPIC 1 priorytet; Root = brak SCP guardrails |
 | ORG 2 | OU hierarchia odpowiada typom workloadów (Prod/NonProd/Platform/Security) | ❌ | Brak OU struktury — EPIC 1 |
 | ORG 3 | Dedicated Security account (delegated admin) | ❌ | EPIC 3 — GuardDuty/Config/SecurityHub admin |
-| ORG 4 | Root account: MFA włączone, brak access keys, zadana alternatywna metoda kontaktu | ⚠️ | Nieaudytowane — sprawdzić manualnie |
-| ORG 5 | CloudTrail: org-level, multi-region, global services, validation enabled, KMS | ⚠️ | Org CloudTrail aktywny ✅; KMS encryption ❌; log file validation ⚠️ (nieznane); EPIC 2 |
+| ORG 4 | Root account: MFA włączone, brak access keys, zadana alternatywna metoda kontaktu | ❌ | **AUDIT 2026-05-04:** monitoring account `814662658531` — root bez MFA (CRITICAL, Security Hub 1.13); Admin MakoLab `647075515164` — root access keys aktywne (Config NON_COMPLIANT); pozostałe konta nieaudytowane |
+| ORG 5 | CloudTrail: org-level, multi-region, global services, validation enabled, KMS | ⚠️ | **AUDIT 2026-05-04:** org trail ✅, multi-region ✅, logging ✅ (delivery 2026-05-04); KMS encryption ❌; log file validation nieaudytowana |
 | ORG 6 | Log Archive: S3 + KMS + lifecycle + block public access + MFA delete | ⚠️ | LogArchiveNew account ✅, S3 bucket ✅; KMS ❌; lifecycle ❌; EPIC 2 |
 | ORG 7 | Account contact info per account (billing, security, operations) | ❌ | Nieaudytowane — wymagane przez FTR |
 | ORG 8 | IAM Identity Center (SSO) zamiast indywidualnych IAM userów | ❌ | Aktualnie: IAM users z MFA — zwiększa surface attack |
 | ORG 9 | Break-glass procedure (kto/jak/kiedy dostaje emergency access) | ❌ | Brak udokumentowanej procedury |
 | ORG 10 | Tag Policies enforcement org-wide | ✅ | llz-project + llz-environment policies aktywne na Root ✅ |
 | ORG 11 | GuardDuty: org-level, auto-enable nowych kont, delegated admin | ✅ | **GuardDuty DEPLOYED 2026-05-02 ✅** — delegated admin: monitoring-nagios-bot, auto_enable=ALL, 12/12 kont enrolled |
-| ORG 12 | AWS Config: org-level recorders + aggregator + minimalne reguły | ❌ | EPIC 5 |
-| ORG 13 | Security Hub: org-level, delegated admin, standardy (CIS, FSBP) | ❌ | EPIC 3/5 — wymagane dla FTR |
+| ORG 12 | AWS Config: org-level recorders + aggregator + minimalne reguły | ✅ | **DEPLOYED 2026-05-02 ✅** — OrgConfigRules (5 baseline), aggregator `org-aggregator`, StackSet `aws-config-org-recorder` CURRENT 11/12 kont; management account bez recordera (⚠️ gap); 4/5 reguł 100% COMPLIANT, 1 NON_COMPLIANT (root access keys Admin MakoLab) |
+| ORG 13 | Security Hub: org-level, delegated admin, standardy (CIS, FSBP) | ✅ | **DEPLOYED + ENROLLED 2026-05-04 ✅** — delegated admin: monitoring-nagios-bot (814662658531), **11/11 members Enrolled**; AutoEnableStandards=NONE (brak duplikatów); 6 CRITICAL + 14 HIGH findings (monitoring account) |
 | ORG 14 | S3 Block Public Access na poziomie account (nie tylko bucket) | ⚠️ | Nieaudytowane org-wide — sprawdzić per account |
 | ORG 15 | IMDSv2 enforcement (EC2, jeśli używane) | ⚠️ | ECS Fargate nie dotyczy ✅; EC2 w DRP-TFS — nieaudytowane |
 | ORG 16 | SCP: deny root actions, deny disable security services, deny non-eu regions | ✅ | **SCP security-baseline DEPLOYED 2026-05-02 ✅** — DenyDisableSecurityServices + DenyRootUserActions live na Sandbox+NonProd+Prod OUs; region restrictions ❌ (future phase) |
@@ -153,7 +153,7 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | ORG 19 | Centralne zarządzanie kluczami KMS (org-wide key policy) | ❌ | Keys per account, brak org-level key governance |
 | ORG 20 | VPC Flow Logs → centralna archiwizacja lub analiza | ❌ | Flow logs nie wszędzie, brak centralizacji |
 
-**Priorytety ORG:** ORG 11 (GuardDuty — HRI), ORG 16 (SCP — HRI), ORG 1 (OU struktura), ORG 3 (Security account), ORG 5/6 (CloudTrail/LogArchive hardening)
+**Priorytety ORG:** ORG 4 (root MFA + access keys — CRITICAL, blokuje FTR), ORG 8 (IAM Identity Center), ORG 5 (CloudTrail KMS), ORG 6 (LogArchive hardening)
 
 ---
 
@@ -163,12 +163,12 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 
 | ID | Wymaganie FTR | Status | Uwagi |
 |----|--------------|--------|-------|
-| FTR 1 | CloudTrail multi-region enabled ze wszystkimi kontami org | ⚠️ | Org CloudTrail ✅; multi-region config nieaudytowana |
+| FTR 1 | CloudTrail multi-region enabled ze wszystkimi kontami org | ✅ | **AUDIT 2026-05-04:** org trail ✅, multi-region ✅, org-wide ✅, logging aktywny ✅ (delivery 2026-05-04); KMS ❌ — pozostaje do hardening |
 | FTR 2 | Centralized S3 log bucket z access controls | ⚠️ | LogArchiveNew ✅; strict access + block public access nieaudytowane |
 | FTR 3 | GuardDuty enabled org-wide | ✅ | **DEPLOYED 2026-05-02 ✅** — org-wide, 12/12 kont, delegated admin, auto-enable ALL |
-| FTR 4 | AWS Config + reguły conformance | ❌ | Blokuje FTR |
-| FTR 5 | Security Hub lub CIS Benchmark report | ❌ | Blokuje FTR |
-| FTR 6 | Root MFA na każdym koncie | ⚠️ | Nieaudytowane — sprawdź przed FTR |
+| FTR 4 | AWS Config + reguły conformance | ✅ | **DEPLOYED 2026-05-02 ✅** — OrgConfigRules (5 baseline) aktywne, aggregator działa, 11/12 kont ocenianych |
+| FTR 5 | Security Hub lub CIS Benchmark report | ✅ | **DEPLOYED + ENROLLED 2026-05-04 ✅** — 11/11 kont, findings flow po initial sync |
+| FTR 6 | Root MFA na każdym koncie | ❌ | **AUDIT 2026-05-04:** monitoring account root bez MFA (Security Hub CRITICAL); Admin MakoLab root access keys aktywne; pozostałe konta nieaudytowane — **bloker FTR** |
 | FTR 7 | Brak hardcoded credentials w kodzie/repo | ⚠️ | Brak centralnego secret scanningu |
 | FTR 8 | Workload isolation — oddzielne konta per projekt | ✅ | Każdy projekt w oddzielnym koncie ✅ |
 | FTR 9 | Incident response playbooks | ❌ | Brak formalnych IR playbooks |
@@ -179,9 +179,9 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | FTR 14 | Szyfrowanie in transit (TLS, no HTTP) | ⚠️ | ALB HTTPS prod ✅; preprod częściowo |
 | FTR 15 | S3 Block Public Access enabled | ⚠️ | Nieaudytowane org-wide |
 
-**FTR blockers (krytyczne dla partner readiness):** FTR 3 (GuardDuty), FTR 4 (Config), FTR 5 (Security Hub), FTR 6 (Root MFA audit)
+**FTR blockers (krytyczne dla partner readiness):** ~~FTR 3 (GuardDuty)~~ ✅, ~~FTR 4 (Config)~~ ✅, ~~FTR 5 (Security Hub)~~ ✅, **FTR 6 (Root MFA — ACTIVE BLOCKER)**
 
-**Szacowany czas do FTR readiness:** 3-4 tygodnie po wykonaniu Faza B EPIC 3+4+5
+**Szacowany czas do FTR readiness:** 1-2 dni (root MFA + access keys = ręczna praca) + audyt pozostałych kont
 
 ---
 
@@ -190,18 +190,19 @@ Ostatnia aktualizacja stanu: **2026-05-02**
 | Pillar | ✅ Done | ⚠️ Partial | ❌ Missing | Ocena |
 |--------|---------|-----------|-----------|-------|
 | Operational Excellence | 0 | 8 | 3 | ~40% |
-| Security | **2** | **4** | **5** | **~35%** ↑ |
+| Security | **3** | **3** | **5** | **~45%** ↑ |
 | Reliability | 0 | 7 | 6 | ~30% |
 | Performance Efficiency | 0 | 4 | 1 | ~40% |
-| Cost Optimization | **2** | **4** | **5** | **~40%** ↑ |
+| Cost Optimization | **2** | **4** | **5** | **~40%** |
 | Sustainability | 0 | 4 | 2 | ~40% |
-| Organizations Governance | **2** | **4** | **14** | **~20%** ↑ |
-| FTR Partner Readiness | **3** | 6 | 6 | **~40%** ↑ |
+| Organizations Governance | **6** | **4** | **10** | **~40%** ↑↑ |
+| FTR Partner Readiness | **6** | 5 | 4 | **~60%** ↑↑ |
 
-**Overall WAF (6 pillarów): ~35%** ↑  
-**FTR Partner Readiness: BLOKOWANE** przez Config + Security Hub — szacowany czas do FTR: 2-3 tygodnie po EPIC 5 (Config) + Security Hub
+**Overall WAF (6 pillarów): ~40%** ↑  
+**FTR Partner Readiness: BLOKOWANE** przez FTR 6 (root MFA) — szacowany czas do FTR: 1-2 dni (operacyjne) + audyt root MFA na pozostałych kontach
 
-> Zmiany 2026-05-02: COST 1 → ✅ (budgets), COST 3 → ✅ (anomaly detection), FTR 12 → ✅, ORG 10 → ✅ (tag policies), ORG 16 → ✅ (SCP), **SEC 4 → ✅, ORG 11 → ✅, FTR 3 → ✅ (GuardDuty org-wide)**
+> Zmiany 2026-05-02: COST 1 → ✅, COST 3 → ✅, FTR 12 → ✅, ORG 10 → ✅, ORG 16 → ✅, SEC 4 → ✅, ORG 11 → ✅, FTR 3 → ✅  
+> Zmiany 2026-05-04: **SEC 1 → ✅** (Config+CloudTrail potwierdzony), **ORG 12 → ✅** (Config org-wide), **ORG 13 → ✅** (Security Hub 11/11 enrolled), **FTR 1 → ✅** (CloudTrail audit), **FTR 4 → ✅** (Config), **FTR 5 → ✅** (Security Hub); **ORG 4 → ❌** (root MFA brak — audyt ujawnił CRITICAL)
 
 ---
 
