@@ -210,19 +210,23 @@ Ostatnia aktualizacja stanu: **2026-05-04**
 
 1. ~~**ORG 11 / SEC 4** — GuardDuty~~ **RESOLVED 2026-05-02** ✅ (org-wide, 12/12 kont)
 2. ~~**ORG 16 / SEC 1** — SCP security-baseline~~ **RESOLVED 2026-05-02** ✅ (deployed Sandbox+NonProd+Prod)
-3. **ORG 1** — Wszystkie konta w Root → SCP nie działają (nie ma gdzie ich podpiąć)
-4. **REL 13** — Brak formalnego DR plan mimo istnienia konta DRP
-5. **SEC 10 / FTR 9** — Brak IR plan → brak procedury na incydent bezpieczeństwa
+3. ~~**ORG 12 / FTR 4** — AWS Config org-wide~~ **RESOLVED 2026-05-02** ✅ (OrgConfigRules + aggregator)
+4. ~~**ORG 13 / FTR 5** — Security Hub org-wide~~ **RESOLVED 2026-05-04** ✅ (11/11 kont enrolled)
+5. **ORG 4 / FTR 6** — Root MFA brak + root access keys aktywne → **ACTIVE BLOCKER FTR** — monitoring `814662658531` bez MFA, Admin MakoLab `647075515164` z access keys
+6. **REL 13** — Brak formalnego DR plan mimo istnienia konta DRP
+7. **SEC 10 / FTR 9** — Brak IR plan → brak procedury na incydent bezpieczeństwa
 
 ---
 
 ## Szybkie wygrane (quick wins)
 
-1. ~~**SCP security-baseline deploy**~~ **DONE ✅ 2026-05-02** — llz-security-baseline live (Sandbox+NonProd+Prod)
-2. **Root MFA audit** — sprawdzić manualnie, 15 minut, odblokuje FTR 6
-3. **S3 Block Public Access audit** — AWS CLI, 30 minut, odblokuje FTR 15 / ORG 14
-4. **Savings Plans zakup** — analiza Cost Explorer 1h, ~20-30% oszczędności dla rshop/booking/planodkupow (stabilny $1100-1400/month każdy)
-5. **Faza B kick-off** — GuardDuty + Config + Security Hub = FTR unblocked w 3-4 tygodnie
+1. ~~**SCP security-baseline deploy**~~ **DONE ✅ 2026-05-02**
+2. ~~**GuardDuty + Config + Security Hub**~~ **DONE ✅ 2026-05-02/04**
+3. **Root MFA w monitoring account** — ręcznie w konsoli, 15 minut, **odblokowuje FTR 6**
+4. **Root access keys usunąć w Admin MakoLab** — ręcznie w konsoli, 5 minut, usuwa Config NON_COMPLIANT
+5. **Root MFA audit wszystkich kont** — per konto via AWS CLI / konsola, 1-2h, zamyka FTR 6 całkowicie
+6. **S3 Block Public Access audit** — AWS CLI, 30 minut, odblokuje FTR 15 / ORG 14
+7. **Savings Plans zakup** — analiza Cost Explorer 1h, ~20-30% oszczędności dla rshop/booking/planodkupow
 
 ---
 
