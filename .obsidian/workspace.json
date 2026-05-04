@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Verify AWS Light Landing Zone compliance status"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
             }
           },
           {
@@ -250,6 +250,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/nis2-technical-assessment-2026-05-04.md",
     "_chatgpt/context-packs/llz.md",
     "20-projects/clients/mako/rshop/rshop-p99-latency-findings.md",
     "40-runbooks/incidents/rshop-alb-p99-latency-2026-05-04.md",
@@ -275,7 +276,6 @@
     "20-projects/clients/mako/rshop/rshop-context.md",
     "20-projects/clients/mako/rshop/finops-rshop.md",
     "20-projects/clients/mako/aws-cloud-platform/finops-anomaly-detection.md",
-    "20-projects/clients/mako/aws-cloud-platform/budgets-context.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
