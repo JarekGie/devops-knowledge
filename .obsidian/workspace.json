@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Verify AWS Light Landing Zone compliance status"
+              "title": "Terminal: ⠐ Verify AWS Light Landing Zone compliance status"
             }
           },
           {
@@ -119,8 +119,7 @@
               "title": "llz-compliance-audit-2026-05-04"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -304,7 +303,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "97668cbae2d0819e",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/internal/llz/llz-compliance-audit-2026-05-04.md",
     "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
