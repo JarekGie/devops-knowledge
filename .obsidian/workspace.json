@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Verify AWS Light Landing Zone compliance status"
+              "title": "Terminal: ✳ Verify AWS Light Landing Zone compliance status"
             }
           }
         ]
@@ -235,6 +235,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "40-runbooks/incidents/rshop-alb-p99-latency-2026-05-04.md",
     "20-projects/internal/llz/waf-checklist.md",
     "20-projects/internal/llz/llz-compliance-audit-2026-05-04.md",
     "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
@@ -260,7 +261,6 @@
     "20-projects/clients/mako/aws-cloud-platform/budgets-context.md",
     "20-projects/clients/mako/aws-cloud-platform/synthetics-canary-audit-2026-05-02.md",
     "50-patterns/prompts/starter-pack/llz-budgets-audit.md",
-    "20-projects/internal/llz/llz-observability-audit-2026-05-02.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
