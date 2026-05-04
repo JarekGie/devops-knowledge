@@ -776,13 +776,31 @@ Decyzja dot. CIS: zostawione włączone — już aktywne, wyłączenie straciło
 - Wszystko wypchniete, MR aktywny
 - Zero uncommitted changes na obu branchach
 
+**Następna sesja:**
+- Merge MR !1
+- Compliance audit post-wdrożeniowy
+
+---
+
+## 2026-05-04 — Compliance audit post-wdrożeniowy (read-only)
+
 **Co zrobiono:**
--
+- Pełny audit: SCP, GuardDuty, Config, Config Compliance, Security Hub, CloudTrail
+- Raport: `llz-compliance-audit-2026-05-04.md`
+
+**Kluczowe findingi:**
+- **CRITICAL:** Security Hub 0/11 members enrolled — istniejące konta nie zostały zaenrollowane przy wdrożeniu
+- **CRITICAL:** Root bez MFA w monitoring account `814662658531` (delegated admin)
+- **CRITICAL:** Root access keys w `647075515164` (Admin MakoLab) — Config NON_COMPLIANT
+- **HIGH:** Config recorder brak w management account `864277686382`
+- **OK:** GuardDuty 12/12 kont, SCP na Sandbox/NonProd/Prod, CloudTrail org-wide aktywny
 
 **Stan na koniec:**
--
+- Audit wykonany, raport zapisany
+- LLZ status: PARTIAL (~67% zgodności)
+- Blokery audytu AWS: Security Hub enrollment + root MFA w monitoring
 
 **Następna sesja:**
--
-
--->
+- Enrolled Security Hub members (11 kont) via delegated admin
+- Włączyć MFA root w monitoring account
+- Usunąć root access keys w Admin MakoLab

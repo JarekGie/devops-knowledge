@@ -1875,4 +1875,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-03 22:06 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-04 12:00 — sesja aktywna*
