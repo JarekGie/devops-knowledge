@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ./scripts/new-cloud-detective-invocation.sh"
+              "title": "Terminal: ✳ Verify AWS Light Landing Zone compliance status"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "confluence-page"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,8 +289,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "0f974f6b1d846a64",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "20-projects/clients/mako/booking-online/booking-online-context.md",
     "_system/AGENTS.md",
@@ -303,7 +303,6 @@
     "10-areas/private/Subskrypcje.md",
     "_chatgpt/context-packs/dual-vault-architecture.md",
     "20-projects/clients/mako/aws-cloud-platform/monitoring-dashboards-guide.md",
-    "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
     "20-projects/internal/llz/root-access-governance.md",
     "20-projects/internal/llz/config-compliance-baseline-2026-05-03.md",
     "40-runbooks/aws/config-compliance-check.md",
