@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Restore accidentally overwritten LLZ file"
+              "title": "Terminal: ⠂ Restore accidentally overwritten LLZ file"
             }
           },
           {
@@ -249,6 +249,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/nis2-aws-live-state-2026-05-04.md",
     "50-patterns/prompts/starter-pack/nis2-infrastructure-audit.md",
     "20-projects/internal/llz/nis2-technical-assessment-2026-05-04.md",
     "_chatgpt/context-packs/llz.md",
@@ -274,7 +275,6 @@
     "CODEX.md",
     "40-runbooks/incidents/rshop-prod-p99-latency-2026-05-02.md",
     "20-projects/clients/mako/rshop/rshop-context.md",
-    "20-projects/clients/mako/rshop/finops-rshop.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
