@@ -63,8 +63,7 @@
               "title": "llz"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -121,7 +120,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -248,8 +248,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "9f299ff355a0e2f9",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/llz.md",
     "20-projects/clients/mako/rshop/rshop-p99-latency-findings.md",
     "40-runbooks/incidents/rshop-alb-p99-latency-2026-05-04.md",
     "20-projects/internal/llz/waf-checklist.md",
@@ -275,7 +276,6 @@
     "20-projects/clients/mako/rshop/finops-rshop.md",
     "20-projects/clients/mako/aws-cloud-platform/finops-anomaly-detection.md",
     "20-projects/clients/mako/aws-cloud-platform/budgets-context.md",
-    "20-projects/clients/mako/aws-cloud-platform/synthetics-canary-audit-2026-05-02.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
