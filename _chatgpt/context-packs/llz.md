@@ -6,22 +6,22 @@
 ## Jak używać tego kontekstu z LLM
 
 - Wklej ten plik na początku rozmowy jako kontekst bazowy
-- Dodaj konkretny problem lub pytanie (np. "jak wdrożyć GuardDuty org-wide")
+- Dodaj konkretny problem lub pytanie
 - Jeśli temat dotyczy konkretnego projektu (rshop, planodkupow) — dołącz jego kontekst z `20-projects/`
 - Nie wklejaj całego vault — tylko potrzebne fragmenty
-- Przy pytaniach o stan — zweryfikuj w IaC, nie polegaj wyłącznie na tym dokumencie
+- Przy pytaniach o stan — zweryfikuj w IaC/AWS, nie polegaj wyłącznie na tym dokumencie
 
 ---
 
 **Projekt:** LLZ — Light Landing Zone (MakoLab platforma AWS)
-**Zaktualizowano:** 2026-04-21
+**Zaktualizowano:** 2026-05-04
 **Repozytoria:** `~/projekty/mako/aws-projects/aws-cloud-platform/` (Terraform IaC)
 
 ---
 
 ## Kim jestem
 
-Senior DevOps/SRE, AWS-primary. Właściciel platformy AWS dla MakoLab — firmy IT świadczącej usługi cloud dla klientów zewnętrznych. Org multi-account (11 aktywnych kont). Vault wiedzy w Obsidian (Claude Code jako asystent). IaC: Terraform + CloudFormation.
+Senior DevOps/SRE, AWS-primary. Właściciel platformy AWS dla MakoLab — firmy IT świadczącej usługi cloud dla klientów zewnętrznych. Org multi-account (12 aktywnych kont). Vault wiedzy w Obsidian (Claude Code jako asystent). IaC: Terraform + CloudFormation.
 
 ---
 
@@ -34,40 +34,9 @@ Senior DevOps/SRE, AWS-primary. Właściciel platformy AWS dla MakoLab — firmy
 | **Scaffold conformance** | Terraform | struktura `envs/`, `backend.tf`, `versions.tf`, `project.yaml` |
 | **Observability readiness** | AWS API | ECS logi, ALB access logs, VPC Flow Logs, CloudFront logging, ElastiCache |
 | **Tagging governance** | CFN + Terraform | tagi `Project`/`Environment`/`ManagedBy`/`Owner`, AWS Tag Policies |
-| **Architecture audit** | CFN static analysis | messaging (AmazonMQ/MSK) w root stack, inne wzorce architektoniczne |
+| **Org security baseline** | AWS Organizations | SCP, GuardDuty, Config, Security Hub, CloudTrail |
 
-Narzędzie: `devops-toolkit` — CLI (`toolkit audit-pack llz-basic`, `toolkit audit-pack aws-logging`, `toolkit audit-pack tagging`, `toolkit audit-pack cfn-messaging`).
-
----
-
-## Zakres LLZ (scope boundaries)
-
-LLZ obejmuje:
-- governance (SCP, Tag Policies, AWS Organizations)
-- observability (CloudWatch, logi, alerty)
-- baseline security (GuardDuty, Config, CloudTrail)
-- standardy operacyjne (scaffold, tagging, health notifications)
-- architecture guardrails (CFN static analysis)
-
-LLZ NIE obejmuje:
-- architektury aplikacyjnej (baza danych, kolejki, API design)
-- implementacji CI/CD dla aplikacji klientów
-- logiki aplikacyjnej ani konfiguracji runtime
-
-Rekomendacje poza tym zakresem traktuj jako out-of-scope.
-
----
-
-## Źródła prawdy (Source of Truth)
-
-| Co | Gdzie |
-|----|-------|
-| Infrastruktura platformowa | Terraform (`aws-cloud-platform/`) |
-| Projekty klientów | CloudFormation (`infra-bbmt/`, `infra-rshop/` itd.) |
-| SCP, Tag Policies, OU | AWS Organizations (stan w Terraform state) |
-| Audyty i conformance | `devops-toolkit` (artefakty w `.devops-toolkit/runs/`) |
-
-**Vault jest warstwą dokumentacyjną — nie jest źródłem prawdy runtime.** Przy rozbieżności między vault a stanem AWS → zaufaj AWS.
+Narzędzie audytu: `devops-toolkit` — CLI (`toolkit audit-pack llz-basic`, `toolkit audit-pack aws-logging`, `toolkit audit-pack tagging`).
 
 ---
 
@@ -77,184 +46,209 @@ Rekomendacje poza tym zakresem traktuj jako out-of-scope.
 Org ID: o-5c4d5k6io1
 Management: 864277686382 (makolab_dc) — profil AWS: mako-dc
 
-Root
-├── Platform OU
-│   ├── Admin MakoLab        647075515164
-│   └── monitoring-nagios-bot 814662658531  ← monitoring, health notifications
-├── Security OU
+Root (FullAWSAccess SCP only)
+├── Platform OU              ← NIE ma llz-security-baseline
+│   └── Admin MakoLab        647075515164
+├── Security OU              ← NIE ma llz-security-baseline
 │   └── LogArchiveNew        771354139056  ← CloudTrail logs
-├── Sandbox OU
+├── Sandbox OU  ←────────────── llz-security-baseline ✅
 │   └── lab                  052845428574
+├── Quarantine OU
 └── Workloads OU
-    ├── Production OU
+    ├── Production OU  ←─────── llz-security-baseline ✅
     │   ├── planodkupow       333320664022
     │   ├── planodkupowv1     292464762806
     │   ├── Booking_Online    128264038676
     │   ├── RShop             943111679945
     │   ├── dacia-asystent    074412166613
     │   └── CC                943696080604  (konto INVITED — klient zewnętrzny)
-    └── NonProduction OU
+    └── NonProduction OU  ←──── llz-security-baseline ✅
         └── DRP-TFS           613448424242
+
+Delegated admins:
+  GuardDuty:    monitoring-nagios-bot  814662658531
+  Security Hub: monitoring-nagios-bot  814662658531
+  Config:       monitoring-nagios-bot  814662658531 (aggregator)
 ```
 
 Terraform state: S3 `864277686382-terraform-state-bucket` + DynamoDB `terraform-state-lock` (eu-central-1).
 
 ---
 
-## Co jest już wdrożone (Faza A — DONE)
+## Co jest wdrożone — stan na 2026-05-04
 
-### 1. Governance (IaC: `aws-cloud-platform/organization/governance/`)
+### 1. SCP — llz-security-baseline ✅ LIVE (2026-05-02)
 
-- **SCP `llz-workloads-baseline`** → Workloads OU (Production + NonProduction dziedziczą)
-  - Deny: wyłączenie CloudTrail, wyłączenie Config, zmiana S3 public access block
-- **SCP `llz-quarantine-deny-all`** → Quarantine OU
-- **Tag Policies** (zaktualizowane, dziedziczone z Root):
-  - `klient`: booking, dacia-asystent, rshop, planodkupow, cc, makolab + legacy
-  - `projekt`: booking, dacia-asystent, planodkupow, rshop, cc + legacy
-  - `typ`: prod, dev, qa, uat, poc, test
-  - `zespol`: legacy (wymaga aktualizacji po zebraniu obecnych teamów)
+Podpięty do: Sandbox OU, Workloads/Production OU, Workloads/NonProduction OU.  
+NIE podpięty do: Root (zamierzony), Platform OU, Security OU.
 
-### 2. Centralna observability (IaC: `aws-cloud-platform/platform/monitoring/`)
+Zawiera:
+- `DenyDisableSecurityServices` — blokuje wyłączenie GuardDuty, Config, CloudTrail, Security Hub
+- `DenyRootUserActions` — blokuje akcje root usera
 
-- **CloudWatch OAM** — sink `observabilitySink` w monitoring-nagios-bot (814662658531)
-- 4 konta podłączone jako sources: rshop, booking, planodkupow, dacia
-- Sink policy: org-wide (`PrincipalOrgID`), metryki + logi + X-Ray
-- CloudTrail org trail `org-baseline-cloudtrail` → S3 w LogArchiveNew ✅
+Brak: region restriction (planowane w kolejnej fazie).
 
-### 3. AWS Health notifications ✅ WDROŻONE (IaC: `aws-cloud-platform/platform/health-notifications/`)
+### 2. GuardDuty org-wide ✅ LIVE (2026-05-02)
+
+- Delegated admin: `monitoring-nagios-bot` (814662658531)
+- Members: **12/12 kont** Enabled
+- auto_enable = ALL (nowe konta automatycznie)
+- Baseline: CLOUD_TRAIL, DNS_LOGS, FLOW_LOGS
+
+### 3. AWS Config org-wide ✅ LIVE (2026-05-02)
+
+- Aggregator: `org-aggregator` w monitoring-nagios-bot
+- OrgConfigRules (5 baseline, z management account):
+  - `cloudtrail-enabled`
+  - `iam-root-access-key-check`
+  - `multi-region-cloud-trail-enabled`
+  - `s3-bucket-public-read-prohibited`
+  - `s3-bucket-public-write-prohibited`
+- StackSet `aws-config-org-recorder`: ACTIVE, CURRENT na 11/12 kont (eu-central-1 + us-east-1)
+- **Gap:** management account (864277686382) nie ma Config recordera — OrgConfigRules nie obejmują management account z definicji
+
+**Compliance na 2026-05-04:**
+
+| Rule | COMPLIANT | NON_COMPLIANT |
+|------|-----------|---------------|
+| cloudtrail-enabled | 11/11 | 0 |
+| iam-root-access-key-check | 10/11 | **1 ⚠️** Admin MakoLab (647075515164) |
+| multi-region-cloud-trail-enabled | 11/11 | 0 |
+| s3-bucket-public-read-prohibited | 10/10 | 0 |
+| s3-bucket-public-write-prohibited | 10/10 | 0 |
+
+### 4. Security Hub org-wide ✅ LIVE (2026-05-04)
+
+- Delegated admin: `monitoring-nagios-bot` (814662658531)
+- Members enrolled: **11/11** (MemberStatus=Enabled)
+- AutoEnable: true (nowe konta automatycznie)
+- AutoEnableStandards: NONE (standardy nie włączają się automatycznie)
+- Istniejące standardy w monitoring account: CIS AWS Foundations v1.2.0, FSBP v1.0.0
+- **Uwaga:** initial findings sync z nowo-enrolled kont może trwać do 24h
+
+**Findings (monitoring account, 2026-05-04):**
+
+| Severity | Count | Główne tematy |
+|----------|-------|---------------|
+| CRITICAL | 6 | Root bez MFA (1.13/IAM.6), Config SLR (Config.1/2.5), SSM public (SSM.7) |
+| HIGH | 14 | VPC default SG, EBS BPA, GuardDuty Runtime/Malware/Lambda/S3/EKS/RDS, Inspector |
+
+### 5. CloudTrail org-trail ✅ LIVE (pre-existing, audit 2026-05-04)
+
+- Trail: `org-baseline-cloudtrail`
+- IsOrganizationTrail: true, IsMultiRegionTrail: true
+- Logging aktywny, ostatnia dostawa 2026-05-04
+- S3: `makolab-org-cloudtrail-logs-771354139056` (LogArchiveNew)
+- **Gap:** brak KMS encryption, log file validation nieaudytowana
+
+### 6. Centralna observability
+
+- CloudWatch OAM sink `observabilitySink` w monitoring-nagios-bot (814662658531)
+- **6 kont** podłączonych jako sources: rshop, booking, planodkupow, dacia + 2 dodane 2026-05-02
+- SLO alarms: rshop/booking/dacia/planodkupow (bbmt-uat) — 8 alarmów, error rate + latency p99
+- CloudTrail org trail → S3 LogArchiveNew ✅
+
+### 7. AWS Health notifications ✅ (IaC: `aws-cloud-platform/platform/health-notifications/`)
 
 - EventBridge rules (us-east-1) w każdym z 11 kont → bus `health-aggregation` (monitoring-nagios-bot)
 - Lambda (Python 3.12, us-east-1) → SNS topic (eu-central-1) → email
-- Filtr: tylko `statusCode=open` + `eventTypeCategory=issue|investigation`
-- Kluczowa lekcja: cross-account EventBridge target zawsze wymaga `role_arn` w source account (IAM role `health-eventbridge-forward` w każdym z 11 kont)
+- Filtr: statusCode=open + eventTypeCategory=issue|investigation
 
-### 4. Tagging standard (LLZ v1)
+### 8. Tagging standard (LLZ v1)
 
 ```
-Wymagane: Project, Environment
-Zalecane: ManagedBy, Owner
-Enforce przez AWS Tag Policies (org Root)
+Wymagane:  Project, Environment
+Zalecane:  ManagedBy, Owner
+Enforce:   AWS Tag Policies (org Root) — llz-project + llz-environment
 ```
 
-### 5. devops-toolkit — audyt CFN messaging (WAF-ARCH-MQ-001) ✅
+### 9. Budgets + Cost Anomaly Detection ✅ (2026-05-02)
 
-Plugin `cfn_messaging_audit` (statyczny, bez boto3):
-- Wykrywa `AWS::AmazonMQ::Broker` i `AWS::MSK::Cluster` w root i nested stackach CFN
-- Zwraca `iac.messaging_in_root: true/false` w normalized_artifacts
-- Finding WAF-ARCH-MQ-001: messaging w root stack = duży blast radius przy rollbackach
-- 20/20 testów, PARTIAL status gdy nested stack jest na S3 URL (nie lokalny)
-
-### 6. devops-toolkit — audit-pack llz-waf-readonly (6 bugów naprawione, 2026-04-20)
-
-- `llz.required_tags`, `llz.monitoring_account_id`, `llz.workloads_ou_name` — wymagane pola w `project.yaml`
-- Region fallback dla cloudtrail/observability gdy brak konfiguracji
-- 129/129 testów PASS
+- 28 budgetów (21 importowanych + 7 nowych) — pokrycie wszystkich 12 kont
+- Cost Anomaly Detection: org-level DIMENSIONAL/SERVICE, threshold $50+20%, SNS us-east-1
 
 ---
 
-## Co jest w toku / planowane (Faza B)
+## Otwarte CRITICAL (stan 2026-05-04)
 
-| Epic | Co | Status |
-|------|----|--------|
-| EPIC 1 | Dokument OU owners + kontakty | Planowane |
-| EPIC 3 | Security Account (oddzielne konto dla Security Hub, SIEM) | Planowane |
-| EPIC 4 | GuardDuty org-wide | **Priorytet — HRI** |
-| EPIC 5 | AWS Config org aggregator + reguły conformance | Planowane |
-| EPIC 6 | SCP baseline (deny expensive, region restriction) | Planowane |
+| Problem | Konto | Priorytet |
+|---------|-------|-----------|
+| Root user **bez MFA** | 814662658531 (monitoring, delegated admin) | **BLOKER FTR** — ręcznie w konsoli |
+| Root **access keys aktywne** | 647075515164 (Admin MakoLab) | **BLOKER FTR** — Config NON_COMPLIANT |
+| Config recorder **brak** | 864277686382 (management) | HIGH — oddzielny StackSet lub ręcznie |
 
 ---
 
-## Aktualny fokus (2026-04)
+## WAF + FTR status — stan 2026-05-04
 
-Priorytety na bieżący kwartał — zgodnie z HRI i Fazą B:
+**Overall WAF: ~40%** (było ~30% w 2026-04)
 
-1. **GuardDuty org-wide** — HRI SEC 4, brak detekcji zagrożeń w całej org
-2. **SCP Faza B** — HRI SEC 1, brak preventive controls poza `llz-workloads-baseline`
-3. **AWS Config org aggregator** — widoczność compliance cross-account (brak teraz)
-4. **Inwentaryzacja projektów Terraform** — tagowanie i scaffold dla kont spoza CFN
+| Pillar | Stan | Zmiana | Główne luki |
+|--------|------|--------|-------------|
+| Operational Excellence | ~40% | → | Brak SLO, brak CI/CD dla IaC |
+| Security | ~45% | ↑ | Root MFA (CRITICAL), brak IR plan |
+| Reliability | ~30% | → | Brak DR plan, brak restore tests |
+| Performance | ~40% | → | Brak right-sizing, brak load testing |
+| Cost | ~40% | ↑ | All On-Demand (brak Savings Plans) |
+| Sustainability | ~40% | → | Brak Graviton, brak S3 lifecycle standard |
+| Organizations Governance | ~40% | ↑↑ | Root MFA, IAM Identity Center |
+| **FTR Partner Readiness** | **~60%** | **↑↑** | **FTR 6 (Root MFA) = jedyny bloker** |
 
-Rekomendacje powinny być zgodne z tymi priorytetami. Jeśli sugerujesz nowe działanie — zaznacz czy wpisuje się w jeden z tych 4 punktów.
+**Rozwiązane HRI (2026-05-02/04):**
+- ~~GuardDuty wyłączony~~ → ✅ 12/12 kont
+- ~~Brak SCP preventive controls~~ → ✅ llz-security-baseline live
+- ~~Brak AWS Config org-wide~~ → ✅ deployed
+- ~~Security Hub 0 members~~ → ✅ 11/11 enrolled
 
----
+**Aktywne HRI:**
+1. **Root bez MFA** w monitoring account (delegated admin) — Security Hub CRITICAL
+2. **Root access keys** w Admin MakoLab — Config NON_COMPLIANT
+3. Brak formalnego DR plan (konto DRP-TFS istnieje, RTO/RPO nieudokumentowane)
+4. Brak IR plan
 
-## WAF stan (2026-04-20)
-
-Overall: **~30% WAF-ready**.
-
-| Pillar | Stan | Główne luki |
-|--------|------|------------|
-| Operational Excellence | ~40% | Brak SLO, brak CI/CD dla IaC, brak readiness checklist |
-| Security | ~25% | GuardDuty wyłączony (HRI!), brak IR plan, brak SCP Faza B |
-| Reliability | ~30% | Brak DR plan (konto DRP istnieje, plan nie), brak restore tests |
-| Performance | ~40% | Brak right-sizing, brak load testing standard |
-| Cost | ~20% | All On-Demand (brak Savings Plans), brak anomaly detection |
-| Sustainability | ~40% | Brak Graviton, brak S3 lifecycle standard |
-
-**High Risk Issues (HRI):**
-1. GuardDuty wyłączony org-wide → zagrożenia niewykrywane
-2. Brak SCP preventive controls → konta mogą wyłączyć security tooling
-3. Brak formalnego DR plan (konto DRP-TFS istnieje ale bez dokumentacji RTO/RPO)
-4. Brak IR plan → zero procedury na incydent bezpieczeństwa
-
-**Quick wins:**
-- Cost Anomaly Detection (30 min) — COST 3
-- Savings Plans analiza (1h, ~20-30% savings) — COST 7
-- GuardDuty org-wide (1-2 dni) — SEC 4 HRI
+**FTR:** z 3 blokerów (Config, Security Hub, GuardDuty) zostały 0. Jedyny bloker = Root MFA (FTR 6). Szacowany czas do FTR readiness: 1-2 dni operacyjne.
 
 ---
 
-## Tagging governance — stan projektów (2026-04-21)
+## Aktualny fokus (2026-05)
+
+1. **Root MFA** w monitoring account (814662658531) — ręcznie w konsoli, 15 min, odblokowuje FTR
+2. **Root access keys** w Admin MakoLab (647075515164) — usuń w konsoli, 5 min
+3. **Config recorder** w management account (864277686382) — StackSet lub ręcznie
+4. **S3 Block Public Access** audit org-wide — AWS CLI, 30 min (FTR 15)
+5. **Savings Plans** zakup — analiza Cost Explorer 1h, ~20-30% savings dla rshop/booking/planodkupow
+
+---
+
+## Tagging governance — stan projektów
 
 | Projekt | IaC | Tagging | Status |
 |---------|-----|---------|--------|
 | rshop | CloudFormation | dev 11/14, prod 12/13 compliant | ⚠️ partial |
-| planodkupow (bbmt) | CloudFormation | Faza 1 audyt DONE — patrz niżej | ⚠️ in progress |
+| planodkupow (bbmt) | CloudFormation | Faza 1 audyt DONE | ⚠️ in progress |
 | Terraform projekty | Terraform | niezbadane — wymaga inwentaryzacji | ❌ not audited |
-
-### planodkupow tagging — wyniki audytu Fazy 1 (2026-04-21)
-
-Dwa równoległe schematy tagów:
-
-**QA (nowy stack):** `Project`, `Environment`, `Owner=DC-devops`, `ManagedBy=cloudformation`, `CostCenter=DC`
-
-**UAT (stary stack):** `Project`, `Environment`, `Maintainer=3rd party - Tribecloud`, `Provisioner=cloudformation`, `Team=DataCenter`, `Client=Reno/Dacia`, `typ=uat`
-
-Brakujące w UAT: `Owner`, `ManagedBy`, `CostCenter`
-
-Mapowanie: `Maintainer→Owner` (wartość się zmienia!), `Provisioner→ManagedBy` (1:1), `CostCenter` bez poprzednika.
-
-**Strategia:** addytywna — dodaj nowe klucze, stare usuń w drugiej fali. Mapowanie logiczne niewystarczające — AWS działa na realnych kluczach.
-
-**DO NOT TOUCH:** wszystkie 4 CloudFront distributions (3x UAT, 1x QA — ten bez tagów).
-
-**SAFE pierwsza fala:** S3, VPC/SG bezpośrednio przez API (nie CFN). RDS przez `rds add-tags-to-resource` (NIE przez CFN — ryzyko SQLDatabase replacement).
 
 ---
 
-## Kluczowe wzorce i lekcje CFN (planodkupow)
+## Kluczowe wzorce i lekcje operacyjne
 
-### Tag drift = DBStack failure
+### CFN (planodkupow)
 
-Tag drift między deployed template a template uploadowanym do S3 powoduje `Static/DirectModification` na DBStack → CFN próbuje update RDS → `custom-named resource requires replacing` → rollback.
+- **Tag drift = DBStack failure:** drift między deployed template a S3 template → `Static/DirectModification` → CFN próbuje update RDS → `custom-named resource requires replacing` → rollback. Fix: patchuj `get-template`, nie repo.
+- **ssm-secure nie działa** dla nested stack parameters → użyj `String` + `{{resolve:ssm:...}}`
+- **RabbitMQ poza root stack (QA DONE 2026-04-21)** — UAT do wdrożenia
 
-**Fix:** zawsze patchuj deployed template pobrany przez `aws cloudformation get-template`, nie wersję z repo.
+### Security Hub enrollment (lekcja 2026-05-04)
 
-### ssm-secure nie działa dla nested stack parameters
+`create-members` z delegated admin dla kont org = enable + associate w jednym kroku. Nie trzeba invite/accept. `UnprocessedAccounts: []` = sukces. AutoEnableStandards=NONE zapobiega duplikatom CIS/FSBP.
 
-`{{resolve:ssm-secure:...}}` nie jest wspierany dla `AWS::CloudFormation::Stack/Properties/Parameters`.
-**Fix:** SSM parameter jako typ `String` + `{{resolve:ssm:...}}`.
+### EventBridge cross-account
 
-### RabbitMQ poza root stack (QA DONE 2026-04-21)
+Cross-account EventBridge target ZAWSZE wymaga `role_arn` w source account (IAM role `health-eventbridge-forward` w każdym z 11 kont).
 
-- RabbitMQ usunięty z lifecycle root stack planodkupow-qa
-- MQCS przez `{{resolve:ssm:/planodkupow/qa/rabbitmq/mqcs}}`
-- UAT: do wdrożenia (stack: UPDATE_ROLLBACK_COMPLETE, broker b-2d26b881 RUNNING)
+### CloudWatch Logs Insights — ASP.NET Core
 
-### continue-update-rollback — dwa kroki
-
-UPDATE_ROLLBACK_FAILED wymaga dwóch kroków:
-1. Nested stack: `--resources-to-skip BasicBroker`
-2. Root stack: `--resources-to-skip "planodkupow-<env>-RabbitMQStack-<ID>.BasicBroker"`
+Regex do parsowania czasu odpowiedzi: `/ (?<duration>[0-9]+\.[0-9]+)ms/` — bez `in` przed wartością (format ASP.NET Core, nie Spring).
 
 ---
 
@@ -264,44 +258,45 @@ UPDATE_ROLLBACK_FAILED wymaga dwóch kroków:
 2. **Monitoring infra na monitoring-nagios-bot** (814662658531), nie na management account
 3. **Health notifications: per-account EventBridge** (bez Business Support = bez org-wide Health view)
 4. **Dokumentacja LLZ pod AWS review od razu** — nie przepisywać do WAF format później
-5. **CC account (INVITED)** — konto klienta zewnętrznego w org, wyjaśnienie kontekstu otwarte
-6. **cfn_messaging_audit** — statyczny, bez boto3, local file analysis only (wzorzec dla kolejnych CFN audit pluginów)
+5. **CC account (INVITED)** — konto klienta zewnętrznego w org
+6. **Security Hub AutoEnableStandards=NONE** — zapobiega duplikacji CIS/FSBP przy masowym enrollmencie
 
 ---
 
-## Pytania otwarte / do rozstrzygnięcia
+## Pytania otwarte
 
-- [ ] CC account — co to jest dokładnie? (INVITED = klient zewnętrzny?)
-- [ ] Admin MakoLab (647075515164) — jaką pełni rolę w Platform OU?
+- [ ] Admin MakoLab (647075515164) — root access keys: kto je utworzył i dlaczego?
+- [ ] CC account — jaka rola w org? Czy powinno mieć llz-security-baseline?
+- [ ] Platform OU + Security OU — czy celowo bez llz-security-baseline?
 - [ ] `zespol` tag policy — jakie są obecne nazwy zespołów? (wymaga HR)
 - [ ] rshop: zostać na CFN czy migrować do Terraform?
-- [ ] DRP-TFS w NonProduction OU — czy nie powinno być w Platform?
-- [ ] planodkupow UAT tagging: czy `Owner=DC-devops` właściwy? (historycznie `Maintainer=3rd party - Tribecloud`)
+- [ ] Config recorder w management account — jak wdrożyć (poza zakresem OrgConfigRules)?
 
 ---
 
-## Profil AWS i uruchamianie
+## Profile AWS i uruchamianie
 
 ```bash
 # Management account (Terraform state, Organizations API)
 AWS_PROFILE=mako-dc terraform plan/apply
 
-# Monitoring account — bezpośredni dostęp (nie przez assume_role)
-aws ... --profile monitoring-tbd    # monitoring-tbd = profil dla monitoring-nagios-bot (814662658531)
+# Monitoring account (delegated admin dla GD/SecHub/Config)
+aws ... --profile monitoring-tbd    # 814662658531 via OrganizationAccountAccessRole
 
-# Inne konta przez assume_role z mako-dc (OrganizationAccountAccessRole)
-aws sts assume-role --role-arn arn:aws:iam::<ACCOUNT_ID>:role/OrganizationAccountAccessRole \
-  --role-session-name llz-audit --profile mako-dc
+# Inne konta
+aws ... --profile rshop             # 943111679945
+aws ... --profile booking           # 128264038676
+aws ... --profile plan              # 333320664022 (planodkupow)
 ```
-
-**UWAGA:** awsume ustawia env vars które nadpisują `profile` w Terraform backend. Zawsze używaj `AWS_PROFILE=mako-dc terraform ...` (nie awsume przed terraform).
 
 | Profil | Konto | Zastosowanie |
 |--------|-------|--------------|
 | `mako-dc` | 864277686382 (management) | Terraform state, Organizations API, aws-cloud-platform |
-| `monitoring-tbd` | 814662658531 (monitoring-nagios-bot) | bezpośredni dostęp CLI do konta monitoring |
+| `monitoring-tbd` | 814662658531 (monitoring-nagios-bot) | GD/SecHub/Config delegated admin ops |
 | `plan` | 333320664022 (planodkupow) | CloudFormation, RDS, ECS, MQ |
+
+**UWAGA:** awsume nadpisuje env vars — zawsze `AWS_PROFILE=mako-dc terraform ...` (nie awsume przed terraform).
 
 ---
 
-*Vault: `20-projects/internal/llz/` — session-log.md, context.md, org-inventory.md, waf-checklist.md, ideas.md, progress-tracker.md*
+*Vault: `20-projects/internal/llz/` — session-log, context, org-inventory, waf-checklist, llz-compliance-audit-2026-05-04*
