@@ -46,77 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Verify AWS Light Landing Zone compliance status"
-            }
-          },
-          {
-            "id": "3bb62abc560d4242",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "10-areas/private/Subskrypcje.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Subskrypcje"
-            }
-          },
-          {
-            "id": "0f9921ea6dd530c7",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/puzzler-b2b/context.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "context"
-            }
-          },
-          {
-            "id": "bd44a1ba6bb170cf",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/puzzler-b2b/context.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "context"
-            }
-          },
-          {
-            "id": "0f974f6b1d846a64",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/clients/mako/aws-cloud-platform/confluence-page.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "confluence-page"
-            }
-          },
-          {
-            "id": "97668cbae2d0819e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/internal/llz/llz-compliance-audit-2026-05-04.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "llz-compliance-audit-2026-05-04"
+              "title": "Terminal: ⠐ Verify AWS Light Landing Zone compliance status"
             }
           }
         ]
