@@ -235,6 +235,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/rshop/rshop-p99-latency-findings.md",
     "40-runbooks/incidents/rshop-alb-p99-latency-2026-05-04.md",
     "20-projects/internal/llz/waf-checklist.md",
     "20-projects/internal/llz/llz-compliance-audit-2026-05-04.md",
@@ -260,7 +261,6 @@
     "20-projects/clients/mako/aws-cloud-platform/finops-anomaly-detection.md",
     "20-projects/clients/mako/aws-cloud-platform/budgets-context.md",
     "20-projects/clients/mako/aws-cloud-platform/synthetics-canary-audit-2026-05-02.md",
-    "50-patterns/prompts/starter-pack/llz-budgets-audit.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
