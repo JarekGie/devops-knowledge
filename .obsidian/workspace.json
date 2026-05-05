@@ -203,8 +203,7 @@
               "title": "nis2-aws-live-state-2026-05-04"
             }
           }
-        ],
-        "currentTab": 9
+        ]
       }
     ],
     "direction": "vertical"
@@ -388,13 +387,13 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "25ef88f819a4521d",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/nis2-aws-live-state-2026-05-04.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "_chatgpt/context-packs/rshop-p99-latency.md",
     "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
-    "20-projects/internal/llz/nis2-aws-live-state-2026-05-04.md",
     "20-projects/internal/llz/nis2-technical-assessment-2026-05-04.md",
     "50-patterns/prompts/starter-pack/nis2-audit-v2.md",
     "50-patterns/prompts/starter-pack/nis2-infrastructure-audit.md",
