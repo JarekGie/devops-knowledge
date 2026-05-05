@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Execute cloud detective maspex patterns"
+              "title": "Terminal: ./scripts/new-cloud-detective-invocation.sh"
             }
           },
           {
