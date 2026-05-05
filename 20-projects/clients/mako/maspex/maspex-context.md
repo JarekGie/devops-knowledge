@@ -330,17 +330,25 @@ Interpretacja (2026-05-05): bot service desired:1/running:1, ale target (10.44.3
 | maspex-uat-alb-unhealthy-hosts-bot | ALARM | UnHealthyHostCount > 0 | **AKTUALNY** — potwierdzone describe-target-health 2026-05-05; alarm od 2026-04-23 (12 dni); bot nie przechodzi health checks |
 | Pozostałe alarmy preprod | OK | — | |
 
-**Log groups:**
+**Log groups (live, 2026-05-05 — describe-log-groups, pełna lista):**
 
 | Log group | Retencja | Uwagi |
 |-----------|----------|-------|
-| /maspex/uat/* | 30 dni | aktywne |
-| /maspex/preprod/* | 30 dni | aktywne |
-| /maspex/shared/* | 90 dni | środowisko shared bez klastra ECS — orphaned? |
+| /maspex/uat/admin-panel | 30 dni | ✓ aktywny |
+| /maspex/uat/bot | 30 dni | ✓ aktywny |
 | /maspex/uat/contest-service | 30 dni | brak serwisu ECS — relikt lub feature flag |
+| /maspex/preprod/admin-panel | 30 dni | ✓ aktywny |
+| /maspex/preprod/bot | 30 dni | ✓ aktywny |
 | /maspex/preprod/contest-service | 30 dni | brak serwisu ECS — relikt lub feature flag |
-| /aws/ecs/containerinsights/*/performance | **1 dzień** | ⚠ retencja zbyt krótka dla post-incident debugging |
-| /aws/elasticache/* | 30 dni | |
+| /maspex/preprod/api | — | **absent** — brak log group; preprod-api nigdy nie startowało (0/3 running) |
+| /maspex/uat/api | — | **absent** — brak log group; możliwe że api-UAT loguje do /maspex/shared/maspex-api |
+| /maspex/shared/maspex-api | 90 dni | shared — może być log group dla UAT api (wymaga potwierdzenia) |
+| /maspex/shared/maspex-frontend | 90 dni | shared — brak klastra ECS w shared |
+| /maspex/shared/maspex-worker | 90 dni | shared — brak klastra ECS w shared |
+| /aws/ecs/containerinsights/maspex-uat/performance | **1 dzień** | ⚠ retencja zbyt krótka dla post-incident debugging |
+| /aws/ecs/containerinsights/maspex-preprod/performance | **1 dzień** | ⚠ retencja zbyt krótka dla post-incident debugging |
+| /aws/elasticache/maspex-uat/redis | 30 dni | ✓ |
+| /aws/elasticache/maspex-preprod/redis | 30 dni | ✓ |
 
 ---
 
@@ -348,12 +356,14 @@ Interpretacja (2026-05-05): bot service desired:1/running:1, ale target (10.44.3
 
 | Problem | Priorytet | Evidence | Opis |
 |---------|-----------|----------|------|
-| maspex-preprod-api: 0/3 running — **przyczyna zidentyfikowana** | WYSOKI | `describe-tasks`: `ResourceInitializationError: AccessDeniedException: User: arn:aws:sts::969209893152:assumed-role/maspex-preprod-api-execution/... is not authorized to perform: secretsmanager:GetSecretValue on resource: ...maspex/preprod/api-STbBy3` | Execution role `maspex-preprod-api-execution` nie ma uprawnień do sekretu `maspex/preprod/api`. Naprawa: dodać policy `secretsmanager:GetSecretValue` na ARN `maspex/preprod/api-*` do roli. |
-| twojkapsel-admin.makolab.pro PENDING_VALIDATION | ŚREDNI | ACM eu-west-1 + us-east-1 — bez zmian od poprzedniego skanu | Certyfikat dla admin preprod/prod bez walidacji DNS; blokuje HTTPS na tej domenie. |
-| maspex-bot: 1 target unhealthy (AKTUALNY) | NISKI | `describe-target-health`: 10.44.3.17:8080 = unhealthy (FailedHealthChecks); running:2/desired:1 | Prawdopodobny cykl zastępowania taska. Jeśli nowy task (10.44.2.110) przejdzie health check — problem samoistnie zniknie. Monitorować. |
-| Container Insights retencja 1 dzień | NISKI | `describe-log-groups` | `/aws/ecs/containerinsights/*/performance` — 1d retencja; utrudnia debugging po incydencie. |
+| maspex-preprod-api: 0/3 running — **przyczyna zidentyfikowana, trwa od 2026-05-01** | WYSOKI | `describe-tasks` 2026-05-05 10:00: `ResourceInitializationError: AccessDeniedException: ...maspex-preprod-api-execution is not authorized to perform: secretsmanager:GetSecretValue on resource: ...maspex/preprod/api-STbBy3` | Execution role `maspex-preprod-api-execution` nie ma uprawnień do sekretu `maspex/preprod/api`. Wymaga dodania policy `secretsmanager:GetSecretValue` na ARN `maspex/preprod/api-*` do roli w Terraform. Brak działań przez 4 dni. |
+| twojkapsel-admin.makolab.pro **FAILED** — ESCALACJA (było PENDING) | WYSOKI | ACM eu-west-1 + us-east-1, scan 2026-05-05 | Status zmienił się z PENDING_VALIDATION (2026-05-01) → FAILED (2026-05-05). Certyfikat wygasł bez walidacji DNS — wymaga ponownego `request-certificate` + walidacji DNS. Blokuje HTTPS dla admin preprod/prod. |
+| maspex-bot: target unhealthy od 12 dni — ESCALACJA (było NISKI) | WYSOKI | `describe-target-health` 2026-05-05: 10.44.3.68:8080 = unhealthy (FailedHealthChecks); 10.44.2.67 draining. Alarm ALARM od 2026-04-23. | NIE jest deployment cycle — bot desired:1/running:1, ale serwis nie przechodzi health checków od 12 dni. Wymaga diagnozy health check config (port, path, thresholds) i logów /maspex/uat/bot. |
+| Brak WAF (REGIONAL eu-west-1) — potwierdzone | WYSOKI | `wafv2 list-web-acls --scope REGIONAL` = `{"WebACLs": []}` 2026-05-05 | Brak WAF względem LLZ/WAF-readiness; nie oznacza aktywnej awarii runtime. Governance gap. |
+| Container Insights retencja 1 dzień | NISKI | `describe-log-groups` 2026-05-05 | `/aws/ecs/containerinsights/maspex-uat/performance` + `maspex-preprod/performance` — 1d retencja; utrudnia debugging po incydencie. |
+| /maspex/uat/api log group absent — api loguje do /maspex/shared/maspex-api? | NISKI | `describe-log-groups` 2026-05-05 — brak /maspex/uat/api | UAT api (9/9 running) nie ma dedykowanej log group — możliwe logowanie do /maspex/shared/maspex-api (90d). Wymaga potwierdzenia w task-def. |
 | contest-service log groups bez serwisu | INFO | `describe-log-groups` | Log groups dla UAT + preprod bez odpowiadającego serwisu ECS — relikt lub niedokończona migracja. |
-| Sekrety: widoczny tylko 1 wpis dla makolab-ci | INFO | `list-secrets`: 1 wynik; `maspex/preprod/api` istnieje (AccessDeniedException nie ResourceNotFoundException) | IAM user makolab-ci nie ma dostępu do wszystkich sekretów — możliwe celowe ograniczenie. |
+| Sekrety: widoczny tylko 1 wpis dla makolab-ci | INFO | `list-secrets`: 1 wynik (maspex/uat/api, last changed 2026-03-19); `maspex/preprod/api` istnieje (AccessDeniedException potwierdza) | IAM user makolab-ci nie ma dostępu do wszystkich sekretów — możliwe celowe ograniczenie. |
 | VPC bez Name tagu | INFO | `describe-vpcs`: name: null | Utrudnia nawigację; może być celowe. |
 | Drift desired_count preprod-api | INFO | commit `743d43e` "scale api to 1 task" vs runtime desired:3 | Commit sugeruje desired:1, runtime pokazuje desired:3 — możliwy późniejszy change poza commitem lub Terraform state drift. |
 
@@ -397,9 +407,13 @@ Interpretacja (2026-05-05): bot service desired:1/running:1, ale target (10.44.3
 | Terraform state backend | wysoka | `backend.hcl` z repozytorium | |
 | IaC (envs/prod, envs/shared) | średnia | pliki .tf w repo — nieprzeczytane szczegółowo | live stan nieweryfikowany |
 | Secrets Manager pokrycie | niska | tylko 1 secret widoczny dla makolab-ci | secret preprod/api istnieje (AccessDeniedException potwierdza) |
-| CloudWatch alarms jako health | wysoka | alarmy zweryfikowane przez target-health | AlarmLow = auto-scaling artefakt; bot alarm aktualny |
+| CloudWatch alarms jako health | wysoka | alarmy zweryfikowane przez target-health (2026-05-05) | AlarmLow = auto-scaling artefakt stale; bot alarm aktualny i persistentny (12 dni) |
+| Bot persistent health issue | wysoka | describe-target-health 2026-05-05 | NIE deployment cycle; eskalacja do WYSOKI |
+| ACM FAILED twojkapsel-admin | wysoka | list-certificates eu-west-1 + us-east-1 (2026-05-05) | eskalacja z PENDING_VALIDATION → FAILED; wymaga re-request |
+| WAF brak (REGIONAL) | wysoka | wafv2 list-web-acls --scope REGIONAL (2026-05-05) | potwierdzone GAP |
 | contest-service | niska | log groups bez ECS service | relikt, feature flag lub niedokończona migracja |
-| Tagging / WAF | nieustalone | resourcegroupstaggingapi + wafv2 nie uruchomiono | wymaga osobnego skanu |
+| Tagging | nieustalone | resourcegroupstaggingapi nie uruchomiono | wymaga osobnego skanu |
+| WAF CloudFront (CLOUDFRONT scope) | nieustalone | list-web-acls --scope CLOUDFRONT nie wykonano | do weryfikacji |
 | Prod environment | nieustalone | live scan nie wykonano | |
 
 ---
@@ -484,22 +498,25 @@ Ten context jest snapshotem na 2026-05-01. Po każdym `terraform apply` należy 
 
 | Źródło | Zakres | Status |
 |--------|--------|--------|
-| live AWS | ecs, elbv2, cloudwatch, acm, secretsmanager, sts | sprawdzone |
-| repo lokalne | `~/projekty/mako/aws-projects/infra-maspex/` — struktura, git log, backend.hcl, task-def :1 | częściowe |
-| IaC | Terraform — envs/ struktura, backend config | częściowe |
+| live AWS | ecs, elbv2, cloudwatch, acm (eu-west-1+us-east-1), secretsmanager, sts, wafv2, logs | sprawdzone (2026-05-05) |
+| repo lokalne | `~/projekty/mako/aws-projects/infra-maspex/` — git log | częściowe |
+| IaC | brak nowych commitów od 2026-05-01 | częściowe — bez zmian |
 | CFN stacks | nie dotyczy — projekt używa Terraform | — |
 | vault historyczny | [[finops-as-is-estimate]], [[finops-uat-preprod-cost-estimate-2026-04]], [[cloudfront-audit-2026-04-26]] | zlinkowane, nie duplikowane |
-| extra_regions | us-east-1 — ACM only | sprawdzone |
+| extra_regions | us-east-1 — ACM only | sprawdzone (2026-05-05) |
 
 ## Fakty live vs historia vault
 
 | Informacja | Status | Źródło | Uwagi |
 |------------|--------|--------|-------|
-| ECS UAT healthy (9/9, 1/1, 1/1) | live | live AWS 2026-05-01 | |
-| ECS preprod-api DOWN (0/3) | live | live AWS 2026-05-01 | przyczyna: IAM — nowość vs poprzedni scan |
-| Bot target unhealthy | live | live AWS 2026-05-01 describe-target-health | poprzedni scan: alarm nieweryfikowany; teraz potwierdzone |
-| Account ID 969209893152 | live | sts get-caller-identity | |
-| ACM PENDING_VALIDATION twojkapsel-admin.makolab.pro | live | live AWS 2026-05-01 | bez zmian od poprzedniego skanu |
+| ECS UAT healthy (9/9, 1/1, 1/1) | live | live AWS 2026-05-05 | bez zmian od 2026-05-01 |
+| ECS preprod-api DOWN (0/3) | live | live AWS 2026-05-05 | trwa od 2026-05-01; ten sam IAM error potwierdzony 2026-05-05 10:00 |
+| Bot target unhealthy — eskalacja do WYSOKI | live | live AWS 2026-05-05 describe-target-health | alarm aktywny od 2026-04-23 (12 dni); NIE deployment cycle |
+| ACM twojkapsel-admin.makolab.pro FAILED | live | live AWS 2026-05-05 | eskalacja z PENDING_VALIDATION (2026-05-01) → FAILED; wymaga re-request |
+| WAF brak (REGIONAL) | live | live AWS 2026-05-05 wafv2 list-web-acls | poprzednio niezweryfikowane; teraz potwierdzone GAP |
+| Log groups — brak /maspex/preprod/api | live | live AWS 2026-05-05 | poprzednio niezweryfikowane; potwierdzone brak — API nigdy nie startowało |
+| Brak nowych commitów od 2026-05-01 | live | git log 2026-05-05 | IaC bez zmian od ostatniego skanu |
+| Account ID 969209893152 | live | sts get-caller-identity | bez zmian |
 | Finops estimates | historyczna | vault — finops-as-is-estimate | nie weryfikowane live |
 | CloudFront audit | historyczna | vault — cloudfront-audit-2026-04-26 | |
 
