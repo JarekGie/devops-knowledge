@@ -445,7 +445,7 @@ aws ecs describe-tasks \
   --profile maspex-cli --region eu-west-1 \
   --query 'tasks[0].{status:lastStatus,stop:stoppedReason,containers:containers[*].{name:name,reason:reason,exit:exitCode}}'
 
-# Naprawa: sprawdź IAM policy execution role preprod-api
+# Diagnoza: sprawdź IAM policy execution role preprod-api
 aws iam list-attached-role-policies \
   --role-name maspex-preprod-api-execution \
   --profile maspex-cli

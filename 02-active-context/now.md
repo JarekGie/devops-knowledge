@@ -2,6 +2,24 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-05 — maspex cloud-detective scan (delta od 2026-05-01)
+
+```
+Projekt:    maspex (klient mako) — platforma konkursowa Kapsel
+Akcja:      Cloud Detective v2 scan — read-only
+
+ZMIANY vs snapshot 2026-05-01:
+  ⛔ ACM twojkapsel-admin.makolab.pro: PENDING_VALIDATION → FAILED (eu-west-1 + us-east-1)
+     Wymaga: re-request certificate + walidacja DNS
+  ⚠ maspex-bot: eskalacja NISKI → WYSOKI
+     target unhealthy od 12 dni (alarm od 2026-04-23), NIE deployment cycle
+  🔴 maspex-preprod-api: nadal 0/3 DOWN — IAM AccessDeniedException (4 dni bez naprawy)
+  ✅ WAF: potwierdzone GAP (wafv2 list-web-acls = puste)
+  ℹ  Brak nowych commitów w infra-maspex od 2026-05-01
+
+Context: 20-projects/clients/mako/maspex/maspex-context.md
+```
+
 ## Update — 2026-05-03 — Root governance established for Admin-MakoLab ✅
 
 ```
@@ -1875,4 +1893,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-04 22:20 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-05 10:36 — sesja aktywna*
