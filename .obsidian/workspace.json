@@ -63,8 +63,7 @@
               "title": "nis2-aws-live-state-2026-05-04"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -248,10 +247,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "0ff462d9308f28fb",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
-    "20-projects/internal/llz/nis2-technical-assessment-2026-05-04.md",
     "20-projects/internal/llz/nis2-aws-live-state-2026-05-04.md",
+    "20-projects/internal/llz/nis2-technical-assessment-2026-05-04.md",
     "50-patterns/prompts/starter-pack/nis2-audit-v2.md",
     "50-patterns/prompts/starter-pack/nis2-infrastructure-audit.md",
     "_chatgpt/context-packs/llz.md",
