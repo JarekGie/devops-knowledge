@@ -16,8 +16,8 @@ regions:
 iac: terraform
 repository: "~/projekty/mako/aws-projects/infra-maspex/"
 created: 2026-05-01
-updated: 2026-05-01
-last_verified: "2026-05-01"
+updated: 2026-05-05
+last_verified: "2026-05-05"
 scan_method: cloud-detective-v2
 last_verified_by: claude
 tags:
@@ -33,11 +33,11 @@ tags:
 
 #aws #terraform #ecs #fargate #mako #maspex
 
-**Data:** 2026-05-01
+**Data:** 2026-05-05
 **Typ dokumentu:** snapshot runtime / context wejściowy
 **Source of truth:** AWS live + IaC + Terraform state
 **Tryb skanowania:** read-only
-**Poziom pewności snapshotu:** częściowa — UAT potwierdzone live, preprod częściowe (API DOWN), prod nieweryfikowane
+**Poziom pewności snapshotu:** częściowa — UAT potwierdzone live, preprod częściowe (API DOWN — trwa od 2026-05-01), prod nieweryfikowane
 **Projekt:** Platforma konkursowa Kapsel — Next.js API + admin panel + bot, CloudFront → ALB → ECS Fargate, Redis ElastiCache, Supabase/PostgREST jako downstream.
 **OrgAccountID:** nieustalone
 **Account ID:** `969209893152`
@@ -52,12 +52,12 @@ tags:
 
 | Pole | Wartość |
 |------|---------|
-| scan_date | 2026-05-01 |
+| scan_date | 2026-05-05 |
 | scan_scope | partial |
 | regions_checked | eu-west-1, us-east-1 (ACM only) |
-| repo_checked | częściowo — struktura, backend.hcl, git log, task-def :1 |
-| iac_checked | częściowo — envs/ struktura, modules/ lista, backend config |
-| runtime_checked | tak — ECS UAT/preprod, ALB target health, CW alarms, ACM, Secrets Manager |
+| repo_checked | częściowo — git log (brak nowych commitów od 2026-05-01) |
+| iac_checked | częściowo — git log bez nowych commitów |
+| runtime_checked | tak — ECS UAT/preprod, ALB target health, CW alarms, ACM eu-west-1+us-east-1, Secrets Manager, WAF |
 | extra_regions_checked | us-east-1 (ACM only) |
 
 ---
@@ -96,7 +96,7 @@ terraform/
   modules/     — alb, alb-routing, ecs, elasticache, cloudfront, …
 ```
 
-Ostatnie commity (live, 2026-05-01):
+Ostatnie commity (live, 2026-05-05 — brak nowych od 2026-05-01):
 ```
 6f466af feat(uat): add ECS Application Auto Scaling for maspex-api
 6e6b4f1 aktualizacja cloudfront
@@ -167,9 +167,9 @@ Przypisanie CloudFront `E17VHHQJ29MVAB` (twojkapsel.pl) do preprod lub prod — 
 | Serwis | Cluster | Ingress | Service Discovery | ECS Exec | Desired | Running | Status |
 |--------|---------|---------|-------------------|----------|---------|---------|--------|
 | maspex-api | maspex-uat | ALB → CF | brak | niezweryfikowane | 9 | 9 | ✓ ACTIVE |
-| maspex-bot | maspex-uat | ALB → CF | brak | niezweryfikowane | 1 | 2 | ⚠ PARTIAL — running>desired (task replacement cycle?), 1 target unhealthy |
+| maspex-bot | maspex-uat | ALB → CF | brak | niezweryfikowane | 1 | 1 | ⚠ WYSOKI — running:1/desired:1 ale target unhealthy (FailedHealthChecks) od 2026-04-23 (12 dni) |
 | maspex-admin-panel | maspex-uat | ALB → CF | brak | niezweryfikowane | 1 | 1 | ✓ ACTIVE |
-| maspex-preprod-api | maspex-preprod | ALB | brak | niezweryfikowane | 3 | 0 | 🔴 DOWN — IAM: brak dostępu do maspex/preprod/api |
+| maspex-preprod-api | maspex-preprod | ALB | brak | niezweryfikowane | 3 | 0 | 🔴 DOWN — IAM: brak dostępu do maspex/preprod/api (trwa od 2026-05-01, ostatnie STOPPED: 2026-05-05 10:00) |
 | maspex-preprod-bot | maspex-preprod | ALB | brak | niezweryfikowane | 1 | 1 | ✓ ACTIVE |
 | maspex-preprod-admin-panel | maspex-preprod | ALB | brak | niezweryfikowane | 1 | 1 | ✓ ACTIVE |
 
@@ -225,8 +225,8 @@ Dodatkowe sekrety mogą istnieć (niezweryfikowane dla makolab-ci):
 | kapsel-admin-uat.makotest.pl | eu-west-1 | ISSUED ✓ | admin UAT |
 | twojkapsel.pl | eu-west-1 | ISSUED ✓ | preprod/prod ALB |
 | twojkapsel.pl | us-east-1 | ISSUED ✓ | CloudFront (us-east-1 required) |
-| twojkapsel-admin.makolab.pro | eu-west-1 | **PENDING_VALIDATION ⚠** | brak walidacji DNS — bez zmian od poprzedniego skanu |
-| twojkapsel-admin.makolab.pro | us-east-1 | **PENDING_VALIDATION ⚠** | brak walidacji DNS — bez zmian od poprzedniego skanu |
+| twojkapsel-admin.makolab.pro | eu-west-1 | **FAILED ⛔** | Zmiana z PENDING_VALIDATION (2026-05-01) → FAILED (2026-05-05). Certyfikat wygasł bez walidacji — wymaga ponownego request. |
+| twojkapsel-admin.makolab.pro | us-east-1 | **FAILED ⛔** | Zmiana z PENDING_VALIDATION (2026-05-01) → FAILED (2026-05-05). Wymaga ponownego request. |
 
 ---
 
@@ -244,7 +244,7 @@ Dodatkowe sekrety mogą istnieć (niezweryfikowane dla makolab-ci):
 | S3 — tagi na bucketach | niezweryfikowane | nie sprawdzono |
 | CloudWatch Log Groups — tagi | niezweryfikowane | nie sprawdzono |
 | VPC / Endpoints — tagi | PARTIAL | VPC bez Name tagu (sprawdzone), pozostałe niezweryfikowane |
-| AWS WAF — obecność i przypisanie właściciela | niezweryfikowane | list-web-acls nie wykonano |
+| AWS WAF — obecność i przypisanie właściciela | GAP | `wafv2 list-web-acls --scope REGIONAL` zwróciło pustą listę (live AWS 2026-05-05). Brak WAF względem LLZ/WAF-readiness; nie oznacza aktywnej awarii runtime. |
 
 ### Wymagane tagi LLZ
 
@@ -298,28 +298,28 @@ Pokrycie tagów i gotowość WAF są niezweryfikowane w bieżącym skanie — ni
 
 **Ważne:** CloudWatch alarms NIE są równoznaczne z aktualnym stanem runtime. Zawsze weryfikuj przez `describe-target-health` i `describe-tasks`.
 
-**Runtime health (live, 2026-05-01):**
+**Runtime health (live, 2026-05-05):**
 
 | Element | Status | Uwagi |
 |---------|--------|-------|
 | maspex-uat — maspex-api | ✓ healthy | 9/9 tasków running |
-| maspex-uat — maspex-bot | ⚠ PARTIAL | running:2/desired:1; 1 target unhealthy (FailedHealthChecks), 1 w initial (RegistrationInProgress) |
+| maspex-uat — maspex-bot | ⚠ WYSOKI | running:1/desired:1 ale target unhealthy (FailedHealthChecks) od 2026-04-23 — 12 dni. NIE jest deployment cycle. |
 | maspex-uat — maspex-admin-panel | ✓ healthy | 1/1 |
-| maspex-preprod — maspex-preprod-api | 🔴 DOWN | 0/3 running — IAM: AccessDeniedException na secretsmanager:GetSecretValue |
+| maspex-preprod — maspex-preprod-api | 🔴 DOWN | 0/3 running — IAM: AccessDeniedException na secretsmanager:GetSecretValue (trwa od 2026-05-01) |
 | maspex-preprod — bot, admin-panel | ✓ healthy | |
 | ALB UAT | ✓ active | |
 | ALB preprod | ✓ active | ALB działa, API tasks nie startują |
 | Redis UAT | ✓ available | cache.t3.medium |
 | Redis preprod | ✓ available | cache.t3.micro |
 
-**Bot target health (live, 2026-05-01 — describe-target-health):**
+**Bot target health (live, 2026-05-05 — describe-target-health):**
 
 | Target IP | Port | Health | Reason |
 |-----------|------|--------|--------|
-| 10.44.2.110 | 8080 | initial | Elb.RegistrationInProgress |
-| 10.44.3.17 | 8080 | unhealthy | Target.FailedHealthChecks |
+| 10.44.2.67 | 8080 | draining | Target.DeregistrationInProgress |
+| 10.44.3.68 | 8080 | unhealthy | Target.FailedHealthChecks |
 
-Interpretacja: stary task bota (10.44.3.17) niezdrowy, nowy task (10.44.2.110) w trakcie rejestracji. Możliwy normalny cykl zastępowania taska. CW alarm `maspex-uat-alb-unhealthy-hosts-bot` jest **aktualny** — nie stale.
+Interpretacja (2026-05-05): bot service desired:1/running:1, ale target (10.44.3.68) jest unhealthy. Stary task (10.44.2.67) draining. Alarm aktywny od 2026-04-23 (12 dni) — **to NIE jest tymczasowy deployment cycle**; bot nie przechodzi health checków. Poprzedni snapshot (2026-05-01) oceniał jako możliwy cykl zastępowania — teraz escalacja do WYSOKI.
 
 **CloudWatch alarms (live, 2026-05-01):**
 
