@@ -2,6 +2,34 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-05 — puzzler-b2b cloud-detective scan (IaC only — credentials expired)
+
+```
+Projekt:    puzzler-b2b (klient mako)
+Akcja:      Cloud Detective v2 scan — IaC only (AWS credentials wygasłe)
+
+NOWE USTALENIA (IaC working tree 2026-05-05):
+  ⚠ AWS credentials puzzler-pbms expired → live scan niemożliwy
+    Fix: odświeżyć klucze IAM w ~/.aws/config (AKIA2FEJOWX7TOPU2B44 unieważniony)
+
+  🔴 authorized_keys untracked na root repo / gitignore literówka (autorized_keys)
+    Fix: poprawić .gitignore na 'authorized_keys'
+
+  ⚠ envs/dev/.env untracked — brak w .gitignore (aktualnie pusty)
+    Fix: dodać '.env' do .gitignore
+
+  📂 QA IaC rozbudowane (niezatwierdzone): services.tf, schedulers.tf, cloudwatch.tf,
+     secrets.tf, iam.tf, alb_frontend.tf, service_discovery.tf — in-progress, nie merged
+
+  📂 Nowy moduł lokalny: modules/pattern/frontend-ecs-microservice (untracked)
+
+RUNTIME (snapshot 2026-05-01 — nadal best available):
+  QA jumphost: DOWN (ECR image missing) — niezweryfikowany stan aktualny
+  Dev + QA ECS: OK (snapshot)
+
+Context: 20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md
+```
+
 ## Update — 2026-05-05 — maspex cloud-detective scan (delta od 2026-05-01)
 
 ```
@@ -1893,4 +1921,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-05 11:33 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-05 11:42 — sesja aktywna*

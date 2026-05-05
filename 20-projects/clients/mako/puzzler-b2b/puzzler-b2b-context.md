@@ -430,13 +430,17 @@ Uwaga: log groups QA mają prefix `/ecs/` (nie `/infra-puzzler-b2b/qa/`). 14-dni
 
 | Problem | Priorytet | Evidence | Opis |
 |---------|-----------|----------|------|
-| QA jumphost DOWN — ECR image missing | WYSOKI | `describe-tasks`: CannotPullContainerError — `infra-puzzler-b2b-app-qa:jumphost` not found w ECR | Terraform wdrożył serwis jumphost QA, ale obraz nie był buildowany/pushowany. Naprawa: zbudować i push obraz `jumphost` do ECR repo QA. |
-| Worker desired:0 (dev + QA) — nieustalone czy celowe | ŚREDNI | live AWS: describe-services, desired:0; brak schedulera dla worker | Worker nie jest zarządzany przez scheduler (który obsługuje tylko gateway/core/delivery/notifier). Desired:0 może być ręcznie ustawione lub celowe (brak wdrożonego obrazu). Wymaga wyjaśnienia. |
-| CloudFront bez custom domain (alias) | ŚREDNI | get-distribution-config: aliases.Quantity=0; origin=dev ALB | CloudFront dev nie ma skonfigurowanego CNAME/aliasu. Dostęp przez `d187f8g7g4wvm6.cloudfront.net` lub bezpośrednio przez ALB. |
-| QA front: pending:1 | NISKI | describe-services: pending:1 | Możliwy aktywny deployment lub zablokowane rejestrowanie taska. Monitorować. |
-| 14-dniowa retencja logów /ecs/* | NISKI | describe-log-groups | Krótka dla post-incident debugging jeśli incydent wykryty po >14 dniach. Akceptowalne dla dev/QA. |
-| Worker sqs-scale alarms: INSUFFICIENT_DATA | INFO | describe-alarms | Oczekiwany stan gdy worker desired:0. Nie jest błędem. |
-| Brak CloudFront dla QA | INFO | list-distributions: 1 dystrybucja (dev only) | QA dostępne tylko przez ALB bezpośrednio. Może być celowe dla środowiska testowego. |
+| QA jumphost DOWN — ECR image missing | WYSOKI | `describe-tasks` 2026-05-01: CannotPullContainerError — `infra-puzzler-b2b-app-qa:jumphost` not found w ECR | Terraform wdrożył serwis jumphost QA, ale obraz nie był buildowany/pushowany. Naprawa: zbudować i push obraz `jumphost` do ECR repo QA. Stan aktualny: niezweryfikowany (credentials expired 2026-05-05). |
+| `authorized_keys` untracked na root repo — gitignore literówka | WYSOKI | git status 2026-05-05: untracked; `.gitignore` ma `autorized_keys` zamiast `authorized_keys` | Plik SSH authorized_keys z 2 liniami kluczy leży na root repozytorium i NIE jest ignorowany przez `.gitignore` (literówka). Przy `git add .` trafi do repozytorium. Fix: poprawić `.gitignore` (`authorized_keys`). |
+| `envs/dev/.env` untracked — brak w `.gitignore` | WYSOKI | git status 2026-05-05: untracked; `git check-ignore` exit:1 (nie ignorowany); plik pusty | Plik `.env` nie jest objęty `.gitignore`. Aktualnie pusty (0 bytes) — ale jeśli operator doda TF_VAR_* lub credentiale, zostanie przypadkowo committed. Fix: dodać `.env` do `.gitignore`. |
+| AWS credentials wygasłe (profile puzzler-pbms) | WYSOKI | `sts get-caller-identity` 2026-05-05: SignatureDoesNotMatch; statyczne klucze IAM AKIA2FEJOWX7TOPU2B44 | Brak możliwości live scan. Klucze zrotowane lub unieważnione. Fix: odświeżyć klucze IAM w `~/.aws/config` dla profilu `puzzler-pbms`. |
+| QA IaC niezatwierdzone — in-progress work | ŚREDNI | git status 2026-05-05: wiele plików untracked/modified | Kompletna struktura IaC QA (services.tf, schedulers.tf, cloudwatch.tf itd.) niezatwierdzona. Branch `feat/dev-jumphost-runtime-secret` nie merged. Ryzyko: niezatwierdzone zmiany mogą być utracone. |
+| Worker desired:0 (dev + QA) — nieustalone czy celowe | ŚREDNI | live AWS 2026-05-01: describe-services, desired:0; brak schedulera dla worker | Worker nie jest zarządzany przez scheduler (który obsługuje tylko gateway/core/delivery/notifier). Desired:0 może być ręcznie ustawione lub celowe (brak wdrożonego obrazu). Wymaga wyjaśnienia. |
+| CloudFront bez custom domain (alias) | ŚREDNI | get-distribution-config 2026-05-01: aliases.Quantity=0; origin=dev ALB | CloudFront dev nie ma skonfigurowanego CNAME/aliasu. Dostęp przez `d187f8g7g4wvm6.cloudfront.net` lub bezpośrednio przez ALB. |
+| QA front: pending:1 | NISKI | describe-services 2026-05-01: pending:1 | Możliwy aktywny deployment lub zablokowane rejestrowanie taska. Monitorować (stan aktualny niezweryfikowany). |
+| 14-dniowa retencja logów /ecs/* | NISKI | describe-log-groups 2026-05-01 | Krótka dla post-incident debugging jeśli incydent wykryty po >14 dniach. Akceptowalne dla dev/QA. |
+| Worker sqs-scale alarms: INSUFFICIENT_DATA | INFO | describe-alarms 2026-05-01 | Oczekiwany stan gdy worker desired:0. Nie jest błędem. |
+| Brak CloudFront dla QA | INFO | list-distributions 2026-05-01: 1 dystrybucja (dev only) | QA dostępne tylko przez ALB bezpośrednio. Może być celowe dla środowiska testowego. |
 
 ---
 
@@ -444,12 +448,15 @@ Uwaga: log groups QA mają prefix `/ecs/` (nie `/infra-puzzler-b2b/qa/`). 14-dni
 
 | Obszar | IaC | Runtime AWS | Ocena |
 |--------|-----|-------------|-------|
-| Scheduler mechanizm | AppAutoScaling ScheduledAction (schedulers.tf) | Potwierdzone: describe-scheduled-actions zwrócił 16 akcji | zgodne |
+| Scheduler mechanizm | AppAutoScaling ScheduledAction (schedulers.tf) | Potwierdzone 2026-05-01: describe-scheduled-actions zwrócił 16 akcji | zgodne |
 | QA account ID | CHANGE_ME_QA_ACCOUNT_ID (komentarz w backend.tf) | 698220459519 (ten sam co dev) | **rozbieżność** — komentarz nieaktualny, QA w tym samym koncie |
-| QA deployment | envs/qa/ istnieje, state z 2026-04-27 | klaster ACTIVE, 9 serwisów | zgodne — QA wdrożone |
-| QA jumphost image | IaC definiuje serwis jumphost | obraz `jumphost` brak w ECR | **rozbieżność** — IaC deployed, obraz nie zbudowany |
-| Worker desired_count | nieustalone (IaC nie przeczytane szczegółowo) | desired:0 (dev + QA) | wymaga potwierdzenia |
+| QA deployment | envs/qa/ istnieje, state z 2026-04-27 | klaster ACTIVE, 9 serwisów (2026-05-01) | zgodne — QA wdrożone |
+| QA jumphost image | IaC definiuje serwis jumphost | obraz `jumphost` brak w ECR (2026-05-01) | **rozbieżność** — IaC deployed, obraz nie zbudowany |
+| Worker desired_count | nieustalone (IaC nie przeczytane szczegółowo) | desired:0 (dev + QA) — 2026-05-01 | wymaga potwierdzenia |
 | UAT/prod environments | IaC templates w envs/ | stan live nieweryfikowany | nieustalone |
+| QA IaC struktura mikroserwisów | niezatwierdzone pliki (services.tf, schedulers.tf, cloudwatch.tf itd.) w working tree | niezweryfikowane — credentials expired | **nowe IaC, niezatwierdzone** — stan live QA nieznany wobec nowego IaC |
+| QA scheduler (AppAutoScaling) | `enable_runtime_scheduler = true` w envs/qa/main.tf (niezatwierdzone) | 16 akcji z 2026-05-01 — QA scheduler potwierdzony live | **do weryfikacji** — scheduler był live, teraz IaC definiuje go explicite przez schedulers.tf |
+| `modules/pattern/frontend-ecs-microservice` | nowy moduł lokalny (untracked) | niezweryfikowane | nowe — nie wiadomo czy deploy |
 
 ---
 
@@ -457,10 +464,13 @@ Uwaga: log groups QA mają prefix `/ecs/` (nie `/infra-puzzler-b2b/qa/`). 14-dni
 
 | Obszar | Typ driftu | Źródło | Opis |
 |--------|-----------|--------|------|
-| QA jumphost — ECR image missing | IaC vs runtime | live AWS (CannotPullContainerError) | Terraform wdrożył ECS service, CI/CD nie pushował obrazu do ECR dla QA. |
-| Worker desired:0 (dev + QA) | unknown | live AWS | Worker services na 0 — brak schedulera dla worker; może być manual change lub IaC default. |
+| QA jumphost — ECR image missing | IaC vs runtime | live AWS 2026-05-01 (CannotPullContainerError) | Terraform wdrożył ECS service, CI/CD nie pushował obrazu do ECR dla QA. Stan aktualny: niezweryfikowany. |
+| Worker desired:0 (dev + QA) | unknown | live AWS 2026-05-01 | Worker services na 0 — brak schedulera dla worker; może być manual change lub IaC default. |
 | QA CHANGE_ME_QA_ACCOUNT_ID | IaC vs runtime | IaC backend.tf + live AWS | Komentarz w backend.tf mówi "zastąp ID konta QA" ale QA deployowane w tym samym koncie co dev. |
-| Stare log groups (/infra-puzzler-b2b/dev/app+worker) | IaC vs runtime | live AWS | Dwa starsze log groups z 90d retencją obok 9 nowych /ecs/ z 14d — prawdopodobnie orphaned po refaktorze. |
+| Stare log groups (/infra-puzzler-b2b/dev/app+worker) | IaC vs runtime | live AWS 2026-05-01 | Dwa starsze log groups z 90d retencją obok 9 nowych /ecs/ z 14d — prawdopodobnie orphaned po refaktorze. |
+| `authorized_keys` untracked — gitignore literówka | IaC (gitignore) | git status 2026-05-05 | Plik SSH keys nie objęty `.gitignore` przez literówkę — `autorized_keys` zamiast `authorized_keys`. Ryzyko accidental commit. |
+| `envs/dev/.env` untracked — brak gitignore rule | IaC (gitignore) | git status 2026-05-05 | Plik `.env` pusty ale brak reguły w `.gitignore`. Ryzyko gdy operator doda TF_VAR_*. |
+| QA IaC niezatwierdzone — in-progress work on non-main branch | multi-repo / branch | IaC git status 2026-05-05 | Kompletna struktura QA (9 plików TF) w working tree, nie committed. Branch feat/dev-jumphost-runtime-secret nie merged do main. |
 
 ---
 
@@ -561,11 +571,11 @@ aws ecs execute-command \
 
 | Źródło | Zakres | Status |
 |--------|--------|--------|
-| live AWS | ecs, elbv2, docdb, sqs, secretsmanager, cloudwatch, acm, cloudfront, application-autoscaling, sts, logs | sprawdzone |
-| repo lokalne | `~/projekty/mako/aws-projects/infra-puzzler-b2b-final/` — struktura, git log, backend.tf, schedulers.tf, versions.tf | częściowe |
-| IaC | Terraform — envs/dev, envs/qa backend.tf, schedulers.tf | częściowe |
+| live AWS | ecs, elbv2, docdb, sqs, secretsmanager, cloudwatch, acm, cloudfront, application-autoscaling, sts, logs | sprawdzone (2026-05-01); nowy scan niemożliwy — credentials expired |
+| repo lokalne | `~/projekty/mako/aws-projects/infra-puzzler-b2b-final/` — working tree 2026-05-05: nowe pliki QA, git status, nowe moduły | tak (2026-05-05) |
+| IaC | Terraform — envs/dev, envs/qa (nowe pliki), envs/prod, envs/uat, modules/pattern/ | tak (2026-05-05) |
 | CFN stacks | nie dotyczy — projekt używa Terraform | — |
-| vault historyczny | context.md (2026-04-22) — architektura, OrgAccountID, CIDR | użyte jako punkt wyjścia |
+| vault historyczny | context.md (2026-04-22) — architektura, OrgAccountID, CIDR; puzzler-b2b-context.md (2026-05-01) jako baseline | użyte |
 | extra_regions | nie dotyczy | — |
 
 ## Fakty live vs historia vault
@@ -575,11 +585,15 @@ aws ecs execute-command \
 | QA wdrożone (klaster, 9 serwisów, DocumentDB) | live | live AWS 2026-05-01 | poprzedni snapshot: CHANGE_ME (niezwdrożone) |
 | Dev: 9 serwisów (builder i sync nowe) | live | live AWS 2026-05-01 | poprzedni snapshot: 7 serwisów (brak builder, sync) |
 | Scheduler: AppAutoScaling (nie EventBridge) | live | live AWS + schedulers.tf | poprzedni snapshot: mechanizm niezidentyfikowany |
-| QA account = 698220459519 (ten sam co dev) | live | sts get-caller-identity | poprzedni snapshot: CHANGE_ME (zakładano oddzielne konto) |
-| QA jumphost DOWN (ECR image missing) | live | live AWS 2026-05-01 | nowe ustalenie |
+| QA account = 698220459519 (ten sam co dev) | live | sts get-caller-identity 2026-05-01 | poprzedni snapshot: CHANGE_ME (zakładano oddzielne konto) |
+| QA jumphost DOWN (ECR image missing) | live | live AWS 2026-05-01 | nowe ustalenie; stan aktualny niezweryfikowany |
 | SQS DLQ (dev + QA) | live | live AWS 2026-05-01 | poprzedni snapshot: bez DLQ |
 | OrgAccountID 233573821857 | historyczna | vault context.md 2026-04-22 | nieweryfikowane live |
 | VPN restriction: 195.117.107.110/32 | historyczna | vault context.md 2026-04-22 | nieweryfikowane live |
+| QA IaC — pełna struktura mikroserwisów (services.tf, schedulers.tf itd.) | IaC working tree | IaC git status 2026-05-05 | niezatwierdzone; wcześniej brak tych plików w QA |
+| `authorized_keys` untracked na root / gitignore literówka | IaC | git status 2026-05-05 | nowe ustalenie — ryzyko security |
+| `envs/dev/.env` untracked / brak gitignore rule | IaC | git status 2026-05-05 | nowe ustalenie — pusty, ale ryzyko |
+| AWS credentials puzzler-pbms expired | live | aws sts 2026-05-05 | SignatureDoesNotMatch — klucze AKIA... nieaktualne |
 
 ---
 
