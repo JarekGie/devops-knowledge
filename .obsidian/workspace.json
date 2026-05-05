@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Execute cloud detective puzzler B2B prompt"
+              "title": "Terminal: ⠐ Execute cloud detective puzzler B2B prompt"
             }
           },
           {
@@ -161,8 +161,7 @@
               "title": "rshop-p99-latency"
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "vertical"
@@ -346,7 +345,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "ebd8badf93feab02",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "_chatgpt/context-packs/rshop-p99-latency.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",

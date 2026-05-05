@@ -15,7 +15,7 @@ regions:
 iac: terraform
 repository: "~/projekty/mako/aws-projects/infra-puzzler-b2b-final"
 created: 2026-05-01
-updated: 2026-05-01
+updated: 2026-05-05
 last_verified: "2026-05-01"
 scan_method: cloud-detective-v2
 last_verified_by: claude
@@ -52,12 +52,12 @@ tags:
 
 | Pole | Wartość |
 |------|---------|
-| scan_date | 2026-05-01 |
-| scan_scope | partial |
-| regions_checked | eu-west-2 |
-| repo_checked | częściowo — struktura, backend.tf, schedulers.tf, versions.tf, git log |
-| iac_checked | częściowo — envs/dev i envs/qa struktura, schedulers.tf |
-| runtime_checked | tak — ECS (dev + QA), ALB, DocumentDB, SQS, CloudMap, Secrets Manager, CloudWatch alarms, ACM, CloudFront |
+| scan_date | 2026-05-05 |
+| scan_scope | partial — IaC only; AWS credentials expired, live scan niemożliwy |
+| regions_checked | eu-west-2 (poprzedni scan 2026-05-01; nowy scan niemożliwy — credentials expired) |
+| repo_checked | tak — pełna analiza working tree, niezatwierdzone zmiany, nowe pliki QA IaC |
+| iac_checked | tak — envs/dev, envs/qa (nowe pliki), modules/pattern/ |
+| runtime_checked | poprzedni scan 2026-05-01 — nowy scan niemożliwy (credentials expired) |
 | extra_regions_checked | nie dotyczy (brak extra_regions w manifeście) |
 
 ---
@@ -95,13 +95,13 @@ tags:
 Struktura repo:
 ```
 envs/          — dev/, qa/, uat/, prod/, shared/, remote-state/
-modules/       — pattern/
+modules/       — pattern/frontend-ecs-microservice (nowy moduł)
 locals.tf
 providers.tf
 versions.tf
 ```
 
-Ostatnie commity (live, 2026-05-01):
+Ostatnie commity (IaC, bez zmian od 2026-05-01):
 ```
 1b961b9 feat(dev): store jumphost authorized_keys in Secrets Manager
 25ce75a feat(dev): add CloudWatch dashboard and baseline operational alarms
@@ -110,7 +110,26 @@ be91cfd changed .gitignore
 04377d4 Merge branch 'platform/dev-microservices-refactor' into 'main'
 ```
 
-Uwaga: bieżący branch `feat/dev-jumphost-runtime-secret` nie jest mergowany — commity mogą zawierać zmiany nieprzydatne do runtime. Źródło: IaC git log.
+**Working tree (2026-05-05) — liczne niezatwierdzone zmiany:**
+
+Nowe pliki QA (untracked — niezatwierdzone):
+- `envs/qa/services.tf` — 9 serwisów ECS mikroserwisowa struktura
+- `envs/qa/schedulers.tf` — AppAutoScaling MON-FRI 07:00-19:00
+- `envs/qa/cloudwatch.tf` — dashboard + alarmy (identyczne z dev)
+- `envs/qa/secrets.tf` — DocumentDB, Azure AD, jumphost secrets
+- `envs/qa/iam.tf`, `envs/qa/service_discovery.tf`, `envs/qa/output.tf`, `envs/qa/alb_frontend.tf`
+
+Nowe pliki dev (untracked):
+- `envs/dev/alb_frontend.tf` — listener certificate dla frontend
+- `envs/dev/.env` — plik pusty (0 bytes), BRAK w `.gitignore` — ryzyko
+
+Zmodyfikowane pliki (unstaged): `envs/dev/main.tf`, `services.tf`, `secrets.tf`, `schedulers.tf`, `variables.tf`, `terraform.tfvars`, `envs/qa/main.tf`, `envs/qa/variables.tf`, `envs/prod/main.tf`, `envs/uat/main.tf`, `envs/shared/backend.tf`
+
+Nowy moduł lokalny: `modules/pattern/frontend-ecs-microservice` (untracked)
+
+Untracked plik wrażliwy: `authorized_keys` (2 linie SSH keys) na root repozytorium — `.gitignore` ma literówkę (`autorized_keys`), plik NIE jest ignorowany.
+
+Źródło: IaC git status 2026-05-05.
 
 ---
 
