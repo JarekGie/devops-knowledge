@@ -321,13 +321,13 @@ Pokrycie tagów i gotowość WAF są niezweryfikowane w bieżącym skanie — ni
 
 Interpretacja (2026-05-05): bot service desired:1/running:1, ale target (10.44.3.68) jest unhealthy. Stary task (10.44.2.67) draining. Alarm aktywny od 2026-04-23 (12 dni) — **to NIE jest tymczasowy deployment cycle**; bot nie przechodzi health checków. Poprzedni snapshot (2026-05-01) oceniał jako możliwy cykl zastępowania — teraz escalacja do WYSOKI.
 
-**CloudWatch alarms (live, 2026-05-01):**
+**CloudWatch alarms (live, 2026-05-05):**
 
 | Alarm | Stan | Metric | Kontekst / aktualny? |
 |-------|------|--------|----------------------|
-| TargetTracking maspex-uat/maspex-api AlarmLow (Memory) | ALARM | MemoryUtilization < 67.5% | Auto-scaling scale-down po load teście (ostatni punkt: 2026-04-28) — normalny, nie krytyczny |
-| TargetTracking maspex-uat/maspex-api AlarmLow (CPU) | ALARM | CPUUtilization < 54% | Auto-scaling scale-down po load teście (ostatni punkt: 2026-04-29) — normalny, nie krytyczny |
-| maspex-uat-alb-unhealthy-hosts-bot | ALARM | UnHealthyHostCount > 0 | **AKTUALNY** — potwierdzony describe-target-health (1 target unhealthy od 23/04/26 08:09) |
+| TargetTracking maspex-uat/maspex-api AlarmLow (Memory) | ALARM | MemoryUtilization < 67.5% | Auto-scaling scale-down po load teście (ostatni punkt: 2026-04-28) — stale/historyczny artefakt, nie awaria runtime |
+| TargetTracking maspex-uat/maspex-api AlarmLow (CPU) | ALARM | CPUUtilization < 54% | Auto-scaling scale-down po load teście (ostatni punkt: 2026-04-29) — stale/historyczny artefakt, nie awaria runtime |
+| maspex-uat-alb-unhealthy-hosts-bot | ALARM | UnHealthyHostCount > 0 | **AKTUALNY** — potwierdzone describe-target-health 2026-05-05; alarm od 2026-04-23 (12 dni); bot nie przechodzi health checks |
 | Pozostałe alarmy preprod | OK | — | |
 
 **Log groups:**
