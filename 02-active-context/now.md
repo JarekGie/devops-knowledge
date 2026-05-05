@@ -2,6 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-05 — Maspex UAT load test 12:00-13:00 CEST — analiza zakonczona
+
+```
+Projekt:    Maspex UAT (klient mako)
+Akcja:      Read-only analiza load testu 2026-05-05 12:00-13:00 CEST
+Wynik:      Raport zapisany do vault
+
+KLUCZOWE USTALENIA:
+  ✅ API/ALB nie zdegradowal — 0 ELB 5XX, 0 unhealthy hosts, max latency 0.8s
+  🔴 Redis circuit open przez CALY test (25 min) — 305K VOTE_CACHE_WRITETHROUGH_FAIL
+     Start: 10:19:58 UTC — 10 minut po anomalii CurrConnections 30→5
+  ⚠ CurrConnections: 30→5 o 10:10 UTC (przed testem) — prawdopodobna przyczyna cascade
+  ✅ Autoscaling: CPU max 24%, dobrze ponizej 60% progu; scale-out nie wyzwolony
+  ✅ CloudFront: 0% 5xx, ~53% offload (vs 41.7% April 29)
+  ⚠ maspex-bot: crash loop (Twitch auth token brakujacy) — osobny problem
+  ❓ Czy votes byly tracone przez 25 min circuit open? — wymaga weryfikacji w kodzie
+
+Raport: 20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1200-cest.md
+```
+
+Poprzedni context:
+
 ## Update — 2026-05-05 — puzzler-b2b cloud-detective scan (IaC only — credentials expired)
 
 ```
@@ -1921,4 +1943,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-05 12:18 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-05 13:31 — sesja aktywna*

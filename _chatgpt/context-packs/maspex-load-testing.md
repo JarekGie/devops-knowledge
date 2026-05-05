@@ -243,4 +243,33 @@ resource "aws_appautoscaling_policy" "cpu" {
 
 ---
 
-*Wygenerowano: 2026-04-22*
+---
+
+## Wyniki load testow (ostatnia aktualizacja: 2026-05-05)
+
+| Test | Opis | Kluczowy wynik |
+|---|---|---|
+| 2026-04-28 17:30 CEST | Sredni load (~1.04M CF req) | Czyste; brak bottlenecku; brak Redis errors |
+| 2026-04-29 13:00 CEST | Ciezki load (~2.48M CF req) | ELB 5XX (105), tail latency 29.99s, Redis circuit open 1 min (1758 err) |
+| 2026-05-05 12:00 CEST | Sredni load (~1.44M CF req) | Brak HTTP degradacji; Redis circuit open 25 min (305K err) |
+
+### 2026-05-05 — szczegoly
+
+- Test aktywny: 10:19–10:45 UTC (25 min), dwie fazy
+- Bottleneck: **aplikacyjny klient Redis** — pool zmniejszyl sie z 30 do 5 polaczen o 10:10 UTC (10 min przed testem); pierwsze `Connection is closed` o 10:19:58; circuit open o 10:20:00
+- API layer: **brak degradacji** — avg latency 13ms, max 0.8s, 0 ELB 5XX, 0 unhealthy hosts
+- ECS CPU avg peak: 11.64% (max 24.58%); autoscaling nie wyzwolony (prog 60%)
+- CloudFront offload: ~53% requestow nie dotarlo do ALB (poprawa vs April 29)
+- Nowa regula CloudFront: `/email/*` z static cache policy
+- maspex-bot: crash loop przez caly czas (Twitch auth token brakujacy w task def :8)
+- task def `maspex-api:53` (zmiana vs :52 w April 29)
+- Otwarta kwestia: czy votes byly tracone przez 25 min circuit open?
+
+### ECS Autoscaling (zaktualizowany stan)
+
+ECS Auto Scaling jest wlaczony dla `maspex-api`:
+- min=9, max=15, CPU target 60%, memory target 75%
+- Ale nigdy nie wyzwolil scale-out w zadnym tescie — CPU/memory sa daleko od progow
+- Rekomendacja: rozwazyc dodatkowy policy na ALB RequestCountPerTarget lub request latency
+
+*Zaktualizowano: 2026-05-05*
