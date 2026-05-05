@@ -1893,4 +1893,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-05 10:36 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-05 11:33 — sesja aktywna*
