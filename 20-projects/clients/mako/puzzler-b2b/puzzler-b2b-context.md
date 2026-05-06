@@ -398,21 +398,69 @@ Uwaga: log groups QA mają prefix `/ecs/` (nie `/infra-puzzler-b2b/qa/`). 14-dni
 
 ---
 
+## Terraform drift guardrails (dodane 2026-05-06)
+
+Zastosowane w `envs/dev` + `modules/core/ecs-service`:
+
+| Zasób | Ignorowany atrybut | Powód |
+|-------|-------------------|-------|
+| `aws_ecs_task_definition.this` | `container_definitions` | CI/CD owns images — TF nie rejestruje nowych rewizji przy deploy |
+| `aws_ecs_service.this` | `desired_count` | Scheduler (AppAutoscaling) owns count — eliminuje drift 0→1 po nocnym stop |
+| `aws_ecs_service.this` | `task_definition` | (było już wcześniej) |
+| `aws_secretsmanager_secret_version` (docdb/azuread/jumphost_ssh) | `secret_string` | Operator rotuje wartości poza TF po bootstrap — TF nie nadpisuje |
+
+**Plan po guardrails:** `0 add, 1 change, 0 destroy` (jedyna zmiana: ALB SG restriction).
+**Apply 2026-05-06:** sukces — ALB SG `0.0.0.0/0` → `195.117.107.110/32`.
+
+---
+
+## Secrets Manager (stan 2026-05-06)
+
+| Secret | Klucze JSON | Uwagi |
+|--------|------------|-------|
+| infra-puzzler-b2b/dev/docdb | host, port, username, password, database_core, database_automation, **database_notifier**, connection_string, connection_string_core, connection_string_automation, **connection_string_notifier** | notifier keys dodane CLI 2026-05-06 |
+| infra-puzzler-b2b/dev/azuread | TenantId, ClientId, ClientSecret, ClientSecretId | |
+| infra-puzzler-b2b/dev/jumphost-ssh | authorized_keys | |
+| infra-puzzler-b2b/qa/docdb | (niezweryfikowane po 2026-05-06) | |
+| infra-puzzler-b2b/qa/azuread | (niezweryfikowane po 2026-05-06) | |
+| infra-puzzler-b2b/qa/jumphost-ssh | (niezweryfikowane po 2026-05-06) | |
+
+---
+
+## DB Jumphost — dostęp developerski (stan 2026-05-06)
+
+Jumphost dev: `1/1 running`, task def `:10`, IP zmienia się przy każdym restarcie.
+**Skrypt:** `scripts/db-connect.ps1` — dla Windows bez AWS CLI.
+
+```powershell
+# 1. Pobierz aktualny IP (AWS Console → ECS → cluster dev → jumphost → running task)
+$env:JUMPHOST_HOST = "18.130.168.253"   # ← aktualizuj po każdym restarcie taska
+
+# 2. Uruchom tunel (okno musi zostać otwarte)
+.\scripts\db-connect.ps1
+
+# 3. W nowym oknie — połącz się
+# CA bundle: https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+mongosh 'mongodb://dbadmin@127.0.0.1:27017/?tls=true&replicaSet=rs0&readPreference=primaryPreferred&retryWrites=false' `
+  --tlsCAFile global-bundle.pem --password 'HASŁO'
+```
+
+Ograniczenie SG: port 22 tylko z `195.117.107.110/32` (biuro MakoLab).
+Skrypt `.sh` robi auto-discovery IP przez AWS CLI — do użytku przez DevOps.
+
+---
+
 ## Znane problemy / dług techniczny
 
 | Problem | Priorytet | Evidence | Opis |
 |---------|-----------|----------|------|
-| QA jumphost DOWN — ECR image missing | WYSOKI | `describe-tasks` 2026-05-01: CannotPullContainerError — `infra-puzzler-b2b-app-qa:jumphost` not found w ECR | Terraform wdrożył serwis jumphost QA, ale obraz nie był buildowany/pushowany. Naprawa: zbudować i push obraz `jumphost` do ECR repo QA. Stan aktualny: niezweryfikowany (credentials expired 2026-05-05). |
-| `authorized_keys` untracked na root repo — gitignore literówka | WYSOKI | git status 2026-05-05: untracked; `.gitignore` ma `autorized_keys` zamiast `authorized_keys` | Plik SSH authorized_keys z 2 liniami kluczy leży na root repozytorium i NIE jest ignorowany przez `.gitignore` (literówka). Przy `git add .` trafi do repozytorium. Fix: poprawić `.gitignore` (`authorized_keys`). |
-| `envs/dev/.env` untracked — brak w `.gitignore` | WYSOKI | git status 2026-05-05: untracked; `git check-ignore` exit:1 (nie ignorowany); plik pusty | Plik `.env` nie jest objęty `.gitignore`. Aktualnie pusty (0 bytes) — ale jeśli operator doda TF_VAR_* lub credentiale, zostanie przypadkowo committed. Fix: dodać `.env` do `.gitignore`. |
-| AWS credentials wygasłe (profile puzzler-pbms) | WYSOKI | `sts get-caller-identity` 2026-05-05: SignatureDoesNotMatch; statyczne klucze IAM AKIA2FEJOWX7TOPU2B44 | Brak możliwości live scan. Klucze zrotowane lub unieważnione. Fix: odświeżyć klucze IAM w `~/.aws/config` dla profilu `puzzler-pbms`. |
-| QA IaC niezatwierdzone — in-progress work | ŚREDNI | git status 2026-05-05: wiele plików untracked/modified | Kompletna struktura IaC QA (services.tf, schedulers.tf, cloudwatch.tf itd.) niezatwierdzona. Branch `feat/dev-jumphost-runtime-secret` nie merged. Ryzyko: niezatwierdzone zmiany mogą być utracone. |
-| Worker desired:0 (dev + QA) — nieustalone czy celowe | ŚREDNI | live AWS 2026-05-01: describe-services, desired:0; brak schedulera dla worker | Worker nie jest zarządzany przez scheduler (który obsługuje tylko gateway/core/delivery/notifier). Desired:0 może być ręcznie ustawione lub celowe (brak wdrożonego obrazu). Wymaga wyjaśnienia. |
-| CloudFront bez custom domain (alias) | ŚREDNI | get-distribution-config 2026-05-01: aliases.Quantity=0; origin=dev ALB | CloudFront dev nie ma skonfigurowanego CNAME/aliasu. Dostęp przez `d187f8g7g4wvm6.cloudfront.net` lub bezpośrednio przez ALB. |
-| QA front: pending:1 | NISKI | describe-services 2026-05-01: pending:1 | Możliwy aktywny deployment lub zablokowane rejestrowanie taska. Monitorować (stan aktualny niezweryfikowany). |
-| 14-dniowa retencja logów /ecs/* | NISKI | describe-log-groups 2026-05-01 | Krótka dla post-incident debugging jeśli incydent wykryty po >14 dniach. Akceptowalne dla dev/QA. |
+| QA jumphost DOWN — ECR image missing | WYSOKI | `describe-tasks` 2026-05-01: CannotPullContainerError — `infra-puzzler-b2b-app-qa:jumphost` not found w ECR | Terraform wdrożył serwis jumphost QA, ale obraz nie był buildowany/pushowany. Naprawa: zbudować i push obraz `jumphost` do ECR repo QA. Stan aktualny: niezweryfikowany po 2026-05-06. |
+| ~~Rotate azuread_client_secret w Azure AD~~ | ~~WYSOKI~~ | ✅ DONE 2026-05-06 | Secret zrotowany w Azure AD Portal. Nowa wartość wstrzyknięta do Secrets Manager. |
+| Worker desired:0 (dev + QA) — nieustalone czy celowe | ŚREDNI | live AWS 2026-05-01: describe-services, desired:0; brak schedulera dla worker | Worker nie jest zarządzany przez scheduler. Desired:0 może być ręcznie ustawione lub celowe. Wymaga wyjaśnienia. |
+| CloudFront bez custom domain (alias) | ŚREDNI | get-distribution-config 2026-05-01: aliases.Quantity=0 | CloudFront dev nie ma CNAME. Dostęp przez `d187f8g7g4wvm6.cloudfront.net` lub bezpośrednio ALB. |
+| 14-dniowa retencja logów /ecs/* | NISKI | describe-log-groups 2026-05-01 | Krótka dla post-incident debugging. Akceptowalne dla dev/QA. |
 | Worker sqs-scale alarms: INSUFFICIENT_DATA | INFO | describe-alarms 2026-05-01 | Oczekiwany stan gdy worker desired:0. Nie jest błędem. |
-| Brak CloudFront dla QA | INFO | list-distributions 2026-05-01: 1 dystrybucja (dev only) | QA dostępne tylko przez ALB bezpośrednio. Może być celowe dla środowiska testowego. |
+| Brak CloudFront dla QA | INFO | list-distributions 2026-05-01: 1 dystrybucja (dev only) | QA dostępne tylko przez ALB. Może być celowe. |
 
 ---
 

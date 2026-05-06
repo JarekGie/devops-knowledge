@@ -27,7 +27,7 @@ PLAN RESULT (po guardrails): 0 add, 1 change, 0 destroy — tylko ALB SG ✅
 APPLY: success — 1 changed (ALB SG)
 
 NASTĘPNY KROK:
-  → Rotate azuread_client_secret w Azure AD (był eksponowany w working tree)
+  ✅ azuread_client_secret zrotowany w Azure AD (2026-05-06)
   → Decyzja: czy QA apply jest teraz bezpieczny?
   → dev-connect: developer musi pobrać RDS CA bundle przed pierwszym użyciem
 ```
@@ -2111,4 +2111,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-06 21:45 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-06 23:12 — sesja aktywna*
