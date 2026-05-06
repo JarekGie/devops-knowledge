@@ -89,47 +89,19 @@ tags:
 
 - lokalna ścieżka: `~/projekty/mako/aws-projects/infra-puzzler-b2b-final`
 - remote: `git@gitlab.makolab.net:admin-makolab/dc/aws-projects/infra-pbms.git`
-- aktywny branch: **`feat/dev-jumphost-runtime-secret`** (nie main)
+- aktywny branch: **`main`** — working tree clean (2026-05-06)
 - IaC: **Terraform** >= 1.5.0
 
-Struktura repo:
+Ostatnie commity na main (2026-05-06):
 ```
-envs/          — dev/, qa/, uat/, prod/, shared/, remote-state/
-modules/       — pattern/frontend-ecs-microservice (nowy moduł)
-locals.tf
-providers.tf
-versions.tf
+b695e0b Merge branch 'fix/dev-restore-notifier-db-keys' into 'main'
+14ddf53 fix(scripts): update jumphost IP + connection instructions in db-connect.ps1
+b853ddc fix(dev): restore notifier DB keys to docdb secret and ECS env map
+e1480ed Merge branch 'rescue/dev-state-reconciliation' into 'main'
+44f26d1 chore: terraform fmt + add plain tfplan to .gitignore
+cce337a fix(dev): gate runtime secrets and notifier DB keys from Terraform drift
+e6b968b fix(module/ecs-service): ignore container_definitions and desired_count drift
 ```
-
-Ostatnie commity (IaC, bez zmian od 2026-05-01):
-```
-1b961b9 feat(dev): store jumphost authorized_keys in Secrets Manager
-25ce75a feat(dev): add CloudWatch dashboard and baseline operational alarms
-80209ff Add dev per-service ECS schedulers
-be91cfd changed .gitignore
-04377d4 Merge branch 'platform/dev-microservices-refactor' into 'main'
-```
-
-**Working tree (2026-05-05) — liczne niezatwierdzone zmiany:**
-
-Nowe pliki QA (untracked — niezatwierdzone):
-- `envs/qa/services.tf` — 9 serwisów ECS mikroserwisowa struktura
-- `envs/qa/schedulers.tf` — AppAutoScaling MON-FRI 07:00-19:00
-- `envs/qa/cloudwatch.tf` — dashboard + alarmy (identyczne z dev)
-- `envs/qa/secrets.tf` — DocumentDB, Azure AD, jumphost secrets
-- `envs/qa/iam.tf`, `envs/qa/service_discovery.tf`, `envs/qa/output.tf`, `envs/qa/alb_frontend.tf`
-
-Nowe pliki dev (untracked):
-- `envs/dev/alb_frontend.tf` — listener certificate dla frontend
-- `envs/dev/.env` — plik pusty (0 bytes), BRAK w `.gitignore` — ryzyko
-
-Zmodyfikowane pliki (unstaged): `envs/dev/main.tf`, `services.tf`, `secrets.tf`, `schedulers.tf`, `variables.tf`, `terraform.tfvars`, `envs/qa/main.tf`, `envs/qa/variables.tf`, `envs/prod/main.tf`, `envs/uat/main.tf`, `envs/shared/backend.tf`
-
-Nowy moduł lokalny: `modules/pattern/frontend-ecs-microservice` (untracked)
-
-Untracked plik wrażliwy: `authorized_keys` (2 linie SSH keys) na root repozytorium — `.gitignore` ma literówkę (`autorized_keys`), plik NIE jest ignorowany.
-
-Źródło: IaC git status 2026-05-05.
 
 ---
 
