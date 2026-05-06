@@ -2,6 +2,56 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-06 — puzzler-b2b IaC commit: ALB ingress + ECS ownership normalization
+
+```
+Projekt:    puzzler-b2b / PBMS (klient mako)
+Branch:     feat/dev-jumphost-runtime-secret
+Commit:     72c3764
+Akcja:      Clean commit — normalizacja własności ALB ingress + ECS task_definition
+Status:     COMMIT CREATED / WORKING TREE DIRTY (pozostałe zmiany unstaged)
+
+WYKONANE:
+  ✅ commit 72c3764 — fix(terraform): normalize alb ingress and ecs task definition ownership
+     Zawiera:
+       - envs/dev: alb_ingress_cidr_blocks = ["195.117.107.110/32"] (main.tf, variables.tf, tfvars)
+       - envs/dev/services.tf: tylko source path changes (notifier hunks wykluczone)
+       - envs/qa/backend.tf: FILL_IN → 698220459519-terraform-state
+       - modules/core/ + modules/pattern/ — pełny vendor (130 plików)
+       - modules/core/ecs-service: ignore_changes = [task_definition] (CI/CD owns revisions)
+       - .gitignore: literówka autorized_keys → authorized_keys + .env/.pem/.key
+     Metoda: selective staging via git hash-object + git update-index (partial hunk staging)
+
+WYKLUCZONE (nadal w working tree):
+  ❌ Dockerfile: AllowTcpForwarding yes — jumphost SSH, osobny commit
+  ❌ envs/dev/secrets.tf: database_notifier / connection_string_notifier — osobny commit
+  ❌ envs/dev/services.tf (notifier hunks): PBMS_DB_NOTIFIER, ConnectionStrings__PBMS_DB_notifier
+  ❌ envs/qa/* — wszystkie pliki QA: ZABLOKOWANE (patrz niżej)
+  ❌ envs/dev/alb_frontend.tf (untracked, broken): ref do undeclared var.frontend_alb_certificate_arn
+  ❌ scripts/: jumphost tooling (db-connect.sh/.cmd/.ps1)
+
+🔴 KRYTYCZNY BLOCKER — SECRETS W WORKING TREE:
+  envs/qa/terraform.tfvars zawiera hardcoded secrets:
+    documentdb_password      = "64IAJ#<233Bt"
+    azuread_client_secret    = "Kja8Q~78D4eEp~..."
+    azuread_tenant_id / client_id / client_secret_id
+  → Ten plik NIGDY nie może zostać commitowany w obecnej formie
+  → Rekomendacja: rotate azuread_client_secret TERAZ, wyczyść plik przed QA commitem
+
+STAN VALIDATE:
+  ✅ terraform fmt: PASS
+  ❌ terraform validate: FAIL (envs/dev/alb_frontend.tf — undeclared var.frontend_alb_certificate_arn)
+     Błąd NIE jest wprowadzony przez commit; pre-existing untracked file
+
+NASTĘPNE KROKI:
+  1. Rotate Azure AD client secret (był eksponowany w working tree)
+  2. Wyczyścić envs/qa/terraform.tfvars (usunąć hardcoded values → TF_VAR_*)
+  3. Osobny commit: notifier DB (secrets.tf + services.tf notifier hunks)
+  4. Osobny commit: Dockerfile (TCP forwarding) + scripts/
+  5. QA IaC commit: qa/main.tf + qa/variables.tf + qa/services.tf (po cleanup secrets)
+  6. Fix envs/dev/alb_frontend.tf: dodać var.frontend_alb_certificate_arn lub usunąć plik
+```
+
 ## Update — 2026-05-06 — switch context: Maspex zapisany, przejście na puzzler-pbms
 
 ```
