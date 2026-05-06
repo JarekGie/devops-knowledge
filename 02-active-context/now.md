@@ -2,6 +2,35 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — vault audit + cloud-detective context pack
+
+```
+Akcja:   Sesja wiedzy — audyt vault + context packi
+
+WYKONANE:
+  1. Pełny audyt vaultu (8 sekcji) dla ChatGPT:
+     - przeczytano 15+ plików _system/ (wszystkie kontrakty LLM)
+     - zaktualizowano: _chatgpt/context-packs/vault-llm-governance.md
+     - zawiera: Executive Summary, Vault Structure, AI/LLM Governance, Workflow Mapping,
+       Context Engineering Model, Organizational/Strategic Insights, Risks, Most Important Files
+     - gotowy do wklejenia do ChatGPT bez dostępu do vault
+
+  2. Nowy context pack — cloud-detective:
+     - utworzono: _chatgpt/context-packs/cloud-detective.md
+     - zawiera: architektura 3-warstwowa (skrypt → invocation → template), workflow,
+       kluczowe guardrails cloud-detective-v2, format pliku wynikowego, aktywne invocations
+
+STAN AKTYWNYCH PROJEKTÓW (bez zmian od 2026-05-06):
+  puzzler-b2b: main CLEAN, apply done, azuread rotated ✅
+  cloud-practice: faza 0-30 aktywna, blokery: Partner Central access + scope sign-off
+  maspex: standby — czeka na certyfikaty SSL od klienta
+  planodkupow: standby — czeka na deva (RabbitMQ 3.8.6 deprecated)
+
+NASTĘPNY KROK:
+  → puzzler-b2b: developer musi pobrać RDS CA bundle (global-bundle.pem) przed użyciem db-connect.ps1
+  → cloud-practice: uzyskać dostęp do AWS Partner Central
+```
+
 ## Update — 2026-05-06 — puzzler-pbms: drift guardrails + apply DONE
 
 ```
@@ -2111,4 +2140,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-06 23:52 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 00:14 — sesja aktywna*
