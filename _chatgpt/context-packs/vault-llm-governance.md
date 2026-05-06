@@ -1,5 +1,5 @@
 ---
-title: ChatGPT context — vault governance i kontrakty LLM
+title: ChatGPT context — pełny audyt vault + governance LLM
 domain: shared-concept
 origin: vault-synthesis
 classification: internal
@@ -7,218 +7,390 @@ llm_exposure: allowed
 cross_domain_export: allowed
 source_of_truth: vault
 created: 2026-05-01
-updated: 2026-05-01
-tags: [chatgpt, context-pack, vault, llm-governance, agent-contract]
+updated: 2026-05-06
+tags: [chatgpt, context-pack, vault, llm-governance, agent-contract, audit]
 ---
 
-# ChatGPT Context Pack — Vault governance + kontrakty LLM
+# Audyt vaultu — Obsidian Knowledge OS
+**Materiał wejściowy dla ChatGPT — dostęp tylko przez ten dokument**
+**Data:** 2026-05-06 | **Przygotował:** Claude Code (analiza 15+ plików _system/)
 
-> Wklej całość na początku rozmowy, gdy tematem jest sam vault, jego organizacja, zasady pracy z LLM lub kontrakty agentów.
-> Zakres: `shared-concept` — można używać bez ograniczeń domenowych.
-
-**Zakres:** budowa vault, zasady organizacji, kontrakty dla Claude/ChatGPT/Codex, cost-aware routing, granice bezpieczeństwa kontekstu.
-**Data przygotowania:** 2026-05-01
-**Source of truth:** vault `devops-knowledge`; plik `_system/AGENTS.md`, `CLAUDE.md`, `_system/AI_COST_AWARE_AGENT_CONTRACT.md`.
+> Wklej całość na początku rozmowy, gdy tematem jest vault, jego organizacja, governance AI, operating model lub sposób pracy użytkownika. Zakres: `shared-concept` — brak ograniczeń domenowych.
 
 ---
 
-## 1. Kim jestem / jak odpowiadać
+## SEKCJA 1 — Executive Summary
 
-Użytkownik to senior DevOps/SRE z ADHD. Odpowiedzi powinny być techniczne, konkretne, bez wstępów. ADHD-aware styl:
-- werdykt na górze, evidence poniżej,
-- krótkie sekcje z nagłówkami zamiast długich esejów,
-- przy skokach tematycznych — podążaj za nowym wątkiem bez pytania o powrót,
-- nie sugeruj "może wróćmy do X", tylko reaguj na to, co jest w prompcie.
+Vault to operacyjna baza wiedzy (nie wiki) dla seniora DevOps/SRE (Jarosław Gołąb, MakoLab). Projektowany pod ADHD: modularne, standalone notatki; szybki powrót do kontekstu po przerwie; zero długich linearnych dokumentów.
 
----
+**Architektura systemu w jednym zdaniu:** Obsidian + git jako jedyne source of truth dla wiedzy; Claude Code jako agent wykonawczy z dostępem do plików + AWS; ChatGPT jako second opinion bez dostępu do vault; NotebookLM jako warstwa syntezy na skurowanych paczkach.
 
-## 2. Czym jest ten vault
-
-Operacyjna baza wiedzy Obsidian dla DevOps/SRE. Nie wiki — narzędzie pracy. Cel: szybki powrót do kontekstu po przerwie i praca z wieloma równoległymi wątkami.
-
-Środowisko techniczne:
-- Cloud: AWS primary (eu-west-1, eu-central-1), GCP/Azure marginalnie
-- IaC: Terraform + CloudFormation
-- Konteneryzacja: ECS Fargate
-- CI/CD: Jenkins
-- Vault: Obsidian + git sync, repo `devops-knowledge`
+**Kluczowe fakty:**
+- 15 katalogów tematycznych + 3 systemowe (`_system/`, `_chatgpt/`, `templates/`)
+- 15+ kontraktów LLM w `_system/` — to najbardziej rozbudowana część systemu
+- Governance wielowarstwowy: izolacja domen, klasyfikacja danych, polityki eksportu, checklista przed każdym eksportem do LLM
+- Operacyjna reguła: **jedno zdarzenie → natychmiastowy zapis do vault**, nie po sesji
+- IaC (Terraform) jest source of truth dla stanu runtime; vault dokumentuje — nie odwrotnie
+- Język treści: polski; kod i komendy: angielski
 
 ---
 
-## 3. Struktura katalogów
+## SEKCJA 2 — Vault Structure
+
+### Fizyczna struktura katalogów
 
 ```
-00-start-here/    — onboarding vault, persona
-01-inbox/         — tymczasowe przechwytywanie (czyść co tydzień)
-02-active-context/— żywy dashboard: now.md, open-loops.md, waiting-for.md, current-focus.md
-10-areas/         — AWS, Terraform, CI/CD, observability, business
-20-projects/      — internal/ (LLZ, toolkit, exam) + clients/mako/
-30-standards/     — tagging, IaC, CI/CD, naming, dokumentacja
-40-runbooks/      — aws/, ecs/, kubernetes/, terraform/, incidents/
-50-patterns/      — debugging, migration, incident-analysis, finops, prompts
-60-toolkit/       — devops-toolkit CLI (architektura, kontrakty, komendy)
-70-finops/        — przeglądy kosztów, optymalizacja
-80-architecture/  — ADR, mapy systemów, zasady platformy
-90-reference/     — commands/, snippets/, glossary/, vendors/
-_system/          — kontrakty LLM, polityki, granice domen
-_chatgpt/         — context-packs/ (gotowe do wklejenia), conversations/, templates/
-templates/        — kopiuj przed użyciem, nigdy nie edytuj oryginałów
+00-start-here/       ← onboarding, persona użytkownika, kontrakt komunikacji
+01-inbox/            ← tymczasowe przechwytywanie; czyść co tydzień
+02-active-context/   ← żywy dashboard (now.md, open-loops.md, waiting-for.md, current-focus.md)
+10-areas/            ← wiedza domenowa: aws/, terraform/, cicd/, observability/, cloud-support/, business/
+20-projects/         ← internal/ (llz, devops-toolkit, exam-prep) + clients/mako/ (rshop, maspex, puzzler-b2b, planodkupow)
+30-standards/        ← aws-tagging, iac, cicd, naming, documentation
+40-runbooks/         ← aws/, ecs/, kubernetes/, terraform/, networking/, incidents/
+50-patterns/         ← debugging, migration, incident-analysis, finops, reusable-prompts
+60-toolkit/          ← devops-toolkit CLI (architecture, contracts, commands, audits)
+70-finops/           ← cost reviews, optimization, savings
+80-architecture/     ← ADR decision-log, system maps, platform principles
+90-reference/        ← commands/, snippets/, glossary/, vendors/, notebooklm/
+_chatgpt/            ← context-packs/ (14 aktywnych), conversations/, templates/
+_system/             ← 15 kontraktów LLM + bootstrap + polityki
+templates/           ← kopiuj przed użyciem, nigdy nie edytuj oryginałów
 ```
 
-Priorytety zapisu (od najwyższego):
-1. `02-active-context/` — stan bieżącej pracy
-2. `40-runbooks/` — procedury incydentowe
-3. `20-projects/` — projekty klientów i wewnętrzne
-4. `30-standards/`, `50-patterns/`, `90-reference/`
+### Taksonomia notatek
+
+Każda notatka ma:
+- **Frontmatter YAML** (obowiązkowy od 2026-04-24): `domain`, `origin`, `classification`, `llm_exposure`, `cross_domain_export`, `source_of_truth`, `created`, `updated`
+- **Format standalone:** objaw/problem → kontekst → rozwiązanie/działania → uwagi
+- **Wiki-linki** `[[nazwa]]` do nawigacji; treść nie duplikowana między notatkami
+
+### Wiedza trwała vs. robocza
+
+| Trwała | Robocza |
+|--------|---------|
+| `30-standards/`, `40-runbooks/`, `50-patterns/` | `02-active-context/`, `01-inbox/` |
+| `80-architecture/`, `90-reference/`, `10-areas/` | `session-log.md` w projektach |
+
+### Kluczowe pliki operacyjne
+
+- `02-active-context/now.md` — **entry point po każdej przerwie**; aktywne zadanie, następny krok, otwarte wątki
+- `80-architecture/decision-log.md` — globalny rejestr ADR
+- `20-projects/<klient>/<projekt>/session-log.md` — historia pracy w projekcie
+- `_system/LLM_CONTEXT_GLOBAL.md` — orientacja vaultu dla każdej sesji LLM
 
 ---
 
-## 4. Kontrakt notatek (non-negotiable)
+## SEKCJA 3 — AI/LLM Governance
 
-- Język: treść po polsku; kod, komendy, ścieżki, identyfikatory AWS/IaC — po angielsku
-- Format każdej notatki: `objaw/problem → kontekst → rozwiązanie → uwagi`
-- Każda notatka działa standalone — zero zależności "przeczytaj X przed Y"
-- Nie duplikuj treści — linkuj `[[wiki-link]]` zamiast kopiować
-- Brak pustych plików — każdy plik musi zawierać realną wartość
-- Nazwy plików: `kebab-case`, krótkie, bez dat w nazwie (data do frontmatter)
-- Inbox (`01-inbox/`) jest tymczasowy: elementy starsze niż tydzień = przenieś lub usuń
+15 kontraktów w `_system/` tworzy wielowarstwowy framework bezpieczeństwa wiedzy.
+
+### 3.1 Model domen (7 klas)
+
+| Domena | Znaczenie | Typowa klasyfikacja |
+|--------|-----------|---------------------|
+| `shared-concept` | Neutralna wiedza techniczna, wzorce | `internal` |
+| `client-work` | Praca dla konkretnego klienta | `confidential` minimum |
+| `internal-product-strategy` | Strategia MakoLab, roadmapy, ceny | `confidential` |
+| `private-rnd` | Devops-toolkit, cloud-detective (własne projekty) | `restricted` |
+| `operational-runbook` | Procedury operacyjne, playbooki | `internal` |
+| `reference-material` | Komendy, snippety, docs referencyjna | `internal`/`public` |
+| `inbox-transient` | Tymczasowe — przypisz w ciągu tygodnia | — |
+
+### 3.2 Klasyfikacja wrażliwości (4 poziomy)
+
+| Poziom | Znaczenie | LLM |
+|--------|-----------|-----|
+| `public` | Może być opublikowane | Dowolny LLM |
+| `internal` | Wewnętrzne MakoLab | ChatGPT/Claude z minimalizacją |
+| `confidential` | Dane klienta, infrastruktura, strategia | Tylko no-training LLM + anonimizacja |
+| `restricted` | NDA, PII, credentiale, sekrety, surowe logi prod. | ZAKAZ zewnętrznych LLM |
+
+### 3.3 Izolacja domen — reguły hard (DOMAIN_ISOLATION_CONTRACT)
+
+- **R1:** Jedna sesja LLM = jedna domena wrażliwości
+- **R2:** `client-work` nie może być mieszane z `private-rnd` ani `internal-product-strategy` w jednym prompcie
+- **R3:** Dane dwóch różnych klientów nigdy w jednej sesji
+- **R4:** Wiedza klientowska może przejść do innych domen wyłącznie przez procedurę derived insight
+- **R5:** Nawet derived insight musi przejść przez `shared-concept` jako warstwę pośrednią
+
+### 3.4 Macierz eksportu LLM (LLM_EXPORT_POLICY)
+
+| Klasyfikacja | ChatGPT Free | ChatGPT Enterprise | Claude API | NotebookLM | Local |
+|---|---|---|---|---|---|
+| `public` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `internal` | ✅ z minimalizacją | ✅ | ✅ | ✅ | ✅ |
+| `confidential` | ❌ | ✅ + anonimizacja | ✅ + anonimizacja | ✅ + anonimizacja | ✅ |
+| `restricted` | ❌ | ❌ | ❌ | ❌ | ✅ (jeśli w pełni lokalny) |
+
+**Uwaga:** ChatGPT Free/Plus = ryzyko trenowania; nie używać dla `confidential`. ChatGPT Enterprise i Claude API mają politykę no-training.
+
+### 3.5 Derived Insights — jedyny legalny mechanizm cross-domain
+
+Procedura transformacji wiedzy klientowskiej w wiedzę neutralną:
+1. Zidentyfikuj obserwację w przestrzeni klienta
+2. Anonimizuj: usuń nazwę klienta, systemy, osoby, konkretne liczby, daty zdarzeń
+3. Generalizuj: wzorzec, nie konkretny przypadek
+4. Oznacz jako `[!note] Derived insight` z datą generalizacji
+5. Zapisz **najpierw** do `shared-concept` — nie bezpośrednio do `private-rnd`/`internal-product-strategy`
+
+Bezwzględnie zakazane bez tego procesu:
+```
+client-work → private-rnd                        ← PROHIBITED
+client-work → internal-product-strategy          ← PROHIBITED
+client A → client B                              ← PROHIBITED
+```
+
+### 3.6 Cost-Aware Execution (AI_COST_AWARE_AGENT_CONTRACT)
+
+| Tier | Kiedy |
+|------|-------|
+| **S** (standard) | Rutynowe operacje, edycja plików, proste pytania |
+| **M** (medium) | Planowanie, analiza, multi-step |
+| **P** (premium) | Eskaluj tylko przy: nierozwiązanej niepewności, sprzeczności, wysokim ryzyku błędu |
+
+Zasady: minimalizuj kontekst, preferuj diffy i linki nad pełnymi rewrite'ami.
+
+### 3.7 Pre-flight checklist (PROMPT_BOUNDARY_CHECKLIST)
+
+4 bloki kontrolne przed każdym eksportem do LLM:
+1. **Zawartość:** dane klienta? credentiale? dane produkcyjne? private R&D? strategia?
+2. **Mieszanie domen:** łączę więcej niż jedną domenę wrażliwości?
+3. **Narzędzie:** właściwe dla tej klasy? ma no-training?
+4. **Output:** gdzie w vault idzie wynik? wymaga weryfikacji?
 
 ---
 
-## 5. Kontrakty agentów LLM
+## SEKCJA 4 — Workflow Mapping
 
-Wspólne dla Claude, Codex, ChatGPT i każdego innego agenta. Plik źródłowy: `_system/AGENTS.md`.
+### 4.1 Narzędzia i ich role
 
-### Ogólne zasady
+| Narzędzie | Rola | Dostęp do vault | Tryb |
+|-----------|------|-----------------|------|
+| Claude Code | Agent wykonawczy | Bezpośredni (filesystem) | In-session, real-time |
+| ChatGPT | Second opinion | Brak — tylko context packs | Ad-hoc, manual prep |
+| NotebookLM | Warstwa syntezy | Upload source packs | Asynchroniczny, curated |
+| Obsidian | UI do vault | Native | Edycja ręczna |
 
-- Inspect first: czytaj plik przed edycją
-- Preferuj update istniejącej notatki zamiast tworzenia duplikatu
-- Małe, konkretne zmiany nad dużymi refaktorami
-- Nie twórz README ani dokumentacji bez wyraźnej prośby
-- Nie usuwaj notatek archiwalnych
-- Wiki-linki `[[nazwa-notatki]]` — zachowaj, nie zamieniaj na URL-e
+### 4.2 Przepływ Claude Code
 
-### Triggery zapisu (wykonaj natychmiast)
+```
+Start sesji → AGENT_BOOTSTRAP.md (5 kroków) → czytaj now.md
+  ↓
+Praca operacyjna (IaC, git, AWS CLI, edycja plików)
+  ↓
+Trigger zapisu (decyzja, implementacja, zmiana zadania, koniec sesji)
+  ↓
+Natychmiastowy zapis do vault → now.md + session-log.md + właściwy katalog
+```
 
-| Zdarzenie | Gdzie zapisać |
-|-----------|---------------|
+**Triggery zapisu (obowiązkowe, natychmiastowe):**
+
+| Zdarzenie | Gdzie |
+|-----------|-------|
 | Zmiana aktywnego zadania | `02-active-context/now.md` |
+| Implementacja / zmiana kodu | `session-log.md` projektu |
 | Decyzja architektoniczna | `80-architecture/decision-log.md` |
-| Nowy incydent | `40-runbooks/incidents/` |
-| Nowa konwencja | `30-standards/` |
-| Koniec sesji roboczej | `now.md` + `session-log.md` projektu |
-| Rozmowa generująca wiedzę operacyjną | właściwy katalog, natychmiast |
+| Nowa konwencja/standard | `30-standards/` |
+| Koniec sesji roboczej | `now.md` + `session-log.md` |
+| Prośba o kontekst dla ChatGPT | `_chatgpt/context-packs/<temat>.md` |
 
-### CLAUDE.md specifics
-
-- Każdy wątek generujący wiedzę operacyjną musi być zapisany do vault
-- Nie czekaj na koniec rozmowy — zapisuj w trakcie
-- Obowiązkowe triggery: zmiana aktywnego zadania, implementacja, decyzja, incydent, koniec sesji
-- Zawiera pełne mapowanie rozmów na katalogi
-
-### ChatGPT specifics
-
-- Brak dostępu do filesystem — kontekst eksportowany ręcznie jako context pack
-- Format paczki: `zakres → kluczowe decyzje → stan → next step`
-- Context pack target: mała ~1500 tokenów, standardowa ~3000 tokenów
-- Workflow po rozmowie: `_system/CHATGPT_WORKFLOW.md`
-- Zawsze sprawdź czy `_chatgpt/context-packs/<temat>.md` już istnieje — jeśli tak, zaktualizuj
-
-### Ograniczenia i zakazy
-
-- Nie używaj `--no-verify` ani nie pomijaj hooków git bez wyraźnej prośby
-- Nie rób force-push na main bez potwierdzenia
-- Nie usuwaj zasobów AWS bez potwierdzenia
-- Nie uruchamiaj `terraform apply` bez wyraźnego "tak" od użytkownika
-
----
-
-## 6. Cost-Aware Execution (AI FinOps)
-
-Plik źródłowy: `_system/AI_COST_AWARE_AGENT_CONTRACT.md`.
-
-Zasada nadrzędna: użyj najtańszego modelu i najmniejszego kontekstu wystarczającego do poprawnego wykonania zadania.
-
-### Model tiers
-
-| Tier | Kiedy używać | Przykłady |
-|------|-------------|-----------|
-| **S** — low-cost | drafting, markdown, formatting, proste aktualizacje, checklist | dopisanie sekcji do runbooka, update frontmatter |
-| **M** — standard | IaC review, RCA synthesis, medium-complexity architecture, review change setów | analiza CFN failure, ocena ryzyka |
-| **P** — premium | deep architecture, threat modeling, długi kontekst, sprzeczne źródła, high blast radius | architektura wielokontowa, rozwiązywanie sprzeczności |
-
-Escalation rule: S → M → P. Escalate tylko gdy niższy tier nie rozwiązał zadania, walidacja wykazała sprzeczność lub blast radius jest wysoki.
-
-Zakazane: `premium-by-default` dla rutynowych aktualizacji vault, formatowania, prostych notatek.
-
-### Token frugality
-
-- Preferuj diffs i linki nad pełnymi rewrite'ami
-- Nie wklejaj stabilnego kontekstu za każdym razem — odwołuj się do niego
-- Przy aktualizacji `now.md` dopisuj delta, nie pełny rewrite
-- Przy context packach: kompaktowy zakres + linki do źródeł prawdy
-
----
-
-## 7. Granice bezpieczeństwa kontekstu
-
-Plik źródłowy: `_system/LLM_CONTEXT_BOUNDARY_CONTRACT.md` i `_system/DOMAIN_ISOLATION_CONTRACT.md`.
-
-Zasada: **jedna sesja LLM = jedna domena wrażliwości.**
-
-| Domena | Przykłady |
-|--------|-----------|
-| `client-work` | projekty MakoLab: rshop, planodkupow, maspex, puzzler-b2b |
-| `internal-product-strategy` | LLZ, devops-toolkit roadmapa |
-| `private-rnd` | osobiste projekty R&D |
-| `shared-concept` | standardy AWS, wzorce Terraform, zasady vault, kontrakty LLM |
-
-Nie łącz `client-work` + `internal-product-strategy` + `private-rnd` w jednym prompcie.
-
-Porównanie między domenami: tylko przez `shared-concept` lub zanonimizowane summary oznaczone jako `derived insight`.
-
----
-
-## 8. NotebookLM — warstwa syntezy
-
-NotebookLM **nie jest** źródłem prawdy — jest warstwą syntezy na skurowanych paczkach z vault.
-
-Przepływ:
-```
-vault → NotebookLM synthesis → notatka w vault → Claude/Codex execution
-```
-
-Używaj do: briefingów, contradiction check, decision pack, gap analysis.  
-Wynik NotebookLM musi trafić do vault **zanim** zostanie użyty przez agenta.  
-Pełny kontrakt: `_system/NOTEBOOKLM_CONTRACT.md`  
-Lokalizacja vault: `90-reference/notebooklm/`
-
----
-
-## 9. Jak używać tego pack w ChatGPT
-
-Użyj do:
-- pytań o organizację vault lub zasady notatek
-- debugowania promptów dla Claude/Codex przy pracy z vault
-- projektowania nowych kontraktów lub polityk agentów
-- generowania nowych context packów zgodnych z tym formatem
-
-Nie używaj do:
-- rozmów o konkretnych projektach klientów (użyj dedykowanego packa)
-- decyzji runtime AWS bez live verification
-
----
-
-## 10. Kluczowe pliki systemowe
+### 4.3 Przepływ ChatGPT
 
 ```
-_system/AGENTS.md                      — wspólny kontrakt agentów
-_system/AI_COST_AWARE_AGENT_CONTRACT.md — model tiering i token frugality
-_system/CHATGPT_WORKFLOW.md            — workflow eksportu/importu ChatGPT
-_system/DOMAIN_ISOLATION_CONTRACT.md  — jedna sesja = jedna domena
-_system/LLM_CONTEXT_BOUNDARY_CONTRACT.md — zasady przygotowania paczek
-_system/LLM_CONTEXT_GLOBAL.md         — globalny kontekst vault dla LLM
-_system/NOTEBOOKLM_CONTRACT.md        — NotebookLM jako warstwa syntezy
-CLAUDE.md                              — kontrakt dla Claude Code
-_chatgpt/templates/context-pack-template.md — szablon nowego context packa
+Obsidian (selekcja plików) → Claude Code (przygotowanie context pack)
+  ↓
+_chatgpt/context-packs/<temat>.md (zapisany, standalone)
+  ↓
+Użytkownik wkleja ręcznie do ChatGPT
+  ↓
+Wyniki → ręcznie do _chatgpt/conversations/ → Claude aktualizuje vault
 ```
+
+Context pack jest zawsze domenowo izolowany. ChatGPT nigdy nie otrzymuje raw dumpów vault.
+
+### 4.4 Przepływ NotebookLM
+
+```
+Vault (selekcja 8-12 plików, nigdy surowy dump)
+  ↓
+NotebookLM (synthesis z kontraktem wyjściowym)
+  ↓
+Wynik: Zakres / Fakty / Sprzeczności / Braki / Następny krok / Pliki do aktualizacji
+  ↓
+Notatka syntezy zapisana do vault
+  ↓
+Claude Code wykonuje akcje z sekcji "Pliki do aktualizacji"
+```
+
+NotebookLM NIGDY nie jest source of truth. Vault jest source of truth.
+
+### 4.5 Integracja z zewnętrznymi repozytoriami
+
+Notatka projektu w `20-projects/` zawiera lokalną ścieżkę do repo (`~/projekty/client/<nazwa>/`). Claude Code czyta i edytuje pliki tego repo bezpośrednio. Vault dokumentuje; IaC/kod jest source of truth dla stanu runtime.
+
+---
+
+## SEKCJA 5 — Context Engineering Model
+
+### 5.1 Wejście do kontekstu — hierarchia
+
+1. **Po przerwie:** `02-active-context/now.md`
+2. **Domena techniczna:** `10-areas/<domena>/LLM_CONTEXT.md`
+3. **Projekt:** `20-projects/<klient>/<projekt>/context.md` + ostatni `session-log.md`
+4. **Globalny vault:** `_system/LLM_CONTEXT_GLOBAL.md`
+
+### 5.2 Format context pack dla ChatGPT (11 obowiązkowych sekcji)
+
+Kim jestem → Opis systemu → Zakres (scope boundaries) → Źródła prawdy → Stan obecny → Plan/roadmapa → Aktualny fokus → Ryzyka/HRI → Decyzje architektoniczne → Pytania otwarte → Jak używać
+
+Wymagania: konkretny (ARNy, account IDs), aktualny (odzwierciedla AWS/IaC), standalone.
+
+### 5.3 Aktywne context packs (14 tematów)
+
+- `cloud-practice.md` — Cloud Practice Lead (AWS Technical Leader role)
+- `llz.md`, `devops-toolkit.md`, `vault-llm-governance.md` — internal
+- `maspex.md`, `planodkupow-ops-context-2026-04-24.md`, `puzzler-b2b-jumphost.md` — projekty klientów
+- `rshop-p99-latency.md`, `rshop-tag-policy.md`, `maspex-load-testing.md` — projekty
+- `dual-vault-architecture.md`, `makolab-projects-vault-context.md` — architektura/przegląd
+
+### 5.4 Anti-patterns (explicitly prohibited)
+
+- Raw vault dumps jako kontekst
+- Mieszanie domen wrażliwości w jednej sesji
+- Długie liniarne checklisty
+- Puste pliki / pliki bez wartości operacyjnej
+- Zależności "przeczytaj X przed Y"
+- Kopiowanie treści zamiast linkowania
+
+---
+
+## SEKCJA 6 — Organizational/Strategic Insights
+
+### 6.1 Profil użytkownika
+
+- **Imię:** Jarosław Gołąb
+- **Rola:** Senior DevOps/SRE → AWS Technical Leader / Cloud Practice Lead (nowa rola)
+- **Firma:** MakoLab, software house, ~150 osób, projekty dla klientów + internal products
+- **Doświadczenie:** 10+ lat, AWS primary (eu-west-1, eu-central-1), uzupełniająco GCP/Azure
+- **Cognition:** ADHD — działa: modularne notatki, szybkie diffy, krótkie bloki; nie działa: linearne checklisty, gigantyczne dokumenty
+- **Stack:** ECS Fargate, Terraform + CloudFormation, Jenkins, ALB, CloudFront, RDS, DocumentDB, SQS
+
+### 6.2 Aktualna rola strategiczna (2026-05-06)
+
+**AWS Technical Leader / Cloud Practice Lead** — buduje cloud practice od zera.
+
+| Faza | Cel | ETA |
+|------|-----|-----|
+| 0–30 dni (aktywna) | Foundation — mapowanie, zakres roli, dostępy | 2026-06-05 |
+| 30–60 dni | Standards & Competency — operating model, evidence, FinOps | 2026-07-05 |
+| 60–90 dni | Scaling — cloud review w lifecycle projektów | 2026-08-05 |
+
+Otwarte blokery: brak dostępu do AWS Partner Central, brak formalnego sign-off zakresu roli, niezinwentaryzowane certyfikacje AWS w firmie.
+
+### 6.3 Aktywne inicjatywy techniczne
+
+**LLZ (Light Landing Zone)** — wewnętrzny standard multi-account AWS na Terraform. Faza A wdrożona. Faza B planowana (GuardDuty, Config, SCP, Security Account).
+
+**devops-toolkit** — bezstanowe CLI do audytów AWS. Domena `private-rnd`. Architektura: plugin/command-router, kontrakty = source of truth, implementacja wtórna.
+
+**Exam prep** — AWS SysOps Associate, target 2026-06-19. Luki: CloudWatch Logs, Systems Manager.
+
+### 6.4 Aktywne projekty klientów
+
+| Projekt | Stan | Bloker |
+|---------|------|--------|
+| puzzler-b2b (PBMS) | Wdrożone, clean main | — |
+| maspex preprod | Wdrożone | Certyfikaty SSL od klienta |
+| planodkupow UAT | Zatrzymane | RabbitMQ deprecated 3.8.6 |
+| rshop | Aktywny | Latency p99, tag policy |
+
+### 6.5 AWS profil techniczny
+
+- Profiles: `mako-dc` = management (864277686382), `maspex-cli`, `plan`
+- Partnership: tier nieznany — brak dostępu do Partner Central
+- Regiony: eu-west-1 primary, eu-central-1, eu-west-2
+
+---
+
+## SEKCJA 7 — Ryzyka i Słabości
+
+| # | Ryzyko | Poziom |
+|---|--------|--------|
+| R1 | Frontmatter adoption gap — kontrakty z 2026-04-24, większość starych notatek bez frontmatter | WYSOKI |
+| R2 | Vault-IaC desynchronizacja — każda zmiana IaC pominięta przez triggery = documentation drift | WYSOKI |
+| R3 | now.md volatility — nie zaktualizowany na koniec sesji = nieaktualny kontekst przy powrocie | ŚREDNI |
+| R4 | ChatGPT workflow w pełni manualny — konwersacje mogą być niezapisywane | ŚREDNI |
+| R5 | Domain isolation compliance = honor system — brak technicznego wymuszenia | ŚREDNI |
+| R6 | NotebookLM topology aspiracyjna — aktualny stan załadowania nie jest śledzony w vault | NISKI |
+| R7 | 01-inbox/ akumulacja — ADHD + wielowątkowość = ryzyko stałego backlogu | NISKI |
+| R8 | Presja równoległych priorytetów — exam (2026-06-19) vs Cloud Practice Foundation (do 2026-06-05) | KONTEKSTOWY |
+
+---
+
+## SEKCJA 8 — Most Important Files
+
+### Nawigacja operacyjna
+
+| Plik | Rola |
+|------|------|
+| `02-active-context/now.md` | **Entry point po przerwie** — aktywne zadanie, następny krok |
+| `_system/LLM_CONTEXT_GLOBAL.md` | Orientacja vaultu; środowisko techniczne, aktywne projekty |
+
+### Governance LLM
+
+| Plik | Rola |
+|------|------|
+| `_system/AGENT_BOOTSTRAP.md` | 5-krokowy mandatory startup dla Claude Code; forbidden actions |
+| `_system/AGENTS.md` | Wspólny kontrakt dla wszystkich agentów (Claude, ChatGPT, Codex) |
+| `_system/DOMAIN_ISOLATION_CONTRACT.md` | R1-R7 hard rules; tabela zakazanych kombinacji |
+| `_system/CLASSIFICATION_MODEL.md` | 7 klas domen × 4 poziomy wrażliwości; pełny schemat frontmatter |
+| `_system/LLM_EXPORT_POLICY.md` | Macierz: co można eksportować do którego LLM |
+| `_system/PROMPT_BOUNDARY_CHECKLIST.md` | 4-blokowa checklista + decision tree |
+| `_system/AI_COST_AWARE_AGENT_CONTRACT.md` | Reguły tieru modelu (S/M/P); token frugality |
+| `_system/LLM_CONTEXT_BOUNDARY_CONTRACT.md` | Jedna-sesja-jedna-domena; tabela ryzyk narzędzi |
+
+### Workflow
+
+| Plik | Rola |
+|------|------|
+| `_system/CHATGPT_WORKFLOW.md` | Jak przygotować context pack; jak zapisać konwersację |
+| `_system/NOTEBOOKLM_CONTRACT.md` | Kontrakt syntezy; dozwolone użycia; format wyjścia; 5 szablonów promptów |
+| `_system/DERIVATIVE_INSIGHT_RULES.md` | Jedyny legalny mechanizm cross-domain; 5-krokowa procedura |
+| `_system/ORIGIN_METADATA_CONTRACT.md` | Schemat frontmatter; wszystkie dopuszczalne wartości pól |
+| `_system/BOUNDARY_EXCEPTION_PROCESS.md` | Formalny proces wyjątku; 3 wymagane role |
+
+### Projekty i architektura
+
+| Plik | Rola |
+|------|------|
+| `_chatgpt/context-packs/cloud-practice.md` | Cloud Practice Lead context (rola, roadmapa, open loops) |
+| `20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md` | PBMS — architektura, decyzje, stan |
+| `80-architecture/decision-log.md` | Globalny ADR |
+| `00-start-here/persona.md` | Profil użytkownika, stack, ADHD design principles |
+
+### Templates
+
+| Plik | Rola |
+|------|------|
+| `_chatgpt/templates/context-pack-template.md` | Szablon nowego context pack |
+| `templates/runbook-template.md` | Szablon runbooka (6 obowiązkowych sekcji) |
+
+---
+
+## Jak używać tego dokumentu z ChatGPT
+
+Wklej cały dokument na początku rozmowy gdy tematem jest:
+- organizacja vault lub zasady notatek
+- governance AI, kontrakty agentów, polityki eksportu
+- operating model (Claude ↔ ChatGPT ↔ NotebookLM)
+- sposób pracy użytkownika, ADHD-aware design
+- projektowanie nowych kontraktów lub context packów
+
+Czego NIE rób:
+- Nie traktuj jako wyczerpującego stanu wszystkich projektów (jest ich więcej)
+- Nie zakładaj że frontmatter jest wszędzie — jest w trakcie adoptacji
+- Dla kontekstu konkretnego projektu — poproś o dedykowany context pack z `_chatgpt/context-packs/<temat>.md`
+
+---
+
+*Wygenerowany przez Claude Code z analizą: AGENT_BOOTSTRAP, AI_COST_AWARE_AGENT_CONTRACT, LLM_CONTEXT_BOUNDARY_CONTRACT, DOMAIN_ISOLATION_CONTRACT, KNOWLEDGE_BOUNDARIES, CLASSIFICATION_MODEL, CHATGPT_WORKFLOW, LLM_EXPORT_POLICY, NOTEBOOKLM_CONTRACT, LLM_CONTEXT_GLOBAL, ORIGIN_METADATA_CONTRACT, PROMPT_BOUNDARY_CHECKLIST, AGENTS, DERIVATIVE_INSIGHT_RULES, BOUNDARY_EXCEPTION_PROCESS, persona.md, 14 context packs.*
