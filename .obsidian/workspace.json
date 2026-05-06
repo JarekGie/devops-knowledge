@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠼ devops-knowledge"
             }
           },
           {
@@ -263,6 +263,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/puzzler-b2b-jumphost.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/clients/mako/maspex/Redis-reboot-uat-prompt.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
@@ -288,7 +289,6 @@
     "CLAUDE.md",
     "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
     "10-areas/private/Subskrypcje.md",
-    "_chatgpt/context-packs/dual-vault-architecture.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
