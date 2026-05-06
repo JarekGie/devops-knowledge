@@ -2,26 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-06 — AKTYWNY KONTEKST: puzzler-pbms
+## Update — 2026-05-06 — puzzler-pbms: branch feat/dev-jumphost-runtime-secret DONE
 
 ```
 Projekt:    puzzler-b2b / PBMS (klient mako)
 AWS profile: puzzler-pbms | region: eu-west-2 | konto: 698220459519
 Repo infra:  ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
 Branch:      feat/dev-jumphost-runtime-secret
-Vault:       20-projects/clients/mako/puzzler-b2b/session-log.md
+Status:      WORKING TREE CLEAN — gotowe do PR / code review
 
-OSTATNI COMMIT: 72c3764 (fix: alb ingress + ecs task_definition ownership)
+COMMITY NA BRANCHU (6):
+  4dbdc12  fix(dev): declare frontend_alb_certificate_arn variable, add alb_frontend.tf
+  6eaa048  feat(qa): add full QA environment IaC (10 plików, validate PASS)
+  55811e8  feat(jumphost): enable TCP forwarding in sshd + db-connect scripts
+  c224509  feat(dev): add notifier database to DocDB secret and ECS env vars
+  943fe87  chore(security): remove hardcoded secrets from envs/qa/terraform.tfvars
+  72c3764  fix(terraform): normalize alb ingress + ecs task_definition ownership
+
+VALIDATE: dev ✅ PASS | qa ✅ PASS
 
 NASTĘPNY KROK:
-  🔴 Rotate azuread_client_secret — był eksponowany w working tree
-  Następnie: wyczyść envs/qa/terraform.tfvars z hardcoded secrets
-
-WORKING TREE — co jeszcze czeka:
-  ❌ envs/dev/secrets.tf + services.tf (notifier DB hunks)
-  ❌ Dockerfile (AllowTcpForwarding) + scripts/
-  ❌ envs/qa/* — zablokowane do czasu cleanup secrets
-  ❌ envs/dev/alb_frontend.tf (broken, untracked)
+  → Rotate azuread_client_secret w Azure AD (był eksponowany w working tree)
+  → PR / code review brancha
+  → Decyzja: czy QA apply jest teraz bezpieczny?
 ```
 
 ## Update — 2026-05-06 — cloud practice space: 85-cloud-practice/ utworzona
@@ -2103,4 +2106,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-06 14:38 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-06 14:46 — sesja aktywna*
