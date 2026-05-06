@@ -15,7 +15,7 @@ regions:
 iac: terraform
 repository: "~/projekty/mako/aws-projects/infra-puzzler-b2b-final"
 created: 2026-05-01
-updated: 2026-05-05
+updated: 2026-05-06
 last_verified: "2026-05-01"
 scan_method: cloud-detective-v2
 last_verified_by: claude
