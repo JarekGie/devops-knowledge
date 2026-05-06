@@ -6,7 +6,7 @@
 
 Test był **trójfalowy, ~90 minut aktywnego ruchu**, z łącznym wolumenem prawie 3× większym niż test 12:00 CEST tego samego dnia. Środowisko **nie wykazało degradacji HTTP** — zero 5xx, doskonałe czasy odpowiedzi ALB, brak unhealthy hosts, brak task churn.
 
-- **CloudFront** absorbował ~51% żądań przez caching statycznych assetów. Cały dynamiczny ruch (API) trafiał do ALB.
+- **CloudFront** absorbował ~53% żądań w ujęciu całego okna rozszerzonego, głównie przez caching statycznych assetów. W peakach ALB dostawał ~48–49% ruchu widzianego przez CloudFront.
 - **ALB/ECS** zachowały się bez zarzutu: avg response time 12–16 ms, p99 45–65 ms, zero 5xx przez cały test.
 - **Autoscaling nie wyzwolił scale-out** — CPU avg peak 18.1% (próg 60%), memory peak avg 57% (próg 75%). MinCapacity=9 ustawione na stałe.
 - **Redis write-through path był całkowicie uszkodzony przez cały test**: 924,582 błędów `VOTE_CACHE_WRITETHROUGH_FAIL` w 79 minutach. Błędy perfektnie korelują z falami ruchu. Redis infrastructure (CloudWatch) był zdrowy — problem jest app-level.
@@ -21,7 +21,7 @@ Test był **trójfalowy, ~90 minut aktywnego ruchu**, z łącznym wolumenem praw
 | Zakres | UTC | CEST |
 |---|---|---|
 | Planowane | 17:00–18:00 | 19:00–20:00 |
-| Faktyczne (z pre-rampu i cooldown) | 16:55–18:25 | 18:55–20:25 |
+| Faktyczne (z pre-rampu i cooldown) | 16:56–18:25 | 18:56–20:25 |
 | Wave 1 | 17:04–17:21 | 19:04–19:21 |
 | Wave 2 | 17:29–17:51 | 19:29–19:51 |
 | Wave 3 | 18:07–18:23 | 20:07–20:23 |
@@ -59,8 +59,8 @@ Zasoby:
 | Timestamp UTC | CEST | Komponent | Zdarzenie | Znaczenie |
 |---|---|---|---|---|
 | 16:30–16:55 | 18:30–18:55 | ALB/CF | Baseline: 0 req/min | Środowisko idle przed testem |
-| **16:55** | **18:55** | **App logs** | **Pierwsze `VOTE_CACHE_WRITETHROUGH_FAIL: Connection is closed`** | **Redis connection zerwane przed rampu-up** |
-| **16:56** | **18:56** | **App logs** | **`Redis circuit open` — circuit breaker wyzwolony** | **Otworzył się ~1s po pierwszym błędzie** |
+| **16:56:31** | **18:56:31** | **App logs** | **Pierwsze `VOTE_CACHE_WRITETHROUGH_FAIL: Connection is closed`** | **Redis connection zerwane przed znaczącym ramp-up** |
+| **16:56** | **18:56** | **App logs** | **`Redis circuit open` — circuit breaker wyzwolony** | **Otworzył się w tej samej minucie co pierwsze błędy connection closed** |
 | 16:56 | 18:56 | ALB | 304 req/min — początek ramp-up | Niski ruch, circuit breaker już otwarty |
 | 17:04 | 19:04 | CF/ALB | CF: 25,458 req/min; ALB: 12,415 req/min | Wave 1 — szybki ramp-up |
 | **17:08** | **19:08** | **CF/ALB** | **CF: 70,072 req/min; ALB: 32,757 req/min** | **Wave 1 — pierwszy peak** |
@@ -184,13 +184,13 @@ Peak łączny: **76,785 req/min** (~1,280 RPS) o 20:18 CEST.
 | TargetConnectionErrorCount | **0** — brak |
 | UnHealthyHostCount | **0** — brak |
 | HTTPCode_Target_5XX_Count | **0** — brak |
-| HTTPCode_ELB_5XX_Count | **4 łącznie** (1 per: 19:16, 19:29, 19:45, 20:20) |
+| HTTPCode_ELB_5XX_Count | **0** — brak datapoints |
 | HTTPCode_Target_4XX_Count peak | 2,332/min (20:21 CEST) |
-| HTTPCode_Target_4XX_Count total | ~24,000 est. przez cały test |
+| HTTPCode_Target_4XX_Count total | **44,051** przez okno 16:30–18:30 UTC |
 
-ELB-level 5xx = 4 przez 90 minut. Absolutnie bez znaczenia. Target 5xx = 0. Backend nie zwrócił ani jednego 5xx przez cały test.
+ELB-level 5xx = 0 i Target 5xx = 0. Backend nie zwrócił ani jednego 5xx przez cały test.
 
-4xx rate: 1–3% przy peak (2,332/76,785 = 3.0% w najgorszej minucie). Normalny poziom dla aplikacji web (missing assets, 404, etc.).
+4xx rate: 1–3% przy peak (2,332/76,785 = 3.0% w najgorszej minucie). Normalny poziom dla aplikacji web / load generatora, bez korelacji z degradacją 5xx lub latency.
 
 ---
 
@@ -237,9 +237,11 @@ Brak anomalii w error rates.
 
 ### Bytes downloaded
 
-Peak egress: **~7.02 GB/min** o 19:45 CEST (156,314 req/min → ~45 KB/req średnio). Łączny egress przez test — szacunkowo 400–500 GB.
+Peak egress: **~7.02 GB/min** o 19:45 CEST (156,314 req/min → ~45 KB/req średnio). Łączny `BytesDownloaded` w oknie 16:30–18:30 UTC: **185.1 GB**.
 
 ### Cache effectiveness (obliczone z CF/ALB ratio)
+
+Łącznie w oknie `16:30–18:30 UTC`: CloudFront `4,389,522` requests, ALB API `2,051,783` requests. To oznacza, że ok. **46.7%** żądań widzianych na CloudFront dotarło do API target group, a ok. **53.3%** zostało odciążone poza ALB API albo obsłużone jako statyczny/cacheowany ruch.
 
 | Wave | CF peak req/min | ALB peak req/min | % do ALB | % absorbowane przez CF |
 |---|---:|---:|---:|---:|
@@ -247,17 +249,17 @@ Peak egress: **~7.02 GB/min** o 19:45 CEST (156,314 req/min → ~45 KB/req śred
 | Wave 2 | 156,314 | 76,360 | 48.8% | **51.2%** |
 | Wave 3 | 159,222 | 76,785 | 48.2% | **51.8%** |
 
-CloudFront absorbuje ~51% żądań. Te 51% to statyczne assety: JS/CSS bundles, obrazy, landing pages. Wszystkie żądania API (default behavior z CachingDisabled) przechodzą do ALB.
+W peakach CloudFront absorbował ok. 51%, a w całym rozszerzonym oknie ok. 53%. To najpewniej statyczne assety: JS/CSS bundles, obrazy, landing pages i `/email/*`. `GET /api/slogan` ma osobne cache behavior, natomiast dynamiczne POST-y i default API path przechodzą do ALB przez `CachingDisabled`.
 
 ### Metryki niedostępne
 
 | Metryka | Powód |
 |---|---|
-| `CacheHitRate` | Enhanced metrics nie włączone na dystrybucji |
-| `OriginLatency` | Enhanced metrics nie włączone |
-| `OriginRequests` | Enhanced metrics nie włączone |
+| `CacheHitRate` | 0 datapoints w CloudWatch dla tej dystrybucji |
+| `OriginLatency` | 0 datapoints w CloudWatch dla tej dystrybucji |
+| `OriginRequests` | 0 datapoints w CloudWatch dla tej dystrybucji |
 
-Metryki origin-level wymagają włączenia "Additional metrics" w CloudFront ($). Analiza na podstawie CF/ALB ratio jest wystarczająca.
+Metryki origin-level wymagają włączenia "Additional metrics" w CloudFront ($). Analiza na podstawie CF/ALB ratio jest wystarczająca do oceny presji na ALB, ale nie daje per-path cache hit ratio.
 
 **Access logi CloudFront:** Włączone. S3: `maspex-uat-access-logs-969209893152` / prefix `cloudfront/maspex-uat/api`. Mogą posłużyć do per-path cache hit analizy.
 
@@ -283,7 +285,7 @@ Metryki origin-level wymagają włączenia "Additional metrics" w CloudFront ($)
 
 ElastiCache CloudWatch pokazuje Redis jako zupełnie nieobciążony, ale aplikacja wygenerowała 924,582 błędów write-through. Możliwe wyjaśnienia:
 
-1. **Zerwanie połączenia pre-test** (16:55 UTC): Redis connection closed przed rampu-up, przy bardzo niskim obciążeniu. CloudWatch ElastiCache ma minimalną rozdzielczość 1 min i może nie uchwycić sub-minutowego zdarzenia (np. Redis restart trwający <10s). Redis log group (`/aws/elasticache/maspex-uat/redis`) — **0 eventów w oknie testu** (nie zidentyfikowano restartu w logach).
+1. **Zerwanie połączenia pre-test** (16:56:31 UTC): Redis connection closed przed znaczącym ramp-up, przy bardzo niskim obciążeniu. CloudWatch ElastiCache ma minimalną rozdzielczość 1 min i może nie uchwycić sub-minutowego zdarzenia (np. Redis restart trwający <10s). Redis log group (`/aws/elasticache/maspex-uat/redis`) — **0 eventów w oknie testu** (nie zidentyfikowano restartu w logach).
 2. **Connection pool exhaustion**: przy 9 taskach maspex-api z własnym pool, peak 1,280 RPS generuje wysoką konkurencję na połączeniach Redis. Visible connections: tylko 4–5 (podejrzanie mało dla 9 tasków). Możliwe: klient Redis stosuje single-connection per process lub pool o rozmiarze 1.
 3. **Circuit breaker nie zamknął się**: po otwarciu na początku testu, circuit breaker utrzymał stan "open" przez 79+ minut. W tym czasie każda próba zapisu do Redis fast-failuje natychmiast z "Redis circuit open", zamiast próbować reconnect. Brak recovery sugeruje długi timeout half-open state lub nieefektywną konfigurację circuit breaker.
 
@@ -305,9 +307,9 @@ ElastiCache CloudWatch pokazuje Redis jako zupełnie nieobciążony, ale aplikac
 
 | Pattern | Count (okno 16:30–18:30 UTC) | Uwagi |
 |---|---|---|
-| `VOTE_CACHE_WRITETHROUGH_FAIL` | **924,582** | Saturuje. Oba subtypes obecne |
-| `Redis circuit open` | **≥100** (limit reached) | Subtype VOTE_CACHE_WRITETHROUGH_FAIL |
-| `Connection is closed` | **≥100** (limit reached) | Subtype VOTE_CACHE_WRITETHROUGH_FAIL |
+| `VOTE_CACHE_WRITETHROUGH_FAIL` | **924,582** | 79 minut z błędami, peak 33,440/min o 18:21 UTC |
+| `Redis circuit open` | **906,504** | 79 minut z błędami, peak 33,196/min o 18:21 UTC |
+| `Connection is closed` | potwierdzone w pierwszych logach | pierwsze wpisy od 16:56:31 UTC; osobny total nie liczony, bo dominujący subtype to circuit open |
 | `timeout` | **0** | Brak |
 | `pool timeout` | **0** | Brak |
 | `statement timeout` | **0** | Brak |
@@ -355,7 +357,7 @@ Pierwsze błędy: **16:56:31 UTC**, przy zaledwie 304 req/min na ALB. Oznacza to
 ### Co się nakładało w czasie
 
 ```
-16:55 UTC: Redis "Connection is closed" (304 req/min ALB — bardzo niski ruch)
+16:56 UTC: Redis "Connection is closed" (304 req/min ALB — bardzo niski ruch)
 16:56 UTC: Redis circuit breaker otworzył się
 17:00–17:21: Wave 1 (CF: 154k req/min peak, ALB: 76k req/min peak)
   → 16% avg CPU, 26% peak CPU per task
@@ -378,7 +380,7 @@ Pierwsze błędy: **16:56:31 UTC**, przy zaledwie 304 req/min na ALB. Oznacza to
 
 ### Przyczyna
 
-**Redis connection closed o 16:55 UTC** otworzył circuit breaker, który nie zamknął się przez cały test. Infrastruktura Redis była zdrowa — problem leży w aplikacyjnej obsłudze reconnection lub w konfiguracji circuit breaker (zbyt długi timeout, brak agresywnego half-open retry).
+**Redis connection closed o 16:56:31 UTC** otworzył circuit breaker, który nie zamknął się przez cały test. Infrastruktura Redis była zdrowa — problem leży w aplikacyjnej obsłudze reconnection lub w konfiguracji circuit breaker (zbyt długi timeout, brak agresywnego half-open retry).
 
 ### Skutek
 
@@ -387,8 +389,7 @@ Każde głosowanie użytkownika generowało błąd write-through cache. Głosowa
 ### Szum
 
 - Skokowy profil CPU bota (~co 7-8 min) — to cron job, niezwiązany z load testem
-- 4 ELB-level 5xx przez 90 minut — poniżej progu istotności
-- 4xx rate 1–3% — normalna dla aplikacji web
+- 4xx rate 1–3% — normalny dla load generatora / aplikacji web
 
 ---
 
@@ -422,7 +423,7 @@ Dowód:
 | ECS CPU bottleneck | CPU avg peak 18.1%, max 30.9% per task; próg autoscaling 60% nigdy nie osiągnięty |
 | ECS task churn / instability | 0 stopped tasks, 0 replacement events dla maspex-api i maspex-admin-panel |
 | Redis infrastructure failure | CloudWatch: CPU <3%, Memory <0.4%, 4–5 connections, 0 evictions, 0 swap, 0 nowych połączeń |
-| 5xx errors / HTTP failures | HTTPCode_Target_5XX = 0, HTTPCode_ELB_5XX = 4 łącznie |
+| 5xx errors / HTTP failures | HTTPCode_Target_5XX = 0, HTTPCode_ELB_5XX = 0 |
 | Autoscaling failure | Autoscaling nie powinno się wyzwolić — metryki były poniżej progów |
 | Unhealthy hosts | UnHealthyHostCount = 0 przez cały test |
 | CloudFront misconfiguration | Cache behaviors zgodne z oczekiwaniami; static assets cached; API prawidłowo pass-through |
@@ -433,7 +434,7 @@ Dowód:
 
 1. **Zbadaj konfigurację Redis circuit breaker w contest-service**: Jaki jest `halfOpenTimeout`? Dlaczego nie próbuje zamknąć circuit breakera przez 79+ minut? Jeśli circuit nie testuje recovery, każdy event Redis (nawet 1-sekundowy blip) blokuje write-through do końca sesji. Rozważ agresywny half-open z retry co 5–10 sekund.
 
-2. **Zbadaj przyczynę initial Redis connection drop o 16:55 UTC**: Redis log group (0 eventów) nie ujawniło restartu. Sprawdź: czy były scheduled maintenance events dla cache.t3.medium, czy load balancer timeout był osiągnięty podczas idle (keepalive?), lub czy poprzedni test (12:00 CEST) pozostawił connection state w złym stanie.
+2. **Zbadaj przyczynę initial Redis connection drop o 16:56:31 UTC**: Redis log group (0 eventów) nie ujawniło restartu. Sprawdź: czy były scheduled maintenance events dla cache.t3.medium, czy load balancer timeout był osiągnięty podczas idle (keepalive?), lub czy poprzedni test (12:00 CEST) pozostawił connection state w złym stanie.
 
 3. **Wyjaśnij 4–5 CurrConnections przy 9 taskach**: Oczekiwane byłoby ~9+ połączeń. Jeśli aplikacja używa single-connection per task (nie pool), każdy peak concurrency w ramach jednego taska może generować queue i backpressure, co wyjaśniałoby "Connection is closed" przy niskim obciążeniu infrastruktury.
 
@@ -449,7 +450,7 @@ Dowód:
 
 ## 13. Evidence
 
-### Komendy AWS CLI użyte (via subagent + główna sesja)
+### Komendy AWS CLI użyte
 
 ```bash
 # ECS
@@ -476,24 +477,38 @@ aws elbv2 describe-target-groups --profile maspex-cli --region eu-west-1
 # CurrConnections, NewConnections, Evictions, SwapUsage
 
 # CloudFront config + metrics (us-east-1, ns AWS/CloudFront, period 60s)
-# Requests, BytesDownloaded, BytesUploaded, 4xxErrorRate, 5xxErrorRate, TotalErrorRate
+# Requests, BytesDownloaded, 4xxErrorRate, 5xxErrorRate, TotalErrorRate
 
 # CloudWatch Logs
-aws logs filter-log-events --profile maspex-cli --region eu-west-1 \
+aws logs start-query --profile maspex-cli --region eu-west-1 \
   --log-group-name /maspex/uat/contest-service \
-  --start-time 1777998600000 --end-time 1778005800000 \
-  --filter-pattern "VOTE_CACHE_WRITETHROUGH_FAIL" --limit 100
+  --start-time 1777998600 --end-time 1778005800 \
+  --query-string 'fields @timestamp, @message | filter @message like /VOTE_CACHE_WRITETHROUGH_FAIL/ | stats count(*) as count by bin(1m)'
 
 aws logs start-query --profile maspex-cli --region eu-west-1 \
   --log-group-name /maspex/uat/contest-service \
   --start-time 1777998600 --end-time 1778005800 \
-  --query-string 'filter @message like /VOTE_CACHE_WRITETHROUGH_FAIL/ | stats count(*) as total, count_distinct(bin(1m)) as minutes_with_errors'
-
-aws logs start-query --profile maspex-cli --region eu-west-1 \
-  --log-group-name /maspex/uat/contest-service \
-  --start-time 1777998600 --end-time 1778005800 \
-  --query-string 'filter @message like /VOTE_CACHE_WRITETHROUGH_FAIL/ | stats count(*) as errors by datefloor(@timestamp, 5m) as t | sort t asc'
+  --query-string 'fields @timestamp, @message | filter @message like /Redis circuit open/ | stats count(*) as count by bin(1m)'
 ```
+
+### Użyte log groups
+
+| Log group | Użycie |
+|---|---|
+| `/maspex/uat/contest-service` | główne logi API / contest service, Redis circuit/write-through |
+| `/maspex/uat/admin-panel` | sprawdzenie symptomów admin-panel |
+| `/maspex/uat/bot` | sprawdzenie symptomów bota |
+| `/aws/elasticache/maspex-uat/redis` | sprawdzenie eventów Redis; 0 eventów w oknie |
+
+### Użyte metryki i zasoby
+
+| Obszar | Metryki / zasoby |
+|---|---|
+| CloudFront | `E3J76RNXIE2YIG`, `Requests`, `BytesDownloaded`, `4xxErrorRate`, `5xxErrorRate`, `TotalErrorRate`, config cache behaviors |
+| ALB | `app/maspex-uat/68317764a66425bd`, `targetgroup/maspex-uat-api-3000/97cac4c72be43344`, RequestCount, TargetResponseTime, 4xx/5xx, connection errors, unhealthy hosts |
+| ECS | `maspex-uat`, services `maspex-api`, `maspex-admin-panel`, `maspex-bot`, CPU/Memory, task state, service events |
+| Auto Scaling | scalable target `service/maspex-uat/maspex-api`, CPU and memory target tracking policies, scaling activities |
+| Redis | ElastiCache `maspex-uat` node `0001`, CPU, EngineCPU, memory usage, connections, evictions, swap |
 
 ---
 
@@ -501,11 +516,11 @@ aws logs start-query --profile maspex-cli --region eu-west-1 \
 
 | Brakujące dane | Wpływ na analizę |
 |---|---|
-| `CacheHitRate` (CloudFront enhanced metric) | Obliczono proxy metric z CF/ALB ratio (~51%). Wystarczające. |
+| `CacheHitRate` (CloudFront enhanced metric) | Obliczono proxy metric z CF/ALB ratio: ~53% offload w całym oknie, ~51% w peakach. Wystarczające dla oceny presji origin. |
 | `OriginLatency` (CloudFront enhanced metric) | Nieznana latencja origin per-request. ALB TargetResponseTime pośrednio zastępuje. |
 | Per-path breakdown requestów CF | Nieznana proporcja `/api/slogan` vs statycznych vs innych. Wymaga analizy S3 access logów. |
 | CloudFront access logs (S3) | Dostępne ale nie przeanalizowane (`maspex-uat-access-logs-969209893152`). Mogą dać pełny per-path obraz. |
-| Redis restart event (16:55 UTC) | Log group 0 eventów, CloudWatch nie uchwycił. Przyczyna initial "Connection is closed" nieustalona definitywnie. |
+| Redis restart event (16:56:31 UTC) | Log group 0 eventów, CloudWatch nie uchwycił. Przyczyna initial "Connection is closed" nieustalona definitywnie. |
 | Application source code dla circuit breaker | Nieznany `halfOpenTimeout` ani implementacja reconnect. Wymaga weryfikacji z developerami. |
 
 ---
@@ -526,9 +541,9 @@ aws logs start-query --profile maspex-cli --region eu-west-1 \
 | Memory peak | ~17% | **~57%** |
 | Memory recovery po teście | NIE (17% zostaje) | **NIE (57% zostaje)** |
 | Autoscaling scale-out | NIE (CPU 11.6%) | **NIE (CPU 18.1%, Memory 57%)** |
-| HTTP 5xx (ELB) | 0 | **4 (bez znaczenia)** |
+| HTTP 5xx (ELB) | 0 | **0** |
 | ALB response time | 13 ms avg | **12–16 ms avg (identycznie)** |
-| Cache offload CF→ALB | ~55.7% | **~51% (-5pp, marginalnie gorszy)** |
+| Cache offload CF→ALB | ~55.7% | **~53.3% w całym oknie / ~51% w peakach** |
 
 **Kluczowa różnica**: Brak anomalii CurrConnections przed testem 19:00 (vs dip 30→5 o 10:10 w teście 12:00). Mimo to circuit breaker otworzył się jeszcze wcześniej (pre-ramp). To sugeruje inne wyzwalanie niż poprzednio.
 
@@ -538,10 +553,24 @@ aws logs start-query --profile maspex-cli --region eu-west-1 \
 
 | Parametr | 04-29 13:00 | **05-05 19:00** |
 |---|---|---|
-| HTTP 5xx (ELB) | ~105 | **4** |
-| ALB tail latency max | 29.99s | **0.087s (p99)** |
+| HTTP 5xx (ELB) | ~105 | **0** |
+| ALB tail latency max | 29.99s | **6.42s pojedynczy max / 0.087s p99** |
 | Degradacja HTTP | TAK (5xx, latency spikes) | **NIE** |
 | Redis circuit open | 1,758 błędów (1 minuta) | **924,582 błędów (79 minut)** |
 | Scale-out | Nie (lub pre-scaled?) | **NIE** |
 
 Testy od April 29 pokazują stopniowe "uczenie się" środowiska: HTTP layer jest coraz stabilniejszy, ale Redis write-through problem jest nadal nierozwiązany i skaluje się z czasem trwania testu.
+
+### vs 2026-04-28 17:30 CEST
+
+| Parametr | 04-28 17:30 | **05-05 19:00** |
+|---|---|---|
+| Charakter testu | krótszy, jedna główna fala | **trzy fale, ~90 minut aktywnego ruchu** |
+| CloudFront total | ~1.04M req | **4.39M req** |
+| ALB API total | ~576k req | **2.05M req** |
+| HTTP degradacja | brak | **brak** |
+| Redis/app errors | brak istotnych | **924,582 `VOTE_CACHE_WRITETHROUGH_FAIL`** |
+| ECS memory | ~52–53% i stabilnie | **17% → 57%, narastająco między falami** |
+| Autoscaling | brak scale-out, zgodnie z metrykami | **brak scale-out, zgodnie z metrykami** |
+
+Największa różnica względem 2026-04-28: warstwa HTTP nadal jest stabilna, ale ścieżka Redis write-through z neutralnej stała się dominującym problemem aplikacyjnym.
