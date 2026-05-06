@@ -5,45 +5,49 @@
 ## Główny cel
 
 ```
-Przełączony kontekst roboczy: rshop.
-Stan vault zapisany 2026-04-30 po pracach shared vault / governance / Maspex.
+Przełączony kontekst roboczy: puzzler-b2b / PBMS.
+Stan vault zapisany 2026-05-06 po pracach Maspex UAT:
+  - raport load testu 2026-05-05 19:00 CEST zapisany,
+  - Redis UAT maspex-uat node 0001 zrestartowany i wrócił do available,
+  - CloudFront UAT API E3J76RNXIE2YIG invalidation /* zakończone jako Completed,
+  - Maspex przesunięty do standby.
 
-Główna oś rshop:
-  1. utrzymać bezpieczną granicę deployu CloudFormation,
-  2. nie wracać do root stack app deploy,
-  3. domknąć permanentną remediację CFN-MUT-001,
-  4. dopiero potem wrócić do ECS Tag Policy readiness.
+Główna oś puzzler-pbms:
+  1. najpierw potwierdzić live AWS credentials dla profilu puzzler-pbms,
+  2. sprawdzić aktualny live state dev/QA po ostatnim snapshotcie,
+  3. zabezpieczyć repo przed przypadkowym commitem sekretów / authorized_keys,
+  4. zweryfikować QA jumphost i ECR image missing,
+  5. dopiero potem wracać do Terraform plan / IaC sync.
 
-CFN-MUT-001:
-  mutable nested TemplateURL powoduje ukrytą mutację VPCStack podczas app deploy.
-  Mitigation wykonany w Jenkinsfiles BE dla dev:
-  - dev targetuje dev-ECSStack-1BLAWHL0P6JKO zamiast root dev
-  - dodany pre-execute change-set guard dla app-only scope
-  - qa/uat bez zmiany zachowania
+Stan wejściowy z vault:
+  - AWS profile: puzzler-pbms
+  - region: eu-west-2
+  - konto: 698220459519
+  - repo infra: ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+  - context: 20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md
 
-Ostatnia awaria nocna:
-  - nie była powrotem CFN-MUT-001
-  - root dev nie został dotknięty
-  - VPCStack/SiecDB nie pojawiły się
-  - ECSStack-only rollback wynikał z ECS/application NotStabilized
+Ryzyka z ostatniego scan:
+  - 2026-05-05 credentials puzzler-pbms były expired / SignatureDoesNotMatch
+  - authorized_keys untracked na root repo + literówka .gitignore
+  - envs/dev/.env untracked
+  - QA IaC rozbudowane i niezatwierdzone
+  - QA jumphost DOWN wg ostatniego live snapshotu: ECR image missing
 
 Wejście:
   - `02-active-context/now.md`
-  - `40-runbooks/incidents/rshop-dev-ecsstack-rollback-2026-04-29.md`
-  - `40-runbooks/aws/cloudformation-nested-template-mutability-hazard.md`
-  - `40-runbooks/incidents/rshop-tag-policy-readiness.md`
-  - `_chatgpt/context-packs/rshop-tag-policy.md`
-
-Maspex zapisany i przesunięty do standby.
+  - `20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md`
+  - `20-projects/clients/mako/puzzler-b2b/troubleshooting.md`
+  - `20-projects/clients/mako/puzzler-b2b/context.md`
+  - `_chatgpt/context-packs/makolab-projects-vault-context.md`
 ```
 
 ## Projekty aktywne
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| rshop | aktywny | sprawdzić app logs dla API 500/backoffice startup po ECSStack-only rollback; utrzymać zakaz root deploy; przygotować permanent fix nested `TemplateURL`; potem wrócić do ECS PropagateTags CFN patch |
-| maspex | standby | Load test report zapisany; Terraform observability/WAF patch przygotowany, ale nie apply; blokada: UAT remote state digest S3/DynamoDB wymaga kontrolowanej conditional korekty przed `terraform plan` |
-| puzzler-b2b | standby | IaC sync+builder gotowe; czeka na: ECR obrazy + Ocelot config w pbms-backend |
+| puzzler-b2b / PBMS | aktywny | precheck `aws sts get-caller-identity --profile puzzler-pbms`; potem live state dev/QA i repo working tree risk check |
+| maspex | standby | Load test report 19:00 zapisany; Redis reboot i CloudFront invalidation wykonane; obserwować przy kolejnym teście Redis circuit + ECS memory; Terraform observability/WAF patch nadal bez apply |
+| rshop | standby | utrzymać zakaz root deploy; wrócić później do permanent fix nested `TemplateURL` i ECS PropagateTags CFN patch |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
 | BMW AI Taskforce | scaffold gotowy | 20-projects/clients/bmw/ai-taskforce/ — czeka na pierwsze materiały od klienta |
 | cloud-support-as-a-service | scaffold gotowy | 20-projects/internal/cloud-support-as-a-service/ — czeka na wypełnienie |
@@ -53,17 +57,17 @@ Maspex zapisany i przesunięty do standby.
 
 ## Priorytety tygodnia
 
-1. rshop: po nocnym teście Jenkins dev path traktować routing jako potwierdzony na poziomie CFN-MUT-001 mitigation; awaria była ECS/app `NotStabilized`, nie root/VPC.
-2. rshop: nie używać root stack `dev` jako app deploy path; root deploy tylko jako świadomy infra rollout.
-3. rshop: przygotować permanent fix: version-pinned nested templates / immutable artifact paths + pipeline guard jako standard.
-4. rshop: po ustabilizowaniu deploy boundary przygotować minimalne CFN zmiany dla ECS Services i walidować najpierw dev.
-5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać sesji roboczej; powrót tylko po explicit switch i prechecku remote state.
+1. puzzler-pbms: potwierdzić aktualne credentials i account identity przed jakimkolwiek live scan.
+2. puzzler-pbms: sprawdzić repo `infra-puzzler-b2b-final` pod kątem untracked sekretów i lokalnych zmian przed `git add` / Terraform.
+3. puzzler-pbms: zweryfikować dev/QA ECS, ECR i QA jumphost względem snapshotu 2026-05-01/05.
+4. puzzler-pbms: ustalić, czy QA ECR image missing nadal blokuje jumphost.
+5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać z bieżącą sesją; powrót tylko po explicit switch.
 
 ## Aktywni klienci
 
 | Klient | Temat | Deadline |
 |--------|-------|----------|
-| Mako | rshop Tag Policy remediation | |
+| Mako | puzzler-b2b / PBMS live state + IaC hygiene | |
 
 ## Blokery / otwarte pętle
 
@@ -74,6 +78,10 @@ Maspex zapisany i przesunięty do standby.
 - [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
 - [ ] Maspex standby: Terraform UAT plan blokuje stary/osierocony digest w `terraform-locks-969209893152`; safe recovery opisane w `02-active-context/now.md`
 - [ ] Maspex standby: `infra-maspex` ma lokalny patch observability/WAF niezaaplikowany: WAF admin allowlist + Athena/Glue per-path CloudFront logs
+- [ ] puzzler-pbms: potwierdzić czy profile credentials nadal expired czy już odświeżone
+- [ ] puzzler-pbms: sprawdzić `authorized_keys` untracked i `.gitignore` literówkę
+- [ ] puzzler-pbms: sprawdzić `envs/dev/.env` untracked / brak ignore rule
+- [ ] puzzler-pbms: zweryfikować QA jumphost i ECR image tag
 
 ## Powiązane
 
@@ -84,4 +92,4 @@ Maspex zapisany i przesunięty do standby.
 
 ---
 
-*Tydzień: 2026-W17*
+*Tydzień: 2026-W19*

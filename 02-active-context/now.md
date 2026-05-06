@@ -2,6 +2,72 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-06 — switch context: Maspex zapisany, przejście na puzzler-pbms
+
+```
+Projekt zamykany: Maspex UAT (klient mako)
+Akcja:            Zapis stanu po analizie load testu 19:00 CEST + controlled cache refresh
+Status:           ZAPISANE / STANDBY
+
+MASPEX — WYKONANE:
+  ✅ Raport load testu 2026-05-05 19:00 CEST zapisany:
+     20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md
+
+  ✅ Redis / ElastiCache UAT zrestartowany kontrolowanie przez AWS CLI:
+     profile: maspex-cli
+     region:  eu-west-1
+     cluster: maspex-uat
+     type:    standalone Redis, single node
+     node:    0001
+     final:   CacheClusterStatus=available, CacheNodeStatus=available
+
+  ✅ CloudFront UAT API cache invalidated:
+     distribution: E3J76RNXIE2YIG
+     alias:        kapsel.makotest.pl
+     path:         /*
+     invalidation: I5ENTEMC80BB7GFLM005T3NK0X
+     final:        Completed
+
+  ✅ Sanity check:
+     curl -I https://kapsel.makotest.pl/api/health → HTTP/2 200
+     x-cache: Miss from cloudfront
+
+MASPEX — NAJWAŻNIEJSZY STAN:
+  🔴 Najmocniejszy bottleneck po load teście: app-level Redis write-through / circuit breaker
+     924,582 VOTE_CACHE_WRITETHROUGH_FAIL, 906,504 Redis circuit open
+     Redis infrastructure zdrowy metrycznie; problem wygląda na klient/circuit/reconnect
+
+  ✅ Warstwa HTTP/ALB/ECS bez degradacji:
+     0 ELB 5XX, 0 Target 5XX, 0 unhealthy hosts, 0 task churn maspex-api
+
+  ⚠ Memory maspex-api narosła z ~17% do ~57% podczas testu; po restarcie Redis nie restartowano ECS.
+     Przy kolejnym teście obserwować ECS MemoryUtilization i logi Redis circuit.
+
+  ⚠ maspex-bot pozostaje osobnym problemem operacyjnym: health check failures / replacements.
+
+  ⚠ Terraform/IaC Maspex nie ruszany:
+     nie było terraform apply, nie było zmian infra; lokalny patch observability/WAF nadal standby.
+
+Następny kontekst roboczy: puzzler-b2b / PBMS
+AWS profile:              puzzler-pbms
+Region:                   eu-west-2
+Repo infra:               ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Vault context:            20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md
+
+PUZZLER — STAN WEJŚCIOWY Z OSTATNIEGO SNAPSHOTU:
+  ⚠ 2026-05-05: AWS credentials puzzler-pbms były expired / SignatureDoesNotMatch.
+     Pierwszy krok po przełączeniu: aws sts get-caller-identity --profile puzzler-pbms.
+
+  🔴 Repo infra miało ryzyka working tree:
+     - authorized_keys untracked + literówka w .gitignore: autorized_keys vs authorized_keys
+     - envs/dev/.env untracked / brak reguły .gitignore
+     - QA IaC rozbudowane, niezatwierdzone
+     - modules/pattern/frontend-ecs-microservice untracked
+
+  ⚠ QA jumphost wg ostatniego pełnego live snapshotu był DOWN przez ECR image missing.
+     Stan aktualny wymaga live weryfikacji po naprawie credentials.
+```
+
 ## Update — 2026-05-05 — Maspex UAT load test 12:00-13:00 CEST — analiza zakonczona
 
 ```
