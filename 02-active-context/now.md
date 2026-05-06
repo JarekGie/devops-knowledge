@@ -2106,4 +2106,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-06 21:25 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-06 21:30 — sesja aktywna*
