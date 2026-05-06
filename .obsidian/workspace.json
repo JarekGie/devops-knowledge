@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Implement Terraform drift guardrails for PBMS dev"
+              "title": "Terminal: ✳ Implement Terraform drift guardrails for PBMS dev"
             }
           },
           {
@@ -345,8 +345,15 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-004-external-llm-after-tokenization.md",
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-003-presidio.md",
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-002-tokenization-over-masking.md",
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-001-local-first.md",
+    "20-projects/internal/secure-ai-anonymizer/session-log.md",
+    "20-projects/internal/secure-ai-anonymizer/glossary.md",
+    "20-projects/internal/secure-ai-anonymizer/data-classification.md",
     "20-projects/internal/secure-ai-anonymizer/tokenization-model.md",
     "20-projects/clients/mako/anonimizator/01-cel-i-kontekst.md",
     "20-projects/clients/mako/anonimizator/00-README.md",
@@ -375,13 +382,6 @@
     "85-cloud-practice/roadmap.md",
     "85-cloud-practice",
     "20-projects/clients/mako/puzzler-b2b/session-log.md",
-    "_chatgpt/context-packs/puzzler-b2b-jumphost.md",
-    "20-projects/clients/mako/maspex/Redis-reboot-uat-prompt.md",
-    "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
-    "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1200-cest.md",
-    "20-projects/internal/llz/nis2-aws-live-state-2026-05-04.md",
-    "_chatgpt/context-packs/rshop-p99-latency.md",
-    "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
     "reports",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
