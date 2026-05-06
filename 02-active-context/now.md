@@ -1943,4 +1943,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-05 17:56 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-06 06:40 — sesja aktywna*
