@@ -69,3 +69,13 @@ aws ec2 authorize-security-group-ingress \
 - Infrastruktura puzzler-b2b jest w `eu-west-2`, nie `eu-central-1` — pamiętaj przy wszystkich operacjach AWS
 - Zmiana jest poza Terraform/CFN — przy następnym `terraform apply` na SG stacku reguły zostaną nadpisane z powrotem na `0.0.0.0/0` jeśli template nie zostanie zaktualizowany
 - Jeśli ograniczenie ma być trwałe, należy zaktualizować SG.yaml / moduł ALB w repozytorium projektu
+
+## Update — 2026-05-06 — IaC enforcement commitowana
+
+Ograniczenie zostało przeprowadzone do Terraform (commit `72c3764`, branch `feat/dev-jumphost-runtime-secret`):
+
+- `alb_ingress_cidr_blocks = ["195.117.107.110/32"]` dodane do `envs/dev/variables.tf` (default), `envs/dev/main.tf` (passthrough), `envs/dev/terraform.tfvars` (explicit)
+- `envs/qa` — zmienna deklarowana, ale `terraform.tfvars` QA jeszcze niezacommitowana (blocker: hardcoded secrets w pliku)
+- Moduł `modules/core/alb` wersjonowany lokalnie — kontroluje SG rules przy `terraform apply`
+
+Przy następnym `terraform apply` na dev ALB SG reguły będą zarządzane przez Terraform i utrzymają `195.117.107.110/32`.
