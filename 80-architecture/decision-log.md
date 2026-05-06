@@ -55,4 +55,15 @@ AWS Health → GLPI Problems (dogfooding przez Cloud Support Team).
 
 ---
 
+### ADR-003 — 2026-05-07 — secure-ai-anonymizer: local-first + tokenization architecture
+
+**Status:** accepted  
+**Kontekst:** Inicjacja projektu secure-ai-anonymizer — pipeline anonimizacji dokumentów klientów przed eksportem do zewnętrznych LLM. Potrzeba technicznego egzekwowania DOMAIN_ISOLATION_CONTRACT i LLM_EXPORT_POLICY vault.  
+**Decyzja:** (1) Local-first deployment — dane wrażliwe nie opuszczają środowiska operatora; (2) Tokenization z semantic tags `[KLASA_N]` zamiast masking lub pseudonymization; (3) Presidio + spaCy + custom recognizers jako silnik detekcji; (4) Zewnętrzny LLM wyłącznie po tokenizacji, nigdy automatycznie; (5) PostgreSQL + pgcrypto jako mapping store; (6) Ollama jako sanity-check (nie gatekeeper).  
+**Konsekwencje:** Rehydration możliwa, audit trail kompletny, pipeline deterministyczny, offline operability. Trade-off: operator musi manualnie wysyłać do LLM (nie auto-routing) — celowy wybór dla bezpieczeństwa.  
+**Alternatywy odrzucone:** Cloud-hosted pipeline (narusza local-first + data sovereignty); masking zamiast tokenizacji (brak rehydration); cloud API do detekcji PII (narusza offline + local-first); automatyczny routing do LLM (niezgodny z LLM_EXPORT_POLICY).  
+**Szczegółowe ADR:** `20-projects/internal/secure-ai-anonymizer/adr/` (ADR-001 do ADR-007)
+
+---
+
 <!-- Dodawaj kolejne decyzje poniżej -->

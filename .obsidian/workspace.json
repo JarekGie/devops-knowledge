@@ -347,6 +347,10 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/secure-ai-anonymizer.md",
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-007-ollama-local-inference.md",
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-006-postgresql-mapping-store.md",
+    "20-projects/internal/secure-ai-anonymizer/adr/ADR-005-deterministic-pipeline.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-004-external-llm-after-tokenization.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-003-presidio.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-002-tokenization-over-masking.md",
@@ -376,12 +380,8 @@
     "85-cloud-practice/opportunities",
     "85-cloud-practice/competency/tracker.md",
     "85-cloud-practice/competency",
-    "85-cloud-practice/partnership/status.md",
     "85-cloud-practice/partnership",
-    "85-cloud-practice/ownership.md",
-    "85-cloud-practice/roadmap.md",
     "85-cloud-practice",
-    "20-projects/clients/mako/puzzler-b2b/session-log.md",
     "reports",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
