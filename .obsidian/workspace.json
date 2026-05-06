@@ -77,7 +77,8 @@
               "title": "Redis-reboot-uat-prompt"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -261,7 +262,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "19341f341b5eadd6",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/Redis-reboot-uat-prompt.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
