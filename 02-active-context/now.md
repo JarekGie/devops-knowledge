@@ -2,6 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-06 — cloud practice space: 85-cloud-practice/ utworzona
+
+```
+Akcja:   Nowa przestrzeń strategiczno-operacyjna dla roli AWS Technical Leader
+Vault:   85-cloud-practice/
+Status:  GOTOWE — faza 0-30 dni aktywna
+
+Pliki:
+  dashboard.md        ← ENTRY POINT — tu zacznij każdy dzień
+  roadmap.md          ← 30-60-90 roadmap + milestones + deliverables
+  ownership.md        ← scope, stakeholders, granice odpowiedzialności
+  partnership/status.md  ← AWS Partnership tier, PAM/PDM, MDF, programy
+  competency/tracker.md  ← competency status, evidence log, WAR tracking
+  opportunities/tracker.md ← presales, tech opportunities, backlog
+
+Priorytety teraz (faza 0-30):
+  → Uzyskać dostęp do AWS Partner Central
+  → Zidentyfikować PAM/PDM
+  → Formal scope sign-off z zarządem
+  → Gap assessment: partnership tier vs. certyfikacje vs. competency requirements
+```
+
 ## Update — 2026-05-06 — puzzler-b2b IaC commit: ALB ingress + ECS ownership normalization
 
 ```
@@ -2059,4 +2081,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-06 14:18 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-06 14:35 — sesja aktywna*
