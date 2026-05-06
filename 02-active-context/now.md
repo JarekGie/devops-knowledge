@@ -2,29 +2,34 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-06 — puzzler-pbms: branch feat/dev-jumphost-runtime-secret DONE
+## Update — 2026-05-06 — puzzler-pbms: drift guardrails + apply DONE
 
 ```
 Projekt:    puzzler-b2b / PBMS (klient mako)
 AWS profile: puzzler-pbms | region: eu-west-2 | konto: 698220459519
 Repo infra:  ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
-Branch:      feat/dev-jumphost-runtime-secret
-Status:      WORKING TREE CLEAN — gotowe do PR / code review
+Branch:      main (CLEAN — wszystko zmergowane)
 
-COMMITY NA BRANCHU (6):
-  4dbdc12  fix(dev): declare frontend_alb_certificate_arn variable, add alb_frontend.tf
-  6eaa048  feat(qa): add full QA environment IaC (10 plików, validate PASS)
-  55811e8  feat(jumphost): enable TCP forwarding in sshd + db-connect scripts
-  c224509  feat(dev): add notifier database to DocDB secret and ECS env vars
-  943fe87  chore(security): remove hardcoded secrets from envs/qa/terraform.tfvars
-  72c3764  fix(terraform): normalize alb ingress + ecs task_definition ownership
+CO ZROBIONO:
+  1. Drift guardrails (modules/core/ecs-service/main.tf):
+     - aws_ecs_task_definition: ignore_changes = [container_definitions]
+     - aws_ecs_service:         ignore_changes = [task_definition, desired_count]
+  2. Secret version guardrails (envs/dev/secrets.tf):
+     - aws_secretsmanager_secret_version (docdb/azuread/jumphost_ssh):
+       ignore_changes = [secret_string]
+  3. Notifier DB keys: gated → dodane do live secret (CLI) → przywrócone w IaC
+     - infra-puzzler-b2b/dev/docdb: ma database_notifier + connection_string_notifier
+  4. ALB SG: 0.0.0.0/0 → 195.117.107.110/32 (apply wykonany)
+  5. db-connect.ps1: stały IP zaktualizowany, dodana instrukcja mongosh z TLS
+  6. Dwa MR zmergowane do main
 
-VALIDATE: dev ✅ PASS | qa ✅ PASS
+PLAN RESULT (po guardrails): 0 add, 1 change, 0 destroy — tylko ALB SG ✅
+APPLY: success — 1 changed (ALB SG)
 
 NASTĘPNY KROK:
   → Rotate azuread_client_secret w Azure AD (był eksponowany w working tree)
-  → PR / code review brancha
   → Decyzja: czy QA apply jest teraz bezpieczny?
+  → dev-connect: developer musi pobrać RDS CA bundle przed pierwszym użyciem
 ```
 
 ## Update — 2026-05-06 — cloud practice space: 85-cloud-practice/ utworzona
