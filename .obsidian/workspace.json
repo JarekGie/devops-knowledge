@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Implement Terraform drift guardrails for PBMS dev"
+              "title": "Terminal: ⠂ Implement Terraform drift guardrails for PBMS dev"
             }
           },
           {
@@ -190,7 +190,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -317,7 +318,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "_chatgpt/context-packs/cloud-practice.md",
     "85-cloud-practice/dashboard.md",
