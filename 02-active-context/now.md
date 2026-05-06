@@ -2,6 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-06 — AKTYWNY KONTEKST: puzzler-pbms
+
+```
+Projekt:    puzzler-b2b / PBMS (klient mako)
+AWS profile: puzzler-pbms | region: eu-west-2 | konto: 698220459519
+Repo infra:  ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Branch:      feat/dev-jumphost-runtime-secret
+Vault:       20-projects/clients/mako/puzzler-b2b/session-log.md
+
+OSTATNI COMMIT: 72c3764 (fix: alb ingress + ecs task_definition ownership)
+
+NASTĘPNY KROK:
+  🔴 Rotate azuread_client_secret — był eksponowany w working tree
+  Następnie: wyczyść envs/qa/terraform.tfvars z hardcoded secrets
+
+WORKING TREE — co jeszcze czeka:
+  ❌ envs/dev/secrets.tf + services.tf (notifier DB hunks)
+  ❌ Dockerfile (AllowTcpForwarding) + scripts/
+  ❌ envs/qa/* — zablokowane do czasu cleanup secrets
+  ❌ envs/dev/alb_frontend.tf (broken, untracked)
+```
+
 ## Update — 2026-05-06 — cloud practice space: 85-cloud-practice/ utworzona
 
 ```
@@ -2081,4 +2103,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-06 14:35 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-06 14:38 — sesja aktywna*
