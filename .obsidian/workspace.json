@@ -233,8 +233,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "85-cloud-practice/dashboard.md",
+    "85-cloud-practice",
     "20-projects/clients/mako/puzzler-b2b/session-log.md",
     "_chatgpt/context-packs/puzzler-b2b-jumphost.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
@@ -260,7 +262,6 @@
     "_system/AGENT_BOOTSTRAP.md",
     "20-projects/clients/mako/puzzler-b2b/context.md",
     "CLAUDE.md",
-    "20-projects/clients/mako/maspex/cloudfront-audit-2026-04-26.md",
     "reports",
     "20-projects/clients/mako/aws-cloud-platform",
     "20-projects/clients/mako/booking-online",
@@ -270,7 +271,6 @@
     "20-projects/clients/maspex",
     "templates/frontmatter",
     "templates",
-    "50-patterns/prompts/starter-pack",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
