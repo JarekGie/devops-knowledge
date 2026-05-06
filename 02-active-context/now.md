@@ -2,29 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-07 — secure-ai-anonymizer: inicjacja projektu
+## Update — 2026-05-07 — secure-ai-anonymizer: bootstrap repo
 
 ```
-Akcja:   Inicjacja projektu secure-ai-anonymizer w vault
+Akcja:   Bootstrap repozytorium dc-anonimizator
+Repo:    ~/projekty/mako/aws-projects/dc-anonimizator
 Domena:  private-rnd | classification: restricted
-Vault:   20-projects/internal/secure-ai-anonymizer/
 
-PROJEKT:
-  Lokalny pipeline anonimizacji dokumentów klientów przed eksportem do LLM.
-  Parse → Detect → Tokenize → Sanitize → (manual) → LLM → Rehydrate → Audit.
-  Inicjator: Tomasz Polke (Head of Cloud)
-
-UTWORZONE:
-  context.md, roadmap.md, architecture.md, mvp-scope.md, threat-model.md
-  tokenization-model.md, data-classification.md, glossary.md, session-log.md
-  adr/ADR-001 do ADR-007
-  _chatgpt/context-packs/secure-ai-anonymizer.md
-  80-architecture/decision-log.md ← ADR-003 dodany
+ZROBIONE:
+  Pełna struktura: src/dc_anonymizer/{ingest,detection,tokenization,storage,audit,pipeline}
+  CLI: dc-anonymizer anonymize / detect / rehydrate / validate
+  Custom recognizers: AWS ARN/account/keys, CIDR, FQDN, DB connection strings, JWT
+  Envelope encryption (AESGCM) dla token map
+  PostgreSQL schema: documents, token_maps, token_map_entries, audit_events (append-only)
+  Docker Compose: PostgreSQL:16 + Ollama (optional profile)
+  7 fixture documents (input), unit + integration tests
+  Makefile, pyproject.toml (uv), .gitignore, .env.example
+  ADR-008 (uv vs Poetry) w vault
 
 NASTĘPNY KROK:
-  → Inicjalizacja repo: ~/projekty/mako/aws-projects/dc-anonimizator
-  → PoC: anonymize.py — CLI roundtrip na 3 dokumentach (TF, YAML, log)
-  → Benchmark Ollama modeli: llama3.2:3b vs mistral:7b na 10 test cases
+  → uv sync + python -m spacy download en_core_web_lg
+  → make db-up
+  → dc-anonymizer anonymize --input tests/fixtures/input/mixed_document.txt
+  → Benchmark Ollama: llama3.2:3b vs mistral:7b
 ```
 
 ## Update — 2026-05-07 — vault audit + cloud-detective context pack
@@ -2165,4 +2165,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 00:49 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 00:59 — sesja aktywna*

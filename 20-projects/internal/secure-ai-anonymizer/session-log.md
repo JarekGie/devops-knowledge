@@ -45,3 +45,49 @@ updated: 2026-05-07
 → Repozytorium: `~/projekty/mako/aws-projects/dc-anonimizator` (istnieje)
 → PoC: `anonymize.py` — CLI roundtrip test na 3 dokumentach (Terraform, YAML, log)
 → Wybór Ollama model dla sanity-check
+
+---
+
+## 2026-05-07 — Bootstrap repozytorium
+
+**Akcja:** Pełny bootstrap `~/projekty/mako/aws-projects/dc-anonimizator`.
+
+**Wykonane:**
+
+Struktura katalogów:
+- `src/dc_anonymizer/` — główny pakiet Python
+- `src/dc_anonymizer/ingest/` — router + text/yaml/pdf extractors
+- `src/dc_anonymizer/detection/` — Presidio engine + recognizers (aws, network, secrets)
+- `src/dc_anonymizer/tokenization/` — tokenizer, token_map (envelope encryption), rehydration
+- `src/dc_anonymizer/storage/` — database (SQLAlchemy), repositories
+- `src/dc_anonymizer/audit/` — audit_log (append-only)
+- `src/dc_anonymizer/pipeline/` — anonymize.py (główny orchestrator)
+- `tests/unit/` — test_tokenizer.py, test_recognizers.py
+- `tests/integration/` — test_pipeline.py (roundtrip + rehydration)
+- `tests/fixtures/input/` — 7 dokumentów testowych (aws_account_id, aws_arn, cidr, hostname, connection_string, email, mixed)
+- `docs/` — architecture.md, mvp-scope.md, adr/
+- `scripts/` — init-db.sql (4 tabele + pgcrypto), smoke-test.sh
+
+Pliki konfiguracyjne:
+- `pyproject.toml` — uv, Python 3.12, pełne zależności
+- `.python-version` — 3.12
+- `.gitignore` — blokuje .env, client_input/, token_maps/, rehydrated/, db_dumps/
+- `.env.example` — szablon z DATABASE_URL, KEK_HEX, OLLAMA_*
+- `docker-compose.yml` — PostgreSQL:16 + Ollama (profile: ai)
+- `Makefile` — install, test, lint, format, db-up, db-down, db-reset, smoke, ollama-up
+
+ADR-008 dodany do vault: uv vs Poetry — wybór uv.
+
+**Kluczowe decyzje:**
+- **uv** zamiast Poetry (ADR-008) — szybszy, PEP 621, standard 2026
+- CLI-first (MVP) — bez FastAPI/Redis/Celery w tym etapie
+- Envelope encryption w Python (cryptography AESGCM) — pgcrypto tylko na poziomie bazy
+- Audit log: append-only przez aplikację (REVOKE DELETE/UPDATE jako TODO na Phase 2)
+
+**Stan:** repo bootstrapped, gotowy do `uv sync` + `make db-up` + implementacji PoC.
+
+**Następny krok:**
+→ `uv sync` + `python -m spacy download en_core_web_lg`
+→ `make db-up`
+→ Implementacja pierwszego roundtrip: `dc-anonymizer anonymize --input tests/fixtures/input/mixed_document.txt`
+→ Benchmark Ollama: llama3.2:3b vs mistral:7b na fixture documents
