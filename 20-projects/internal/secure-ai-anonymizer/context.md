@@ -41,7 +41,7 @@ Trzy problemy praktyczne obserwowane w pracy operacyjnej:
 
 3. **Onboarding klientów na MakoLab** — dokumentacja klientów (architektury, diagramy, specyfikacje) zawiera dane wrażliwe. Praca nad nimi z LLM wymaga technicznego egzekwowania polityki eksportu.
 
-Inicjator: Tomasz Polkowski (Head of Cloud), 2026-05-07.
+Inicjator: Tomasz Polke (Head of Cloud), 2026-05-07.
 
 ## Czym nie jest — granice projektu
 
@@ -61,7 +61,7 @@ Inicjator: Tomasz Polkowski (Head of Cloud), 2026-05-07.
 - **Cel** — wewnętrzna platforma enablement dla engineering team i cloud practice
 - **Nie jest produktem** — jest enablerem dla innych produktów i usług
 - **Właściciel** — Jarosław Gołąb (Cloud Practice Lead)
-- **Sponsor** — Tomasz Polkowski (Head of Cloud)
+- **Sponsor** — Tomasz Polke (Head of Cloud)
 
 ## Powiązania w vault
 
@@ -87,7 +87,7 @@ Inicjator: Tomasz Polkowski (Head of Cloud), 2026-05-07.
 |------|---------|
 | Faza | PoC planning |
 | Właściciel | Jarosław Gołąb |
-| Sponsor | Tomasz Polkowski |
+| Sponsor | Tomasz Polke |
 | Data inicjacji | 2026-05-07 |
 | Repozytorium | TBD — `~/projekty/devops/secure-ai-anonymizer` |
 | Roadmap | [[roadmap]] |

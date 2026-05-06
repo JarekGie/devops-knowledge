@@ -31,7 +31,7 @@ updated: 2026-05-07
 - adr/ — 7 ADR dla kluczowych decyzji architektonicznych
 - _chatgpt/context-packs/secure-ai-anonymizer.md — context pack dla ChatGPT
 
-**Inicjator:** Tomasz Polkowski (Head of Cloud)
+**Inicjator:** Tomasz Polke (Head of Cloud)
 **Właściciel:** Jarosław Gołąb
 
 **Open questions na wejściu (do rozwiązania w PoC):**

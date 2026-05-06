@@ -12,7 +12,7 @@ Vault:   20-projects/internal/secure-ai-anonymizer/
 PROJEKT:
   Lokalny pipeline anonimizacji dokumentów klientów przed eksportem do LLM.
   Parse → Detect → Tokenize → Sanitize → (manual) → LLM → Rehydrate → Audit.
-  Inicjator: Tomasz Polkowski (Head of Cloud)
+  Inicjator: Tomasz Polke (Head of Cloud)
 
 UTWORZONE:
   context.md, roadmap.md, architecture.md, mvp-scope.md, threat-model.md
@@ -2165,4 +2165,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 00:36 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 00:40 — sesja aktywna*
