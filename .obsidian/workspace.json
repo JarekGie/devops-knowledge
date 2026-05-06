@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: devops-knowledge"
+              "title": "Terminal: ⠼ devops-knowledge"
             }
           },
           {
@@ -77,8 +77,7 @@
               "title": "puzzler-b2b-context"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -262,13 +261,13 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "19341f341b5eadd6",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/clients/mako/maspex/Redis-reboot-uat-prompt.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1200-cest.md",
     "20-projects/internal/llz/nis2-aws-live-state-2026-05-04.md",
-    "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "_chatgpt/context-packs/rshop-p99-latency.md",
     "50-patterns/prompts/invocations/cloud-detective-puzzler-b2b.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
