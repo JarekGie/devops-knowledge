@@ -137,7 +137,7 @@ Format tokenu: `[AWS_ACCOUNT_1]`, `[IP_ADDRESS_3]`, `[EMAIL_ADDRESS_1]`
 ## 8. Aktualny stan
 
 **Faza:** PoC planning (2026-05-07)  
-**Repo:** TBD — `~/projekty/devops/secure-ai-anonymizer`  
+**Repo:** TBD — `~/projekty/mako/aws-projects/dc-anonimizator`  
 **Brak kodu** — inicjacja projektu, dokumentacja architektoniczna w vault
 
 ---

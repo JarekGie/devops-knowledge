@@ -22,7 +22,7 @@ UTWORZONE:
   80-architecture/decision-log.md ← ADR-003 dodany
 
 NASTĘPNY KROK:
-  → Inicjalizacja repo: ~/projekty/devops/secure-ai-anonymizer
+  → Inicjalizacja repo: ~/projekty/mako/aws-projects/dc-anonimizator
   → PoC: anonymize.py — CLI roundtrip na 3 dokumentach (TF, YAML, log)
   → Benchmark Ollama modeli: llama3.2:3b vs mistral:7b na 10 test cases
 ```
@@ -2165,4 +2165,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 00:44 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 00:49 — sesja aktywna*

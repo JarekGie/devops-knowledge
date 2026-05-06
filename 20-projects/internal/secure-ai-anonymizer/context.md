@@ -89,7 +89,7 @@ Inicjator: Tomasz Polke (Head of Cloud), 2026-05-07.
 | Właściciel | Jarosław Gołąb |
 | Sponsor | Tomasz Polke |
 | Data inicjacji | 2026-05-07 |
-| Repozytorium | TBD — `~/projekty/devops/secure-ai-anonymizer` |
+| Repozytorium | `~/projekty/mako/aws-projects/dc-anonimizator` |
 | Roadmap | [[roadmap]] |
 | MVP scope | [[mvp-scope]] |
 | Architektura | [[architecture]] |

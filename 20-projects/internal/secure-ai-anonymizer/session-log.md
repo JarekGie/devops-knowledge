@@ -42,6 +42,6 @@ updated: 2026-05-07
 5. Audit trail granularity — per token (zdecydowano), implementacja wymaga weryfikacji
 
 **Następny krok:**
-→ Inicjalizacja repozytorium kodu: `~/projekty/devops/secure-ai-anonymizer`
+→ Repozytorium: `~/projekty/mako/aws-projects/dc-anonimizator` (istnieje)
 → PoC: `anonymize.py` — CLI roundtrip test na 3 dokumentach (Terraform, YAML, log)
 → Wybór Ollama model dla sanity-check
