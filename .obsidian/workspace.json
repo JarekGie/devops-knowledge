@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Check vault state and fix Codex sync issues"
+              "title": "Terminal: ✳ Check vault state and fix Codex sync issues"
             }
           },
           {
@@ -105,7 +105,8 @@
               "title": "drp-tfs-context"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -290,7 +291,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "7254c81a276b7e45",
   "lastOpenFiles": [
     "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
     "20-projects/clients/mako/anonimizator/session-log.md",

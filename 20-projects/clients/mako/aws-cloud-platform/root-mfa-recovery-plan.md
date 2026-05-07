@@ -167,7 +167,7 @@ Discovery zakończone. Sytuacja jest poważna, ale bez aktywnych root access key
 | DRP-TFS | 613448424242 | Workloads/NonProd | ❌ false | DenyRootUserActions | drptfs@makolab.pl | **HIGH** (SCP bloker) |
 | pbms | 378131232770 | Sandbox | SUSPENDED | DenyRootUserActions | pbms@makolab.pl | LOW (SUSPENDED) |
 | MakolabDev | 442703586623 | Quarantine | SUSPENDED | DEV SCP | personal email | LOW (SUSPENDED) |
-| makolab_monitoring | 400837535641 | Quarantine | SUSPENDED | brak | tymur.myma@makolab.com (ex-pracownik?) | **MEDIUM** (ex-employee email!) |
+| makolab_monitoring | 400837535641 | Quarantine | SUSPENDED | brak | tymur.myma@makolab.com | **LOW** (konto wkrótce wygasa, Tymur aktywny pracownik) |
 
 ### Specjalne ryzyki email
 
