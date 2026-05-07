@@ -117,25 +117,25 @@ Skrypty operacyjne:
 **Control Tower:** aktywny (controltower.amazonaws.com w org services access; 3x aws-guardrails-* SCP)
 **Management account:** `864277686382` (makolab_dc)
 
-| Account | ID | OU | Status |
-|---------|-----|-----|--------|
-| makolab_dc (management) | 864277686382 | Root (bezpośrednio) | ACTIVE |
-| Admin MakoLab | 647075515164 | Platform | ACTIVE |
-| monitoring-nagios-bot | 814662658531 | Platform | ACTIVE |
-| lab | 052845428574 | Sandbox | ACTIVE |
-| pbms | 378131232770 | Sandbox | SUSPENDED |
-| LogArchiveNew | 771354139056 | Security | ACTIVE |
-| planodkupow | 333320664022 | Workloads / Production | ACTIVE |
-| planodkupowv1 | 292464762806 | Workloads / Production | ACTIVE |
-| Booking_Online | 128264038676 | Workloads / Production | ACTIVE |
-| RShop | 943111679945 | Workloads / Production | ACTIVE |
-| dacia-asystent | 074412166613 | Workloads / Production | ACTIVE |
-| CC | 943696080604 | Workloads / Production | ACTIVE |
-| DRP-TFS | 613448424242 | Workloads / NonProduction | ACTIVE |
-| Audit | 012086764624 | Quarantine | SUSPENDED |
-| Log Archive (stary) | 518286664393 | Quarantine | SUSPENDED |
-| makolab_monitoring (stary) | 400837535641 | Quarantine | SUSPENDED |
-| MakolabDev | 442703586623 | Quarantine | SUSPENDED |
+| Account | ID | OU | Status | Root email (2026-05-07) |
+|---------|-----|-----|--------|------------------------|
+| makolab_dc (management) | 864277686382 | Root (bezpośrednio) | ACTIVE | dc@makolab.com ⚠️ |
+| Admin MakoLab | 647075515164 | Platform | ACTIVE | aws-makolab@infra.makolab.pl ✅ |
+| monitoring-nagios-bot | 814662658531 | Platform | ACTIVE | aws@makolab.pl ⚠️ |
+| lab | 052845428574 | Sandbox | ACTIVE | aws-lab@infra.makolab.pl ✅ |
+| pbms | 378131232770 | Sandbox | SUSPENDED | pbms@makolab.pl |
+| LogArchiveNew | 771354139056 | Security | ACTIVE | aws-logarchivenew@infra.makolab.pl ✅ |
+| planodkupow | 333320664022 | Workloads / Production | ACTIVE | aws-planodkupow@infra.makolab.pl ✅ |
+| planodkupowv1 | 292464762806 | Workloads / Production | ACTIVE | aws-planodkupow1@infra.makolab.pl ✅ |
+| Booking_Online | 128264038676 | Workloads / Production | ACTIVE | aws-bookingonline@infra.makolab.pl ✅ |
+| RShop | 943111679945 | Workloads / Production | ACTIVE | aws-rshopdev@infra.makolab.pl ✅ |
+| dacia-asystent | 074412166613 | Workloads / Production | ACTIVE | aws-daciaasystent@infra.makolab.pl ✅ |
+| CC | 943696080604 | Workloads / Production | ACTIVE | aws-cc@infra.makolab.pl ✅ |
+| DRP-TFS | 613448424242 | Workloads / NonProduction | ACTIVE | aws-drptfs@infra.makolab.pl ✅ |
+| ~~Audit~~ | ~~012086764624~~ | Quarantine | **USUNIĘTE Z ORG** | — |
+| ~~Log Archive (stary)~~ | ~~518286664393~~ | Quarantine | **USUNIĘTE Z ORG** | — |
+| makolab_monitoring (stary) | 400837535641 | Quarantine | SUSPENDED | tymur.myma@makolab.com (wygasa) |
+| MakolabDev | 442703586623 | Quarantine | SUSPENDED | jaroslaw.golab+makodev@makolab.com |
 
 Terraform state backend:
 - Bucket: `864277686382-terraform-state-bucket` (eu-central-1, versioning: ENABLED)
@@ -305,29 +305,59 @@ Konto management nie hostuje workloadów z TLS. Brak certyfikatów zgodny z ocze
 
 ## SCPs — stan live vs IaC
 
-### Aktywne SCPs (live AWS, potwierdzone 2026-05-01)
+### Aktywne SCPs (live AWS, potwierdzone 2026-05-07)
 
 | SCP | ID | Targets | Tracking |
 |-----|----|---------|---------|
 | FullAWSAccess | p-FullAWSAccess | Root (inherited all) | AWS managed |
-| aws-guardrails-WCOddW | p-26aljn7o | **brak targets** | CT managed (orphaned?) |
-| aws-guardrails-BbhyLy | p-wacgblah | Security OU | CT managed |
-| aws-guardrails-zTzmTA | p-yncf8tm8 | Security OU | CT managed |
+| **llz-security-baseline** | **p-8wat7tjs** | **Production OU, NonProduction OU, Sandbox OU** | manual — wdrożony między 2026-05-01 a 2026-05-07 |
 | bilingi | p-c6iuxb0c | **brak targets** | manual, untracked |
 | DEV | p-yfwlx134 | MakolabDev (SUSPENDED) | manual, untracked |
+
+**Zmiana vs scan 2026-05-01:** CT guardrails (p-26aljn7o, p-wacgblah, p-yncf8tm8) już nie istnieją w org. Nowy SCP `llz-security-baseline` zastąpił poprzedni model.
+
+### llz-security-baseline — treść (potwierdzona live 2026-05-07)
+
+```json
+{
+  "Statement": [
+    {
+      "Sid": "DenyDisableSecurityServices",
+      "Effect": "Deny",
+      "Action": ["cloudtrail:StopLogging","cloudtrail:DeleteTrail","cloudtrail:UpdateTrail",
+                 "guardduty:DeleteDetector","guardduty:DisableOrganizationAdminAccount",
+                 "guardduty:StopMonitoringMembers","config:StopConfigurationRecorder",
+                 "config:DeleteConfigurationRecorder","securityhub:DisableSecurityHub",
+                 "securityhub:BatchDisableStandards"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyRootUserActions",
+      "Effect": "Deny",
+      "Action": "*",
+      "Resource": "*",
+      "Condition": { "StringLike": { "aws:PrincipalArn": "arn:aws:iam::*:root" } }
+    }
+  ]
+}
+```
+
+### Historia zmian SCP w maintenance window 2026-05-07
+
+| Czas | Stan | Cel |
+|------|------|-----|
+| przed oknem | NotAction [5 MFA akcji] | tymczasowe MFA enrollment |
+| w oknie | account-specific exclusion (8 kont) | email + MFA remediation |
+| po oknie (finał) | **pełny DenyRootUserActions** | przywrócony governance |
 
 ### Brakujące LLZ SCPs (IaC zdefiniowane, brak w live)
 
 IaC locals.tf komentarz: `# SCP ID (po apply 2026-04-18): quarantine_deny_all: p-wxsdn4cy, workloads_baseline: p-flr98jkj`
 
-Tych IDs nie ma w live AWS. Governance terraform state zmodyfikowany 2026-04-20 (2 dni po apply).
-**Hipoteza:** SCPs zostały wdrożone 2026-04-18, następnie usunięte przez `terraform destroy` lub ręcznie 2026-04-20.
-**Impact:** Quarantine OU bez deny-all. Workloads Production OU bez baseline guardrails.
-
-| SCP (IaC) | Oczekiwany ID | Stan live | Impact |
-|-----------|--------------|-----------|--------|
-| llz-quarantine-deny-all | p-wxsdn4cy (z 2026-04-18) | **NIE ISTNIEJE** | Quarantine konta bez blokady |
-| llz-workloads-baseline | p-flr98jkj (z 2026-04-18) | **NIE ISTNIEJE** | Production accounts bez LLZ guardrails |
+| SCP (IaC) | Stan live | Impact |
+|-----------|-----------|--------|
+| llz-quarantine-deny-all | **NIE ISTNIEJE** | Quarantine konta bez blokady |
+| llz-workloads-baseline | **NIE ISTNIEJE** (zastąpiony przez llz-security-baseline?) | Production accounts — llz-security-baseline obejmuje Prod OU |
 
 ### Tag Policies — stan live
 

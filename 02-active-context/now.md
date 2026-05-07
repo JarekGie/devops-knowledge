@@ -2,31 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-07 — aws-cloud-platform: SCP OPTION-B aktywna ⚠️ MAINTENANCE WINDOW
+## Update — 2026-05-07 — aws-cloud-platform: SCP rollback ✅ — MFA pending
 
 ```
-AKTYWNA ZMIANA SCP — MAINTENANCE WINDOW OTWARTY
-SCP:    llz-security-baseline (p-8wat7tjs)
-Zmiana: DenyRootUserActions — account-specific exclusion (Option B)
-        Root nierestrykowany w 8 kontach remediation; DenyDisableSecurityServices AKTYWNE
-Snapshot: /tmp/scp-mfa-remediation/SNAPSHOT-2026-05-07T170429Z.json
+SCP:    llz-security-baseline (p-8wat7tjs) — PRZYWRÓCONY do pełnego DenyRootUserActions
+Stan:   maintenance window ZAMKNIĘTY 2026-05-07
+Email:  10/12 ACTIVE kont ma infra.makolab.pl
 
-ROLLBACK (wykonaj NATYCHMIAST po zakończeniu remediacji):
-  aws organizations update-policy \
-    --policy-id p-8wat7tjs \
-    --content file:///tmp/scp-mfa-remediation/ROLLBACK-full-restore.json \
-    --profile mako-dc
+Email do zmiany (ACTIVE):
+  [ ] makolab_dc (864277686382)           — dc@makolab.com → aws-makolabdc@infra.makolab.pl
+  [ ] monitoring-nagios-bot (814662658531) — aws@makolab.pl → aws-monitoring@infra.makolab.pl
 
-Konta do remediacji (email + MFA):
-  [ ] LogArchiveNew (771354139056) — log-archive-new@makolab.pl        [tylko MFA, nie w exclusion]
-  [ ] planodkupow (333320664022)   — planodkupow@makolab.pl
-  [ ] planodkupowv1 (292464762806) — planodkupow1@makolab.pl
-  [ ] Booking_Online (128264038676) — jaroslaw.golab+booking@makolab.com [email PERSONAL → zmień]
-  [ ] RShop (943111679945)          — jaroslaw.golab+rshop@makolab.com   [email PERSONAL → zmień]
-  [ ] dacia-asystent (074412166613) — dacia-asystent@makolab.pl
-  [ ] CC (943696080604)             — CCAWS@makolab.com
-  [ ] DRP-TFS (613448424242)        — drptfs@makolab.pl
-  [ ] lab (052845428574)            — lab@makolab.pl
+MFA do enrollment (9 kont — wymaga kolejnego maintenance window):
+  [ ] LogArchiveNew (771354139056)
+  [ ] planodkupow (333320664022)
+  [ ] planodkupowv1 (292464762806)
+  [ ] Booking_Online (128264038676)
+  [ ] RShop (943111679945)
+  [ ] dacia-asystent (074412166613)
+  [ ] CC (943696080604)
+  [ ] DRP-TFS (613448424242)
+  [ ] lab (052845428574)
 ```
 
 ## Update — 2026-05-07 — aws-cloud-platform: root MFA discovery ZAKOŃCZONE
@@ -2789,4 +2785,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 20:28 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 20:50 — sesja aktywna*
