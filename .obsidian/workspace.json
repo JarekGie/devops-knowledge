@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Check vault state and fix Codex sync issues"
+              "title": "Terminal: ⠂ Check vault state and fix Codex sync issues"
             }
           },
           {
@@ -292,6 +292,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/anonimizator/session-log.md",
     "20-projects/clients/mako/drp-tfs/drp-tfs-context.md",
     "20-projects/clients/mako/drp-tfs",
     "50-patterns/prompts/invocations/cloud-detective-drp-tfs.md",
@@ -321,7 +322,6 @@
     "20-projects/internal/secure-ai-anonymizer",
     "_chatgpt/context-packs/cloud-detective.md",
     "_chatgpt/context-packs/cloud-practice.md",
-    "85-cloud-practice/dashboard.md",
     "85-cloud-practice/competency/evidence",
     "85-cloud-practice/partnership/notes",
     "85-cloud-practice/opportunities",

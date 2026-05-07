@@ -2,6 +2,43 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — switch context: Maspex zapisany, przejście na puzzler-pbms
+
+```
+Zamknięty kontekst roboczy: Maspex / Kapsel
+Status:                   standby / brak nowych operacji w tej sesji
+Context:                  20-projects/clients/mako/maspex/maspex-context.md
+
+Najważniejszy stan Maspex:
+  - Redis reboot + CloudFront invalidation wykonane (sesja wcześniejsza).
+  - Projekt w standby — czeka na certyfikaty SSL od klienta.
+  - Otwarte obserwacje: Redis circuit breaker, maspex-api memory, maspex-bot failures.
+  - Terraform UAT plan może blokować stary digest w DynamoDB terraform-locks-969209893152.
+  - infra-maspex lokalny patch observability/WAF nadal bez apply — nie dotykać bez plan review.
+
+Aktywny kontekst roboczy: puzzler-b2b / PBMS
+AWS profile:              puzzler-pbms
+Region:                   eu-west-2
+Account:                  698220459519
+Repo infra:               ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Vault context:            20-projects/clients/mako/puzzler-b2b/session-log.md
+
+Stan wejściowy puzzler-pbms:
+  - DEV i QA jumphosty ustabilizowane i operator-safe (jumphost-v11, linux/amd64).
+  - staged: envs/dev/services.tf
+      usunięto local.azuread_secrets; 7x merge -> local.docdb_secrets
+      terraform plan: No changes
+  - untracked: docs/db-access.md — nie commitować bez decyzji
+  - apply NIE wykonany od ostatniego przełączenia
+
+Następny krok:
+  → weryfikacja tożsamości AWS:
+      aws sts get-caller-identity --profile puzzler-pbms
+  → commit staged DEV guardrail change:
+      git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
+  → potem zdecydować co zrobić z docs/db-access.md
+```
+
 ## Update — 2026-05-07 — switch context: puzzler-pbms zapisany, przejście na Maspex
 
 ```
@@ -2588,4 +2625,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 10:52 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 14:41 — sesja aktywna*
