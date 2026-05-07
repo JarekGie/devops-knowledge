@@ -16,6 +16,9 @@ created: "2026-05-07"
 updated: "2026-05-07"
 discovery_date: "2026-05-07"
 discovery_status: complete
+maintenance_window: "2026-05-07"
+maintenance_window_status: closed
+scp_state: restored
 ---
 
 # AWS Root MFA Recovery & Remediation — Plan operacyjny
