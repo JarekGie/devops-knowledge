@@ -152,5 +152,43 @@ make test  → 10 passed, 4 skipped (integration: 4 passed z DATABASE_URL)
 ```
 
 **Następny krok:**
-→ Benchmark Ollama modeli
-→ Testowanie na realnych dokumentach (Terraform, YAML, logi)
+→ Coverage workflow i regression tests → patrz sekcja niżej
+
+---
+
+## 2026-05-07 — Recognizer coverage workflow
+
+**Cel:** Przekształcenie ad-hoc debugowania w uporządkowany workflow jakości.
+
+**Nowe pliki:**
+- `docs/known-failures.md` — 6 znanych failures (KF-001 do KF-006) z severity, root cause, regression test pointers
+- `docs/recognizer-coverage-matrix.md` — coverage table dla 12 entity types + overlap priority table
+- `docs/testing-workflow.md` — 8-krokowy workflow: fixture → detect → anonymize → grep → rehydrate → diff → classify → register
+- `tests/regression/` — 4 pliki, 18 testów: 8 pass (must-not-regress), 10 xfail (known broken)
+- `scripts/analyze-fixture.sh` — end-to-end fixture analysis z leakage checks i audit summary
+- `make analyze-fixture FILE=<path>` + `make test-regression`
+
+**Zidentyfikowane failures:**
+
+| ID | Severity | Problem |
+|----|----------|---------|
+| KF-001 | high | S3 ARN bez account ID nie matchuje (regex wymaga `\d{12}`) |
+| KF-002 | **critical** | EMAIL_ADDRESS (score 1.0) bije DB_CONNECTION_STRING (0.97) → prefix leakuje |
+| KF-003 | high | `.internal`/`.local` TLD nie w liście Presidio → email nie wykryty, URL partial match |
+| KF-004 | **critical** | Double-`@` w password → ta sama przyczyna co KF-002 |
+| KF-005 | medium | `API`, `VPC` tokenizowane jako ORGANIZATION przez spaCy NER |
+| KF-006 | **critical** | `_merge_overlapping` zastępuje outer span przez inner span o wyższym score |
+
+**Root cause priority:** KF-006 (overlap resolution) jest przyczyną KF-002 i KF-004.
+
+**Wyniki testów:**
+```
+make smoke          → PASSED (2 events: anonymize,rehydrate)
+make test           → 18 passed, 4 skipped, 10 xfailed
+make test-regression → 8 passed, 10 xfailed
+```
+
+**Następny krok:**
+→ Fix KF-006 (overlap resolution algorithm) → unblocks KF-002 i KF-004
+→ Fix KF-001 (S3 ARN regex — S3 bucket ARNs bez account ID)
+→ Fix KF-003 (custom email recognizer z relaxed TLD)
