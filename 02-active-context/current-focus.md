@@ -5,24 +5,29 @@
 ## Główny cel
 
 ```
-Przełączony kontekst roboczy: puzzler-b2b / PBMS.
-Stan vault zapisany 2026-05-07 po drp-tfs cloud-detective i powrocie na puzzler-pbms:
-  - drp-tfs snapshot zapisany w 20-projects/clients/mako/drp-tfs/drp-tfs-context.md,
-  - drp-tfs standby z CRITICAL: leasing-filters CrashLoopBackOff + haproxy LB pending,
+Aktywny kontekst roboczy: puzzler-b2b / PBMS.
+Stan vault zapisany 2026-05-07 po finalnej remediacji DEV/QA jumphostów:
   - AWS profile puzzler-pbms działa: account 698220459519, user makolab-ci,
-  - QA ownership model sprawdzony względem DEV,
-  - DEV envs/dev/services.tf dostosowany do QA: bez AzureAd ECS secret injection,
-  - terraform fmt/validate OK,
-  - terraform plan DEV = No changes,
-  - apply NIE wykonany,
-  - infra repo ma staged envs/dev/services.tf oraz untracked docs/db-access.md.
+  - DEV jumphost operational: task def :11, image jumphost-v11, ECS Exec OK, SSH OK, tunnel OK,
+  - QA jumphost operational: task def :4, image jumphost-v11, ECS Exec OK, SSH OK, tunnel OK,
+  - image jumphost-v11 pushed as linux/amd64 to DEV and QA ECR,
+  - digest: sha256:4cd031cee7da3f5b874f3fadab93399a945ff4ccfecb6a333a4a7ed70f13e66d,
+  - Dockerfile fixed: no UsePAM, AllowTcpForwarding yes via sed replacement,
+  - Terraform db-jumphost now supports enable_execute_command; DEV/QA enabled,
+  - targeted apply done only for jumphost task/service and jumphost_ssh secret version,
+  - explicit aws ecs update-service done for jumphost only due to task_definition ignore_changes,
+  - commits created:
+      12fac50 fix(jumphost): stabilize sshd runtime and amd64 image build
+      a5e5598 fix(terraform): enable ecs exec and normalize jumphost key handling
+  - infra repo still has staged pre-existing envs/dev/services.tf guardrail parity change,
+  - infra repo still has untracked docs/db-access.md.
 
-Główna oś puzzler-pbms:
-  1. commit staged DEV guardrail change,
-  2. utrzymać zakaz apply bez ponownego plan review,
-  3. opcjonalnie sprawdzić uat/prod/secrets.tf parity,
-  4. opcjonalnie force-replace task definitions tylko jeśli potrzebny runtime cleanup,
-  5. nie mieszać untracked docs/db-access.md z commitem guardrails bez decyzji.
+Główna oś puzzler-pbms teraz:
+  1. commit staged DEV guardrail parity change,
+  2. nie mieszać untracked docs/db-access.md bez decyzji,
+  3. opcjonalnie uat/prod secrets parity,
+  4. opcjonalnie cleanup docs/context: stare wzmianki QA jumphost DOWN są już nieaktualne,
+  5. przy kolejnych zmianach pamiętać, że ecs-service ignoruje task_definition i container_definitions.
 
 Stan wejściowy z vault:
   - AWS profile: puzzler-pbms
@@ -31,12 +36,13 @@ Stan wejściowy z vault:
   - repo infra: ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
   - context: 20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md
 
-Ryzyka z ostatniego scan:
-  - apply nie był wykonany po DEV parity change; plan był no-op
+Ryzyka / uwagi po ostatniej pracy:
+  - staged envs/dev/services.tf to wcześniejsza guardrail parity zmiana, nie część jumphost commitów
   - docs/db-access.md untracked w infra repo — nie stagingować przypadkiem
   - envs/dev/.env istnieje jako pusty plik
   - runtime ECS task definitions nie zmienią się bez CI/CD albo force-replace
-  - QA jumphost wcześniejszy blocker ECR image missing został naprawiony tagiem jumphost-v10 wg ostatniego stanu IaC, ale live recheck można zrobić przy kolejnej sesji
+  - QA jumphost wcześniejszy blocker arm64-only / CannotPullContainerError rozwiązany przez jumphost-v11
+  - healthStatus ECS tasków jumphosta = UNKNOWN, bo brak container healthcheck
 
 Wejście:
   - `02-active-context/now.md`
@@ -50,7 +56,7 @@ Wejście:
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| puzzler-b2b / PBMS | aktywny | commit staged `envs/dev/services.tf`; potem opcjonalnie uat/prod secrets parity albo runtime cleanup task definitions |
+| puzzler-b2b / PBMS | aktywny | DEV/QA jumphosty ustabilizowane; commit staged `envs/dev/services.tf`; potem decyzja o `docs/db-access.md` |
 | maspex | standby | Load test report 19:00 zapisany; Redis reboot i CloudFront invalidation wykonane; obserwować przy kolejnym teście Redis circuit + ECS memory; Terraform observability/WAF patch nadal bez apply |
 | rshop | standby | utrzymać zakaz root deploy; wrócić później do permanent fix nested `TemplateURL` i ECS PropagateTags CFN patch |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
@@ -62,10 +68,10 @@ Wejście:
 
 ## Priorytety tygodnia
 
-1. puzzler-pbms: commit staged DEV guardrail change w `infra-puzzler-b2b-final`.
+1. puzzler-pbms: commit staged DEV guardrail parity change w `infra-puzzler-b2b-final`.
 2. puzzler-pbms: nie stagingować przypadkiem `docs/db-access.md` bez review.
 3. puzzler-pbms: opcjonalnie uat/prod `secrets.tf` parity dla `ignore_changes`.
-4. puzzler-pbms: opcjonalnie runtime cleanup ECS task definitions po decyzji.
+4. puzzler-pbms: opcjonalnie zaktualizować dłuższy `puzzler-b2b-context.md`, bo nadal ma historyczne wpisy QA jumphost DOWN.
 5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać z bieżącą sesją; powrót tylko po explicit switch.
 
 ## Aktywni klienci
@@ -86,7 +92,7 @@ Wejście:
 - [ ] puzzler-pbms: commit staged `envs/dev/services.tf` guardrail parity
 - [ ] puzzler-pbms: zdecydować co zrobić z untracked `docs/db-access.md`
 - [ ] puzzler-pbms: uat/prod `secrets.tf` parity dla `ignore_changes`
-- [ ] puzzler-pbms: runtime cleanup ECS task definitions tylko po explicit decision
+- [ ] puzzler-pbms: opcjonalnie dodać healthcheck do obrazu/modułu jumphosta, bo ECS healthStatus jest UNKNOWN
 
 ## Powiązane
 

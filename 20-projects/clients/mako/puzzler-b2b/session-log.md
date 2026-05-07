@@ -166,6 +166,113 @@ logi: "PBMS Notifier API started." — brak MongoConfigurationException ✅
 
 ---
 
+## 2026-05-07 — DEV/QA jumphost final stabilization
+
+**Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final`  
+**AWS:** profile `puzzler-pbms`, account `698220459519`, region `eu-west-2`  
+**Result:** DEV and QA jumphosts operational for SSH, ECS Exec and DocumentDB TCP forwarding.
+
+### Root causes
+
+- QA `jumphost-v10` ECR tag was `linux/arm64` only while Fargate ran `x86_64`.
+- ECS Exec was disabled on DEV and QA jumphost services.
+- QA `jumphost_ssh` secret contained literal `$(cat ~/.ssh/id_rsa.pub)`.
+- Dockerfile appended unsupported Alpine/OpenSSH option `UsePAM no`.
+- `modules/core/ecs-service` ignores `task_definition`, so Terraform registered new task definitions but did not automatically switch services to them.
+
+### Changes
+
+- `Dockerfile`
+  - removed `UsePAM no`
+  - kept `PermitRootLogin no`, `PasswordAuthentication no`, `PubkeyAuthentication yes`
+  - enforced `AllowTcpForwarding yes` via replacement
+- `modules/pattern/db-jumphost`
+  - added `enable_execute_command`
+  - passed it into `modules/core/ecs-service`
+- `envs/dev/services.tf`, `envs/qa/services.tf`
+  - enabled ECS Exec only for `module "db_jumphost"`
+- `envs/dev/terraform.tfvars`, `envs/qa/terraform.tfvars`
+  - `jumphost_image` -> `jumphost-v11`
+
+### Image
+
+Built and pushed deterministic amd64 image:
+
+```text
+tag:      jumphost-v11
+platform: linux/amd64
+digest:   sha256:4cd031cee7da3f5b874f3fadab93399a945ff4ccfecb6a333a4a7ed70f13e66d
+DEV:      698220459519.dkr.ecr.eu-west-2.amazonaws.com/infra-puzzler-b2b-app-dev:jumphost-v11
+QA:       698220459519.dkr.ecr.eu-west-2.amazonaws.com/infra-puzzler-b2b-app-qa:jumphost-v11
+```
+
+### Deployment
+
+Targeted Terraform apply only:
+
+- DEV/QA `aws_secretsmanager_secret_version.jumphost_ssh`
+- DEV/QA `module.db_jumphost.module.ecs_service.aws_ecs_task_definition.this`
+- DEV/QA `module.db_jumphost.module.ecs_service.aws_ecs_service.this`
+
+Then explicit jumphost-only ECS service update:
+
+```text
+DEV service -> infra-puzzler-b2b-dev-jumphost:11
+QA service  -> infra-puzzler-b2b-qa-jumphost:4
+```
+
+No ALB, VPC, DocumentDB, app ECS services or unrelated secrets were changed.
+
+### Runtime verification
+
+DEV:
+
+```text
+service: desired=1 running=1 pending=0 rollout=COMPLETED
+task:    41dab89d34894d9e9c74aad1bfc2e819
+image:   jumphost-v11, digest sha256:4cd031cee7da3f5b874f3fadab93399a945ff4ccfecb6a333a4a7ed70f13e66d
+arch:    x86_64
+ECS Exec: OK
+sshd -T: allowtcpforwarding yes; permitrootlogin no; passwordauthentication no; pubkeyauthentication yes
+authorized_keys: 2 lines, non-empty
+port 22: listening
+container -> DocumentDB:27017: open
+SSH login with configured RSA key: OK
+local tunnel 127.0.0.1:37017 -> DEV DocumentDB: OK
+```
+
+QA:
+
+```text
+service: desired=1 running=1 pending=0 rollout=COMPLETED
+task:    85610ee4390b4f158c9507cbee2e32a1
+image:   jumphost-v11, digest sha256:4cd031cee7da3f5b874f3fadab93399a945ff4ccfecb6a333a4a7ed70f13e66d
+arch:    x86_64
+ECS Exec: OK
+sshd -T: allowtcpforwarding yes; permitrootlogin no; passwordauthentication no; pubkeyauthentication yes
+authorized_keys: 2 lines, non-empty
+port 22: listening
+container -> DocumentDB:27017: open
+SSH login with configured RSA key: OK
+local tunnel 127.0.0.1:37018 -> QA DocumentDB: OK
+```
+
+### Commits
+
+```text
+12fac50 fix(jumphost): stabilize sshd runtime and amd64 image build
+a5e5598 fix(terraform): enable ecs exec and normalize jumphost key handling
+```
+
+### Remaining repo state
+
+```text
+staged:    envs/dev/services.tf
+untracked: docs/db-access.md
+```
+
+The staged `envs/dev/services.tf` is the earlier DEV guardrail parity change and was intentionally preserved after the jumphost commits.
+
 ## 2026-05-06 — IaC ownership normalization commit
 
 **Branch:** `feat/dev-jumphost-runtime-secret`

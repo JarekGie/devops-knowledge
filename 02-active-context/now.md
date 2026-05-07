@@ -2,6 +2,100 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — puzzler-b2b: DEV/QA jumphost remediation DONE
+
+```
+Projekt:  puzzler-b2b / PBMS
+Repo:     ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+AWS:      profile puzzler-pbms | account 698220459519 | region eu-west-2
+
+CEL ZAKOŃCZONY:
+  DEV i QA jumphosty są operacyjnie używalne dla:
+    - SSH access
+    - TCP forwarding / DocumentDB tunnel
+    - ECS Exec troubleshooting
+    - controlled operator access
+
+ROOT CAUSES:
+  - QA jumphost-v10 był linux/arm64-only, a Fargate task działa jako x86_64.
+  - ECS Exec był disabled na obu usługach jumphosta.
+  - QA authorized_keys secret miał literal "$(cat ~/.ssh/id_rsa.pub)".
+  - Dockerfile dodawał nieobsługiwane Alpine/OpenSSH "UsePAM no".
+  - Terraform guardrail ignore_changes=[task_definition] wymagał jawnego update-service dla jumphosta.
+
+WDROŻONE:
+  - Dockerfile:
+      removed UsePAM no
+      deterministic AllowTcpForwarding yes via sed replacement
+      preserved PermitRootLogin no / PasswordAuthentication no / PubkeyAuthentication yes
+  - image built/pushed:
+      tag: jumphost-v11
+      platform: linux/amd64
+      digest: sha256:4cd031cee7da3f5b874f3fadab93399a945ff4ccfecb6a333a4a7ed70f13e66d
+      repos:
+        698220459519.dkr.ecr.eu-west-2.amazonaws.com/infra-puzzler-b2b-app-dev:jumphost-v11
+        698220459519.dkr.ecr.eu-west-2.amazonaws.com/infra-puzzler-b2b-app-qa:jumphost-v11
+  - Terraform targeted apply:
+      DEV/QA jumphost task definition replaced
+      DEV/QA jumphost ECS service enable_execute_command false -> true
+      DEV/QA jumphost_ssh secret version replaced with real authorized_keys
+  - explicit ECS update-service required and executed:
+      dev service -> task definition infra-puzzler-b2b-dev-jumphost:11
+      qa service  -> task definition infra-puzzler-b2b-qa-jumphost:4
+
+RUNTIME VERIFIED:
+  DEV:
+    service: desired=1 running=1 pending=0 rollout=COMPLETED
+    task: 41dab89d34894d9e9c74aad1bfc2e819
+    public IP during verification: 18.170.98.226
+    ECS Exec: OK
+    sshd -T: allowtcpforwarding yes, permitrootlogin no,
+             passwordauthentication no, pubkeyauthentication yes
+    authorized_keys: 2 lines, non-empty
+    port 22: listening
+    container -> DocumentDB:27017: open
+    SSH login with configured RSA key: OK
+    local tunnel 127.0.0.1:37017 -> DEV DocumentDB: OK
+
+  QA:
+    service: desired=1 running=1 pending=0 rollout=COMPLETED
+    task: 85610ee4390b4f158c9507cbee2e32a1
+    public IP during verification: 13.40.23.226
+    ECS Exec: OK
+    sshd -T: allowtcpforwarding yes, permitrootlogin no,
+             passwordauthentication no, pubkeyauthentication yes
+    authorized_keys: 2 lines, non-empty
+    port 22: listening
+    container -> DocumentDB:27017: open
+    SSH login with configured RSA key: OK
+    local tunnel 127.0.0.1:37018 -> QA DocumentDB: OK
+
+VALIDATION:
+  - terraform fmt OK
+  - terraform -chdir=envs/dev validate -no-color -> Success with existing deprecated aws_region.name warnings
+  - terraform -chdir=envs/qa validate -no-color -> Success with existing deprecated aws_region.name warnings
+  - CloudWatch logs after deploy show no UsePAM warning; show sshd listening and accepted publickey.
+
+COMMITS CREATED:
+  - 12fac50 fix(jumphost): stabilize sshd runtime and amd64 image build
+  - a5e5598 fix(terraform): enable ecs exec and normalize jumphost key handling
+
+REPO STATE AFTER REMEDIATION:
+  - staged pre-existing change preserved: envs/dev/services.tf
+      (DEV guardrail parity: AzureAd ECS env injection removal)
+  - untracked, do not stage accidentally: docs/db-access.md
+
+FINAL VERDICT:
+  DEV usable: YES
+  QA usable: YES
+  operator-safe: YES
+
+NASTĘPNY KROK:
+  → commit staged DEV guardrail parity change:
+    git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
+  → potem zdecydować co zrobić z untracked docs/db-access.md
+```
+
 ## Update — 2026-05-07 — switch context: drp-tfs zapisany, powrót na puzzler-pbms
 
 ```
