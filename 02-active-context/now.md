@@ -2,6 +2,40 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — secure-ai-anonymizer: KF-006 fixed
+
+```
+Projekt:  secure-ai-anonymizer (dc-anonimizator)
+Repo:     ~/projekty/mako/aws-projects/dc-anonimizator
+Status:   KF-006 FIXED — priority-based overlap resolution
+
+ZROBIONE:
+  src/dc_anonymizer/tokenization/tokenizer.py — pełny rewrite
+    → _ENTITY_PRIORITY: 13 poziomów (DB_CONNECTION_STRING=11 > EMAIL_ADDRESS=4)
+    → _beats(): priorytet > długość spanu > score
+    → _merge_overlapping(): kandydat wygrywa tylko gdy bije WSZYSTKIE nakładające się spany
+
+  tests/unit/test_tokenizer.py — +6 testów priority resolution
+  tests/regression/test_kf_002_004_006_*: xfail usunięty z 3 testów (teraz pass)
+  docs/known-failures.md: KF-006/KF-002/KF-004 → status: fixed
+
+WYNIKI:
+  make test           → 27 passed, 4 skipped, 7 xfailed
+  make test-regression → 11 passed, 7 xfailed  (było 8/10xfail)
+  make smoke          → PASSED
+  fixture analyze     → postgresql/mongodb/redis connection strings w pełni tokenizowane
+
+NOWY EDGE CASE (nie blocking):
+  API_KEY_GENERIC (priority=9) > AWS_ARN (priority=8)
+  → rola IAM triggeruje API_KEY_GENERIC jako FP → partial ARN leak
+  → naprawa: obniżyć priorytet API_KEY_GENERIC lub podnieść AWS_ARN
+
+NASTĘPNY KROK:
+  → KF-001: S3 ARN regex (brak account ID w bucket ARNs)
+  → KF-003: email z relaxed TLD (.internal, .example, .corp)
+  → Nowy KF: API_KEY_GENERIC priority edge case (ARN partial leak)
+```
+
 ## Update — 2026-05-07 — secure-ai-anonymizer: bootstrap repo
 
 ```
@@ -2165,4 +2199,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 09:20 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 09:23 — sesja aktywna*
