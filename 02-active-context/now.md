@@ -2,6 +2,37 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — puzzler-b2b: Terraform ownership model documented + IaC stabilized
+
+```
+Repo:    ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Branch:  main
+
+COMMITY:
+  15ae29e fix(qa): remove AzureAd env vars and add lifecycle drift guards
+  87086b0 docs(terraform): document runtime ownership and drift guardrails
+
+IaC ZMIANY (applied):
+  - envs/qa/services.tf: usunięto AzureAd vars z 7 serwisów
+  - envs/qa/secrets.tf: ignore_changes = [secret_string] na 3 secret versions
+  - modules/core/documentdb/main.tf: ignore_changes = [master_password] (wszystkie envs)
+  - .gitignore: usunięto błędny wpis docs/
+
+DOKUMENTACJA:
+  - docs/terraform-ownership-model.md (437 linii)
+  - 3-tierowy model własności: Terraform / CI/CD / Operator
+  - Rationale dla każdego ignore_changes guardrail
+  - Workflow operacyjny (plan-first, sts verify)
+  - Krytyczne ostrzeżenia operacyjne
+  - 6 TODOs architektonicznych
+
+STAN: terraform plan QA = effectively no-op | serwisy zdrowe
+
+NASTĘPNY KROK:
+  → Weryfikacja: uat/prod/secrets.tf parity (ignore_changes gaps)
+  → Opcjonalnie: force-replace task definitions dla runtime cleanup
+```
+
 ## Update — 2026-05-07 — puzzler-b2b: notifier crash loop RESOLVED
 
 ```
@@ -2253,4 +2284,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 10:43 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 10:52 — sesja aktywna*
