@@ -91,3 +91,38 @@ ADR-008 dodany do vault: uv vs Poetry — wybór uv.
 → `make db-up`
 → Implementacja pierwszego roundtrip: `dc-anonymizer anonymize --input tests/fixtures/input/mixed_document.txt`
 → Benchmark Ollama: llama3.2:3b vs mistral:7b na fixture documents
+
+---
+
+## 2026-05-07 — Smoke test fixes
+
+**Problem:** `make smoke` failowało na 2 błędach runtime.
+
+**Root causes i naprawione pliki:**
+
+1. **`src/dc_anonymizer/cli.py`** — `RecognizerResult` (Presidio) nie jest Pydantic — brak `model_dump()` i `text`. Fix:
+   - `r.model_dump()` → `r.to_dict()`
+   - `r.text` → `raw_text[r.start:r.end]` (wymagało doładowania tekstu z `ingest.router.extract`)
+
+2. **`src/dc_anonymizer/audit/audit_log.py`** — `:meta::jsonb` PostgreSQL cast nie parsuje się poprawnie przez psycopg3+SQLAlchemy `text()`. Fix:
+   - `:meta::jsonb` → `CAST(:meta AS JSONB)`
+
+**Wynik po naprawkach:**
+
+```
+=== SMOKE PASSED ===
+[OK] preflight (env, KEK, spaCy, psycopg3)
+[OK] DB connection + schema
+[OK] detect (20 entities)
+[OK] anonymize (7 tokens, document_id zapisany)
+[OK] AWS account ID usunięty z output
+[OK] rehydrate (output = original)
+[OK] audit events (1 event per run)
+```
+
+**Deterministyczny:** 2 uruchomienia → identyczny token count (7), zawsze PASSED.
+
+**Następny krok:**
+→ `make test` — unit + integration tests
+→ Benchmark Ollama modeli
+→ Testowanie na realnych dokumentach (Terraform, YAML, logi)
