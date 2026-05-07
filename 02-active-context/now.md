@@ -2,6 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — maspex UAT: Redis reboot + CloudFront invalidation
+
+```
+Projekt:   maspex (klient mako)
+AWS:       profile maspex-cli | account 969209893152
+Operacja:  kontrolowany refresh cache UAT — Redis + CloudFront
+
+WYKONANE:
+  1. Redis ElastiCache maspex-uat — reboot node 0001
+     → status po operacji: available ✅
+     → czas downtime: ~30–45 sek (single-node, brak failover)
+
+  2. CloudFront E3J76RNXIE2YIG (kapsel.makotest.pl) — invalidation /*
+     → Invalidation ID: IDLPGZBLCJJMAIW6ACQUPL5IDJ
+     → status: Completed ✅
+
+WYNIK: środowisko UAT gotowe do dalszych testów
+
+NASTĘPNY KROK:
+  → Czeka na certyfikaty SSL od klienta (projekt w standby)
+```
+
 ## Update — 2026-05-07 — secure-ai-anonymizer: KF-006 fixed
 
 ```
@@ -2199,4 +2221,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 09:28 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 09:38 — sesja aktywna*
