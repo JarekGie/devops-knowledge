@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ AWS root MFA recovery and remediation execution"
+              "title": "Terminal: ⠂ AWS root MFA recovery and remediation execution"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "drp-tfs-context"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -163,7 +162,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -290,7 +290,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7254c81a276b7e45",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
     "20-projects/clients/mako/anonimizator/session-log.md",
