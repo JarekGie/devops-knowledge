@@ -2,21 +2,33 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-07 — aws-cloud-platform: root MFA recovery plan utworzony
+## Update — 2026-05-07 — aws-cloud-platform: root MFA discovery ZAKOŃCZONE
 
 ```
 Projekt:  mako / aws-cloud-platform
-Operacja: planowanie — Root MFA Recovery & Remediation
+Operacja: Root MFA Recovery & Remediation — discovery live 2026-05-07
 Vault:    20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md
 
-FAZA:     DISCOVERY — nie wykonano jeszcze żadnej remediacji
-STAN:     Plan gotowy, wymaga wykonania discovery (credential reports + email weryfikacja)
+WYNIKI DISCOVERY:
+  ✅ MFA OK (3 konta): makolab_dc, Admin MakoLab, monitoring-nagios-bot
+  ❌ MFA brak (9 kont): LogArchiveNew + 8x Workloads/NonProd/Sandbox
+  ✅ Brak root access keys w całej org
 
-Następny krok:
-  1. Uruchom discovery pack (sekcja Appendix w root-mfa-recovery-plan.md)
-  2. Wypełnij tabelę discovery (sekcja 3.4)
-  3. Sprawdź treść CT guardrails (p-wacgblah, p-yncf8tm8)
-  4. Dopiero po discovery — plan remediation per konto
+KRYTYCZNY BLOKER:
+  SCP llz-security-baseline (p-8wat7tjs) DenyRootUserActions blokuje
+  root MFA enrollment w 8 z 9 kont wymagających remediacji
+  (Production OU + NonProduction OU + Sandbox OU)
+
+DODATKOWE RYZYKA:
+  - Booking_Online i RShop: email root = personal email pracownika
+  - makolab_monitoring: email = tymur.myma@makolab.com (ex-pracownik?)
+
+NASTĘPNY KROK:
+  1. LogArchiveNew — brak SCP bloker, można działać natychmiast
+     → log-archive-new@makolab.pl → zaloguj jako root → enroll MFA
+  2. Utwórz Recovery OU pod Root (r-z8np) dla pozostałych 8 kont
+     → aws organizations create-organizational-unit --parent-id r-z8np --name "MFA-Recovery"
+  3. Jedno konto na raz: move → enroll → verify → move back
 
 PRIORYTET remediacji:
   1. makolab_dc (864277686382) — management account
@@ -2723,4 +2735,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 18:23 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 18:48 — sesja aktywna*
