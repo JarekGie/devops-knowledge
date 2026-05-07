@@ -11,6 +11,76 @@ Chronologicznie, najnowszy na górze.
 
 ---
 
+## 2026-05-07 — QA: usunięcie AzureAd env vars z serwisów ECS
+
+**Scope:** QA — wszystkie serwisy backendowe (gateway, core, delivery, notifier, worker, sync, builder)
+**Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final/envs/qa`
+**Wynik:** IaC zmienione i zaaplikowane ✅ | runtime cleanup wymaga force-replace (patrz niżej)
+
+### Root cause / motywacja
+
+Developer potwierdził: `AzureAd__ClientId`, `AzureAd__ClientSecret`, `AzureAd__ClientSecretId`, `AzureAd__TenantId` są niepotrzebne na QA — aplikacja czyta z `appsettings`. Zmienne były skopiowane z dev i wstrzykiwane przez ECS jako ECS secrets z Secrets Manager.
+
+### Gdzie były zdefiniowane
+
+- `local.azuread_secrets` w `envs/qa/services.tf:42-47` — map 4 zmiennych → ARN Secrets Manager
+- Używane przez `merge(local.docdb_secrets, local.azuread_secrets)` w 7 serwisach
+- Secrets Manager: `infra-puzzler-b2b/qa/azuread` — nadal istnieje (nie usunięte, cel: Key Vault)
+
+### Zmiany IaC
+
+**`envs/qa/services.tf`** (core change):
+- Usunięto `local.azuread_secrets` block
+- 7x `merge(local.docdb_secrets, local.azuread_secrets)` → `local.docdb_secrets`
+- Worker service miał różne wcięcia — naprawione osobno
+
+**`envs/qa/secrets.tf`** (prerequisite safety fixes — parity z dev):
+- `lifecycle { ignore_changes = [secret_string] }` dodane do `aws_secretsmanager_secret_version.docdb`
+- `lifecycle { ignore_changes = [secret_string] }` dodane do `aws_secretsmanager_secret_version.azuread`
+- `lifecycle { ignore_changes = [secret_string] }` dodane do `aws_secretsmanager_secret_version.jumphost_ssh`
+
+**`modules/core/documentdb/main.tf`** (prerequisite safety fix — wszystkie envs):
+- `lifecycle { ignore_changes = [master_password] }` dodane do `aws_docdb_cluster.this`
+- Zapobiega incydentowi z dev (nadpisanie hasła przy planowaniu z placeholder)
+
+### Plan / apply
+
+```
+terraform fmt -check    → OK (brak outputu)
+terraform validate      → Success (only pre-existing deprecated attribute warnings)
+terraform plan          → Plan: 0 to add, 1 to change, 0 to destroy
+                          1 zmiana: module.app_stack.aws_security_group.alb
+                          — description "MakoLab office HTTP/HTTPS" → "HTTP/HTTPS"
+                          — pre-existing drift, niezwiązane z naszą zmianą, bezpieczne
+terraform apply         → Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
+```
+
+### Stan runtime po apply
+
+Serwisy RUNNING, zdrowe, bez AzureAd errors:
+```
+gateway:   running:1/desired:1, rev:5, logi: 200 OK requests ✅
+core:      running:1/desired:1, rev:5, logi: jobs processing ✅
+delivery:  running:1/desired:1, rev:5
+notifier:  running:1/desired:1, rev:5
+sync:      running:1/desired:1, rev:5
+builder:   running:1/desired:1, rev:5
+worker:    desired:0 (wyłączony przez scheduler)
+```
+
+### Ograniczenie: runtime vars nadal w kontenerach
+
+`ignore_changes = [container_definitions]` na task definitions → apply NIE tworzy nowych rewizji. Zmienne są usunięte z IaC, ale nadal obecne w task definition rev:5 działających kontenerów. Znikną przy:
+- **automatycznie:** następnym deployu CI/CD (nowy obraz → nowy task def)
+- **ręcznie:** `terraform apply -replace=module.<svc>.module.ecs_service.aws_ecs_task_definition.this` + `aws ecs update-service` dla każdego z 7 serwisów
+
+### Do zrobienia (opcjonalnie, nie blokujące)
+
+- [ ] Force-replace task definitions dla natychmiastowego runtime cleanup
+- [ ] Rozważyć usunięcie `aws_secretsmanager_secret.azuread` z QA gdy target: Key Vault
+
+---
+
 ## 2026-05-07 — Notifier crash loop: MongoConfigurationException
 
 **Serwis:** `infra-puzzler-b2b-dev-notifier` (ECS Fargate)
