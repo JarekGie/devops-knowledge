@@ -2,6 +2,48 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — drp-tfs: cloud-detective snapshot zapisany
+
+```
+Projekt:    drp-tfs (client-work / mako)
+AWS:        profile drp-tfs | account 613448424242 | region eu-central-1
+Zapis:      20-projects/clients/mako/drp-tfs/drp-tfs-context.md
+Tryb:       read-only cloud-detective-v2
+
+ŹRÓDŁA:
+  - live AWS: STS, EC2, EKS, ELBv2, ECS, RDS, DocDB, ElastiCache, Secrets Manager,
+              CFN, CloudWatch, Logs, ACM, CloudFront, ECR, EventBridge, WAF, tags
+  - live Kubernetes: nodes, namespaces, deployments, services, pods, ingress,
+                     describe selected deployments/services, selected pod logs
+  - IaC:
+      ~/projekty/mako/drp_tfs
+      ~/projekty/mako/dc-terraform/terraform-aws/environments/drp-tfs
+
+NAJWAŻNIEJSZE LIVE FINDINGS:
+  - EKS drp-tfs-eks-cluster ACTIVE, v1.30, nodegroup general 4/4 Ready.
+  - Większość deploymentów tfs-prod działa.
+  - CRITICAL: tfs-prod-leasing-filters-api-service 0/2 i core-service 0/2,
+    pody CrashLoopBackOff; logi wskazują Mongo replica set jako REPLICA_SET_GHOST
+    i brak primary dla ReadPreference primary.
+  - CRITICAL: tfs-prod/haproxy-kubernetes-ingress LoadBalancer ma EXTERNAL-IP <pending>;
+    event: mixed protocol is not supported for LoadBalancer; target groups listenerów NLB puste.
+  - ECS/RDS/DocDB/ElastiCache/Secrets Manager: brak zasobów live w eu-central-1.
+  - ECR: wiele repo `tfs/*`, większość scanOnPush=false.
+  - CloudWatch alarms: 0.
+  - WAF regional: 0 WebACLs.
+
+UWAGI:
+  - invocation manifest ma uszkodzony repo_path (`�~/projekty/mako//drp-tfs`);
+    użyty rzeczywisty checkout: ~/projekty/mako/drp_tfs.
+  - repo drp_tfs jest dirty w module mongo-ec2 playbook.
+  - żadnych operacji write/apply/delete nie wykonano.
+
+NASTĘPNY KROK:
+  → naprawić Mongo replica set / primary dla leasing-filters
+  → rozdzielić albo poprawić HAProxy LoadBalancer mixed TCP+UDP service
+  → potem powtórzyć cloud-detective live check
+```
+
 ## Update — 2026-05-07 — puzzler-b2b: DEV ownership parity guardrails ready
 
 ```
