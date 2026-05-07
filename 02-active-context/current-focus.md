@@ -41,7 +41,7 @@ Wejście:
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| drp-tfs | aktywny | CRITICAL: Mongo replica set + haproxy LoadBalancer pending |
+| drp-tfs | aktywny | CRITICALs naprawione; cloud-detective check + mongorestore verify |
 | puzzler-b2b / PBMS | standby | CI/CD audit done; commit staged services.tf; decyzja AzureAd QA; decyzja docs/db-access.md |
 | maspex | standby | czeka na SSL certs od klienta |
 | rshop | standby | utrzymać zakaz root deploy; wrócić później do permanent fix nested `TemplateURL` i ECS PropagateTags CFN patch |
@@ -54,10 +54,10 @@ Wejście:
 
 ## Priorytety tygodnia
 
-1. drp-tfs: `aws sts get-caller-identity --profile drp-tfs` — weryfikacja credentials.
-2. drp-tfs: CRITICAL Mongo replica set — zbadać primary status na EC2 (mongo-0/1/2).
-3. drp-tfs: CRITICAL haproxy LoadBalancer — mixed protocol fix lub workaround.
-4. drp-tfs: po naprawie — powtórzyć live check leasing-filters + cloud-detective.
+1. ✅ drp-tfs: CRITICAL Mongo replica set — NAPRAWIONE (delegate_to → lokalna koordynacja, Jinja2 '\t' bug, retry loop).
+2. ✅ drp-tfs: CRITICAL haproxy LoadBalancer — NAPRAWIONE (quic=false, stary ALB usunięty).
+3. drp-tfs: cloud-detective live check — zweryfikować funkcjonalne działanie leasing-filters i core-service.
+4. drp-tfs: sprawdzić stan danych po mongorestore (backup key z S3).
 5. Puzzler-pbms w standby — CI/CD audit gotowy; wrócić gdy decyzja o AzureAd QA.
 
 ## Aktywni klienci

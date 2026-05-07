@@ -63,6 +63,33 @@ PRIORYTET remediacji:
   3. Pozostałe ACTIVE konta
 ```
 
+## Update — 2026-05-07 — drp-tfs: CRITICAL issues NAPRAWIONE ✅
+
+```
+Projekt:  drp-tfs (klient mako)
+AWS:      drp-tfs | 613448424242 | eu-central-1
+
+ZAKOŃCZONE:
+  ✅ make destroy / make apply / make app / make nlb / make redis — full reprovision
+  ✅ MongoDB replica set: 1 PRIMARY + 2 SECONDARY
+     - root cause: delegate_to → brak SSH między node'ami (SG)
+     - fix: 60-replset.yml bez delegate_to, node 0 inicjuje rs
+     - bug #2: Jinja2 '\t' ≠ tab → pipe-separator '|' w 50-discovery.yml
+     - bug #3: race condition — retry loop 60×10s w shell discovery
+  ✅ haproxy LoadBalancer: hostname przydzielony
+     - fix: enablePorts.quic=false (mixed TCP+UDP usunięte)
+     - user usunął stary ALB z AWS (blokował EIP)
+     NLB: a6293990bdab242b191283f7b757315e-286074f3d72658d6.elb.eu-central-1.amazonaws.com
+
+PODY tfs-prod: wszystkie 1/1 Running (leasing-filters stabilne)
+
+NASTĘPNY KROK:
+  → cloud-detective live check drp-tfs
+  → sprawdzić dane po mongorestore
+  → zaktualizować install.sh (quic=false)
+  → opcjonalnie: powtórzyć functional check leasing-filters API
+```
+
 ## Update — 2026-05-07 — switch context: puzzler-pbms zapisany, przejście na drp-tfs
 
 ```
@@ -2762,4 +2789,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 19:20 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 20:04 — sesja aktywna*

@@ -31,9 +31,11 @@ Sprawy w toku, bez zakończenia. Nie todo — rzeczy, które "wiszą" i zajmują
 
 ## DRP-TFS (klient mako)
 
-- [ ] CRITICAL: leasing-filters api/core 0/2, CrashLoopBackOff — Mongo REPLICA_SET_GHOST, brak primary ReadPreference; wymaga naprawy replica set
-- [ ] CRITICAL: haproxy LoadBalancer EXTERNAL-IP `<pending>` — mixed TCP+UDP service; target groups listenerów NLB puste
+- [x] CRITICAL: leasing-filters api/core 0/2, CrashLoopBackOff — NAPRAWIONE 2026-05-07; Mongo RS 1 PRIMARY + 2 SECONDARY; pody 2/2 Running
+- [x] CRITICAL: haproxy LoadBalancer EXTERNAL-IP `<pending>` — NAPRAWIONE 2026-05-07; mixed TCP+UDP usunięto (quic=false), stary ALB usunięty ręcznie; hostname: `a6293990bdab242b191283f7b757315e-286074f3d72658d6.elb.eu-central-1.amazonaws.com`
 - [ ] powtórzyć cloud-detective live check po naprawie Mongo + LoadBalancer
+- [ ] sprawdzić dane po mongorestore (backup key z S3 przywrócony przez mongorestore --drop)
+- [ ] zaktualizować `k8s/loadbalancer/install.sh` aby trwale ustawiał `enablePorts.quic=false`
 
 ## Rshop (klient mako)
 
