@@ -2,6 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — aws-cloud-platform: SCP MFA exception AKTYWNA ⚠️
+
+```
+AKTYWNA ZMIANA SCP — wymagane przywrócenie po enrollment
+SCP:    llz-security-baseline (p-8wat7tjs)
+Zmiana: DenyRootUserActions "Action":"*" → "NotAction":[5 akcji MFA]
+Backup: /tmp/scp-mfa-remediation/llz-security-baseline-BACKUP-2026-05-07.json
+
+ROLLBACK po zakończeniu:
+  aws organizations update-policy \
+    --policy-id p-8wat7tjs \
+    --content file:///tmp/scp-mfa-remediation/llz-security-baseline-BACKUP-2026-05-07.json \
+    --profile mako-dc
+
+Enrollment do wykonania (9 kont):
+  [ ] LogArchiveNew (771354139056) — log-archive-new@makolab.pl
+  [ ] planodkupow (333320664022) — planodkupow@makolab.pl
+  [ ] planodkupowv1 (292464762806) — planodkupow1@makolab.pl
+  [ ] Booking_Online (128264038676) — jaroslaw.golab+booking@makolab.com
+  [ ] RShop (943111679945) — jaroslaw.golab+rshop@makolab.com
+  [ ] dacia-asystent (074412166613) — dacia-asystent@makolab.pl
+  [ ] CC (943696080604) — CCAWS@makolab.com
+  [ ] DRP-TFS (613448424242) — drptfs@makolab.pl
+  [ ] lab (052845428574) — lab@makolab.pl
+```
+
 ## Update — 2026-05-07 — aws-cloud-platform: root MFA discovery ZAKOŃCZONE
 
 ```
@@ -2735,4 +2761,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 18:54 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 18:56 — sesja aktywna*
