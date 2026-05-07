@@ -2,23 +2,52 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-07 — health-notifications: GLPI routing wdrożony ✅
+## Update — 2026-05-07 — SNS/GLPI routing: sesja zamknięta ✅
 
 ```
-Zmiana:  platform/health-notifications — rozdzielono zmienną notification_emails
-         health_notification_emails = ["glpi@infra.makolab.pl"]  → SNS health-notifications
-         ops_alert_emails           = ["jaroslaw.golab@makolab.com"] → SNS health-ops-alerts
+Repo: aws-cloud-platform (main, pushed, commit 1b492e7)
 
-Apply:   ✅ 4 added, 13 changed, 1 destroyed
-         - SNS health-notifications: jaroslaw.golab@ usunięty, glpi@ dodany (pending confirmation)
-         - SNS health-ops-alerts: jaroslaw.golab@ zostaje bez zmian
-         - health_eventbridge_dlq SQS + DLQ config na 13 EventBridge targets — wdrożone
-Commit:  64e5316 (main, pushed)
+STAN SNS — monitoring-nagios-bot (814662658531):
 
-Następny krok:
-  [ ] GLPI: potwierdzić subskrypcję SNS (email confirmation pending)
-  [ ] GLPI: skonfigurować mailbox glpi@infra.makolab.pl → auto-ticket creation
-  [ ] Test: aws health describe-events lub mockowy payload → weryfikacja ticketu w GLPI
+  health-notifications (eu-central-1)
+    → glpi@infra.makolab.pl       ✅ confirmed
+    → jaroslaw.golab@makolab.com  ✅ confirmed (dodany na końcu sesji)
+    Źródło: Lambda health-notify (AWS Health issue/investigation/open)
+    Terraform: platform/health-notifications
+
+  cloudwatch-alarms-glpi (eu-central-1)   ← NOWY
+    → glpi@infra.makolab.pl       ✅ confirmed
+    ARN: arn:aws:sns:eu-central-1:814662658531:cloudwatch-alarms-glpi
+    Przeznaczenie: CloudWatch ALARM → GLPI (tylko alarmy świadomie przypięte)
+    Terraform: platform/health-notifications
+    Żaden alarm jeszcze nie jest wired do tego topiku.
+
+  health-ops-alerts (us-east-1)
+    → jaroslaw.golab@makolab.com  ✅ confirmed
+    Źródło: 5 pipeline alarmów (Lambda errors, DLQ, EventBridge failures)
+    Terraform: platform/health-notifications
+
+  slo-alerts (eu-central-1)
+    → jaroslaw.golab@makolab.com  ✅ confirmed
+    Źródło: 8 SLO alarmów (error rate, latency p99) dla rshop/booking/dacia/bbmt-uat
+    Terraform: platform/monitoring
+    UWAGA: platform/monitoring/terraform.tfvars odtworzony lokalnie
+           slo_notification_emails = ["jaroslaw.golab@makolab.com"]
+
+ZROBIONE W TEJ SESJI:
+  ✅ health_notification_emails / ops_alert_emails — rozdzielone zmienne
+  ✅ health-eventbridge-dlq SQS + DLQ config na 13 EventBridge targets
+  ✅ cloudwatch-alarms-glpi topic stworzony + subskrypcja GLPI potwierdzona
+  ✅ jaroslaw.golab@makolab.com dodany do health-notifications
+  ✅ platform/monitoring/terraform.tfvars odtworzony (slo sub zabezpieczona)
+  ✅ SNS audit raport: docs/audits/sns-topics-monitoring-nagios-bot-2026-05-07.md
+  ✅ ChatGPT context pack: _chatgpt/context-packs/aws-glpi-integration.md
+
+NASTĘPNY KROK (wiring CloudWatch alarmów do GLPI):
+  [ ] Zdecydować które alarmy → cloudwatch-alarms-glpi
+      Kandydaci: SLO breach? budgets? security findings?
+  [ ] Wired alarm_actions w platform/monitoring/alarms.tf
+  [ ] Opcjonalnie: scheduledChange → health-notifications lub osobny topic
 ```
 
 ## Update — 2026-05-07 — aws-cloud-platform: break-glass framework gotowy
@@ -2835,4 +2864,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 23:19 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 23:31 — sesja aktywna*
