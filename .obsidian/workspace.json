@@ -105,8 +105,7 @@
               "title": "drp-tfs-context"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -291,7 +290,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7254c81a276b7e45",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/drp-tfs/session-log.md",
     "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
