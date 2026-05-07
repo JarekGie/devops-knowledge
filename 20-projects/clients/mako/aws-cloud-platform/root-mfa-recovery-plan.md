@@ -30,6 +30,55 @@ scp_state: restored
 
 ---
 
+## 0. Stan po maintenance window 2026-05-07
+
+### Email root — wyniki
+
+| Konto | ID | Email (live) | Domena OK |
+|-------|-----|-------------|-----------|
+| makolab_dc | 864277686382 | dc@makolab.com | ❌ wymaga zmiany |
+| Admin MakoLab | 647075515164 | aws-makolab@infra.makolab.pl | ✅ |
+| monitoring-nagios-bot | 814662658531 | aws@makolab.pl | ❌ wymaga zmiany |
+| lab | 052845428574 | aws-lab@infra.makolab.pl | ✅ |
+| LogArchiveNew | 771354139056 | aws-logarchivenew@infra.makolab.pl | ✅ |
+| planodkupow | 333320664022 | aws-planodkupow@infra.makolab.pl | ✅ |
+| planodkupowv1 | 292464762806 | aws-planodkupow1@infra.makolab.pl | ✅ |
+| Booking_Online | 128264038676 | aws-bookingonline@infra.makolab.pl | ✅ (zmieniony z personal) |
+| RShop | 943111679945 | aws-rshopdev@infra.makolab.pl | ✅ (zmieniony z personal) |
+| dacia-asystent | 074412166613 | aws-daciaasystent@infra.makolab.pl | ✅ |
+| CC | 943696080604 | aws-cc@infra.makolab.pl | ✅ |
+| DRP-TFS | 613448424242 | aws-drptfs@infra.makolab.pl | ✅ |
+
+### MFA root — wyniki (credential report 2026-05-07)
+
+| Konto | MFA | Keys |
+|-------|-----|------|
+| makolab_dc | ✅ | brak |
+| Admin MakoLab | ✅ | brak |
+| monitoring-nagios-bot | ✅ | brak |
+| lab | ❌ | brak |
+| LogArchiveNew | ❌ | brak |
+| planodkupow | ❌ | brak |
+| planodkupowv1 | ❌ | brak |
+| Booking_Online | ❌ | brak |
+| RShop | ❌ | brak |
+| dacia-asystent | ❌ | brak |
+| CC | ❌ | brak |
+| DRP-TFS | ❌ | brak |
+
+### SCP state po rollbacku
+
+`llz-security-baseline` (p-8wat7tjs) — **przywrócony do pełnego DenyRootUserActions** 2026-05-07.
+
+### Remaining actions
+
+| Akcja | Konta | Uwagi |
+|-------|-------|-------|
+| Zmiana email → infra.makolab.pl | makolab_dc, monitoring-nagios-bot | management account — root immune do SCP |
+| MFA enrollment | 9 kont (lab, LogArchiveNew, planodkupow, planodkupowv1, Booking_Online, RShop, dacia-asystent, CC, DRP-TFS) | Wymaga kolejnego maintenance window (Option B lub Recovery OU) |
+
+---
+
 ## 1. Executive Summary
 
 Discovery zakończone. Sytuacja jest poważna, ale bez aktywnych root access keys.
