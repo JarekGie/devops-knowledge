@@ -273,6 +273,64 @@ untracked: docs/db-access.md
 
 The staged `envs/dev/services.tf` is the earlier DEV guardrail parity change and was intentionally preserved after the jumphost commits.
 
+## 2026-05-07 — DEV DocumentDB Compass URI (read-only discovery)
+
+**Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final`
+**AWS:** profile `puzzler-pbms`, account `698220459519`, region `eu-west-2`
+**Operacja:** read-only — secret discovery + local URI generation, bez zmian w AWS
+
+### Cel
+
+Wygenerowanie poprawnego URI do MongoDB Compass przez SSH tunnel (localhost:27117 → DEV DocDB:27017).
+
+### Stan secretu `infra-puzzler-b2b/dev/docdb`
+
+Klucze obecne w secrecie:
+
+```
+connection_string
+connection_string_automation
+connection_string_core
+connection_string_notifier
+database_automation
+database_core
+database_notifier
+host
+password
+port
+username
+```
+
+Weryfikacja:
+- `username` = `dbadmin` ✅
+- `password` niepusty ✅
+- `connection_string_automation` wskazuje `PBMS_DB_automation` ✅
+- `connection_string_automation` zawiera `replicaSet=rs0` — usunięty tylko z lokalnego URI
+
+### URI do MongoDB Compass
+
+Tunnel: `localhost:27117` → `infra-puzzler-b2b-dev-puzzler-mongo.cluster-*.docdb.amazonaws.com:27017`
+
+```
+mongodb://dbadmin:***@localhost:27117/PBMS_DB_automation?authSource=admin&directConnection=true&tls=true&tlsAllowInvalidCertificates=true&retryWrites=false
+```
+
+Parametry konieczne przez tunnel:
+- `directConnection=true` — bez tego Compass próbuje discovery przez replica set, co nie działa przez tunel
+- `replicaSet=rs0` USUNIĘTY — przez localhost tunnel RS discovery nie działa; secret AWS pozostał niezmieniony
+- `tlsAllowInvalidCertificates=true` — DocDB używa własnego CA; cert nie matchuje `localhost`
+- `retryWrites=false` — DocDB nie obsługuje retryable writes
+
+### Stan repo (bez zmian)
+
+```
+staged:    envs/dev/services.tf  (guardrail parity DEV — do commita)
+untracked: docs/db-access.md
+apply:     NIE wykonany
+```
+
+---
+
 ## 2026-05-06 — IaC ownership normalization commit
 
 **Branch:** `feat/dev-jumphost-runtime-secret`
