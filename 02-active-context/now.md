@@ -2,6 +2,47 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — switch context: puzzler-pbms zapisany, przejście na drp-tfs
+
+```
+Zamknięty kontekst roboczy: puzzler-b2b / PBMS
+Status:                   standby / audit zapisany
+Context:                  20-projects/clients/mako/puzzler-b2b/session-log.md
+
+Najważniejszy stan puzzler-pbms:
+  - CI/CD audit DONE: pull-and-update pattern potwierdzony (backend.yml verbatim odczytany)
+  - Root cause AzureAd: CI/CD kopiuje secrets z poprzedniego ECS revision przy każdym deploy
+  - DEV IAM roles w QA: intencjonalne przez terraform.tfvars — QA roles nie stworzone
+  - Worker: NIE w CI/CD matrix — nigdy nie był deployowany przez pipeline
+  - Rekomendacja: Wariant C (Terraform structural baseline + CI/CD explicit task def builder)
+  - Quick fix: jq del AzureAd z task def + register + update-service
+    → wymaga decyzji: czy QA potrzebuje AzureAd? (appsettings.QA.json ma AzureAd sekcję)
+  - infra repo: staged envs/dev/services.tf (guardrail parity DEV) — do commita
+  - untracked: docs/db-access.md — bez decyzji
+
+Aktywny kontekst roboczy: drp-tfs (klient mako)
+AWS profile:              drp-tfs
+Region:                   eu-central-1
+Account:                  613448424242
+Repo:                     ~/projekty/mako/drp_tfs
+                          ~/projekty/mako/dc-terraform/terraform-aws/environments/drp-tfs
+Vault context:            20-projects/clients/mako/drp-tfs/drp-tfs-context.md
+
+Stan wejściowy drp-tfs:
+  CRITICAL: tfs-prod-leasing-filters-api-service 0/2, CrashLoopBackOff
+            Mongo REPLICA_SET_GHOST, brak primary ReadPreference primary
+  CRITICAL: haproxy-kubernetes-ingress LoadBalancer EXTERNAL-IP <pending>
+            mixed TCP+UDP protocol; NLB target groups puste
+  Reszta tfs-prod deploymentów: running
+  EKS drp-tfs-eks-cluster v1.30, nodegroup 4/4 Ready
+  MongoDB replica set na EC2 (drp-tfs-mongo-0/1/2)
+
+Następny krok:
+  → aws sts get-caller-identity --profile drp-tfs
+  → zbadać Mongo replica set primary status
+  → zbadać haproxy LoadBalancer mixed protocol problem
+```
+
 ## Update — 2026-05-07 — puzzler-pbms: DEV DocumentDB Compass URI
 
 ```

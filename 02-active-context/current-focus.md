@@ -5,44 +5,45 @@
 ## Główny cel
 
 ```
-Aktywny kontekst roboczy: puzzler-b2b / PBMS
-Stan vault zapisany 2026-05-07 po przełączeniu z Maspex.
-  - AWS profile: puzzler-pbms
-  - account: 698220459519
-  - region: eu-west-2
-  - repo infra: ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
-  - context: 20-projects/clients/mako/puzzler-b2b/session-log.md
+Aktywny kontekst roboczy: drp-tfs (klient mako)
+Stan vault zapisany 2026-05-07 po przełączeniu z puzzler-pbms.
+  - AWS profile: drp-tfs
+  - account: 613448424242
+  - region: eu-central-1
+  - repo: ~/projekty/mako/drp_tfs
+           ~/projekty/mako/dc-terraform/terraform-aws/environments/drp-tfs
+  - context: 20-projects/clients/mako/drp-tfs/drp-tfs-context.md
 
-Główna oś puzzler-pbms teraz:
-  1. aws sts get-caller-identity --profile puzzler-pbms  (weryfikacja credentials)
-  2. commit staged envs/dev/services.tf:
-       git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
-  3. zdecydować co zrobić z untracked docs/db-access.md
-  4. opcjonalnie: uat/prod secrets.tf parity (ignore_changes gaps)
+Główna oś drp-tfs teraz:
+  1. aws sts get-caller-identity --profile drp-tfs  (weryfikacja credentials)
+  2. CRITICAL: diagnoza Mongo replica set — REPLICA_SET_GHOST, brak primary
+     leasing-filters-api 0/2 i core-service 0/2 crashloop przez brak Mongo primary
+  3. CRITICAL: diagnoza haproxy LoadBalancer EXTERNAL-IP <pending>
+     mixed TCP+UDP protocol, NLB target groups puste
+  4. po naprawie: live check serwisów + powtórzyć cloud-detective
 
 Stan wejściowy z vault:
-  - DEV i QA jumphosty: jumphost-v11 linux/amd64, operator-safe, ECS Exec OK, SSH OK, DocDB tunnel OK
-  - staged: envs/dev/services.tf (usunięto local.azuread_secrets, 7x merge -> local.docdb_secrets)
-  - terraform -chdir=envs/dev plan: No changes
-  - untracked, nie commitować: docs/db-access.md
-  - apply NIE wykonany od jumphosta
+  - EKS drp-tfs-eks-cluster v1.30, nodegroup 4/4 Ready
+  - większość tfs-prod deploymentów: running
+  - MongoDB replica set EC2: drp-tfs-mongo-0/1/2
+  - drp_tfs repo lokalnie dirty (mongo-ec2 playbook)
 
-Ryzyka / uwagi:
-  - terraform plan w DEV używa placeholderów dla sensitive TF_VAR; No changes = guardrail safe
-  - uat/prod secrets.tf może nie mieć parity ignore_changes — sprawdzić przed apply QA/UAT/PROD
-  - ECS healthStatus jumphostów: UNKNOWN (brak healthchecka w image); nie blokuje, ale uwaga
+Ryzyka:
+  - repo drp_tfs dirty — nie commitować bez review
+  - repo_path w invocation manifest uszkodzony (�~/projekty/mako//drp-tfs)
 
 Wejście:
   - `02-active-context/now.md`
-  - `20-projects/clients/mako/puzzler-b2b/session-log.md`
+  - `20-projects/clients/mako/drp-tfs/drp-tfs-context.md`
 ```
 
 ## Projekty aktywne
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| puzzler-b2b / PBMS | aktywny | commit staged `envs/dev/services.tf`; decyzja o `docs/db-access.md`; uat/prod parity |
-| maspex | standby | czeka na SSL certs od klienta; obserwować Redis circuit + ECS memory przy kolejnym teście |
+| drp-tfs | aktywny | CRITICAL: Mongo replica set + haproxy LoadBalancer pending |
+| puzzler-b2b / PBMS | standby | CI/CD audit done; commit staged services.tf; decyzja AzureAd QA; decyzja docs/db-access.md |
+| maspex | standby | czeka na SSL certs od klienta |
 | rshop | standby | utrzymać zakaz root deploy; wrócić później do permanent fix nested `TemplateURL` i ECS PropagateTags CFN patch |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
 | BMW AI Taskforce | scaffold gotowy | 20-projects/clients/bmw/ai-taskforce/ — czeka na pierwsze materiały od klienta |
@@ -53,17 +54,17 @@ Wejście:
 
 ## Priorytety tygodnia
 
-1. Puzzler-pbms: `aws sts get-caller-identity --profile puzzler-pbms` — weryfikacja credentials przed czymkolwiek.
-2. Puzzler-pbms: commit staged `envs/dev/services.tf` guardrail parity.
-3. Puzzler-pbms: decyzja o `docs/db-access.md` (untracked, nie commitować przez przypadek).
-4. Puzzler-pbms: uat/prod `secrets.tf` parity dla `ignore_changes` — sprawdzić przed kolejnym apply.
-5. Maspex w standby — nie dotykać bez explicit switch z powrotem.
+1. drp-tfs: `aws sts get-caller-identity --profile drp-tfs` — weryfikacja credentials.
+2. drp-tfs: CRITICAL Mongo replica set — zbadać primary status na EC2 (mongo-0/1/2).
+3. drp-tfs: CRITICAL haproxy LoadBalancer — mixed protocol fix lub workaround.
+4. drp-tfs: po naprawie — powtórzyć live check leasing-filters + cloud-detective.
+5. Puzzler-pbms w standby — CI/CD audit gotowy; wrócić gdy decyzja o AzureAd QA.
 
 ## Aktywni klienci
 
 | Klient | Temat | Deadline |
 |--------|-------|----------|
-| Mako | Puzzler-B2B / PBMS — IaC guardrail commit + db-access decyzja | |
+| Mako | drp-tfs — CRITICAL: Mongo replica set + haproxy LoadBalancer | |
 
 ## Blokery / otwarte pętle
 
