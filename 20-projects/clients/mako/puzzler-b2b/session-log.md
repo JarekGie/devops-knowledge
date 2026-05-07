@@ -9,6 +9,104 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-07 — CI/CD pipeline audit + deployment ownership analysis
+
+**Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final` + `~/projekty/mako/pbms-backend`
+**Pipeline source:** `git@gitlab.makolab.net:bss/pbms/cicd.git` (ref: dev), plik `backend/backend.yml`
+**Operacja:** read-only audit
+
+### Exact deploy flow (backend.yml — verbatim)
+
+```bash
+# 1. Pobierz aktualny task definition ARN z serwisu ECS
+TASK_DEF=$(aws ecs describe-services --cluster $ECS_CLUSTER --services $ECS_SERVICE \
+  --query "services[0].taskDefinition" --output text)
+
+# 2. Pobierz pełne JSON task definition
+aws ecs describe-task-definition --task-definition "$TASK_DEF" \
+  --query "taskDefinition" > task-def.json
+
+# 3. Zmień TYLKO image; usuń metadata ECS
+jq --arg IMAGE "$IMAGE" '
+  .containerDefinitions[0].image = $IMAGE
+  | del(.taskDefinitionArn, .revision, .status, .requiresAttributes,
+        .compatibilities, .registeredAt, .registeredBy, .deregisteredAt?)
+' task-def.json > new-task-def.json
+
+# 4. Zarejestruj nową revision
+NEW_TASK_DEF=$(aws ecs register-task-definition \
+  --cli-input-json file://new-task-def.json \
+  --query "taskDefinition.taskDefinitionArn" --output text)
+
+# 5. Update service
+aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE \
+  --task-definition "$NEW_TASK_DEF"
+
+# 6. Tracking 600s / 15s interval (rolloutState + failedTasks check)
+```
+
+### Pola kopiowane przez CI/CD (pull-and-update)
+
+Wszystko poza `del()` jest kopiowane dosłownie z poprzedniego revision:
+
+| Pole | Co się dzieje |
+|------|---------------|
+| `secrets` | **kopiowane w całości — źródło AzureAd propagacji** |
+| `environment` | kopiowane — stale env vars propagują się |
+| `executionRoleArn` | kopiowane — **DEV role w QA** (see below) |
+| `taskRoleArn` | kopiowane — **DEV role w QA** |
+| `logConfiguration` | kopiowane |
+| `cpu` / `memory` | kopiowane (512/1024) |
+| `healthCheck` | kopiowane (null — nigdy nie doda healthchecka) |
+
+### Kluczowe findings
+
+**1. Worker nie jest w CI/CD matrix**
+
+Pipeline matrix (6 serwisów): core-api, delivery-api, notifier-api, gateway, sync-api, builder-api.
+`worker` jest **nieobecny**. Worker revision :1 z 2026-04-27 — nigdy nie był deployowany przez CI/CD.
+
+**2. DEV IAM roles w QA task definitions**
+
+```
+executionRoleArn: infra-puzzler-b2b-dev-ecs-execution-role
+taskRoleArn:      infra-puzzler-b2b-dev-ecs-task-role
+```
+
+Potwierdzono w `envs/qa/terraform.tfvars`:
+```hcl
+ecs_execution_role_arn = "arn:aws:iam::698220459519:role/infra-puzzler-b2b-dev-ecs-execution-role"
+ecs_task_role_arn      = "arn:aws:iam::698220459519:role/infra-puzzler-b2b-dev-ecs-task-role"
+```
+**To jest intencjonalne w Terraform** — QA-specific IAM roles nie zostały jeszcze stworzone.
+CI/CD perpetuuje DEV roles przez pull-and-update.
+
+**3. Terraform blind na container_definitions**
+
+`ignore_changes = [container_definitions]` → Terraform apply z `15ae29e` usunął AzureAd z kodu, ale nie stworzył nowej task definition revision. `terraform plan` pokazuje "no changes" — porównuje state do siebie.
+
+**4. CI/CD pipeline jest generic ECS image updater**
+
+Brak canonical task definition template w repo. Live ECS revision jest jedynym source of truth dla CI/CD. Każdy deploy utrwala wszystkie pola poprzedniego revision.
+
+### Rekomendacja architektury
+
+**Wariant C (rekomendowany):** Terraform zarządza structural baseline (IAM, log groups, networking) eksportowanym przez SSM. CI/CD buduje task definition deterministycznie z whitelist secrets — NIE używa pull-and-update.
+
+Szczegóły 3 wariantów: `40-runbooks/` lub następny commit.
+
+### Quick fix (bez refaktoru pipeline)
+
+Dla każdego serwisu: wygenerować clean task def bez AzureAd secrets (`jq del`), zarejestrować ręcznie, ustawić serwis. CI/CD użyje tej czystej revision jako bazy przy następnym deploy. **Wymaga decyzji biznesowej:** czy QA potrzebuje AzureAd? (`appsettings.QA.json` ma AzureAd sekcję.)
+
+### Stan po sesji
+
+```
+infra repo: staged envs/dev/services.tf — do commita
+untracked:  docs/db-access.md — bez decyzji
+apply:      NIE wykonany
+```
+
 ---
 
 ## 2026-05-07 — DEV: ownership parity z QA bez runtime drift
