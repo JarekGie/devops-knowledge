@@ -2,6 +2,25 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — health-notifications: GLPI routing wdrożony ✅
+
+```
+Zmiana:  platform/health-notifications — rozdzielono zmienną notification_emails
+         health_notification_emails = ["glpi@infra.makolab.pl"]  → SNS health-notifications
+         ops_alert_emails           = ["jaroslaw.golab@makolab.com"] → SNS health-ops-alerts
+
+Apply:   ✅ 4 added, 13 changed, 1 destroyed
+         - SNS health-notifications: jaroslaw.golab@ usunięty, glpi@ dodany (pending confirmation)
+         - SNS health-ops-alerts: jaroslaw.golab@ zostaje bez zmian
+         - health_eventbridge_dlq SQS + DLQ config na 13 EventBridge targets — wdrożone
+Commit:  64e5316 (main, pushed)
+
+Następny krok:
+  [ ] GLPI: potwierdzić subskrypcję SNS (email confirmation pending)
+  [ ] GLPI: skonfigurować mailbox glpi@infra.makolab.pl → auto-ticket creation
+  [ ] Test: aws health describe-events lub mockowy payload → weryfikacja ticketu w GLPI
+```
+
 ## Update — 2026-05-07 — aws-cloud-platform: break-glass framework gotowy
 
 ```
@@ -2816,4 +2835,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 22:52 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 22:55 — sesja aktywna*
