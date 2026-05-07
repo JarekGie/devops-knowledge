@@ -5,56 +5,44 @@
 ## Główny cel
 
 ```
-Aktywny kontekst roboczy: Maspex / Kapsel.
-Stan vault zapisany 2026-05-07 po przełączeniu z puzzler-pbms:
-  - AWS profile: maspex-cli
-  - account: 969209893152
-  - region główny: eu-west-1
-  - repo infra: ~/projekty/mako/aws-projects/infra-maspex
-  - context: 20-projects/clients/mako/maspex/maspex-context.md
-  - troubleshooting: 20-projects/clients/mako/maspex/troubleshooting.md
-  - last report: 20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md
+Aktywny kontekst roboczy: puzzler-b2b / PBMS
+Stan vault zapisany 2026-05-07 po przełączeniu z Maspex.
+  - AWS profile: puzzler-pbms
+  - account: 698220459519
+  - region: eu-west-2
+  - repo infra: ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+  - context: 20-projects/clients/mako/puzzler-b2b/session-log.md
 
-Główna oś Maspex teraz:
-  1. live check UAT po Redis reboot / CloudFront invalidation,
-  2. obserwować Redis circuit/write-through przy kolejnym teście,
-  3. obserwować memory maspex-api, bo ostatni test podniósł ją ~17% -> ~57%,
-  4. osobno zbadać maspex-bot health check failures / replacements,
-  5. wrócić do lokalnego patcha observability/WAF tylko po plan review.
+Główna oś puzzler-pbms teraz:
+  1. aws sts get-caller-identity --profile puzzler-pbms  (weryfikacja credentials)
+  2. commit staged envs/dev/services.tf:
+       git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
+  3. zdecydować co zrobić z untracked docs/db-access.md
+  4. opcjonalnie: uat/prod secrets.tf parity (ignore_changes gaps)
 
 Stan wejściowy z vault:
-  - UAT CloudFront API distribution: E3J76RNXIE2YIG, alias kapsel.makotest.pl
-  - UAT ECS cluster: maspex-uat
-  - UAT services: maspex-api, maspex-admin-panel, maspex-bot
-  - UAT Redis: ElastiCache maspex-uat, standalone single-node, node 0001
-  - Redis reboot wykonany, final status available
-  - CloudFront invalidation /* wykonany, final status Completed
-  - ostatni sanity: curl -I https://kapsel.makotest.pl/api/health -> HTTP/2 200
+  - DEV i QA jumphosty: jumphost-v11 linux/amd64, operator-safe, ECS Exec OK, SSH OK, DocDB tunnel OK
+  - staged: envs/dev/services.tf (usunięto local.azuread_secrets, 7x merge -> local.docdb_secrets)
+  - terraform -chdir=envs/dev plan: No changes
+  - untracked, nie commitować: docs/db-access.md
+  - apply NIE wykonany od jumphosta
 
-Ryzyka / uwagi po ostatniej pracy:
-  - Redis infrastructure była zdrowa metrycznie, ale app-level Redis circuit był otwarty przez cały test.
-  - 924,582 VOTE_CACHE_WRITETHROUGH_FAIL i 906,504 Redis circuit open w teście 19:00.
-  - HTTP/ALB/ECS bez degradacji: 0 ELB 5XX, 0 Target 5XX, 0 unhealthy hosts, 0 task churn API.
-  - maspex-api memory rosła bez recovery między falami; obserwować próg autoscaling 75%.
-  - maspex-bot ma osobny problem health check / replacements.
-  - preprod API historycznie DOWN 0/3 przez IAM AccessDenied do secretu.
-  - Terraform UAT plan może blokować osierocony digest w terraform-locks-969209893152.
-  - infra-maspex lokalny patch observability/WAF nadal bez apply.
+Ryzyka / uwagi:
+  - terraform plan w DEV używa placeholderów dla sensitive TF_VAR; No changes = guardrail safe
+  - uat/prod secrets.tf może nie mieć parity ignore_changes — sprawdzić przed apply QA/UAT/PROD
+  - ECS healthStatus jumphostów: UNKNOWN (brak healthchecka w image); nie blokuje, ale uwaga
 
 Wejście:
   - `02-active-context/now.md`
-  - `20-projects/clients/mako/maspex/maspex-context.md`
-  - `20-projects/clients/mako/maspex/troubleshooting.md`
-  - `20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md`
-  - `_chatgpt/context-packs/makolab-projects-vault-context.md`
+  - `20-projects/clients/mako/puzzler-b2b/session-log.md`
 ```
 
 ## Projekty aktywne
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| maspex | aktywny | live check UAT / Redis circuit + ECS memory; ewentualnie review patcha observability/WAF |
-| puzzler-b2b / PBMS | standby | DEV/QA jumphosty ustabilizowane; później commit staged `envs/dev/services.tf` i decyzja o `docs/db-access.md` |
+| puzzler-b2b / PBMS | aktywny | commit staged `envs/dev/services.tf`; decyzja o `docs/db-access.md`; uat/prod parity |
+| maspex | standby | czeka na SSL certs od klienta; obserwować Redis circuit + ECS memory przy kolejnym teście |
 | rshop | standby | utrzymać zakaz root deploy; wrócić później do permanent fix nested `TemplateURL` i ECS PropagateTags CFN patch |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
 | BMW AI Taskforce | scaffold gotowy | 20-projects/clients/bmw/ai-taskforce/ — czeka na pierwsze materiały od klienta |
@@ -65,17 +53,17 @@ Wejście:
 
 ## Priorytety tygodnia
 
-1. Maspex: zweryfikować bieżącą tożsamość AWS `maspex-cli`, zanim robić live check albo Terraform.
-2. Maspex: obserwować UAT po Redis reboot; szczególnie Redis circuit/write-through i memory `maspex-api`.
-3. Maspex: jeśli wracamy do IaC, najpierw `terraform plan` i ocena blokady digest w `terraform-locks-969209893152`.
-4. Maspex: osobno zbadać `maspex-bot` health check failures.
-5. Puzzler-pbms pozostaje zapisany jako standby; nie mieszać staged `envs/dev/services.tf` bez explicit switch.
+1. Puzzler-pbms: `aws sts get-caller-identity --profile puzzler-pbms` — weryfikacja credentials przed czymkolwiek.
+2. Puzzler-pbms: commit staged `envs/dev/services.tf` guardrail parity.
+3. Puzzler-pbms: decyzja o `docs/db-access.md` (untracked, nie commitować przez przypadek).
+4. Puzzler-pbms: uat/prod `secrets.tf` parity dla `ignore_changes` — sprawdzić przed kolejnym apply.
+5. Maspex w standby — nie dotykać bez explicit switch z powrotem.
 
 ## Aktywni klienci
 
 | Klient | Temat | Deadline |
 |--------|-------|----------|
-| Mako | Maspex / Kapsel UAT load-test follow-up + observability | |
+| Mako | Puzzler-B2B / PBMS — IaC guardrail commit + db-access decyzja | |
 
 ## Blokery / otwarte pętle
 
