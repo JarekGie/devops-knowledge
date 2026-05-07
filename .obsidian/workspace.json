@@ -318,8 +318,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "7254c81a276b7e45",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/aws-glpi-integration.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
     "20-projects/clients/mako/aws-cloud-platform/monitoring-dashboards-guide.md",
     "20-projects/clients/mako/aws-cloud-platform/break-glass-framework.md",
@@ -346,7 +347,6 @@
     "20-projects/internal/secure-ai-anonymizer/glossary.md",
     "20-projects/internal/secure-ai-anonymizer/data-classification.md",
     "20-projects/internal/secure-ai-anonymizer/tokenization-model.md",
-    "20-projects/clients/mako/anonimizator/01-cel-i-kontekst.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",
