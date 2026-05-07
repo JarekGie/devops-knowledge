@@ -11,6 +11,48 @@ Chronologicznie, najnowszy na górze.
 
 ---
 
+## 2026-05-07 — DEV: ownership parity z QA bez runtime drift
+
+**Scope:** DEV — Terraform ownership guardrails / ECS service secrets
+**Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final`
+**Wynik:** IaC zmienione i staged ✅ | plan DEV = no-op | apply nie wykonany
+
+### Zmiana
+
+`envs/dev/services.tf` dostosowany do modelu QA:
+- usunięto `local.azuread_secrets`
+- 7x `merge(local.docdb_secrets, local.azuread_secrets)` → `local.docdb_secrets`
+- AzureAd secret metadata i secret version zostają w Secrets Manager/IaC, ale nie są wstrzykiwane do ECS task definitions jako runtime env
+
+### Guardraile potwierdzone
+
+- `envs/dev/secrets.tf`: `ignore_changes = [secret_string]` na `docdb`, `azuread`, `jumphost_ssh`
+- `modules/core/documentdb/main.tf`: `ignore_changes = [master_password]`
+- `modules/core/ecs-service/main.tf`: `ignore_changes = [container_definitions]`
+- `modules/core/ecs-service/main.tf`: `ignore_changes = [task_definition, desired_count]`
+- `envs/dev/terraform.tfvars`: account `698220459519`, ALB CIDR `195.117.107.110/32`, live-aligned app image tags zachowane
+- worker nadal `nginx:latest`, zgodnie z live/desired=0 komentarzem
+
+### Walidacja
+
+```
+terraform fmt envs/dev/services.tf                         → OK
+AWS_PROFILE=puzzler-pbms terraform -chdir=envs/dev init    → OK
+AWS_PROFILE=puzzler-pbms terraform -chdir=envs/dev validate → Success
+terraform -chdir=envs/dev plan -no-color -input=false      → No changes
+```
+
+Plan był wykonany z placeholderami dla wymaganych sensitive `TF_VAR_*`; `ignore_changes` zadziałało, więc nie było rotacji sekretów, zmian `master_password`, nowych ECS task definitions ani rollbacku services.
+
+### Stan repo po sesji
+
+- staged: `envs/dev/services.tf`
+- untracked, nietknięte: `docs/db-access.md`
+- rekomendowany commit:
+  `fix(dev): align Terraform drift guardrails with QA ownership model`
+
+---
+
 ## 2026-05-07 — QA: usunięcie AzureAd env vars z serwisów ECS
 
 **Scope:** QA — wszystkie serwisy backendowe (gateway, core, delivery, notifier, worker, sync, builder)

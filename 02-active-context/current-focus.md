@@ -6,18 +6,21 @@
 
 ```
 Przełączony kontekst roboczy: puzzler-b2b / PBMS.
-Stan vault zapisany 2026-05-06 po pracach Maspex UAT:
-  - raport load testu 2026-05-05 19:00 CEST zapisany,
-  - Redis UAT maspex-uat node 0001 zrestartowany i wrócił do available,
-  - CloudFront UAT API E3J76RNXIE2YIG invalidation /* zakończone jako Completed,
-  - Maspex przesunięty do standby.
+Stan vault zapisany 2026-05-07 po DEV ownership parity guardrails:
+  - AWS profile puzzler-pbms działa: account 698220459519, user makolab-ci,
+  - QA ownership model sprawdzony względem DEV,
+  - DEV envs/dev/services.tf dostosowany do QA: bez AzureAd ECS secret injection,
+  - terraform fmt/validate OK,
+  - terraform plan DEV = No changes,
+  - apply NIE wykonany,
+  - infra repo ma staged envs/dev/services.tf oraz untracked docs/db-access.md.
 
 Główna oś puzzler-pbms:
-  1. najpierw potwierdzić live AWS credentials dla profilu puzzler-pbms,
-  2. sprawdzić aktualny live state dev/QA po ostatnim snapshotcie,
-  3. zabezpieczyć repo przed przypadkowym commitem sekretów / authorized_keys,
-  4. zweryfikować QA jumphost i ECR image missing,
-  5. dopiero potem wracać do Terraform plan / IaC sync.
+  1. commit staged DEV guardrail change,
+  2. utrzymać zakaz apply bez ponownego plan review,
+  3. opcjonalnie sprawdzić uat/prod/secrets.tf parity,
+  4. opcjonalnie force-replace task definitions tylko jeśli potrzebny runtime cleanup,
+  5. nie mieszać untracked docs/db-access.md z commitem guardrails bez decyzji.
 
 Stan wejściowy z vault:
   - AWS profile: puzzler-pbms
@@ -27,11 +30,11 @@ Stan wejściowy z vault:
   - context: 20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md
 
 Ryzyka z ostatniego scan:
-  - 2026-05-05 credentials puzzler-pbms były expired / SignatureDoesNotMatch
-  - authorized_keys untracked na root repo + literówka .gitignore
-  - envs/dev/.env untracked
-  - QA IaC rozbudowane i niezatwierdzone
-  - QA jumphost DOWN wg ostatniego live snapshotu: ECR image missing
+  - apply nie był wykonany po DEV parity change; plan był no-op
+  - docs/db-access.md untracked w infra repo — nie stagingować przypadkiem
+  - envs/dev/.env istnieje jako pusty plik
+  - runtime ECS task definitions nie zmienią się bez CI/CD albo force-replace
+  - QA jumphost wcześniejszy blocker ECR image missing został naprawiony tagiem jumphost-v10 wg ostatniego stanu IaC, ale live recheck można zrobić przy kolejnej sesji
 
 Wejście:
   - `02-active-context/now.md`
@@ -45,7 +48,7 @@ Wejście:
 
 | Projekt | Status | Następny krok |
 |---------|--------|---------------|
-| puzzler-b2b / PBMS | aktywny | precheck `aws sts get-caller-identity --profile puzzler-pbms`; potem live state dev/QA i repo working tree risk check |
+| puzzler-b2b / PBMS | aktywny | commit staged `envs/dev/services.tf`; potem opcjonalnie uat/prod secrets parity albo runtime cleanup task definitions |
 | maspex | standby | Load test report 19:00 zapisany; Redis reboot i CloudFront invalidation wykonane; obserwować przy kolejnym teście Redis circuit + ECS memory; Terraform observability/WAF patch nadal bez apply |
 | rshop | standby | utrzymać zakaz root deploy; wrócić później do permanent fix nested `TemplateURL` i ECS PropagateTags CFN patch |
 | vault governance | standby | Knowledge Boundaries wdrożone; oczekuje ręcznego frontmatter w clients/mako/ + _chatgpt/ + llz/ |
@@ -57,10 +60,10 @@ Wejście:
 
 ## Priorytety tygodnia
 
-1. puzzler-pbms: potwierdzić aktualne credentials i account identity przed jakimkolwiek live scan.
-2. puzzler-pbms: sprawdzić repo `infra-puzzler-b2b-final` pod kątem untracked sekretów i lokalnych zmian przed `git add` / Terraform.
-3. puzzler-pbms: zweryfikować dev/QA ECS, ECR i QA jumphost względem snapshotu 2026-05-01/05.
-4. puzzler-pbms: ustalić, czy QA ECR image missing nadal blokuje jumphost.
+1. puzzler-pbms: commit staged DEV guardrail change w `infra-puzzler-b2b-final`.
+2. puzzler-pbms: nie stagingować przypadkiem `docs/db-access.md` bez review.
+3. puzzler-pbms: opcjonalnie uat/prod `secrets.tf` parity dla `ignore_changes`.
+4. puzzler-pbms: opcjonalnie runtime cleanup ECS task definitions po decyzji.
 5. Utrzymać Maspex jako zapisany kontekst standby, nie mieszać z bieżącą sesją; powrót tylko po explicit switch.
 
 ## Aktywni klienci
@@ -78,10 +81,10 @@ Wejście:
 - [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
 - [ ] Maspex standby: Terraform UAT plan blokuje stary/osierocony digest w `terraform-locks-969209893152`; safe recovery opisane w `02-active-context/now.md`
 - [ ] Maspex standby: `infra-maspex` ma lokalny patch observability/WAF niezaaplikowany: WAF admin allowlist + Athena/Glue per-path CloudFront logs
-- [ ] puzzler-pbms: potwierdzić czy profile credentials nadal expired czy już odświeżone
-- [ ] puzzler-pbms: sprawdzić `authorized_keys` untracked i `.gitignore` literówkę
-- [ ] puzzler-pbms: sprawdzić `envs/dev/.env` untracked / brak ignore rule
-- [ ] puzzler-pbms: zweryfikować QA jumphost i ECR image tag
+- [ ] puzzler-pbms: commit staged `envs/dev/services.tf` guardrail parity
+- [ ] puzzler-pbms: zdecydować co zrobić z untracked `docs/db-access.md`
+- [ ] puzzler-pbms: uat/prod `secrets.tf` parity dla `ignore_changes`
+- [ ] puzzler-pbms: runtime cleanup ECS task definitions tylko po explicit decision
 
 ## Powiązane
 

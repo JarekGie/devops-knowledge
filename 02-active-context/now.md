@@ -2,6 +2,73 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — puzzler-b2b: DEV ownership parity guardrails ready
+
+```
+Projekt:  puzzler-b2b / PBMS
+Repo:     ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+Branch:   main
+AWS:      profile puzzler-pbms | account 698220459519 | region eu-west-2
+
+ZROBIONE:
+  - sprawdzono QA model:
+      envs/qa/services.tf
+      envs/qa/secrets.tf
+      envs/qa/terraform.tfvars
+      modules/core/ecs-service/main.tf
+      modules/core/documentdb/main.tf
+      docs/terraform-ownership-model.md
+  - sprawdzono DEV:
+      envs/dev/services.tf
+      envs/dev/secrets.tf
+      envs/dev/main.tf
+      envs/dev/variables.tf
+      envs/dev/terraform.tfvars
+      envs/dev/service_discovery.tf
+      envs/dev/iam.tf
+      envs/dev/schedulers.tf
+
+ZMIANA DEV:
+  - envs/dev/services.tf:
+      usunięto local.azuread_secrets
+      7x merge(local.docdb_secrets, local.azuread_secrets) -> local.docdb_secrets
+  - zakres tylko DEV; QA/shared modules/docs nietknięte
+  - zachowane live-aligned image tags DEV
+  - zachowane konto 698220459519
+  - zachowany ALB CIDR 195.117.107.110/32
+  - zachowane Cloud Map + frontend/sync/builder/jumphost definitions
+  - worker nadal nginx:latest, bo live worker task definition też używa nginx i desired=0
+
+GUARDRAILS POTWIERDZONE:
+  - envs/dev/secrets.tf: ignore_changes = [secret_string] na docdb/azuread/jumphost_ssh
+  - modules/core/documentdb/main.tf: ignore_changes = [master_password]
+  - modules/core/ecs-service/main.tf:
+      ignore_changes = [container_definitions]
+      ignore_changes = [task_definition, desired_count]
+  - brak account 947927348523
+  - ECS Exec IAM policy istnieje
+
+WALIDACJA:
+  - terraform fmt envs/dev/services.tf -> OK
+  - terraform -chdir=envs/dev init z AWS_PROFILE=puzzler-pbms -> OK
+  - terraform -chdir=envs/dev validate -no-color -> Success
+      tylko istniejące warningi deprecated data.aws_region.current.name
+  - terraform -chdir=envs/dev plan -no-color -input=false
+      z placeholderami dla wymaganych sensitive TF_VAR -> No changes
+
+STAN ROBOCZY:
+  - staged: envs/dev/services.tf
+  - untracked, nietknięte: docs/db-access.md
+  - apply NIE wykonany
+
+REKOMENDOWANY COMMIT:
+  git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
+
+NASTĘPNY KROK:
+  → commit staged DEV guardrail change
+  → potem opcjonalnie uat/prod/secrets.tf parity check albo runtime cleanup task definitions
+```
+
 ## Update — 2026-05-07 — puzzler-b2b: Terraform ownership model documented + IaC stabilized
 
 ```
