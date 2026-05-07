@@ -2,6 +2,78 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — switch context: puzzler-pbms zapisany, przejście na Maspex
+
+```
+Zamknięty kontekst roboczy: puzzler-b2b / PBMS
+Status:                   standby / snapshot zapisany
+Context:                  20-projects/clients/mako/puzzler-b2b/session-log.md
+
+Najważniejszy stan puzzler-pbms:
+  - DEV/QA jumphosty ustabilizowane i operator-safe.
+  - Commity:
+      12fac50 fix(jumphost): stabilize sshd runtime and amd64 image build
+      a5e5598 fix(terraform): enable ecs exec and normalize jumphost key handling
+  - Infra repo nadal ma staged pre-existing envs/dev/services.tf
+    (DEV guardrail parity: AzureAd ECS env injection removal).
+  - Infra repo nadal ma untracked docs/db-access.md — nie mieszać bez decyzji.
+
+Aktywny kontekst roboczy: Maspex / Kapsel
+AWS profile:              maspex-cli
+Region:                   eu-west-1
+Account:                  969209893152
+Repo infra:               ~/projekty/mako/aws-projects/infra-maspex
+Vault context:            20-projects/clients/mako/maspex/maspex-context.md
+Troubleshooting:          20-projects/clients/mako/maspex/troubleshooting.md
+Last load-test report:    20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md
+
+Stan wejściowy Maspex:
+  - UAT CloudFront/API:
+      distribution E3J76RNXIE2YIG
+      alias kapsel.makotest.pl
+      last sanity: /api/health HTTP/2 200 po invalidation
+  - UAT ECS:
+      cluster maspex-uat
+      services maspex-api, maspex-admin-panel, maspex-bot
+      last load-test snapshot: maspex-api desired/running 9/9, admin 1/1, bot 1/1
+  - UAT Redis:
+      ElastiCache maspex-uat, node 0001, standalone single-node
+      reboot wykonany kontrolowanie; final status available
+  - Najmocniejszy bottleneck z testu 2026-05-05 19:00 CEST:
+      app-level Redis write-through / circuit breaker
+      924,582 VOTE_CACHE_WRITETHROUGH_FAIL
+      906,504 Redis circuit open
+      Redis infrastructure zdrowy metrycznie
+  - HTTP/ALB/ECS podczas testu:
+      0 ELB 5XX
+      0 Target 5XX
+      0 unhealthy hosts
+      0 task churn maspex-api
+      ALB avg response 12-16 ms, p99 45-65 ms
+  - Ryzyko:
+      maspex-api MemoryUtilization narosła ~17% -> ~57%;
+      obserwować przy kolejnym teście, bo 4. fala mogłaby zbliżyć do progu 75%.
+  - Osobny problem:
+      maspex-bot health check failures / replacements.
+  - Preprod:
+      maspex-preprod-api historycznie 0/3 DOWN przez IAM AccessDeniedException do secretu.
+
+Otwarte prace IaC:
+  - infra-maspex ma lokalny patch observability/WAF standby:
+      WAF admin allowlist
+      Athena/Glue per-path CloudFront logs
+      monitoring/dashboard/log metric filters
+  - Terraform UAT plan może blokować stary/osierocony digest w DynamoDB:
+      table terraform-locks-969209893152
+      key maspex/uat/terraform.tfstate-md5
+  - Nie wykonywać broad apply bez ponownego plan review.
+
+Następny krok:
+  → najpierw zweryfikować bieżącą tożsamość AWS:
+    aws sts get-caller-identity --profile maspex-cli
+  → potem zależnie od celu: live check UAT po Redis reboot albo review/apply lokalnego patcha observability/WAF.
+```
+
 ## Update — 2026-05-07 — puzzler-b2b: DEV/QA jumphost remediation DONE
 
 ```
