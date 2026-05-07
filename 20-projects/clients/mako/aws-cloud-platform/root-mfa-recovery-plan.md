@@ -74,7 +74,7 @@ scp_state: restored
 
 | Akcja | Konta | Uwagi |
 |-------|-------|-------|
-| Zmiana email → infra.makolab.pl | makolab_dc, monitoring-nagios-bot | management account — root immune do SCP |
+| Email | makolab_dc, monitoring-nagios-bot | **ACCEPTED STATE** — operator ma kontrolę nad tymi skrzynkami, zmiana nie jest wymagana |
 | MFA enrollment | 9 kont (lab, LogArchiveNew, planodkupow, planodkupowv1, Booking_Online, RShop, dacia-asystent, CC, DRP-TFS) | Wymaga kolejnego maintenance window (Option B lub Recovery OU) |
 
 ---
