@@ -10,23 +10,44 @@ Sprawy w toku, bez zakończenia. Nie todo — rzeczy, które "wiszą" i zajmują
 
 ---
 
-## Techniczne
+## Maspex (klient mako)
 
-- [ ] rshop DEV — zebrać Jenkins console log dla nocnego failed build; lokalnie nie znaleziono aktualnego logu, AWS potwierdził ECSStack-only rollback
-- [ ] rshop DEV — sprawdzić logi aplikacyjne dla nieudanego rollout: API ALB healthcheck HTTP 500 oraz backoffice startup/runtime dla próbowanej rewizji obrazu
-- [ ] rshop — utrzymać zakaz root stack app deploy; permanent fix CFN-MUT-001 przez immutable nested `TemplateURL` / release artifact paths
+- [ ] Redis write-through / circuit breaker — 924,582 VOTE_CACHE_WRITETHROUGH_FAIL w teście 2026-05-05 19:00; Redis infra zdrowy, problem app-level; zbadać przy kolejnym teście
+- [ ] maspex-api MemoryUtilization — narosła ~17%→~57% podczas testu; obserwować przy kolejnym teście, próg autoscaling 75%
+- [ ] maspex-bot health check failures / replacements — osobny problem, nie powiązany z Redisem
+- [ ] Terraform UAT plan — może blokować stary digest w DynamoDB `terraform-locks-969209893152`, key `maspex/uat/terraform.tfstate-md5`; safe recovery opisane w `now.md`
+- [ ] infra-maspex lokalny patch observability/WAF — WAF admin allowlist + Athena/Glue per-path CloudFront logs; standby bez apply
+- [ ] preprod API historycznie 0/3 DOWN — IAM AccessDeniedException do secretu; nie ruszane
 
-## Biznesowe
+## Puzzler-B2B / PBMS (klient mako)
 
-- [ ]
+- [ ] commit staged `envs/dev/services.tf` — guardrail parity DEV; rekomendowany commit message: `fix(dev): align Terraform drift guardrails with QA ownership model`
+- [ ] decyzja o `docs/db-access.md` — untracked w infra repo; nie mieszać bez explicit review
+- [ ] uat/prod `secrets.tf` parity — `ignore_changes` gaps względem DEV/QA; nie zrobione
+- [ ] opcjonalnie: healthcheck do obrazu/modułu jumphosta — ECS healthStatus jest UNKNOWN
+
+## DRP-TFS (klient mako)
+
+- [ ] CRITICAL: leasing-filters api/core 0/2, CrashLoopBackOff — Mongo REPLICA_SET_GHOST, brak primary ReadPreference; wymaga naprawy replica set
+- [ ] CRITICAL: haproxy LoadBalancer EXTERNAL-IP `<pending>` — mixed TCP+UDP service; target groups listenerów NLB puste
+- [ ] powtórzyć cloud-detective live check po naprawie Mongo + LoadBalancer
+
+## Rshop (klient mako)
+
+- [ ] rshop DEV — zebrać Jenkins console log dla nocnego failed build; AWS potwierdził ECSStack-only rollback
+- [ ] rshop DEV — sprawdzić logi aplikacyjne dla nieudanego rollout: API ALB healthcheck HTTP 500 oraz backoffice startup/runtime
+- [ ] rshop — permanent fix CFN-MUT-001: immutable nested `TemplateURL` / release artifact paths (aktualny zakaz root deploy to mitygacja tymczasowa)
+- [ ] rshop CFN — brak `PropagateTags`, `EnableECSManagedTags` w cloudformation/{api,backoffice,frontend,frontend2}.yml + akcesoria2/svc.yml
+- [ ] sprawdzić `Project=akcesoria2` w allowedValues LLZ Tag Policy przed re-enable
 
 ## Decyzje do podjęcia
 
-- [ ]
+- [ ] secure-ai-anonymizer: obniżyć priorytet `API_KEY_GENERIC` (priority=9) lub podnieść `AWS_ARN` (priority=8) — rola IAM triggeruje API_KEY_GENERIC jako FP → partial ARN leak
 
 ## Do sprawdzenia później
 
-- [ ]
+- [ ] secure-ai-anonymizer KF-001: S3 ARN regex (brak account ID w bucket ARNs)
+- [ ] secure-ai-anonymizer KF-003: email z relaxed TLD (.internal, .example, .corp)
 
 ---
 
