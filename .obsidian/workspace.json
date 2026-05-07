@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ AWS root MFA recovery and remediation execution"
+              "title": "Terminal: ✳ AWS root MFA recovery and remediation execution"
             }
           },
           {
@@ -293,6 +293,7 @@
   },
   "active": "7254c81a276b7e45",
   "lastOpenFiles": [
+    "20-projects/clients/mako/aws-cloud-platform/root-governance-postmortem.md",
     "20-projects/clients/mako/drp-tfs/session-log.md",
     "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
     "20-projects/clients/mako/anonimizator/session-log.md",
@@ -319,7 +320,6 @@
     "20-projects/internal/secure-ai-anonymizer/threat-model.md",
     "20-projects/internal/secure-ai-anonymizer/mvp-scope.md",
     "20-projects/internal/secure-ai-anonymizer/architecture.md",
-    "20-projects/internal/secure-ai-anonymizer/roadmap.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",

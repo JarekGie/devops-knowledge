@@ -2,6 +2,24 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — aws-cloud-platform: postmortem gotowy, sesja zamknięta
+
+```
+Vault:  20-projects/clients/mako/aws-cloud-platform/root-governance-postmortem.md
+Stan:   sesja root MFA remediation zakończona
+
+Wynik:
+  Email:  10/12 ACTIVE na infra.makolab.pl ✅ (2 konta: accepted state)
+  MFA:    3/12 ACTIVE ✅ — 9 kont wymaga enrollment
+  Keys:   0/12 root access keys ✅
+  SCP:    przywrócony ✅
+
+Następny krok (priorytet 1):
+  MFA enrollment — 9 kont (maintenance window Option B, target ~2026-05-14)
+  Security Hub + GuardDuty włączyć
+  Recovery OU permanentny (Terraform)
+```
+
 ## Update — 2026-05-07 — aws-cloud-platform: SCP rollback ✅ — MFA pending
 
 ```
@@ -2785,4 +2803,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 20:54 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 21:02 — sesja aktywna*
