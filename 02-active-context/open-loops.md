@@ -21,9 +21,12 @@ Sprawy w toku, bez zakończenia. Nie todo — rzeczy, które "wiszą" i zajmują
 
 ## Puzzler-B2B / PBMS (klient mako)
 
-- [ ] commit staged `envs/dev/services.tf` — guardrail parity DEV; rekomendowany commit message: `fix(dev): align Terraform drift guardrails with QA ownership model`
+- [ ] **decyzja: czy QA potrzebuje AzureAd?** — `appsettings.QA.json` ma sekcję AzureAd; jeśli nie potrzebuje → quick fix jq del na task definitions; jeśli potrzebuje → problem zamknięty
+- [ ] commit staged `envs/dev/services.tf` — guardrail parity DEV; commit message: `fix(dev): align Terraform drift guardrails with QA ownership model`
 - [ ] decyzja o `docs/db-access.md` — untracked w infra repo; nie mieszać bez explicit review
-- [ ] uat/prod `secrets.tf` parity — `ignore_changes` gaps względem DEV/QA; nie zrobione
+- [ ] CI/CD refaktor: zamienić pull-and-update na explicit task def builder (Wariant C) — szczegóły w session-log.md
+- [ ] stworzyć QA-specific IAM roles (`infra-puzzler-b2b-qa-ecs-*`) zamiast reużywania DEV roles
+- [ ] dodać `worker` do CI/CD deploy matrix — nigdy nie był deployowany przez pipeline
 - [ ] opcjonalnie: healthcheck do obrazu/modułu jumphosta — ECS healthStatus jest UNKNOWN
 
 ## DRP-TFS (klient mako)
