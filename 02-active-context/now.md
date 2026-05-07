@@ -2,30 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-07 — aws-cloud-platform: SCP MFA exception AKTYWNA ⚠️
+## Update — 2026-05-07 — aws-cloud-platform: SCP OPTION-B aktywna ⚠️ MAINTENANCE WINDOW
 
 ```
-AKTYWNA ZMIANA SCP — wymagane przywrócenie po enrollment
+AKTYWNA ZMIANA SCP — MAINTENANCE WINDOW OTWARTY
 SCP:    llz-security-baseline (p-8wat7tjs)
-Zmiana: DenyRootUserActions "Action":"*" → "NotAction":[5 akcji MFA]
-Backup: /tmp/scp-mfa-remediation/llz-security-baseline-BACKUP-2026-05-07.json
+Zmiana: DenyRootUserActions — account-specific exclusion (Option B)
+        Root nierestrykowany w 8 kontach remediation; DenyDisableSecurityServices AKTYWNE
+Snapshot: /tmp/scp-mfa-remediation/SNAPSHOT-2026-05-07T170429Z.json
 
-ROLLBACK po zakończeniu:
+ROLLBACK (wykonaj NATYCHMIAST po zakończeniu remediacji):
   aws organizations update-policy \
     --policy-id p-8wat7tjs \
-    --content file:///tmp/scp-mfa-remediation/llz-security-baseline-BACKUP-2026-05-07.json \
+    --content file:///tmp/scp-mfa-remediation/ROLLBACK-full-restore.json \
     --profile mako-dc
 
-Enrollment do wykonania (9 kont):
-  [ ] LogArchiveNew (771354139056) — log-archive-new@makolab.pl
-  [ ] planodkupow (333320664022) — planodkupow@makolab.pl
+Konta do remediacji (email + MFA):
+  [ ] LogArchiveNew (771354139056) — log-archive-new@makolab.pl        [tylko MFA, nie w exclusion]
+  [ ] planodkupow (333320664022)   — planodkupow@makolab.pl
   [ ] planodkupowv1 (292464762806) — planodkupow1@makolab.pl
-  [ ] Booking_Online (128264038676) — jaroslaw.golab+booking@makolab.com
-  [ ] RShop (943111679945) — jaroslaw.golab+rshop@makolab.com
+  [ ] Booking_Online (128264038676) — jaroslaw.golab+booking@makolab.com [email PERSONAL → zmień]
+  [ ] RShop (943111679945)          — jaroslaw.golab+rshop@makolab.com   [email PERSONAL → zmień]
   [ ] dacia-asystent (074412166613) — dacia-asystent@makolab.pl
-  [ ] CC (943696080604) — CCAWS@makolab.com
-  [ ] DRP-TFS (613448424242) — drptfs@makolab.pl
-  [ ] lab (052845428574) — lab@makolab.pl
+  [ ] CC (943696080604)             — CCAWS@makolab.com
+  [ ] DRP-TFS (613448424242)        — drptfs@makolab.pl
+  [ ] lab (052845428574)            — lab@makolab.pl
 ```
 
 ## Update — 2026-05-07 — aws-cloud-platform: root MFA discovery ZAKOŃCZONE
@@ -2761,4 +2762,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 18:56 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 19:06 — sesja aktywna*
