@@ -148,7 +148,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -332,7 +332,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "091449f95edbb05b",
+  "active": "7254c81a276b7e45",
   "lastOpenFiles": [
     "_chatgpt/context-packs/aws-glpi-integration.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
