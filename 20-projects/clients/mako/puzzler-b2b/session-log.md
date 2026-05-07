@@ -11,6 +11,49 @@ Chronologicznie, najnowszy na górze.
 
 ---
 
+## 2026-05-07 — Notifier crash loop: MongoConfigurationException
+
+**Serwis:** `infra-puzzler-b2b-dev-notifier` (ECS Fargate)
+**Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final`
+**Wynik:** crash loop zażegnany, serwis RUNNING od 10:15:05 ✅
+
+### Root cause
+
+Task definition (rev 65, potem 69) nie zawierała mappingu `ConnectionStrings__PBMS_DB_notifier` w sekcji `secrets` kontenera. Aplikacja .NET otrzymywała pusty string zamiast MongoDB connection string → `MongoConfigurationException: The connection string '' is not valid` → crash co ~30s.
+
+Secret `infra-puzzler-b2b/dev/docdb` zawierał klucz `connection_string_notifier` z poprawnym connection string. Mapowanie było zdefiniowane w Terraform (`secrets.tf` → `local.docdb_secrets`) ale nie było w faktycznej task definition — prawdopodobnie rev 65 było wdrożone przed dodaniem tego mappingu do kodu Terraform.
+
+### Fix
+
+1. `terraform apply -replace=module.app_stack.module.notifier[0].aws_ecs_task_definition.this` z prawdziwymi sensitive vars
+   → task definition rev 70 z poprawnym mappingiem `ConnectionStrings__PBMS_DB_notifier`
+2. `aws ecs update-service --task-definition infra-puzzler-b2b-dev-notifier:70`
+   → serwis skierowany na rev 70
+
+### Incident w trakcie naprawy (WAŻNE)
+
+`aws_docdb_cluster.master_password` nadpisane wartością `"plan-placeholder"` podczas pierwszego apply. Przyczyna: brak `lifecycle { ignore_changes = [master_password] }` na `aws_docdb_cluster`. Wszystkie sensitive vars (w tym `documentdb_password`) muszą być podane bez defaults i nie mają guardrails jeśli nie ma `ignore_changes`.
+
+**Naprawione:** drugi apply z prawdziwym hasłem `TF_VAR_documentdb_password="64IAJ#<233Bt"`.
+
+**Rekomendacja:** dodać `ignore_changes = [master_password]` do `modules/core/docdb/main.tf`.
+
+### Weryfikacja końcowa
+
+```
+runningCount: 1 / desiredCount: 1 / pendingCount: 0
+task: 533d3891 | rev 70 | RUNNING od 10:15:05
+logi: "PBMS Notifier API started." — brak MongoConfigurationException ✅
+```
+
+### Kluczowe pliki
+
+- `envs/dev/secrets.tf` — `local.docdb_secrets` z mappingiem `ConnectionStrings__PBMS_DB_notifier`
+- `envs/dev/services.tf` — `merge(local.docdb_secrets, local.azuread_secrets)` → notifier container secrets
+- `modules/core/ecs-service/main.tf:29` — `ignore_changes = [container_definitions]` (blokuje normal plan)
+
+---
+
 ## 2026-05-06 — IaC ownership normalization commit
 
 **Branch:** `feat/dev-jumphost-runtime-secret`

@@ -2,6 +2,38 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — puzzler-b2b: notifier crash loop RESOLVED
+
+```
+Projekt:  Puzzler B2B (klient mako)
+Serwis:   infra-puzzler-b2b-dev-notifier (ECS Fargate)
+Profil:   puzzler-pbms | account 698220459519 | region eu-west-2
+
+ROOT CAUSE:
+  Task definition rev 65/69 nie miała mappingu ConnectionStrings__PBMS_DB_notifier
+  w sekcji secrets → zmienna env = "" → MongoConfigurationException crash loop
+
+FIX:
+  terraform apply -replace=...aws_ecs_task_definition.this
+  → rev 70 z ConnectionStrings__PBMS_DB_notifier → arn:...:connection_string_notifier::
+  aws ecs update-service --task-definition ...:70
+  → serwis skierowany na rev 70
+
+INCIDENT W TRAKCIE:
+  aws_docdb_cluster.master_password nadpisane "plan-placeholder" (brak ignore_changes)
+  → naprawione drugim apply z prawdziwym hasłem
+
+WERYFIKACJA:
+  runningCount: 1 / desiredCount: 1 / pendingCount: 0
+  logi: "PBMS Notifier API started." — brak MongoConfigurationException ✅
+
+REKOMENDACJA (nie zrobione):
+  → ignore_changes = [master_password] do modułu DocumentDB
+
+NASTĘPNY KROK:
+  → projekt w trakcie — crash loop zażegnany, dev env stabilny
+```
+
 ## Update — 2026-05-07 — maspex UAT: Redis reboot + CloudFront invalidation
 
 ```
@@ -2221,4 +2253,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 10:03 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 10:16 — sesja aktywna*
