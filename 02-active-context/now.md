@@ -2,6 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — aws-cloud-platform: root MFA recovery plan utworzony
+
+```
+Projekt:  mako / aws-cloud-platform
+Operacja: planowanie — Root MFA Recovery & Remediation
+Vault:    20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md
+
+FAZA:     DISCOVERY — nie wykonano jeszcze żadnej remediacji
+STAN:     Plan gotowy, wymaga wykonania discovery (credential reports + email weryfikacja)
+
+Następny krok:
+  1. Uruchom discovery pack (sekcja Appendix w root-mfa-recovery-plan.md)
+  2. Wypełnij tabelę discovery (sekcja 3.4)
+  3. Sprawdź treść CT guardrails (p-wacgblah, p-yncf8tm8)
+  4. Dopiero po discovery — plan remediation per konto
+
+PRIORYTET remediacji:
+  1. makolab_dc (864277686382) — management account
+  2. LogArchiveNew (771354139056) — po analizie CT guardrails
+  3. Pozostałe ACTIVE konta
+```
+
 ## Update — 2026-05-07 — switch context: puzzler-pbms zapisany, przejście na drp-tfs
 
 ```
@@ -2701,4 +2723,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 17:00 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 18:23 — sesja aktywna*
