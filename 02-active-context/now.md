@@ -2,6 +2,41 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — puzzler-pbms: DEV DocumentDB Compass URI
+
+```
+Projekt:  puzzler-b2b / PBMS
+AWS:      profile puzzler-pbms | account 698220459519 | region eu-west-2
+Operacja: read-only — secret discovery + generowanie URI
+
+SECRET: infra-puzzler-b2b/dev/docdb
+  klucze: connection_string, connection_string_automation, connection_string_core,
+          connection_string_notifier, database_automation, database_core,
+          database_notifier, host, password, port, username
+  username: dbadmin ✅
+  password: niepusty ✅
+  connection_string_automation: wskazuje PBMS_DB_automation ✅
+  replicaSet=rs0 w secrecie: TAK — usunięty tylko z lokalnego URI (secret AWS bez zmian)
+
+TUNNEL: localhost:27117 -> DEV DocDB:27017
+
+URI DO COMPASS:
+  mongodb://dbadmin:***@localhost:27117/PBMS_DB_automation
+    ?authSource=admin&directConnection=true&tls=true
+    &tlsAllowInvalidCertificates=true&retryWrites=false
+
+ZAPIS: 20-projects/clients/mako/puzzler-b2b/session-log.md
+
+STAN REPO (bez zmian):
+  staged:    envs/dev/services.tf (guardrail parity DEV)
+  untracked: docs/db-access.md
+  apply:     NIE wykonany
+
+NASTĘPNY KROK:
+  → git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
+  → decyzja o docs/db-access.md
+```
+
 ## Update — 2026-05-07 — switch context: Maspex zapisany, przejście na puzzler-pbms
 
 ```
