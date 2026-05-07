@@ -189,6 +189,43 @@ make test-regression → 8 passed, 10 xfailed
 ```
 
 **Następny krok:**
-→ Fix KF-006 (overlap resolution algorithm) → unblocks KF-002 i KF-004
+→ Fix KF-006 (overlap resolution algorithm) → unblocks KF-002 i KF-004 ✓ DONE
 → Fix KF-001 (S3 ARN regex — S3 bucket ARNs bez account ID)
 → Fix KF-003 (custom email recognizer z relaxed TLD)
+
+---
+
+## 2026-05-07 — KF-006 fix: priority-based overlap resolution
+
+**Cel:** Fix krytycznego bugu w `_merge_overlapping` — inner high-score span zastępował outer lower-score span.
+
+**Root cause:** Stary algorytm greedy left-to-right: nowy span z wyższym score zastępował poprzedni, nawet jeśli był krótszy i zawierał się w środku. `DB_CONNECTION_STRING[5:80]` score=0.97 był zastępowany przez `EMAIL_ADDRESS[25:60]` score=1.0 → `postgresql://user:` prefix leakował.
+
+**Fix:** Całkowity rewrite `tokenizer.py`:
+- `_ENTITY_PRIORITY` dict: 13 poziomów (DB_CONNECTION_STRING=11 > EMAIL_ADDRESS=4)
+- `_beats(challenger, champion)`: priorytet > długość spanu > score
+- `_merge_overlapping`: kandidat akceptowany tylko gdy bije WSZYSTKIE nakładające się zaakceptowane spany
+- Sorting: `(start, -length, -priority)` — pierwszeństwo outer spans
+
+**Zmienione pliki:**
+- `src/dc_anonymizer/tokenization/tokenizer.py` — pełny rewrite
+- `tests/unit/test_tokenizer.py` — +6 nowych testów dla priority-based resolution
+- `tests/regression/test_kf_002_004_006_connection_string_overlap.py` — usunięto xfail z 3 testów + zaktualizowano docstring
+- `docs/known-failures.md` — KF-006, KF-002, KF-004 → status: fixed
+
+**Wyniki testów:**
+```
+make test           → 27 passed, 4 skipped, 7 xfailed
+make test-regression → 11 passed, 7 xfailed  (było: 8 passed, 10 xfailed)
+make smoke          → PASSED (2 events: anonymize,rehydrate)
+make analyze-fixture FILE=tests/fixtures/input/dc-anonymizer-synthetic-sensitive-fixture.md
+  → 3 connection strings fully tokenized (postgresql, mongodb, redis)
+  → WARNINGS: KF-003 (email .example TLD), nowy edge case: API_KEY_GENERIC (priority 9) bije AWS_ARN (priority 8) → partial ARN leak
+```
+
+**Nowy edge case (do śledzenia):** Nazwy ról IAM (`acme-prod-ecs-task-execution-role`) triggerują `API_KEY_GENERIC` score=0.40. Ponieważ `API_KEY_GENERIC` (priority=9) > `AWS_ARN` (priority=8), inner false-positive wypycha outer ARN span → fragment ARN z account ID widoczny. Prawdopodobna naprawa: obniżyć priorytet `API_KEY_GENERIC` poniżej `AWS_ARN` lub dodać min-score threshold dla `API_KEY_GENERIC`.
+
+**Następny krok:**
+→ Fix KF-001 (S3 ARN regex)
+→ Fix KF-003 (email z relaxed TLD — .internal, .local, .example, .corp)
+→ Nowy KF: API_KEY_GENERIC priority > AWS_ARN — partial ARN leak przez false positive
