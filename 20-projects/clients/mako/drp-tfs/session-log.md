@@ -78,9 +78,25 @@ Pody tfs-prod: wszystkie 1/1 Running
   - leasing-filters-core: 2/2
 ```
 
+### Persistence audit (2026-05-07 ~20:30)
+
+Wynik: wszystkie fixy commitnięte w `df1acd1`.
+
+Kluczowe ustalenia:
+- `playbook/ansible-mongo.tar` był budowany z self-reference (zawierał starą wersję siebie) → przebudowano z `--exclude='./ansible-mongo.tar'`
+- `values.yaml enablePorts.quic: false` wystarczy — `install.sh` używa `--values=values.yaml`, Helm respektuje
+- S3 bucket pre-exists (nie jest zarządzany przez Terraform) → plik trwa przez destroy/apply
+- `helm-tfs-drp/install.sh` NIE aktualizuje kubeconfig → wymagany manual step przed `make app`
+
+Pre-requisite po `make apply` przed `make app`:
+```bash
+AWS_PROFILE=drp-tfs aws eks update-kubeconfig --name drp-tfs-eks-cluster --region eu-central-1
+```
+
 ### Do zrobienia
 
-- [ ] Zaktualizować `k8s/loadbalancer/install.sh` aby trwale ustawiał `enablePorts.quic=false`
+- [ ] dodać `aws eks update-kubeconfig` do `helm-tfs-drp/install.sh` (make app bez manual step)
+- [ ] `make destroy` wymaga `NAMESPACE=tfs-prod RELEASE=haproxy-kubernetes-ingress` — brak domyślnych wartości
 - [ ] Sprawdzić czy backup restore się powiódł (dane z S3 przywrócone przez `mongorestore --drop`)
 - [ ] Powtórzyć cloud-detective live check po naprawie
 - [ ] Sprawdzić leasing-filters-api i core-service działanie funkcjonalne (nie tylko Running)
