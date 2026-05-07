@@ -2,6 +2,35 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — switch context: drp-tfs zapisany, powrót na puzzler-pbms
+
+```
+Zamknięty kontekst roboczy: drp-tfs cloud-detective
+Status:                   standby / snapshot zapisany
+Context:                  20-projects/clients/mako/drp-tfs/drp-tfs-context.md
+
+Najważniejsze otwarte sprawy drp-tfs:
+  - CRITICAL: leasing-filters api/core 0/2, CrashLoopBackOff, Mongo REPLICA_SET_GHOST
+  - CRITICAL: haproxy LoadBalancer EXTERNAL-IP <pending>, mixed TCP+UDP service
+  - follow-up: naprawić Mongo replica set / LoadBalancer i powtórzyć live check
+
+Aktywny kontekst roboczy: puzzler-b2b / PBMS
+AWS profile:              puzzler-pbms
+Region:                   eu-west-2
+Account:                  698220459519
+Repo infra:               ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+
+Stan wejściowy puzzler-pbms:
+  - staged: envs/dev/services.tf
+  - untracked, nie mieszać bez review: docs/db-access.md
+  - ostatni DEV plan: No changes
+  - apply NIE wykonany
+
+Następny krok:
+  → commit staged DEV guardrail change:
+    git commit -m "fix(dev): align Terraform drift guardrails with QA ownership model"
+```
+
 ## Update — 2026-05-07 — drp-tfs: cloud-detective snapshot zapisany
 
 ```

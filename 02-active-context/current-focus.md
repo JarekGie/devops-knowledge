@@ -6,7 +6,9 @@
 
 ```
 Przełączony kontekst roboczy: puzzler-b2b / PBMS.
-Stan vault zapisany 2026-05-07 po DEV ownership parity guardrails:
+Stan vault zapisany 2026-05-07 po drp-tfs cloud-detective i powrocie na puzzler-pbms:
+  - drp-tfs snapshot zapisany w 20-projects/clients/mako/drp-tfs/drp-tfs-context.md,
+  - drp-tfs standby z CRITICAL: leasing-filters CrashLoopBackOff + haproxy LB pending,
   - AWS profile puzzler-pbms działa: account 698220459519, user makolab-ci,
   - QA ownership model sprawdzony względem DEV,
   - DEV envs/dev/services.tf dostosowany do QA: bez AzureAd ECS secret injection,
