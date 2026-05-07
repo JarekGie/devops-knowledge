@@ -123,6 +123,34 @@ ADR-008 dodany do vault: uv vs Poetry — wybór uv.
 **Deterministyczny:** 2 uruchomienia → identyczny token count (7), zawsze PASSED.
 
 **Następny krok:**
-→ `make test` — unit + integration tests
+→ Benchmark Ollama modeli
+→ Testowanie na realnych dokumentach (Terraform, YAML, logi)
+
+---
+
+## 2026-05-07 — Audit trail dla rehydrate
+
+**Problem:** operacja `rehydrate` nie zapisywała eventu do `audit_events`. Smoke pokazywało tylko 1 event.
+
+**Naprawione pliki:**
+
+1. **`src/dc_anonymizer/tokenization/rehydration.py`** — dodano `log_event()` po udanej rehydratacji:
+   - `operation = "rehydrate"`
+   - metadata: `token_map_id`, `input_path`, `output_path`, `tokens_rehydrated_count`
+   - NIE loguje: oryginalnych wartości, treści dokumentu, token map entries
+
+2. **`scripts/smoke-test.sh`** — warunek audit zmieniony z `gt 0` → `ge 2`, sprawdza obecność obu eventów (`anonymize`, `rehydrate`)
+
+3. **`tests/integration/test_pipeline.py`** — 2 nowe testy:
+   - `test_rehydrate_audit_event_recorded` — weryfikuje obecność obu operacji w audit log
+   - `test_rehydrate_audit_metadata_no_secrets` — weryfikuje że audit payload nie zawiera haseł z fixture
+
+**Wyniki:**
+```
+make smoke → PASSED (2 events: anonymize,rehydrate)
+make test  → 10 passed, 4 skipped (integration: 4 passed z DATABASE_URL)
+```
+
+**Następny krok:**
 → Benchmark Ollama modeli
 → Testowanie na realnych dokumentach (Terraform, YAML, logi)
