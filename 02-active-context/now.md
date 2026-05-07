@@ -2,6 +2,19 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-07 — aws-cloud-platform: break-glass framework gotowy
+
+```
+Nowe dokumenty:
+  20-projects/clients/mako/aws-cloud-platform/break-glass-framework.md
+  40-runbooks/aws/break-glass-ou-move.md
+
+Następny krok (priorytet 1):
+  terraform apply — Break-Glass OU (organizations/break-glass/)
+  MFA enrollment — 9 kont (użyć Recovery OU zamiast SCP modification)
+  Security Hub + GuardDuty włączyć
+```
+
 ## Update — 2026-05-07 — aws-cloud-platform: postmortem gotowy, sesja zamknięta
 
 ```
@@ -2803,4 +2816,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-07 21:02 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-07 21:13 — sesja aktywna*
