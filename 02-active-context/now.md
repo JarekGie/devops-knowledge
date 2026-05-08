@@ -2992,4 +2992,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 20:37 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 20:42 — sesja aktywna*
