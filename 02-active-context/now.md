@@ -2,6 +2,48 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-08 — DWA OTWARTE WĄTKI — wróć do obu
+
+### 1. Maspex UAT — Redis ELB migration (przerwane, wróć tutaj)
+
+```
+ZROBIONE:
+  ✅ Redis maspex-uat reboot (available)
+  ✅ CloudFront E3J76RNXIE2YIG invalidation /* (Completed)
+  ✅ Secret maspex/uat/api zaktualizowany:
+       STARY: redis://maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379
+       NOWY:  redis://maspex-uat-redis-9e944396060e4763.elb.eu-west-1.amazonaws.com:6379
+  ✅ maspex-api force-new-deployment — 9/9 running z nowym connection stringiem
+
+DO WERYFIKACJI (następna sesja):
+  [ ] Czy aplikacja poprawnie łączy się z Redis przez ELB?
+  [ ] Czy VOTE_CACHE_WRITETHROUGH_FAIL błędy zniknęły? (było 924k/79min w load teście)
+  [ ] Sprawdzić logi /maspex/uat/contest-service po teście obciążeniowym
+  [ ] Rollback gotowy w: 20-projects/clients/mako/maspex/redis-connection-change-2026-05-08.md
+
+Rollback 1 komendą:
+  aws secretsmanager put-secret-value --secret-id maspex/uat/api \
+    --secret-string '{"ConnectionStrings__Redis":"redis://maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379"}' \
+    --profile maspex-cli --region eu-west-1
+  + force-new-deployment maspex-api
+```
+
+### 2. devops-toolkit Governance Foundation P0/P1 (przerwane, wróć tutaj)
+
+```
+Branch: feat/governance-foundation-p0-p1
+Repo: ~/projekty/devops/devops-toolkit
+
+ZROBIONE: Tasks 1–2 (package infra + fixtury)
+NASTĘPNY KROK: Task 3 — OrganizationsCollector.collect_accounts() TDD
+Plan: docs/superpowers/plans/2026-05-08-governance-foundation-p0-p1.md
+
+KOREKTA DO PLANU (Task 8):
+  test_filters_events_by_account_id → account_id="222222222222" (nie 999999999999)
+```
+
+---
+
 ## Update — 2026-05-08 — devops-toolkit Governance Foundation P0/P1 (przerwane, wróć tutaj)
 
 ```
@@ -2889,4 +2931,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 09:57 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 13:02 — sesja aktywna*
