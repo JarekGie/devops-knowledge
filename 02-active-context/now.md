@@ -36,30 +36,34 @@ DO ZROBIENIA:
   [ ] Zwiększyć retencję /ecs/rshop-dev z 1 dnia na 14+ dni (P0)
 ```
 
-## Update — 2026-05-08 — DWA OTWARTE WĄTKI — wróć do obu
+## Update — 2026-05-08 sesja 2 — Maspex UAT ZAMKNIĘTE ✅
 
-### 1. Maspex UAT — Redis ELB migration (przerwane, wróć tutaj)
+### 1. Maspex UAT — Redis + WAF — ZROBIONE ✅
 
 ```
-ZROBIONE:
-  ✅ Redis maspex-uat reboot (available)
-  ✅ CloudFront E3J76RNXIE2YIG invalidation /* (Completed)
-  ✅ Secret maspex/uat/api zaktualizowany:
-       STARY: redis://maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379
-       NOWY:  redis://maspex-uat-redis-9e944396060e4763.elb.eu-west-1.amazonaws.com:6379
-  ✅ maspex-api force-new-deployment — 9/9 running z nowym connection stringiem
+STAN AKTUALNY (2026-05-08 ~14:30):
 
-DO WERYFIKACJI (następna sesja):
-  [ ] Czy aplikacja poprawnie łączy się z Redis przez ELB?
-  [ ] Czy VOTE_CACHE_WRITETHROUGH_FAIL błędy zniknęły? (było 924k/79min w load teście)
-  [ ] Sprawdzić logi /maspex/uat/contest-service po teście obciążeniowym
-  [ ] Rollback gotowy w: 20-projects/clients/mako/maspex/redis-connection-change-2026-05-08.md
+  Secret maspex/uat/api:
+    ✅ PRZYWRÓCONY do ElastiCache:
+       redis://maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379
+       (eksperymentalny ELB Redis z sesji 1 — cofnięty)
 
-Rollback 1 komendą:
-  aws secretsmanager put-secret-value --secret-id maspex/uat/api \
-    --secret-string '{"ConnectionStrings__Redis":"redis://maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379"}' \
-    --profile maspex-cli --region eu-west-1
-  + force-new-deployment maspex-api
+  Task definition maspex-api:58 (Terraform commit 249e618):
+    ✅ NAPRAWIONY: secret wstrzykiwany jako REDIS_URL (było: ConnectionStrings__Redis)
+    ✅ Force-new-deployment → 9/9 running, Ready in 129ms, brak błędów Redis
+
+  WAF maspex-uat-public-uat-allowlist (Terraform commit b87c415):
+    ✅ Dodano IPv6 IP set maspex-uat-supabase-ipv6:
+       2a05:d018:135e:16df:624:8d0e:2886:f540/128
+    ✅ Reguła allow-supabase-ipv6 (P1) → Supabase pg_net przechodzi
+    ✅ Sampled requests 14:26+ = ALLOW dla /api/cron/* i /api/email/process-outbox
+
+OTWARTE:
+  [ ] preprod/prod: ten sam błąd ConnectionStrings__Redis → REDIS_URL (nie naprawione)
+  [ ] WAF: jeśli Supabase zmieni IPv6, blokada wróci — docelowo: custom header (Wariant C)
+  [ ] Drift aws_ecs_service.redis :3→:2 w Terraform state — osobna sprawa
+
+Logi/historia: 20-projects/clients/mako/maspex/session-log.md
 ```
 
 ### 2. devops-toolkit Governance Foundation P0/P1 (przerwane, wróć tutaj)
@@ -2965,4 +2969,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 14:29 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 14:57 — sesja aktywna*
