@@ -63,7 +63,21 @@ REDIS STATE CHECK (sesja 3):
   ✅ Experimental ECS Redis: 0 kluczy, idle — nigdy nie był używany przez app
   ✅ Cache end-to-end działa po naprawie REDIS_URL (maspex-api:58)
 
-OTWARTE:
+LOAD TEST INFRA (sesja 4) — wdrożone ✅:
+  ✅ ASG maspex-uat-loadtest: 2/2 InService, c6i.4xlarge
+  ✅ i-0ee2df328caa07706 → 54.170.233.211 (eu-west-1a)
+  ✅ i-0890054b5bf36fb7b → 34.255.6.69   (eu-west-1b)
+  ✅ Docker 25.0.14 + k6 v2.0.0-rc1 zainstalowane via SSM
+  ✅ SSM Online na obu maszynach
+  ✅ Outbound connectivity potwierdzone (403 z WAF — oczekiwane)
+
+PRZED PIERWSZYM TESTEM:
+  [ ] Dodać SSH keys (Karol + Jarosław) do loadtest_ssh_pubkeys w tfvars + terraform apply
+  [ ] Dodać 54.170.233.211/32 i 34.255.6.69/32 do public_uat_extra_allowed_ipv4_cidrs + apply
+      LUB: użyć ALB bezpośrednio: http://maspex-uat-1361582173.eu-west-1.elb.amazonaws.com + Host header
+  [ ] Po testach: scale to 0 → aws autoscaling set-desired-capacity --auto-scaling-group-name maspex-uat-loadtest --desired-capacity 0 --profile maspex-cli --region eu-west-1
+
+OTWARTE (legacy):
   [ ] preprod/prod: ten sam błąd ConnectionStrings__Redis → REDIS_URL (nie naprawione)
   [ ] WAF: jeśli Supabase zmieni IPv6, blokada wróci — docelowo: custom header (Wariant C)
   [ ] Drift aws_ecs_service.redis :3→:2 w Terraform state — osobna sprawa

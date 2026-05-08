@@ -57,6 +57,59 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-08 — sesja 4 — Load test infrastructure
+
+**Cel:** 2 maszyny generatorów ruchu k6 w VPC UAT.
+
+### VPC Discovery
+
+- VPC: `vpc-0df07c64ea8a8b00e` (10.44.0.0/16) — shared (owner: hub account)
+- IGW: `igw-0c10dce685b0226e6` — attached, available
+- NAT: `nat-0d1caf7eeb99c43fe` — w hub account, niewidoczny z naszego konta
+- Subnety publiczne: `maspex-public-az1/az2` → `0.0.0.0/0 → IGW`, `MapPublicIpOnLaunch=False`
+- Subnety app: `maspex-app-az1/az2` → `0.0.0.0/0 → NAT (hub)`
+- Subnety backend: `maspex-backend-az1/az2` → NAT (hub)
+- VGW: `vgw-0f7eeec82737e4797` — VPN propagowany do obydwu RT
+
+### Decyzja architektoniczna: Wariant A
+
+Public subnets + `associate_public_ip_address=true` + SSH.  
+Uzasadnienie: znane IP źródłowe (dla WAF), bezpośredni SSH, brak zmian w shared routing.
+
+### Zmiany Terraform
+
+- Commit: `af18cb5` (infra-maspex)
+- Nowy plik: `terraform/envs/uat/loadtest.tf`
+  - `data.aws_ami.loadtest_al2023` — najnowszy AL2023 AMI
+  - `aws_security_group.loadtest` — SSH z biura MakoLab (195.117.107.110, 91.233.19.251)
+  - `aws_iam_role.loadtest` + `aws_iam_role_policy_attachment.loadtest_ssm` — SSM access
+  - `aws_iam_instance_profile.loadtest`
+  - `aws_launch_template.loadtest` — c6i.4xlarge, 50GB gp3, AL2023, user_data bootstrap
+  - `aws_autoscaling_group.loadtest` — min=0, desired=2, max=2, no scaling policies
+- Zmodyfikowane: `variables.tf` (+loadtest_ssh_pubkeys, +loadtest_extra_ssh_cidrs), `outputs.tf`, `terraform.tfvars`
+
+### Stan po deploy
+
+- ASG: `maspex-uat-loadtest` (min=0, max=2, desired=2)
+- Instancje:
+  - `i-0ee2df328caa07706` → `54.170.233.211` (eu-west-1a, 10.44.0.236)
+  - `i-0890054b5bf36fb7b` → `34.255.6.69` (eu-west-1b, 10.44.1.89)
+- Docker 25.0.14 ✅ | k6 v2.0.0-rc1 ✅ | SSM Online ✅
+- Outbound: HTTP 403 z kapsel.makotest.pl — maszyny docierają do CloudFront, WAF blokuje (oczekiwane)
+
+### Uwagi bootstrap
+
+`dnf update -y` fail na AL2023 — conflict `curl`/`curl-minimal`. Fix: `--allowerasing`.  
+Pierwsze uruchomienie naprawione ręcznie przez SSM. LT zaktualizowane do wersji z fixem.
+
+**Otwarte (przed pierwszym testem):**
+- [ ] SSH keys: dodać klucze Karola i Jarosława do `loadtest_ssh_pubkeys` w tfvars + `terraform apply`
+- [ ] WAF allowlist: dodać `54.170.233.211/32` i `34.255.6.69/32` do `public_uat_extra_allowed_ipv4_cidrs` + apply
+- [ ] Alternatywnie: testy przez ALB bezpośrednio (pomijając CloudFront+WAF): `http://maspex-uat-1361582173.eu-west-1.elb.amazonaws.com` z `Host: kapsel.makotest.pl`
+- [ ] Po zakończeniu testów: scale to 0 → `aws autoscaling set-desired-capacity --auto-scaling-group-name maspex-uat-loadtest --desired-capacity 0 --profile maspex-cli --region eu-west-1`
+
+---
+
 ## 2026-05-08 — sesja 3 — Redis state check (ElastiCache vs experimental)
 
 **Co zrobiono:**
