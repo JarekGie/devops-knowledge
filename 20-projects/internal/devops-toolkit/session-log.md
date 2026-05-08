@@ -21,20 +21,22 @@ Format: data, co zrobiono, gdzie skończono, co następne.
   - CSV: nagłówek w linii 1, root `<123456789012>` w linii 2, brak BOM
   - Fix: `lookup_events_move_response.json` — zastąpiono `999999999999`/`888888888888` → `222222222222`/`123456789012`
 
-**Stan na koniec sesji:**
-- Tasks 3–10 do wykonania (subagent-driven)
-- Następny krok: Task 3 — `OrganizationsCollector.collect_accounts()` (TDD)
-- **UWAGA:** Test w Task 8 (CloudTrailLookupCollector) musi używać `account_id="222222222222"` w `test_filters_events_by_account_id` — nie `999999999999` jak w oryginalnym planie
+**Sesja kontynuowana — Tasks 3–10 ZROBIONE:**
 
-**Kolejność pozostałych zadań:**
-- Task 3: `accounts.py` + 4 testy collect_accounts
-- Task 4: 4 testy collect_ou_tree + check_management_account
-- Task 5: `scps.py` + 6 testów
-- Task 6: `credential_report.py` + 9 testów (bez generate_and_wait)
-- Task 7: 2 testy generate_and_wait (retry + timeout)
-- Task 8: `lookup.py` + 7 testów CloudTrail
-- Task 9: Polish docs (operator + architecture)
-- Task 10: make contract-check + test + lint + push
+- ✅ Task 3: `OrganizationsCollector.collect_accounts()` — commit `bd4a5e7`
+- ✅ Task 4: `collect_ou_tree()` + `check_management_account()` — commit `ee88be4`
+- ✅ Task 5: `SCPCollector` (4 metody, 6 testów) — commit `9604bd5`
+- ✅ Task 6: `CredentialReportCollector` (5 metod, 9 testów) — commit `e0f8acc`
+- ✅ Task 7: `TestGenerateAndWait` (2 testy retry/timeout) — commit `1e726b2`
+- ✅ Task 8: `CloudTrailLookupCollector` (graceful degradation, 8 testów) — commits `95a24aa`, `37ba6aa`
+- ✅ Task 9: Docs PL — `docs/operator/governance-audit.md` + `docs/architecture/governance-commands.md` — commit `d29aae8`
+- ✅ Task 10: 33/33 tests, contract-check PASS, lint PASS, branch pushed — commit `d29aae8`
+
+**Stan na koniec sesji:**
+- Branch `feat/governance-foundation-p0-p1` — PUSHED ✅
+- 33 testów jednostkowych, 0 failures
+- contract-check PASS, lint PASS
+- Następna faza: P2 — Plugin `root-governance` + pack `governance-root`
 
 ---
 

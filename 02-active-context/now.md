@@ -85,45 +85,24 @@ OTWARTE (legacy):
 Logi/historia: 20-projects/clients/mako/maspex/session-log.md
 ```
 
-### 2. devops-toolkit Governance Foundation P0/P1 (przerwane, wróć tutaj)
+### 2. devops-toolkit Governance Foundation P0/P1 — ZROBIONE ✅
 
 ```
-Branch: feat/governance-foundation-p0-p1
+Branch: feat/governance-foundation-p0-p1 (pushed)
 Repo: ~/projekty/devops/devops-toolkit
+33 testów, 0 failures, contract-check PASS, lint PASS
 
-ZROBIONE: Tasks 1–2 (package infra + fixtury)
-NASTĘPNY KROK: Task 3 — OrganizationsCollector.collect_accounts() TDD
-Plan: docs/superpowers/plans/2026-05-08-governance-foundation-p0-p1.md
+ZROBIONE (Tasks 1–10):
+  ✅ Package infra: collectors/aws/{organizations,iam,cloudtrail} jako Python package
+  ✅ Fixtury: 10 plików JSON/CSV (organizations, IAM, CloudTrail)
+  ✅ OrganizationsCollector: collect_accounts, collect_ou_tree, check_management_account
+  ✅ SCPCollector: collect_policies, collect_targets, describe_policy, collect_policies_for_target
+  ✅ CredentialReportCollector: generate_report, get_report, generate_and_wait, parse, get_root_row
+  ✅ CloudTrailLookupCollector: lookup_root_events, lookup_move_account_events (graceful degradation)
+  ✅ Docs: docs/operator/governance-audit.md + docs/architecture/governance-commands.md
+  ✅ Weryfikacja: 33/33 tests, contract-check PASS, lint PASS, branch pushed
 
-KOREKTA DO PLANU (Task 8):
-  test_filters_events_by_account_id → account_id="222222222222" (nie 999999999999)
-```
-
----
-
-## Update — 2026-05-08 — devops-toolkit Governance Foundation P0/P1 (przerwane, wróć tutaj)
-
-```
-Branch: feat/governance-foundation-p0-p1
-Repo: ~/projekty/devops/devops-toolkit
-
-STAN: Tasks 1–2 zrobione, Tasks 3–10 do wykonania
-
-ZROBIONE:
-  ✅ Task 1: collectors/ jako Python package + error classes (commit 122d61d)
-  ✅ Task 2: Fixtury testowe — 10 plików JSON/CSV (commits e117264, ed4c6ef)
-
-NASTĘPNY KROK:
-  → Task 3: OrganizationsCollector.collect_accounts() TDD
-    collectors/aws/organizations/accounts.py + tests/unit/test_organizations_collector.py
-    Plan: docs/superpowers/plans/2026-05-08-governance-foundation-p0-p1.md
-
-WAŻNA KOREKTA DO PLANU (Task 8):
-  test_filters_events_by_account_id musi używać account_id="222222222222"
-  (fixture zmieniony z 999999999999 → 222222222222)
-
-KOLEJNOŚĆ:
-  Task 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 (make test + push)
+NASTĘPNA FAZA: P2 — Plugin root-governance + pack governance-root
 ```
 
 ## Update — 2026-05-07 — SNS/GLPI routing: sesja zamknięta ✅
@@ -2988,4 +2967,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 15:58 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 16:38 — sesja aktywna*
