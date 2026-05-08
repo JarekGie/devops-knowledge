@@ -146,9 +146,23 @@
               "icon": "lucide-file",
               "title": "aws-glpi-integration"
             }
+          },
+          {
+            "id": "799c044b83535816",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "40-runbooks/incidents/planodkupow-qa-rabbitmq-rollback-failed.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "planodkupow-qa-rabbitmq-rollback-failed"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 6
       }
     ],
     "direction": "vertical"
@@ -332,7 +346,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7254c81a276b7e45",
+  "active": "799c044b83535816",
   "lastOpenFiles": [
     "_chatgpt/context-packs/aws-glpi-integration.md",
     "20-projects/clients/mako/aws-cloud-platform/aws-cloud-platform-context.md",
