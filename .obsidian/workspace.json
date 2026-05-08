@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Audit devops-toolkit before governance commands"
+              "title": "Terminal: ⠂ Audit devops-toolkit before governance commands"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Restore Redis secret value in Maspex"
+              "title": "Terminal: ⠂ Restore Redis secret value in Maspex"
             }
           },
           {
@@ -133,7 +133,8 @@
               "title": "puzzler-b2b-context"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -317,13 +318,13 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "ea7659ebbbd6e366",
   "lastOpenFiles": [
+    "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/clients/mako/rshop/session-log.md",
     "20-projects/clients/mako/rshop/acm-cert-migration-2026-05-08.md",
     "20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md",
     "20-projects/clients/mako/rshop/rca-ecs-deploy-failure-2026-05-08.md",
-    "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/clients/mako/maspex/session-log.md",
     "20-projects/clients/mako/maspex/redis-connection-change-2026-05-08.md",
     "20-projects/internal/devops-toolkit/governance-commands-audit.md",
