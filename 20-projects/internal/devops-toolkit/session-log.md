@@ -4,6 +4,46 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-08 — Governance P3: scp-governance plugin (DONE ✅)
+
+**Branch:** `feat/scp-governance-p3`
+**Plan:** `docs/superpowers/plans/2026-05-08-p3-scp-governance.md`
+**PR:** #60 — merged do main (`b983a6a`)
+
+**Zrobione:**
+- ✅ `toolkit/plugins/scp_governance/plugin.py` — `SCPGovernancePlugin`, fazy 1–5
+- ✅ `packs/governance-scp.yaml` — pack `governance-scp`
+- ✅ 41 testów jednostkowych (`tests/unit/test_scp_governance_plugin.py`) — 41/41 pass
+- ✅ 99 testów governance+collectors — zero regresji
+- ✅ `make contract-check` PASS, `make lint` PASS
+- ✅ Docs: `governance-commands.md`, `governance-audit.md`, `cli.md`
+
+**Kluczowe decyzje (corrections applied before impl):**
+- Mocking na granicy modułu (`_build_session`, `OrganizationsCollector`, `SCPCollector`) — nie przez boto3 internals
+- `_action_matches()`: `*`, `<service>:*`, exact case-insensitive; `NotAction` poza zakresem
+- Granica: plugin nigdy nie wywołuje `collect_policies_for_target` na `r-xxx` (root GOV-ROOT-003)
+
+**Findings:** GOV-SCP-001 (critical OU coverage), GOV-SCP-002 (baseline deny), GOV-SCP-003 (account-only attachment), GOV-SCP-004 (OU with accounts, no SCP)
+
+**Stan na koniec sesji:**
+- main zsynchronizowany z origin
+- Branch `feat/finops-sanitizer` gotowy (next task TBD)
+
+---
+
+## 2026-05-08 — Governance P2: root-governance plugin (DONE ✅)
+
+**Branch:** `feat/governance-foundation-p0-p1` (merged)
+**Merge commit:** `fc8c096 merge: governance foundation P0/P1 + root-governance plugin (P2)`
+
+**Zrobione:**
+- ✅ `toolkit/plugins/root_governance/plugin.py` — `RootGovernancePlugin` (GOV-ROOT-001..005)
+- ✅ `packs/governance-root.yaml` — pack `governance-root`
+- ✅ 36 testów jednostkowych — 36/36 pass
+- ✅ Pattern: hard abort Phase 1, soft skip Phase 2–4, sanitized/normalized artifact split
+
+---
+
 ## 2026-05-08 — Governance Foundation P0/P1 — implementacja
 
 **Branch:** `feat/governance-foundation-p0-p1`

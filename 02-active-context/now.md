@@ -2,6 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-08 sesja 3 — devops-toolkit governance P2+P3 DONE ✅
+
+```
+AKTYWNY BRANCH: feat/finops-sanitizer (off main b983a6a)
+REPO: ~/projekty/devops/devops-toolkit
+
+GOVERNANCE STATUS:
+  ✅ P0/P1 — collectors (Organizations, IAM, CloudTrail) — merged
+  ✅ P2 — root-governance plugin (GOV-ROOT-001..005) — merged fc8c096
+  ✅ P3 — scp-governance plugin (GOV-SCP-001..004) — merged b983a6a (#60)
+  ⛔ P4 drift organizations — wykluczone
+  ⛔ P5 break-glass status — wykluczone
+  ⛔ P6 UI — wykluczone
+
+NASTĘPNE ZADANIE: TBD na branchu feat/finops-sanitizer
+  - Sprawdzić next-steps.md — część pozycji może być stale (finops sanitizer i cost norm. były zrobione wcześniej)
+  - Potencjalny kandydat: ALB scaffold fix (test_init_project.py:1396) — jedyny potwierdzony otwarty dług
+```
+
+---
+
 ## Update — 2026-05-08 — rshop cert ✅ ZAMKNIĘTE + 2 otwarte wątki
 
 ### 0. rshop cert `*.skleprenault.pl` — ZMIGROWANY ✅
