@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Review governance foundation P0/P1 branch"
+              "title": "Terminal: ⠐ Review governance foundation P0/P1 branch"
             }
           },
           {
@@ -147,7 +147,8 @@
               "title": "maspex-context"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -331,7 +332,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "ea7659ebbbd6e366",
   "lastOpenFiles": [
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
