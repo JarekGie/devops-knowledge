@@ -2,7 +2,7 @@
 title: Redis connection string change — 2026-05-08
 date: 2026-05-08
 tags: [maspex, redis, elasticache, rollback]
-status: pending-execution
+status: PRZYWRÓCONO — aktywny ElastiCache
 ---
 
 # Redis connection string change — 2026-05-08
