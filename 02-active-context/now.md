@@ -2,6 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-08 — devops-toolkit Governance Foundation P0/P1 (przerwane, wróć tutaj)
+
+```
+Branch: feat/governance-foundation-p0-p1
+Repo: ~/projekty/devops/devops-toolkit
+
+STAN: Tasks 1–2 zrobione, Tasks 3–10 do wykonania
+
+ZROBIONE:
+  ✅ Task 1: collectors/ jako Python package + error classes (commit 122d61d)
+  ✅ Task 2: Fixtury testowe — 10 plików JSON/CSV (commits e117264, ed4c6ef)
+
+NASTĘPNY KROK:
+  → Task 3: OrganizationsCollector.collect_accounts() TDD
+    collectors/aws/organizations/accounts.py + tests/unit/test_organizations_collector.py
+    Plan: docs/superpowers/plans/2026-05-08-governance-foundation-p0-p1.md
+
+WAŻNA KOREKTA DO PLANU (Task 8):
+  test_filters_events_by_account_id musi używać account_id="222222222222"
+  (fixture zmieniony z 999999999999 → 222222222222)
+
+KOLEJNOŚĆ:
+  Task 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 (make test + push)
+```
+
 ## Update — 2026-05-07 — SNS/GLPI routing: sesja zamknięta ✅
 
 ```
@@ -2864,4 +2889,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 08:37 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 09:27 — sesja aktywna*

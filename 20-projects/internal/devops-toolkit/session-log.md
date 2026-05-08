@@ -4,6 +4,40 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-08 — Governance Foundation P0/P1 — implementacja
+
+**Branch:** `feat/governance-foundation-p0-p1`
+**Plan:** `docs/superpowers/plans/2026-05-08-governance-foundation-p0-p1.md`
+**Spec:** `docs/superpowers/specs/2026-05-08-governance-foundation-p0-p1-design.md`
+
+**Zrobione w tej sesji (Tasks 1–2):**
+- ✅ Task 1: `collectors/` jako Python package (`__init__.py`, error classes, `pyproject.toml`)
+  - commit `122d61d`
+  - `collectors/aws/{organizations,iam,cloudtrail}/errors.py` — bez importów z `toolkit.*`
+  - `pyproject.toml` — dodano `collectors*` do packages.find
+- ✅ Task 2: Fixtury testowe (10 plików)
+  - commit `e117264` + fix `ed4c6ef`
+  - `tests/fixtures/aws/organizations/` (7 JSON), `/iam/credential_report.csv`, `/cloudtrail/` (2 JSON)
+  - CSV: nagłówek w linii 1, root `<123456789012>` w linii 2, brak BOM
+  - Fix: `lookup_events_move_response.json` — zastąpiono `999999999999`/`888888888888` → `222222222222`/`123456789012`
+
+**Stan na koniec sesji:**
+- Tasks 3–10 do wykonania (subagent-driven)
+- Następny krok: Task 3 — `OrganizationsCollector.collect_accounts()` (TDD)
+- **UWAGA:** Test w Task 8 (CloudTrailLookupCollector) musi używać `account_id="222222222222"` w `test_filters_events_by_account_id` — nie `999999999999` jak w oryginalnym planie
+
+**Kolejność pozostałych zadań:**
+- Task 3: `accounts.py` + 4 testy collect_accounts
+- Task 4: 4 testy collect_ou_tree + check_management_account
+- Task 5: `scps.py` + 6 testów
+- Task 6: `credential_report.py` + 9 testów (bez generate_and_wait)
+- Task 7: 2 testy generate_and_wait (retry + timeout)
+- Task 8: `lookup.py` + 7 testów CloudTrail
+- Task 9: Polish docs (operator + architecture)
+- Task 10: make contract-check + test + lint + push
+
+---
+
 ## 2026-04-17 — Przegląd i dokumentacja kontekstu
 
 **Co zrobiono:**
