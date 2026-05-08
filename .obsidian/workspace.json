@@ -319,6 +319,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/rshop/session-log.md",
     "20-projects/clients/mako/rshop/acm-cert-migration-2026-05-08.md",
     "20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md",
     "20-projects/clients/mako/rshop/rca-ecs-deploy-failure-2026-05-08.md",
@@ -345,7 +346,6 @@
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-007-ollama-local-inference.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-006-postgresql-mapping-store.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-005-deterministic-pipeline.md",
-    "20-projects/internal/secure-ai-anonymizer/adr/ADR-004-external-llm-after-tokenization.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",
