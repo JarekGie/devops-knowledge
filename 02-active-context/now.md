@@ -2,6 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-08 sesja 4 — Governance UI Refactor PR SUBMITTED ✅
+
+```
+AKTYWNY BRANCH: feat/governance-ui-findings-first (8 commitów ahead of main)
+REPO: ~/projekty/devops/devops-toolkit
+PR: #62 (open) — https://github.com/JarekGie/devops-toolkit/pull/62
+
+GOVERNANCE UI STATUS (findings-first UX):
+  ✅ Task 0 — plan gotowy (docs/superpowers/plans/2026-05-08-governance-ui-findings-first.md)
+  ✅ Task 1 — CSS classes (finding cards, severity badges, summary panel)
+  ✅ Task 2 — HTML restructure (findings-first layout, ID-compatible)
+  ✅ Task 3 — renderGovernanceFindingCard + renderGovernanceSummaryPanel (bez resource_id)
+  ✅ Task 4 — findings-first render: severity sort, FAILED banner, summary wiring
+  ✅ Task 5 — exec panel hidden on governance tab, Show/Hide toggle
+  ✅ Task 6 — clickable mini-runs z per-run findings loading (run_id param)
+  ✅ Task 7 — full regression check: 133 tests PASS, +70 nowych, 0 regresji
+
+TESTY:
+  133 governance tests passing
+  Gałąź: 3924 pass / 291 fail (291 = pre-existing na main, identyczne)
+
+NASTĘPNE ZADANIE: review PR #62, merge do main
+```
+
+---
+
 ## Update — 2026-05-08 sesja 3 — devops-toolkit governance P2+P3 DONE ✅
 
 ```
@@ -2992,4 +3018,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 23:04 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 23:10 — sesja aktywna*

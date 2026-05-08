@@ -4,6 +4,38 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-08 — Governance UI Refactor: findings-first UX (PR #62)
+
+**Branch:** `feat/governance-ui-findings-first`
+**Plan:** `docs/superpowers/plans/2026-05-08-governance-ui-findings-first.md`
+**PR:** #62 (open) — https://github.com/JarekGie/devops-toolkit/pull/62
+
+**Zrobione:**
+- ✅ CSS: klasy kart findings, severity badges, summary panel (`styles.css`)
+- ✅ HTML: restructure governance tab — findings-first, ID-compatible, summary/cards/toggle structure (`index.html`)
+- ✅ JS: `renderGovernanceFindingCard()`, `renderGovernanceSummaryPanel()` — bez `resource_id`
+- ✅ JS: `renderGovernanceFindings()` — sort CRITICAL→HIGH→MEDIUM→LOW→INFO, FAILED banner, summary wired
+- ✅ JS: exec panel hidden na governance tab, Show/Hide execution log toggle (czysty DOM, bez re-fetcha)
+- ✅ JS: `renderGovernanceMiniRuns()`, `bindGovernanceMiniRunClicks()` — klikalne runy, `mini-run--selected`, scoped selection
+- ✅ Python: `_governance_findings_payload` + endpoint `/governance-findings` z opcjonalnym `?run_id=` (non-breaking)
+- ✅ 133 testów jednostkowych (`tests/unit/test_ui_governance.py`) — 133/133 pass
+
+**Testy:**
+- +70 nowych passing testów vs main
+- Pełna suita: 3924 pass / 291 fail — 291 = identyczne pre-existing na main, zero regresji
+
+**Kluczowe zasady egzekwowane:**
+- `resource_id` nigdy nie trafia do JS ani UI (test pinuje brak w całym app.js)
+- Nigdy nie fetchuj `raw/` ani `normalized/`
+- `escapeHtml()` tylko na danych użytkownika, nie na wewnętrznych nazwach CSS klas
+- Toggle jest czystym DOM — bez `fetch()` ani `loadGovernanceFindings()` w handlerze
+
+**Stan na koniec sesji:**
+- Branch pushed, PR #62 open
+- `main` bez zmian — czeka na merge po review
+
+---
+
 ## 2026-05-08 — Governance P3: scp-governance plugin (DONE ✅)
 
 **Branch:** `feat/scp-governance-p3`
