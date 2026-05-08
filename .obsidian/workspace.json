@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Review governance foundation P0/P1 branch"
+              "title": "Terminal: ✳ Review governance foundation P0/P1 branch"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Add SSH public keys to load-test generators in Terraform"
+              "title": "Terminal: ⠂ Add SSH public keys to load-test generators in Terraform"
             }
           },
           {
