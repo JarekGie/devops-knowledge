@@ -133,7 +133,8 @@
               "title": "puzzler-b2b-context"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -317,7 +318,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "ea7659ebbbd6e366",
   "lastOpenFiles": [
     "20-projects/clients/mako/rshop/acm-cert-migration-2026-05-08.md",
     "20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md",
