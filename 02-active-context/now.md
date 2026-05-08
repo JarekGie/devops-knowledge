@@ -2,6 +2,37 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-08 — TRZY OTWARTE WĄTKI + PILNE: cert prod wygasa 2026-05-13
+
+### 0. rshop PILNE — cert `*.skleprenault.pl` wygasa 2026-05-13 (5 dni)
+
+```
+Certyfikat: arn:aws:acm:us-east-1:943111679945:certificate/3be77743-e90b-4d21-ba97-c6193c8bc977
+Domeny: *.skleprenault.pl + *.eshoprenault.sk/.cz + *.eshopdacia.sk/.cz + *.webshopdacia.hu/.webshoprenault.hu
+Użycie: CloudFront prod-PL + prod-Foreign (InUse=True)
+RenewalEligibility: ELIGIBLE (ACM powinno odnowić automatycznie przez DNS/HTTP validation)
+
+DO ZROBIENIA TERAZ:
+  [ ] aws acm describe-certificate --certificate-arn arn:aws:acm:us-east-1:943111679945:certificate/3be77743-e90b-4d21-ba97-c6193c8bc977 --profile cd-rshop --region us-east-1
+  [ ] Sprawdzić RenewalStatus — czy ACM już wysłało validation request?
+  [ ] Jeśli PENDING_VALIDATION: zweryfikować rekordy DNS w Route53 (lub odpowiednik)
+  [ ] Jeśli FAILED: ręczne odnawianie certyfikatu
+```
+
+### 1. rshop dev — RCA ECS deploy failure 2026-05-08 (ZAMKNIĘTE)
+
+```
+Stan: rollback automatyczny ✅, serwisy zdrowe
+RCA: 20-projects/clients/mako/rshop/rca-ecs-deploy-failure-2026-05-08.md
+Root cause: ECS nie ustabilizował nowych kontenerów (nieznana przyczyna — logi niedostępne)
+ValidationError: symptom wtórny — Jenkins concurrent deploy podczas UPDATE_IN_PROGRESS
+
+DO ZROBIENIA:
+  [ ] Zbadać przyczynę nieudanej stabilizacji zanim nowy deploy dev
+  [ ] Dodać preflight check stanu stacka w Jenkins (P0)
+  [ ] Zwiększyć retencję /ecs/rshop-dev z 1 dnia na 14+ dni (P0)
+```
+
 ## Update — 2026-05-08 — DWA OTWARTE WĄTKI — wróć do obu
 
 ### 1. Maspex UAT — Redis ELB migration (przerwane, wróć tutaj)
