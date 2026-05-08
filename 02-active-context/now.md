@@ -58,6 +58,11 @@ STAN AKTUALNY (2026-05-08 ~14:30):
     ✅ Reguła allow-supabase-ipv6 (P1) → Supabase pg_net przechodzi
     ✅ Sampled requests 14:26+ = ALLOW dla /api/cron/* i /api/email/process-outbox
 
+REDIS STATE CHECK (sesja 3):
+  ✅ ElastiCache: 3592 kluczy, wszystkie z TTL, 1.76M commands — zdrowy i aktywny
+  ✅ Experimental ECS Redis: 0 kluczy, idle — nigdy nie był używany przez app
+  ✅ Cache end-to-end działa po naprawie REDIS_URL (maspex-api:58)
+
 OTWARTE:
   [ ] preprod/prod: ten sam błąd ConnectionStrings__Redis → REDIS_URL (nie naprawione)
   [ ] WAF: jeśli Supabase zmieni IPv6, blokada wróci — docelowo: custom header (Wariant C)
@@ -2969,4 +2974,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 15:14 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 15:58 — sesja aktywna*

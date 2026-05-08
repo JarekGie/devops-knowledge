@@ -57,6 +57,43 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-08 — sesja 3 — Redis state check (ElastiCache vs experimental)
+
+**Co zrobiono:**
+
+Weryfikacja stanu Redis po naprawie `REDIS_URL` — sprawdzono oba klastry via ECS Exec.
+
+### ElastiCache `maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379`
+
+- `DBSIZE`: 3592 kluczy
+- Keyspace: `db0: keys=3592, expires=3592, avg_ttl=~235000ms`
+- **Wszystkie klucze mają TTL** — brak "zapomnianego" garbage
+- Typy kluczy:
+  - `slogan:data:<uuid>-v2` → STRING, TTL ~300s (SLOGAN_CACHE_TTL_SECONDS)
+  - `slogans:by_votes`, `slogans:by_date`, `slogans:by_alphabet` → ZSET, TTL ~900s (RANKING_ZSET_TTL_SECONDS), ~3584 members
+  - `stage:active`, `slogans:total_count` — nieobecne (generowane dopiero gdy cache zimny lub specyficzny trigger)
+- Stats: `total_commands_processed=1.76M`, `expired_keys=64k` → cache aktywnie używany od ~14:30 (po naprawie task def)
+- `connected_clients=9` (9 tasków API)
+
+### Experimental ECS Redis (z sesji 1)
+
+- `DBSIZE=0` — zero kluczy
+- `expired_keys=4` — krótkie połączenie rano podczas testów ELB endpoint (sesja 1)
+- `connected_clients=0` — nikt już nie łączy
+- Status: **idle, bezpieczny do usunięcia**
+
+### Wnioski
+
+- ElastiCache jest aktywny i zdrowy — aplikacja poprawnie pisze i odczytuje cache po naprawie REDIS_URL
+- Experimental Redis był nigdy naprawdę nie używany przez aplikację (0 kluczy, tylko 4 expired z testów)
+- Sekwencja `maspex-api:55` (błędna zmienna) → `maspex-api:58` (REDIS_URL) naprawia cache end-to-end
+
+**Stan na koniec sesji:**
+- Redis (ElastiCache): 3592 kluczy, aktywny, healthy ✅
+- Experimental ECS Redis: idle, 0 kluczy ✅
+
+---
+
 ## 2026-05-08 — Redis ELB migration + UAT cache refresh
 
 **Co zrobiono:**
