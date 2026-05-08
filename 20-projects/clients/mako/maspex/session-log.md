@@ -4,6 +4,80 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-08 — sesja 5 — SSH keys + operator scripts + IAM least-privilege
+
+**Zakres:** load test fleet — dostęp SSH, skrypty operacyjne, auto-shutdown, IAM hardening.
+
+### 1. SSH keys do load test generatorów (IaC)
+
+- Mechanizm już istniał: `var.loadtest_ssh_pubkeys` → user-data → `/home/ec2-user/.ssh/authorized_keys` (AL2023, `ec2-user`)
+- Dodano 3 klucze w `terraform/envs/uat/terraform.tfvars` (`loadtest_ssh_pubkeys`):
+  - `jaroslaw.golab@S004268` (RSA)
+  - `karol.maslaniec@makolab.com` (ED25519)
+  - `mateusz.kmiecik` (RSA, `root@s004742`)
+- Każde dodanie: `terraform apply -target=aws_launch_template.loadtest` → nowa wersja LT → instance refresh (MinHealthyPercentage=50)
+- Weryfikacja przez SSM `send-command` — wszystkie 3 klucze potwierdzone live na instancjach
+- Instancje po ostatnim refreshie: `i-00b4dd5a06af19a7f` (3.251.67.108), `i-085842e07c2614a39` (3.248.207.255) — LT v4
+
+### 2. Skrypty operacyjne: `loadtest-ctrl`
+
+Nowe pliki w `scripts/`:
+- `scripts/loadtest-ctrl.ps1` — Windows/PowerShell
+- `scripts/loadtest-ctrl.sh` — macOS/Linux/bash
+
+Flagi:
+- `--run` / `-run` — scale ASG do 2, czeka aż InService
+- `--stop` / `-stop` — scale ASG do 0, czeka aż puste
+- `--clear` / `-clear` — CF invalidation `/*` + ElastiCache reboot (z potwierdzeniem YES)
+- `--ssh` / `-ssh` — pobiera public IP InService instancji z ASG → przy 1 łączy od razu, przy 2 pyta o wybór → `ssh ec2-user@<ip>`
+
+Bash używa `jq` do parsowania JSON (dodany `check_deps`). `exec ssh` zastępuje proces skryptu.
+
+### 3. Auto-shutdown ASG — 19:00 Warsaw time
+
+- Dodano do `terraform/envs/uat/loadtest.tf`:
+  ```hcl
+  resource "aws_autoscaling_schedule" "loadtest_scale_down" {
+    scheduled_action_name  = "maspex-uat-loadtest-scale-down-1900"
+    recurrence             = "0 19 * * *"
+    time_zone              = "Europe/Warsaw"   # DST obsługiwane automatycznie
+    desired_capacity       = 0
+    min_size               = 0
+    max_size               = -1               # max=2 bez zmian, --run nadal działa
+  }
+  ```
+- Verified live: `aws autoscaling describe-scheduled-actions` ✅
+
+### 4. IAM least-privilege dla makolab-qa
+
+**Przed:** `AdministratorAccess` (pełny dostęp do konta)
+**Po:** `maspex-uat-loadtest-operator` — 6 akcji, resource-scoped gdzie AWS pozwala
+
+| Akcja | Resource |
+|---|---|
+| `sts:GetCallerIdentity` | `*` |
+| `autoscaling:DescribeAutoScalingGroups` | `*` |
+| `autoscaling:UpdateAutoScalingGroup` | ASG `maspex-uat-loadtest` |
+| `ec2:DescribeInstances` | `*` |
+| `cloudfront:CreateInvalidation` + `GetInvalidation` | CF `E3J76RNXIE2YIG` |
+| `elasticache:RebootCacheCluster` | cluster `maspex-uat` |
+
+- Plik: `terraform/envs/uat/iam-loadtest-operator.tf` — ARNy budowane z live state (bez hardkodowanych ID)
+- `terraform apply` → policy `arn:aws:iam::969209893152:policy/maspex-uat-loadtest-operator`
+- `aws iam detach-user-policy AdministratorAccess` — odepnięto ✅
+- Verified: `list-attached-user-policies` zwraca tylko `maspex-uat-loadtest-operator` ✅
+
+**Stan na koniec sesji:**
+- SSH: 3 osoby mają dostęp do load test maszyn (`ec2-user@3.251.67.108`, `ec2-user@3.248.207.255`)
+- Skrypty: `loadtest-ctrl.sh` (macOS) + `loadtest-ctrl.ps1` (Windows) w `scripts/`
+- Auto-shutdown: 19:00 Warsaw time każdego dnia
+- IAM: `makolab-qa` bez AdminAccess — tylko operacje skryptów
+
+**Otwarte:**
+- [ ] WAF allowlist: dodać nowe IPs instancji (3.251.67.108, 3.248.207.255) do `public_uat_extra_allowed_ipv4_cidrs` przed testem — przy każdym `--run` IPs się zmieniają, więc warto rozważyć alternatywę (ALB direct + Host header)
+
+---
+
 ## 2026-05-08 — sesja 2 — REDIS_URL fix + WAF Supabase IPv6
 
 **Co zrobiono:**
