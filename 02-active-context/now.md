@@ -2,28 +2,24 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-08 — TRZY OTWARTE WĄTKI + PILNE: cert prod wygasa 2026-05-13
+## Update — 2026-05-08 — rshop cert ✅ ZAMKNIĘTE + 2 otwarte wątki
 
-### 0. rshop PILNE — cert `*.skleprenault.pl` wygasa 2026-05-13 (5 dni) — ZBADANE
+### 0. rshop cert `*.skleprenault.pl` — ZMIGROWANY ✅
 
 ```
-Certyfikat: arn:aws:acm:us-east-1:943111679945:certificate/3be77743-e90b-4d21-ba97-c6193c8bc977
-Status: ISSUED, RenewalStatus=PENDING_VALIDATION (zablokowany!)
-Używane przez: E3LC30816FMUSK (DEV CloudFront — NIE produkcja!)
-PRODUKCJA NIEZAGROŻONA (prod certy wygasają 2026-07 i 2026-10).
+ZROBIONE (2026-05-08 ~13:50):
+  ✅ Nowy cert wydany: arn:.../72123357-5a77-4b60-84b1-f59e5282270e
+     NotAfter: 2026-11-22 | Status: ISSUED | 7 SANów (bez .hu)
+  ✅ CF E3LC30816FMUSK: zaktualizowany → nowy cert, 12 aliasów (usunięto 4 dead HU)
+  ✅ TLS zweryfikowany openssl dla 5 SNI aliasów → CN=*.skleprenault.pl 2026-11-22
+  ✅ Stary cert (3be77743) NIE usunięty → rollback gotowy do 2026-05-13
 
-PROBLEM:
-  *.webshopdacia.hu + *.webshoprenault.hu → NXDOMAIN w .hu TLD
-  Brak strefy DNS → brak CNAME walidacyjnych → ACM nie odnowi
+CLEANUP (2026-05-23 lub później):
+  [ ] Usuń stary cert 3be77743-... (wygasł, InUseBy=[])
+  [ ] Usuń orphaned cert dev.eshoprenault.lt (173ae59f, EXPIRED 2024-08-08)
+  [ ] Dodaj CloudWatch alarm DaysToExpiry < 30 dla nowego certu
 
-DZIAŁANIE (30 min, wykona DevOps):
-  1. Usuń HU aliasy z CF E3LC30816FMUSK (4 aliasy, NXDOMAIN i tak niedziałające)
-  2. aws acm request-certificate *.skleprenault.pl + 5 SANów (bez HU)
-     → 6 CNAME walidacyjnych JUŻ ISTNIEJE → cert ISSUED w ~5 min
-  3. Przypisz nowy cert do CF E3LC30816FMUSK
-  4. Usuń stary cert (3be77743)
-
-Pełna dokumentacja: 20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md
+Dokumentacja: 20-projects/clients/mako/rshop/acm-cert-migration-2026-05-08.md
 ```
 
 ### 1. rshop dev — RCA ECS deploy failure 2026-05-08 (ZAMKNIĘTE)
