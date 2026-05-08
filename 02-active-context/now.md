@@ -4,19 +4,26 @@
 
 ## Update — 2026-05-08 — TRZY OTWARTE WĄTKI + PILNE: cert prod wygasa 2026-05-13
 
-### 0. rshop PILNE — cert `*.skleprenault.pl` wygasa 2026-05-13 (5 dni)
+### 0. rshop PILNE — cert `*.skleprenault.pl` wygasa 2026-05-13 (5 dni) — ZBADANE
 
 ```
 Certyfikat: arn:aws:acm:us-east-1:943111679945:certificate/3be77743-e90b-4d21-ba97-c6193c8bc977
-Domeny: *.skleprenault.pl + *.eshoprenault.sk/.cz + *.eshopdacia.sk/.cz + *.webshopdacia.hu/.webshoprenault.hu
-Użycie: CloudFront prod-PL + prod-Foreign (InUse=True)
-RenewalEligibility: ELIGIBLE (ACM powinno odnowić automatycznie przez DNS/HTTP validation)
+Status: ISSUED, RenewalStatus=PENDING_VALIDATION (zablokowany!)
+Używane przez: E3LC30816FMUSK (DEV CloudFront — NIE produkcja!)
+PRODUKCJA NIEZAGROŻONA (prod certy wygasają 2026-07 i 2026-10).
 
-DO ZROBIENIA TERAZ:
-  [ ] aws acm describe-certificate --certificate-arn arn:aws:acm:us-east-1:943111679945:certificate/3be77743-e90b-4d21-ba97-c6193c8bc977 --profile cd-rshop --region us-east-1
-  [ ] Sprawdzić RenewalStatus — czy ACM już wysłało validation request?
-  [ ] Jeśli PENDING_VALIDATION: zweryfikować rekordy DNS w Route53 (lub odpowiednik)
-  [ ] Jeśli FAILED: ręczne odnawianie certyfikatu
+PROBLEM:
+  *.webshopdacia.hu + *.webshoprenault.hu → NXDOMAIN w .hu TLD
+  Brak strefy DNS → brak CNAME walidacyjnych → ACM nie odnowi
+
+DZIAŁANIE (30 min, wykona DevOps):
+  1. Usuń HU aliasy z CF E3LC30816FMUSK (4 aliasy, NXDOMAIN i tak niedziałające)
+  2. aws acm request-certificate *.skleprenault.pl + 5 SANów (bez HU)
+     → 6 CNAME walidacyjnych JUŻ ISTNIEJE → cert ISSUED w ~5 min
+  3. Przypisz nowy cert do CF E3LC30816FMUSK
+  4. Usuń stary cert (3be77743)
+
+Pełna dokumentacja: 20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md
 ```
 
 ### 1. rshop dev — RCA ECS deploy failure 2026-05-08 (ZAMKNIĘTE)
