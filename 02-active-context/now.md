@@ -65,17 +65,21 @@ REDIS STATE CHECK (sesja 3):
 
 LOAD TEST INFRA (sesja 4) — wdrożone ✅:
   ✅ ASG maspex-uat-loadtest: 2/2 InService, c6i.4xlarge
-  ✅ i-0ee2df328caa07706 → 54.170.233.211 (eu-west-1a)
-  ✅ i-0890054b5bf36fb7b → 34.255.6.69   (eu-west-1b)
   ✅ Docker 25.0.14 + k6 v2.0.0-rc1 zainstalowane via SSM
   ✅ SSM Online na obu maszynach
-  ✅ Outbound connectivity potwierdzone (403 z WAF — oczekiwane)
+
+LOAD TEST INFRA (sesja 5) — SSH + skrypty + IAM ✅:
+  ✅ SSH keys: jarosław + karol + mateusz.kmiecik — potwierdzone live via SSM
+  ✅ Instancje po refreshie: i-00b4dd5a06af19a7f (3.251.67.108), i-085842e07c2614a39 (3.248.207.255) — LT v4
+  ✅ Auto-shutdown 19:00 Warsaw time (aws_autoscaling_schedule, time_zone=Europe/Warsaw)
+  ✅ scripts/loadtest-ctrl.sh (macOS) + scripts/loadtest-ctrl.ps1 (Windows)
+     --run | --stop | --clear | --ssh
+  ✅ makolab-qa: AdminAccess → maspex-uat-loadtest-operator (least-privilege, 6 akcji)
 
 PRZED PIERWSZYM TESTEM:
-  [ ] Dodać SSH keys (Karol + Jarosław) do loadtest_ssh_pubkeys w tfvars + terraform apply
-  [ ] Dodać 54.170.233.211/32 i 34.255.6.69/32 do public_uat_extra_allowed_ipv4_cidrs + apply
-      LUB: użyć ALB bezpośrednio: http://maspex-uat-1361582173.eu-west-1.elb.amazonaws.com + Host header
-  [ ] Po testach: scale to 0 → aws autoscaling set-desired-capacity --auto-scaling-group-name maspex-uat-loadtest --desired-capacity 0 --profile maspex-cli --region eu-west-1
+  [ ] WAF: dodać IPs generatorów do public_uat_extra_allowed_ipv4_cidrs
+      UWAGA: IPs zmieniają się przy każdym --run → rozważyć ALB direct zamiast CF
+      ALB: http://maspex-uat-1361582173.eu-west-1.elb.amazonaws.com + Host: kapsel.makotest.pl
 
 OTWARTE (legacy):
   [ ] preprod/prod: ten sam błąd ConnectionStrings__Redis → REDIS_URL (nie naprawione)
@@ -2967,4 +2971,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-08 17:56 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-08 18:25 — sesja aktywna*
