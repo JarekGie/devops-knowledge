@@ -2,24 +2,17 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-09 — LLZ Phase 1 Routing Cleanup APPLIED ✅
+## Update — 2026-05-09 — AKTYWNY PROJEKT: MASPEX
 
 ```
-BRANCH: feature/observability-routing-cleanup-phase1
-REPO: ~/projekty/mako/aws-projects/aws-cloud-platform
+LLZ ZAMKNIĘTE NA DZIŚ (branch: feature/observability-routing-cleanup-phase1):
+  ✅ Phase 1 applied: Health pattern, SLO routing, MQ retention, dead SNS cleanup
+  ✅ Architektura docs: docs/architecture/observability-monitoring-architecture.md
+  ✅ Confluence copy: 20-projects/internal/llz/observability-architecture-confluence.md
+  ⚠️  Manual cleanup pending: org-cloudwatch-alarms-to-sns + org-central-alarms (management account)
+  → Phase 2 next: Security routing (GD/SH → GLPI), ECS/RDS alarms, shadow sink
 
-ZROBIONE (terraform applied):
-  ✅ QW-1: glpi@infra.makolab.pl → SNS slo-alerts (monitoring stack)
-  ✅ QW-2: AmazonMQ logs planodkupow: 90d → 14d (22 log groups imported + updated)
-  ✅ QW-3: Health event pattern + scheduledChange + accountNotification (12 EventBridge rules)
-  ✅ QW-4: dc@makolab.com PENDING SNS subscription usunięty
-
-ZOSTAŁO (manual / Phase 2):
-  ⚠️  org-cloudwatch-alarms-to-sns EventBridge rule → delete manually (management account)
-  ⚠️  org-central-alarms SNS topic → delete or add subscriber manually
-  → Phase 2: Security Hub CRITICAL → GLPI, GuardDuty FIFTEEN_MINUTES, ECS/RDS/MQ alarms
-
-RAPORT AUDYTU: 20-projects/internal/llz/observability-audit-2026-05-09.md
+PRZEŁĄCZENIE NA: MASPEX
 ```
 
 ---
@@ -3068,4 +3061,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 20:13 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 20:32 — sesja aktywna*

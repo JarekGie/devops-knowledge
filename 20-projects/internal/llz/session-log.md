@@ -807,6 +807,36 @@ Decyzja dot. CIS: zostawione włączone — już aktywne, wyłączenie straciło
 
 ---
 
+## 2026-05-09 — Observability Phase 1 cleanup APPLIED + architektura docs
+
+**Co zrobiono:**
+- `terraform apply` na obu stackach z brancha `feature/observability-routing-cleanup-phase1`:
+  - health-notifications: 13 zmian (EventBridge rules + scheduledChange/accountNotification), 1 destroy (dc@makolab.com PENDING)
+  - monitoring: 22 importy AmazonMQ log groups, 22 update (90d → 14d retention), 1 add (glpi@ do slo-alerts)
+- Wygenerowano dokumentację architektury observability:
+  - `docs/architecture/observability-monitoring-architecture.md` w repo aws-cloud-platform
+  - Kopia Confluence-ready: `20-projects/internal/llz/observability-architecture-confluence.md`
+  - 6 diagramów Mermaid `graph TD`, max 10 nodów każdy
+- Zapisano prompt architektury do `50-patterns/prompts/starter-pack/llz-observability-architecture-docs.md`
+
+**Stan AWS po apply:**
+- Health events: wszystkie 4 kategorie (issue, investigation, scheduledChange, accountNotification) routowane do GLPI
+- SLO alerts: glpi@infra.makolab.pl + jaroslaw.golab@makolab.com
+- AmazonMQ logi (planodkupow): 22 log groups pod Terraform, retention 14d
+- Martwa subskrypcja dc@makolab.com usunięta
+
+**Pozostałe do zrobienia (manual):**
+- Usunąć `org-cloudwatch-alarms-to-sns` EventBridge rule (management account, recznie)
+- Usunąć `org-central-alarms` SNS topic (management account, 0 subskrybentów, recznie)
+
+**Następna sesja:**
+- Phase 2: Security Hub CRITICAL / GuardDuty HIGH → Lambda filter → SNS cloudwatch-alarms-glpi → GLPI
+- ECS/RDS/MQ alarmy
+- Shadow OAM sink cleanup (management account)
+- Branch `feature/observability-routing-cleanup-phase1` do merge/PR
+
+---
+
 ## 2026-05-04 — Security Hub enrollment: 11/11 kont
 
 **Co zrobiono:**
