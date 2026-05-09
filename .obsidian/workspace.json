@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Add Terraform plan support and Polish documentation"
+              "title": "Terminal: ⠂ Add Terraform plan support and Polish documentation"
             }
           },
           {
@@ -148,7 +148,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 519.5
+    "width": 519.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
