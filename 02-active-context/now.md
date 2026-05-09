@@ -3082,4 +3082,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 21:43 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 21:58 — sesja aktywna*
