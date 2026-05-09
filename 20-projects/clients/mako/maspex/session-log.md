@@ -4,6 +4,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-09 sesja 5 — Load test: loadtest-ctrl.sh — WAF automation dla macOS
+
+**Commit:** `ae39b3a` (branch: `fix/uat-loadtest-docker-compose-plugin`, pushed)
+
+### loadtest-ctrl.sh — pełna paryteta z PS1
+
+Skrypt bash portowany z PowerShell, obsługuje te same flagi (`--run`, `--stop`, `--clear`, `--ssh`) z identyczną logiką WAF.
+
+Kluczowe różnice techniczne vs PS1:
+- JSON budowany przez `jq`: `printf '%s\n' "${merged[@]}" | jq -R . | jq -sc .` — bez problemów z quote stripping
+- `mapfile -t ips < <(get_loadtest_public_ips)` — bash array z process substitution
+- `exec ssh ec2-user@$target_ip` — zastępuje proces skryptu (bez wrapper shella)
+- `check_deps` sprawdza `aws` + `jq` na starcie
+
+Skalowanie floty — dwa miejsca (muszą być spójne):
+1. `loadtest.tf`: `aws_autoscaling_group.max_size`, `desired_capacity`
+2. `loadtest-ctrl.sh`: `DESIRED_CAPACITY_RUN`, `MAX_SIZE_RUN`
+3. `loadtest-ctrl.ps1`: `$DesiredCapacityRun`, `$MaxSizeRun`
+
+---
+
 ## 2026-05-09 sesja 4 — Load test: SG porty Grafana/InfluxDB + skalowanie floty
 
 **Commit:** `d5e63e5`

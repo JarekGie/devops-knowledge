@@ -2,10 +2,10 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie ✅
+## Update — 2026-05-09 — MASPEX: load test infra KOMPLETNA, MR pushed (8 commitów) ✅
 
 ```
-BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 7 commitów)
+BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 8 commitów)
 REPO:   ~/projekty/mako/aws-projects/infra-maspex
 
 CO ZROBIONO (cała sesja):
@@ -14,19 +14,22 @@ CO ZROBIONO (cała sesja):
   ✅ Discovery WAF: blokada kapsel.makotest.pl = WAFv2 CloudFront IP Set, NIE Security Group
   ✅ Nowy WAF IP Set maspex-uat-loadtest-allowlist — Terraform applied
   ✅ loadtest-ctrl.ps1: --run dopisuje IP do WAF, --stop czyści (Clear niezależny od instancji)
-  ✅ PS5.1 syntax fix: )) parser bug + node'a apostrof
+  ✅ PS5.1 syntax fix: )) parser bug + apostrof
   ✅ Scheduler fix: Clear-LoadTestAllowList działa też gdy maszyny ubite o 19:00
   ✅ IAM fix: makolab-qa dostał wafv2:GetIPSet + UpdateIPSet — applied + IAM Simulator ✅
   ✅ JSON quoting fix: ConvertTo-Json → ręczny join (PS5.1 + aws CLI quote stripping)
   ✅ SG: otwarto port 3000 (Grafana) + 8086 (InfluxDB) z biurowych IP — applied
-  ✅ MR: gitlab.makolab.net/.../infra-maspex-kapsel/-/merge_requests
+  ✅ loadtest-ctrl.sh: macOS bash — pełna paryteta z PS1 (WAF automation, jq JSON)
+  ✅ Commit ae39b3a pushed
 
-SKALOWANIE FLOTY (gdzie zmieniać):
-  loadtest.tf: max_size + desired_capacity w aws_autoscaling_group
-  loadtest-ctrl.ps1: $DesiredCapacityRun + $MaxSizeRun (muszą być spójne z tf)
+SKALOWANIE FLOTY (trzy miejsca — muszą być spójne):
+  loadtest.tf:       max_size + desired_capacity w aws_autoscaling_group
+  loadtest-ctrl.ps1: $DesiredCapacityRun + $MaxSizeRun
+  loadtest-ctrl.sh:  DESIRED_CAPACITY_RUN + MAX_SIZE_RUN
 
 NASTĘPNE KROKI:
   → Merge MR po weryfikacji dewelopera
+  → Test end-to-end: --run → curl kapsel.makotest.pl → 200, --stop → 403
 ```
 
 ---
@@ -3090,4 +3093,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 22:30 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 23:03 — sesja aktywna*
