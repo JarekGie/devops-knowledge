@@ -2,6 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie
+
+```
+BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty)
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+
+CO ZROBIONO (ta sesja):
+  ✅ Docker Compose v2 plugin — naprawiony w IaC (loadtest.tf) i na żywych instancjach przez SSM
+  ✅ Discovery WAF: blokada kapsel.makotest.pl = WAFv2 CloudFront IP Set, NIE Security Group
+  ✅ Nowy WAF IP Set maspex-uat-loadtest-allowlist — Terraform applied
+  ✅ loadtest-ctrl.ps1 — --run dopisuje IP do WAF, --stop usuwa przed zjazdem ASG
+  ✅ MR: gitlab.makolab.net/.../infra-maspex-kapsel/-/merge_requests
+
+NASTĘPNE KROKI:
+  → Test end-to-end: --run → curl kapsel.makotest.pl → 200, --stop → 403
+  → Merge MR po weryfikacji przez dewelopera
+  → Ewentualnie: scheduled scale-down i SSH keys do przejrzenia przez team
+```
+
+---
+
 ## Update — 2026-05-09 — AKTYWNY PROJEKT: MASPEX
 
 ```
