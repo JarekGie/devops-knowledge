@@ -2,6 +2,31 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-09 — dc-anonymizer: TFPlan + Polish UI + Docs MR OPEN
+
+```
+AKTYWNY BRANCH: feature/tfplan-polish-ui-docs
+REPO: ~/projekty/mako/aws-projects/dc-anonimizator
+MR: open — GitLab (link w session-log)
+
+STATUS:
+  ✅ sample.tfplan.txt fixture (52 detekcje, CLEAN)
+  ✅ test_tfplan_fixture.py (regression, PASS)
+  ✅ .tfplan w upload validation + router
+  ✅ Polish UI (wszystkie stringi przetłumaczone)
+  ✅ Demo UX: banner, expander, quick-load buttons, footer
+  ✅ Docs PL: instrukcja-instalacji, instrukcja-uzycia, demo-scenariusze, faq
+
+TESTY: 29 unit PASS, 14 regression PASS, 6 xfail (expected)
+
+NASTĘPNE ZADANIE:
+  → Merge MR feature/tfplan-polish-ui-docs
+  → Demo dla Tomasza (quick-load: Terraform plan)
+  → Opcjonalnie: fix KF-001 (S3 ARN) lub KF-003 (email .internal)
+```
+
+---
+
 ## Update — 2026-05-08 sesja 4 — Governance UI Refactor PR SUBMITTED ✅
 
 ```
@@ -3018,4 +3043,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 10:15 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 10:20 — sesja aktywna*

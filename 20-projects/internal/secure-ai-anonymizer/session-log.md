@@ -7,7 +7,7 @@ llm_exposure: restricted
 cross_domain_export: prohibited
 source_of_truth: vault
 created: 2026-05-07
-updated: 2026-05-07
+updated: 2026-05-09
 ---
 
 # Session Log — secure-ai-anonymizer
@@ -229,3 +229,58 @@ make analyze-fixture FILE=tests/fixtures/input/dc-anonymizer-synthetic-sensitive
 → Fix KF-001 (S3 ARN regex)
 → Fix KF-003 (email z relaxed TLD — .internal, .local, .example, .corp)
 → Nowy KF: API_KEY_GENERIC priority > AWS_ARN — partial ARN leak przez false positive
+
+---
+
+## 2026-05-09 — TFPlan support + Polish UI + docs (MR open)
+
+**Akcja:** Pełna implementacja 4 zakresów: tfplan support, tłumaczenie UI, UX demo, dokumentacja user-facing.
+
+**Branch:** `feature/tfplan-polish-ui-docs` (8 commitów)
+**MR:** https://gitlab.makolab.net/admin-makolab/dc/aws-projects/dc-anonimizator/-/merge_requests/new?merge_request%5Bsource_branch%5D=feature%2Ftfplan-polish-ui-docs
+**Stan:** MR otwarty, branch pushed, gotowy do review
+
+**Wykonane (Część 1 — tfplan support):**
+- `tests/fixtures/input/sample.tfplan.txt` — nowa fikstura (134 linie, realistyczny `terraform plan` output z ECS/RDS/ALB/VPC, zawiera: AWS account ID, ARNy, postgresql://, redis://, AKIAFAKE..., CIDRy, ECR URI)
+- `tests/regression/test_tfplan_fixture.py` — regression test: PASS (52 detekcje, 24 tokeny, 0 wycieków)
+- `demo/app.py` — `.tfplan` dodane do `SUPPORTED_UPLOAD_EXTENSIONS`
+- `tests/unit/test_demo_upload_validation.py` — 2 nowe testy dla `.tfplan` i `.tfplan.txt`
+- `src/dc_anonymizer/ingest/router.py` — `.tfplan` dodane explicite do text branch
+
+**Wykonane (Część 2 — Polish UI):**
+- `demo/app.py` — WSZYSTKIE user-visible stringi przetłumaczone na polski
+- Zachowane: entity type names (`AWS_ACCOUNT_ID`, `DB_CONNECTION_STRING` itp.), nazwy tokenów, kod
+- Przetłumaczone: labele, przyciski, placeholdery, error messages, subheadery
+- `test_demo_upload_validation.py` — asercje zaktualizowane do polskich stringów
+
+**Wykonane (Część 3 — Demo UX):**
+- `FIXTURE_DIR` constant + `_load_fixture()` helper
+- Banner: `st.info("dc-anonymizer — lokalny anonimizator dokumentów dla AI")`
+- Expander "O narzędziu" z opisem architektury (4 punkty)
+- Quick-load buttons: "Terraform state" / "Terraform plan" / "Markdown" (auto-anonimizacja po kliknięciu)
+- Footer: `MVP / PoC — internal demo`
+
+**Wykonane (Część 4 — Dokumentacja):**
+- `docs/instrukcja-instalacji.md` — instalacja step-by-step z troubleshootingiem (5 typowych błędów)
+- `docs/instrukcja-uzycia.md` — 7-krokowy workflow + słowniczek (Anonimizacja/Token/Rehydratacja/Mapa tokenów)
+- `docs/demo-scenariusze.md` — 5 gotowych scenariuszy prezentacyjnych z tabelami tokenizacji
+- `docs/faq.md` — 9 Q&A dla interesariuszy (bezpieczeństwo danych, offline, on-prem, PDF, Kubernetes, lokalny LLM)
+- Zaktualizowane: `docs/recognizer-coverage-matrix.md`, `docs/known-failures.md`, `README.md`, `demo/README.md`
+
+**Wyniki walidacji:**
+```
+make test-unit      → 29 passed, 0 failed
+make test-regression → 14 passed, 6 xfailed (expected), 0 unexpected failures
+analyze-fixture sample.tfstate  → CLEAN (20 detekcji, 6 tokenów, 0 wycieków)
+analyze-fixture sample.tfplan.txt → CLEAN (52 detekcje, 24 tokeny, 0 wycieków)
+```
+
+**Znane false-positives w tfplan (kosmetyczne, nie blokujące):**
+- `vpc.ma` z `aws_vpc.main` tokenizowane jako `[URL_1]` — Presidio łapie sufiks `.ma` jako domenę
+- `HTTPS` tokenizowane jako `[ORGANIZATION_1]` — spaCy NER false positive
+- Rehydratacja jest round-trip correct — to są over-redactions, nie wycieki
+
+**Następny krok:**
+→ Review i merge MR `feature/tfplan-polish-ui-docs`
+→ Demo dla Tomasza z użyciem quick-load buttons
+→ Fix KF-001 (S3 ARN) lub KF-003 (email .internal) — do decyzji po demo
