@@ -5,7 +5,7 @@
 ## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie ✅
 
 ```
-BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 6 commitów)
+BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 7 commitów)
 REPO:   ~/projekty/mako/aws-projects/infra-maspex
 
 CO ZROBIONO (cała sesja):
@@ -18,7 +18,12 @@ CO ZROBIONO (cała sesja):
   ✅ Scheduler fix: Clear-LoadTestAllowList działa też gdy maszyny ubite o 19:00
   ✅ IAM fix: makolab-qa dostał wafv2:GetIPSet + UpdateIPSet — applied + IAM Simulator ✅
   ✅ JSON quoting fix: ConvertTo-Json → ręczny join (PS5.1 + aws CLI quote stripping)
+  ✅ SG: otwarto port 3000 (Grafana) + 8086 (InfluxDB) z biurowych IP — applied
   ✅ MR: gitlab.makolab.net/.../infra-maspex-kapsel/-/merge_requests
+
+SKALOWANIE FLOTY (gdzie zmieniać):
+  loadtest.tf: max_size + desired_capacity w aws_autoscaling_group
+  loadtest-ctrl.ps1: $DesiredCapacityRun + $MaxSizeRun (muszą być spójne z tf)
 
 NASTĘPNE KROKI:
   → Merge MR po weryfikacji dewelopera

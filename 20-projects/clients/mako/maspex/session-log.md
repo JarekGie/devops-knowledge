@@ -4,6 +4,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-09 sesja 4 — Load test: SG porty Grafana/InfluxDB + skalowanie floty
+
+**Commit:** `d5e63e5`
+
+### SG — Grafana i InfluxDB
+
+Grafana (`0.0.0.0:3000`) i InfluxDB (`0.0.0.0:8086`) działały w Dockerze, ale SG miał tylko port 22. Dodano:
+- `3000/tcp` z biurowych IP (Grafana)
+- `8086/tcp` z biurowych IP (InfluxDB)
+- `8086/tcp` self (inter-instance — k6 → InfluxDB między instancjami)
+
+Terraform applied natychmiast bez restartu instancji.
+
+### Gdzie zwiększać rozmiar floty
+
+Dwa miejsca — muszą być spójne:
+1. `terraform/envs/uat/loadtest.tf` → `aws_autoscaling_group`: `max_size`, `desired_capacity`
+2. `scripts/loadtest-ctrl.ps1` → `$DesiredCapacityRun`, `$MaxSizeRun`
+
+---
+
 ## 2026-05-09 sesja 3 — Load test: JSON quoting fix + docker-compose symlink
 
 **Branch:** `fix/uat-loadtest-docker-compose-plugin` (commity `d1f367f`, `0f1eead`)
