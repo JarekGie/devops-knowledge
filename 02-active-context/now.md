@@ -2,25 +2,24 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-09 — LLZ Observability Audit DONE ✅
+## Update — 2026-05-09 — LLZ Phase 1 Routing Cleanup APPLIED ✅
 
 ```
-RAPORT: 20-projects/internal/llz/observability-audit-2026-05-09.md
+BRANCH: feature/observability-routing-cleanup-phase1
+REPO: ~/projekty/mako/aws-projects/aws-cloud-platform
 
-QUICK WINS (zrób w tyg. 1):
-  QW-1: Dodaj glpi@infra.makolab.pl do SNS slo-alerts (5 min)
-  QW-2: MQ logs planodkupow: 90d → 7d retention (~30 USD/mies oszczędność)
-  QW-3: Dodaj scheduledChange do health event pattern
-  QW-4: Usuń dead: dc@makolab.com pending, org-cloudwatch-alarms-to-sns dead rule, shadow sink management
+ZROBIONE (terraform applied):
+  ✅ QW-1: glpi@infra.makolab.pl → SNS slo-alerts (monitoring stack)
+  ✅ QW-2: AmazonMQ logs planodkupow: 90d → 14d (22 log groups imported + updated)
+  ✅ QW-3: Health event pattern + scheduledChange + accountNotification (12 EventBridge rules)
+  ✅ QW-4: dc@makolab.com PENDING SNS subscription usunięty
 
-KRYTYCZNE BRAKI:
-  - SLO breaches → tylko jaroslaw.golab personal email (NIE GLPI)
-  - 0 alarmów ECS/RDS/MQ/Redis (backend blindspot)
-  - Security Hub CRITICAL → 0 GLPI tickets
-  - GuardDuty SIX_HOURS delay
+ZOSTAŁO (manual / Phase 2):
+  ⚠️  org-cloudwatch-alarms-to-sns EventBridge rule → delete manually (management account)
+  ⚠️  org-central-alarms SNS topic → delete or add subscriber manually
+  → Phase 2: Security Hub CRITICAL → GLPI, GuardDuty FIFTEEN_MINUTES, ECS/RDS/MQ alarms
 
-KOSZT: 285 USD/mies observability (CW 161 + CloudTrail 100 + GD 24)
-  - Optymalizacja: 30-40 USD/mies (MQ logs + canary frequency)
+RAPORT AUDYTU: 20-projects/internal/llz/observability-audit-2026-05-09.md
 ```
 
 ---
@@ -3069,4 +3068,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 15:53 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 18:25 — sesja aktywna*
