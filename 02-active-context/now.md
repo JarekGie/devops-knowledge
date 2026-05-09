@@ -2,23 +2,25 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie
+## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie ✅
 
 ```
-BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty)
+BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 4 commity)
 REPO:   ~/projekty/mako/aws-projects/infra-maspex
 
-CO ZROBIONO (ta sesja):
-  ✅ Docker Compose v2 plugin — naprawiony w IaC (loadtest.tf) i na żywych instancjach przez SSM
+CO ZROBIONO (cała sesja):
+  ✅ Docker Compose v2 plugin — naprawiony w IaC + na żywych instancjach (SSM)
   ✅ Discovery WAF: blokada kapsel.makotest.pl = WAFv2 CloudFront IP Set, NIE Security Group
   ✅ Nowy WAF IP Set maspex-uat-loadtest-allowlist — Terraform applied
-  ✅ loadtest-ctrl.ps1 — --run dopisuje IP do WAF, --stop usuwa przed zjazdem ASG
+  ✅ loadtest-ctrl.ps1: --run dopisuje IP do WAF, --stop czyści (Clear niezależny od instancji)
+  ✅ PS5.1 syntax fix: )) parser bug + node'a apostrof
+  ✅ Scheduler fix: Clear-LoadTestAllowList działa też gdy maszyny ubite o 19:00
+  ✅ IAM fix: makolab-qa dostał wafv2:GetIPSet + UpdateIPSet — applied + IAM Simulator ✅
   ✅ MR: gitlab.makolab.net/.../infra-maspex-kapsel/-/merge_requests
 
 NASTĘPNE KROKI:
-  → Test end-to-end: --run → curl kapsel.makotest.pl → 200, --stop → 403
-  → Merge MR po weryfikacji przez dewelopera
-  → Ewentualnie: scheduled scale-down i SSH keys do przejrzenia przez team
+  → Test end-to-end przez dewelopera: --run → curl kapsel.makotest.pl → 200, --stop → 403
+  → Merge MR
 ```
 
 ---
@@ -3082,4 +3084,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 21:58 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 22:03 — sesja aktywna*
