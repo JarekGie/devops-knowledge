@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Add Terraform plan support and Polish documentation"
+              "title": "Terminal: ⠂ Add Terraform plan support and Polish documentation"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "observability-audit-2026-05-09"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,7 +289,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "95bb0f3e8be30d71",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/internal/llz/observability-audit-2026-05-09.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
