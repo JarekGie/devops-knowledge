@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Add Terraform plan support and Polish documentation"
+              "title": "Terminal: ✳ Add Terraform plan support and Polish documentation"
             }
           },
           {
@@ -278,6 +278,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/observability-audit-2026-05-09.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/internal/devops-toolkit/governance-commands-audit.md",
@@ -304,7 +305,6 @@
     "20-projects/internal/secure-ai-anonymizer/context.md",
     "_chatgpt/context-packs/secure-ai-anonymizer.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-007-ollama-local-inference.md",
-    "20-projects/internal/secure-ai-anonymizer/adr/ADR-006-postgresql-mapping-store.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",
