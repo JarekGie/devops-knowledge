@@ -5,22 +5,23 @@
 ## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie ✅
 
 ```
-BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 4 commity)
+BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 6 commitów)
 REPO:   ~/projekty/mako/aws-projects/infra-maspex
 
 CO ZROBIONO (cała sesja):
   ✅ Docker Compose v2 plugin — naprawiony w IaC + na żywych instancjach (SSM)
+  ✅ Symlink /usr/local/bin/docker-compose → v2 plugin (legacy docker-compose działa)
   ✅ Discovery WAF: blokada kapsel.makotest.pl = WAFv2 CloudFront IP Set, NIE Security Group
   ✅ Nowy WAF IP Set maspex-uat-loadtest-allowlist — Terraform applied
   ✅ loadtest-ctrl.ps1: --run dopisuje IP do WAF, --stop czyści (Clear niezależny od instancji)
   ✅ PS5.1 syntax fix: )) parser bug + node'a apostrof
   ✅ Scheduler fix: Clear-LoadTestAllowList działa też gdy maszyny ubite o 19:00
   ✅ IAM fix: makolab-qa dostał wafv2:GetIPSet + UpdateIPSet — applied + IAM Simulator ✅
+  ✅ JSON quoting fix: ConvertTo-Json → ręczny join (PS5.1 + aws CLI quote stripping)
   ✅ MR: gitlab.makolab.net/.../infra-maspex-kapsel/-/merge_requests
 
 NASTĘPNE KROKI:
-  → Test end-to-end przez dewelopera: --run → curl kapsel.makotest.pl → 200, --stop → 403
-  → Merge MR
+  → Merge MR po weryfikacji dewelopera
 ```
 
 ---

@@ -4,6 +4,34 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-09 sesja 3 — Load test: JSON quoting fix + docker-compose symlink
+
+**Branch:** `fix/uat-loadtest-docker-compose-plugin` (commity `d1f367f`, `0f1eead`)
+
+### JSON quoting fix (loadtest-ctrl.ps1)
+
+`ConvertTo-Json @($merged) -Compress` produkuje poprawny JSON, ale PowerShell 5.1 na Windows zjada cudzysłowy przy przekazaniu stringa do zewnętrznego procesu. AWS CLI dostaje `[52.49.155.58/32,...]` zamiast `["52.49.155.58/32",...]` → `ParamValidation` error.
+
+Fix: ręczny string join:
+```powershell
+'["' + ($merged -join '","') + '"]'
+```
+
+Przy okazji: dodano `$LASTEXITCODE` check — skrypt nie kontynuuje po błędzie AWS CLI.
+
+### docker-compose symlink
+
+`docker-compose up -d` → `command not found`. Zainstalowany jest tylko v2 plugin (inwokacja przez `docker compose` ze spacją). Deweloper domyślił się i dodał symlink ręcznie.
+
+IaC fix w `loadtest.tf` — nowe instancje dostają symlink od razu:
+```bash
+ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
+```
+
+Oba warianty (`docker compose` i `docker-compose`) działają na nowych instancjach.
+
+---
+
 ## 2026-05-09 sesja 2 — Load test: PS5.1 fix, scheduler-safe WAF, IAM fix
 
 **Branch:** `fix/uat-loadtest-docker-compose-plugin` (commit `4ed1e37`, `901a908`)
