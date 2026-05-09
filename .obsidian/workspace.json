@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Add Terraform plan support and Polish documentation"
+              "title": "Terminal: ✳ Add Terraform plan support and Polish documentation"
             }
           },
           {
@@ -291,6 +291,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/internal/llz/observability-architecture-confluence.md",
     "50-patterns/prompts/starter-pack/llz-observability-architecture-docs.md",
     "20-projects/internal/llz/observability-audit-2026-05-09.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
@@ -317,7 +318,6 @@
     "50-patterns/prompts/invocations/cloud-detective-drp-tfs.md",
     "20-projects/internal/secure-ai-anonymizer/adr/ADR-008-uv-vs-poetry.md",
     "20-projects/internal/secure-ai-anonymizer/context.md",
-    "_chatgpt/context-packs/secure-ai-anonymizer.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",
