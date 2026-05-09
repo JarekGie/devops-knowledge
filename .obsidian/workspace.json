@@ -46,10 +46,53 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠇ devops-knowledge"
+              "title": "Terminal: devops-knowledge"
+            }
+          },
+          {
+            "id": "71191a135971ab99",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
+                  "focus": false,
+                  "profile": {
+                    "args": [
+                      "--login"
+                    ],
+                    "executable": "/bin/zsh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/mako/aws-projects/dc-anonimizator"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -233,7 +276,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "71191a135971ab99",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/maspex-context.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
