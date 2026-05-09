@@ -88,10 +88,11 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/mako/aws-projects/dc-anonimizator"
+              "title": "Terminal: make demo"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -275,7 +276,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7c26723e425838d3",
+  "active": "71191a135971ab99",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/maspex-context.md",
     "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
