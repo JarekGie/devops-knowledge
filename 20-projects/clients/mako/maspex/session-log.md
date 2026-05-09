@@ -4,6 +4,54 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-09 — Load test: Docker Compose v2 + WAF allowlist automation
+
+**Branch:** `fix/uat-loadtest-docker-compose-plugin` (pushed, MR otwarty na GitLab)
+**Repo:** `~/projekty/mako/aws-projects/infra-maspex`
+**Commity:** `ee72c24`, `5572bdb`
+
+### Docker Compose v2 plugin
+
+Problem: maszyny load testowe (ASG `maspex-uat-loadtest`, 2× c6i.4xlarge) uruchamiały się bez `docker compose` (v2). AL2023 nie pakuje `docker-compose-plugin` w swoich repozytoriach.
+
+Naprawa dwutorowa:
+- **IaC** (`loadtest.tf`): dodano instalację binarki z GitHub Releases do `/usr/local/lib/docker/cli-plugins/docker-compose` — wchodzi przy każdym nowym spin-upie
+- **Żywe instancje**: naprawione przez SSM Send-Command — `Docker Compose version v5.1.3` potwierdzone na obu instancjach (`i-035c3a2af554ffbf7`, `i-0e3c308a34aeb7c49`)
+
+Przy okazji: scheduled scale-down (19:00 Warsaw) i rzeczywiste SSH keys (`jaroslaw.golab`, `karol.maslaniec`) wypełnione w `terraform.tfvars`.
+
+### WAF allowlist automation
+
+**Discovery:** blokada `kapsel.makotest.pl` = CloudFront WAFv2 IP Set, **nie Security Group**. ALB SG jest `0.0.0.0/0` — nie jest punktem kontroli. Potwierdzone przez SSM curl: maszyny dostają `403` od WAF, `kapsel-uat.makotest.pl` (osobna domena, IP `193.239.136.82`) to inna infrastruktura.
+
+**Terraform (`waf.tf` + `outputs.tf`):**
+- Nowy `aws_wafv2_ip_set.loadtest_allowlist` (`maspex-uat-loadtest-allowlist`, pusty, `lifecycle.ignore_changes = [addresses]`)
+- Nowa reguła `allow-loadtest-ips` (priority 2) w `aws_wafv2_web_acl.public_uat_allowlist`
+- Output `loadtest_waf_ip_set_id = "76b89f7c-b8c9-4725-ad8c-56600786fe8e"`
+- **Terraform applied** (maspex-cli, lock=false — DynamoDB locks niedostępne przez mako-dc)
+
+**Skrypt (`scripts/loadtest-ctrl.ps1`):**
+- `Get-LoadTestPublicIps` — zwraca `x.x.x.x/32` dla InService instancji
+- `Add-LoadTestIpsToAllowList` — GET lock-token + merge + UPDATE (idempotentny)
+- `Remove-LoadTestIpsFromAllowList` — GET lock-token + filter + UPDATE (idempotentny)
+- `--run`: po InService dopisuje IP do dedykowanego WAF IP Set
+- `--stop`: **najpierw** usuwa IP z WAF (gdy instancje żyją), **potem** `desired=0`
+- Bezpieczeństwo: oddzielny IP Set — nigdy nie dotykamy biurowych IP z `public_uat_allowlist`
+
+### Stan na koniec sesji
+
+- MR na GitLabie: gotowy do przeglądu przez dewelopera
+- WAF IP Set: aktywny, pusty (maszyny stoją, poprawny stan)
+- `kapsel.makotest.pl`: zwraca 403 dla maszyn loadtest (prawidłowe — IP nie ma w WAF)
+
+### Następne kroki
+
+- [ ] Test end-to-end: `--run` → curl `kapsel.makotest.pl` → 200, `--stop` → 403
+- [ ] Merge MR po weryfikacji
+- [ ] Bot UAT unhealthy (FailedHealthChecks) — osobny problem, niezmieniony
+
+---
+
 ## 2026-05-08 — sesja 5 — SSH keys + operator scripts + IAM least-privilege
 
 **Zakres:** load test fleet — dostęp SSH, skrypty operacyjne, auto-shutdown, IAM hardening.
