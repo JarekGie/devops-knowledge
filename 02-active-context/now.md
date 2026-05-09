@@ -2,27 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-09 — dc-anonymizer: TFPlan + Polish UI + Docs MR OPEN
+## Update — 2026-05-09 sesja 2 — dc-anonymizer: MR PUSHED, gotowy do merge ✅
 
 ```
-AKTYWNY BRANCH: feature/tfplan-polish-ui-docs
+AKTYWNY BRANCH: feature/tfplan-polish-ui-docs (13 commitów)
 REPO: ~/projekty/mako/aws-projects/dc-anonimizator
-MR: open — GitLab (link w session-log)
+MR: pushed — GitLab (link w session-log)
 
-STATUS:
+STATUS KOŃCOWY:
   ✅ sample.tfplan.txt fixture (52 detekcje, CLEAN)
-  ✅ test_tfplan_fixture.py (regression, PASS)
-  ✅ .tfplan w upload validation + router
+  ✅ Protected terms filter (KF-005 fixed — API != ORGANIZATION)
+  ✅ .tfplan/.tfstate support (upload + router + regression tests)
   ✅ Polish UI (wszystkie stringi przetłumaczone)
   ✅ Demo UX: banner, expander, quick-load buttons, footer
   ✅ Docs PL: instrukcja-instalacji, instrukcja-uzycia, demo-scenariusze, faq
-
-TESTY: 29 unit PASS, 14 regression PASS, 6 xfail (expected)
+  ✅ README.md + demo/README.md — pełna polonizacja
+  ✅ Dokumentacja rehydratacji — wymagania, ograniczenia, 6-krokowy workflow
+  ✅ make test: 43 passed, 5 skipped, 6 xfailed
+  ✅ make smoke: PASSED (anonymize + rehydrate round-trip)
+  ✅ make demo: starts on localhost:8502
 
 NASTĘPNE ZADANIE:
-  → Merge MR feature/tfplan-polish-ui-docs
+  → Review i merge MR feature/tfplan-polish-ui-docs
   → Demo dla Tomasza (quick-load: Terraform plan)
-  → Opcjonalnie: fix KF-001 (S3 ARN) lub KF-003 (email .internal)
+  → Fix KF-001 (S3 ARN) lub KF-003 (email .internal) — po merge
 ```
 
 ---
@@ -3043,4 +3046,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 15:00 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 15:17 — sesja aktywna*

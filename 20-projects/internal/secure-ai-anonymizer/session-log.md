@@ -284,3 +284,38 @@ analyze-fixture sample.tfplan.txt → CLEAN (52 detekcje, 24 tokeny, 0 wycieków
 → Review i merge MR `feature/tfplan-polish-ui-docs`
 → Demo dla Tomasza z użyciem quick-load buttons
 → Fix KF-001 (S3 ARN) lub KF-003 (email .internal) — do decyzji po demo
+
+---
+
+## 2026-05-09 — Sesja 2: spolszczenie dokumentacji, weryfikacja rehydratacji, push
+
+**Akcja:** Dokończenie sesji 1 — polonizacja README/demo README, rozbudowa dokumentacji rehydratacji, uruchomienie testów, push do repo.
+
+**Branch:** `feature/tfplan-polish-ui-docs` (13 commitów)
+**MR link:** `https://gitlab.makolab.net/admin-makolab/dc/aws-projects/dc-anonimizator/-/merge_requests/new?merge_request%5Bsource_branch%5D=feature%2Ftfplan-polish-ui-docs`
+**Stan:** MR gotowy do review — wszystkie commity wypchnięte
+
+**Wykonane:**
+
+- `README.md` — pełna polonizacja sekcji user-facing: Wymagania, Pierwsze uruchomienie, Zmienne środowiskowe (WAŻNE), Użycie, Rozwiązywanie problemów, Architektura, Kontekst projektu; zachowane: Make targets (po angielsku), nazwy CLI, komendy
+- `demo/README.md` — pełne zastąpienie treścią po polsku: wszystkie sekcje (Uruchomienie, Wymagania, Co robi demo, Chronione terminy, Granice bezpieczeństwa, Czym NIE jest, Przebieg prezentacji)
+- `docs/instrukcja-uzycia.md` — rozbudowana sekcja rehydratacji: wymagania (Document ID, PostgreSQL, KEK_HEX, mapa tokenów), "Czego NIE robi" (5 punktów), 6-krokowy przepływ odanonimizowania, CLI przykład
+- `docs/faq.md` — 3 nowe Q&A: konsekwencje zmiany KEK_HEX, rehydratacja bez DB, izolacja danych LLM podczas rehydratacji
+- Commit backlog z sesji 1: `feat: add protected terms filter, tfstate support, and demo make target` — staged i zacommitowany (był pominięty w sesji 1)
+  - `src/dc_anonymizer/detection/filters.py` — filtr protected terms
+  - `src/dc_anonymizer/detection/rules/protected_terms.yml` — słownik domenowy
+  - `tests/fixtures/input/sample.tfstate` — fikstura tfstate
+  - `tests/regression/test_tfstate_fixture.py`, `tests/unit/test_protected_terms.py`
+  - Makefile (cel `demo`), pyproject.toml (streamlit dev dep), uv.lock
+
+**Wyniki walidacji:**
+```
+make test  → 43 passed, 5 skipped, 6 xfailed — OK
+make smoke → SMOKE PASSED (anonymize + rehydrate round-trip)
+make demo  → Uvicorn started on localhost:8502 — OK
+```
+
+**Następny krok:**
+→ Review i merge MR `feature/tfplan-polish-ui-docs`
+→ Demo dla Tomasza (quick-load: Terraform plan)
+→ Fix KF-001 (S3 ARN) lub KF-003 (email .internal) — po merge MR
