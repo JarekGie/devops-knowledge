@@ -2,6 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-09 — LLZ Observability Audit DONE ✅
+
+```
+RAPORT: 20-projects/internal/llz/observability-audit-2026-05-09.md
+
+QUICK WINS (zrób w tyg. 1):
+  QW-1: Dodaj glpi@infra.makolab.pl do SNS slo-alerts (5 min)
+  QW-2: MQ logs planodkupow: 90d → 7d retention (~30 USD/mies oszczędność)
+  QW-3: Dodaj scheduledChange do health event pattern
+  QW-4: Usuń dead: dc@makolab.com pending, org-cloudwatch-alarms-to-sns dead rule, shadow sink management
+
+KRYTYCZNE BRAKI:
+  - SLO breaches → tylko jaroslaw.golab personal email (NIE GLPI)
+  - 0 alarmów ECS/RDS/MQ/Redis (backend blindspot)
+  - Security Hub CRITICAL → 0 GLPI tickets
+  - GuardDuty SIX_HOURS delay
+
+KOSZT: 285 USD/mies observability (CW 161 + CloudTrail 100 + GD 24)
+  - Optymalizacja: 30-40 USD/mies (MQ logs + canary frequency)
+```
+
+---
+
 ## Update — 2026-05-09 sesja 2 — dc-anonymizer: MR PUSHED, gotowy do merge ✅
 
 ```
@@ -3046,4 +3069,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 15:17 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 15:42 — sesja aktywna*
