@@ -4,6 +4,46 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-09 sesja 2 — Load test: PS5.1 fix, scheduler-safe WAF, IAM fix
+
+**Branch:** `fix/uat-loadtest-docker-compose-plugin` (commit `4ed1e37`, `901a908`)
+
+### PS5.1 syntax fix
+
+Deweloper zgłosił błędy parsera PowerShell 5.1 na Windows:
+- `$($i + 1))` — podwójny `)` łamał parser (`Missing closing '}'`). Fix: `-f` format operator
+- `node'a` — apostrof w double-quoted string powodował `string missing terminator`. Fix: usunięty apostrof
+
+### Obsługa schedulera 19:00
+
+`Remove-LoadTestIpsFromAllowList` w `--stop` pobierało IP z InService → jeśli scheduler już ubił instancje, zwracało `[]` → WAF nie był czyszczony → stale IPs w allowliście.
+
+Fix: zastąpiono `Remove-LoadTestIpsFromAllowList` przez `Clear-LoadTestAllowList` — czyści cały dedykowany IP Set niezależnie od stanu instancji (GET lock-token + UPDATE z `[]`).
+
+Przy `--run` dodano `Clear-LoadTestAllowList` przed `Add` — usuwa stale IPs z poprzedniej sesji.
+
+### IAM fix — makolab-qa
+
+Błąd: `AccessDeniedException: wafv2:GetIPSet ... because no identity-based policy allows the wafv2:GetIPSet action`
+
+Policy `maspex-uat-loadtest-operator` nie miała żadnych uprawnień WAFv2 — skrypt dodano po policy.
+
+Fix: nowy Statement `WafLoadtestAllowlist` w `iam-loadtest-operator.tf`:
+```json
+{ "wafv2:GetIPSet", "wafv2:UpdateIPSet" }
+Resource: arn:aws:wafv2:us-east-1:969209893152:global/ipset/maspex-uat-loadtest-allowlist/76b89f7c-...
+```
+
+Terraform applied. IAM Policy Simulator: `allowed` dla obu akcji ✅
+
+### Stan na koniec sesji 2
+
+- MR ma 4 commity, gotowy do merge
+- makolab-qa: pełne uprawnienia do obsługi skryptu
+- Oczekuje na test end-to-end przez dewelopera
+
+---
+
 ## 2026-05-09 — Load test: Docker Compose v2 + WAF allowlist automation
 
 **Branch:** `fix/uat-loadtest-docker-compose-plugin` (pushed, MR otwarty na GitLab)
