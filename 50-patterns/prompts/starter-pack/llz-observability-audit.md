@@ -2,226 +2,345 @@
 title: llz-observability-audit
 type: prompt-template
 domain: client-work
-use_case: LLZ observability audit — CloudWatch, OAM, CloudTrail, log retention
+use_case: LLZ full observability audit — OAM, CloudWatch, SNS routing, Health, Security Hub, GuardDuty, Wazuh readiness, GLPI integration, FinOps
 tags:
   - prompt
   - llz
   - observability
   - cloudwatch
   - oam
-  - cloudtrail
+  - guardduty
+  - security-hub
+  - glpi
+  - wazuh
+  - finops
   - audit
 created: 2026-05-02
-updated: 2026-05-02
+updated: 2026-05-09
 ---
 
-# CONTEXT — AWS LLZ Monitoring Audit (MakoLab)
+# LLZ Observability & Alerting Audit
 
-You are a senior AWS SRE performing a **read-only audit of AWS Organization** focused on:
+Jesteś senior AWS CloudOps / Observability / FinOps auditor working READ-ONLY.
 
-1. CloudWatch metrics coverage
-2. Cross-account observability (OAM / monitoring account)
-3. Central logging (CloudTrail → LogArchive account)
-4. LLZ compliance
+Kontekst:
+- Repo: ~/projekty/mako/aws-projects/aws-cloud-platform
+- AWS Organization ID: o-5c4d5k6io1
+- Monitoring / delegated admin account:
+  - monitoring-nagios-bot
+  - 814662658531
+- Główny region:
+  - eu-central-1
+- LLZ już posiada:
+  - GuardDuty org-wide
+  - Security Hub org-wide
+  - AWS Config org-wide
+  - OAM cross-account observability częściowo wdrożone
+  - Health notifications przez EventBridge + Lambda + SNS
+  - CloudWatch dashboardy i SLO alarms dla części workloadów
 
-Work ONLY in read-only mode (no write operations).
+CEL AUDYTU:
+Nie budujemy enterprise SIEM.
+Nie chcemy spamować GLPI/Wazuh/Jiry.
+Chcemy:
+- mały koszt
+- wysoki signal/noise ratio
+- actionable alerts only
+- central visibility
+- ownership
+- minimal operational overhead
 
----
+TRYB:
+- STRICTLY READ-ONLY
+- żadnego terraform apply
+- żadnych zmian
+- żadnych create/update/delete
+- możesz wykonywać:
+  - terraform state/list/show
+  - aws describe/list/get
+  - aws cloudwatch
+  - aws oam
+  - aws sns
+  - aws events
+  - aws logs
+  - aws configservice
+  - aws securityhub
+  - aws guardduty
+  - aws budgets
+  - aws ce
+- jeśli jakaś operacja wymaga write -> STOP
 
-# INPUT (ASSUMPTIONS)
+OUTPUT:
+Przygotuj:
+1. inventory observability
+2. gap analysis
+3. signal/noise analysis
+4. rekomendacje pod GLPI/Wazuh
+5. koszt/ryzyko
+6. roadmapę
 
-Organization structure:
+========================================
+PHASE 1 — ORGANIZATION INVENTORY
+========================================
 
-* Monitoring account: monitoring-nagios-bot
-* Log archive account: LogArchiveNew
-* Multiple workload accounts (prod + nonprod)
+Zidentyfikuj:
+- wszystkie aktywne konta AWS
+- suspended accounts
+- role i delegated admin:
+  - Security Hub
+  - GuardDuty
+  - Config
+  - OAM
+- regiony używane przez workloady
 
-Expected LLZ behavior:
+Tabela:
+| Account | AccountId | Workload Type | Prod/NonProd | Monitoring Coverage |
 
-* CloudWatch metrics available in each account
-* Cross-account aggregation via OAM sink (monitoring account)
-* Organization CloudTrail writing to LogArchive account
-* No local-only observability silos
+========================================
+PHASE 2 — OAM / CENTRAL OBSERVABILITY
+========================================
 
----
+Sprawdź:
+- wszystkie OAM sinks
+- wszystkie OAM links
+- które konta wysyłają:
+  - metrics
+  - logs
+  - traces
+- które NIE są spięte do monitoring-nagios-bot
 
-# TASK
-
-Perform structured audit and return:
-
-## 1. METRICS COVERAGE PER ACCOUNT
-
-For each AWS account:
-
-* List available CloudWatch namespaces
-* Detect key services:
-
-  * ECS / Fargate
-  * EC2
-  * RDS
-  * ALB / NLB
-  * Lambda
-* Identify:
-
-  * Missing expected metrics
-  * Accounts with minimal/no metrics
+Zweryfikuj:
+- czy coverage jest pełny
+- czy są orphan links
+- czy są inactive links
+- czy są duplicate sinks
 
 Output:
+| Account | OAM Link | Metrics | Logs | Traces | Status |
 
-* Table: account → services → metrics present/missing
-* Flag accounts with LOW observability
+Na końcu:
+- coverage %
+- lista brakujących kont
 
----
+========================================
+PHASE 3 — CLOUDWATCH AUDIT
+========================================
 
-## 2. CROSS-ACCOUNT OBSERVABILITY (OAM)
+Per account:
+- liczba alarmów
+- alarmy ALARM state
+- alarmy bez actions
+- alarmy bez SNS
+- alarmy z disabled actions
+- alarmy stare (>180 dni bez datapoints)
+- orphan alarms
+- duplicate alarms
 
-Verify:
+Podziel alarmy:
+- production critical
+- operational useful
+- noisy/useless
+- probably obsolete
 
-### A. Monitoring account (sink)
+Wykryj:
+- ECS alarms
+- ALB alarms
+- RDS alarms
+- Lambda alarms
+- Synthetics alarms
+- billing alarms
 
-* Is OAM sink configured?
-* What resource types are allowed:
-
-  * metrics
-  * logs
-  * traces
-* Is org-wide access enabled?
-
-### B. Source accounts
-
-* Are they linked to the sink?
-* Are links ACTIVE?
-
-### C. Consistency
-
-* Accounts without OAM link
-* Accounts partially configured
-
-Output:
-
-* FULL / PARTIAL / MISSING per account
-
----
-
-## 3. CLOUDWATCH LOGS
-
-For each account:
-
-* Check:
-
-  * Log groups exist
-  * Retention policy set (not "Never expire")
-* Identify:
-
-  * Missing logs for ECS/Lambda
-  * Infinite retention (cost risk)
-
----
-
-## 4. CLOUDTRAIL (ORG LEVEL)
-
-Verify:
-
-### A. Organization Trail
-
-* Exists?
-* Multi-region enabled?
-* Includes:
-
-  * management events
-  * data events (S3 / Lambda?)
-
-### B. Delivery
-
-* Target: LogArchiveNew account
-* S3 bucket:
-
-  * encryption enabled
-  * versioning enabled
-
-### C. Coverage
-
-* All accounts included?
-* Any standalone trails?
+Oceń:
+- signal/noise ratio
+- czy alarm ma ownera
+- czy alarm ma routing
 
 Output:
+| Alarm | Account | Severity | Action Target | Useful? | Recommendation |
 
-* PASS / PARTIAL / FAIL
+========================================
+PHASE 4 — SNS / EVENT ROUTING
+========================================
 
----
+Sprawdź:
+- SNS topics
+- subscriptions
+- dead subscriptions
+- unconfirmed email subscriptions
+- Lambda targets
+- EventBridge targets
+- DLQ presence
 
-## 5. LOG ARCHIVE ACCOUNT (LogArchiveNew)
+Zweryfikuj:
+- AWS Health routing
+- Budget alerts
+- Cost anomaly alerts
+- CloudWatch alarm routing
 
-Validate:
+Output:
+| Source | Destination | Account | DLQ | Status |
 
-* S3 bucket structure for CloudTrail
-* Access policies (org-wide write)
-* Lifecycle policies (cost optimization)
+========================================
+PHASE 5 — AWS HEALTH / ACTION REQUIRED
+========================================
 
-Detect:
+Sprawdź:
+- EventBridge rules dla AWS Health
+- jakie event categories są łapane
+- czy:
+  - issue
+  - scheduledChange
+  - accountNotification
+  - investigation
+  są routowane
 
-* Missing lifecycle
-* Misconfigured permissions
+Zweryfikuj:
+- deduplication
+- filtering
+- czy region us-east-1 jest poprawnie używany
 
----
+Oceń:
+- czy flow jest gotowy pod GLPI
 
-## 6. LLZ COMPLIANCE SUMMARY
+Output:
+- current architecture
+- weak points
+- duplicate notifications
+- missing action-required coverage
 
-Evaluate against LLZ baseline:
+========================================
+PHASE 6 — SECURITY SIGNALS
+========================================
 
-| Area                        | Status                |
-| --------------------------- | --------------------- |
-| Metrics coverage            | PASS / PARTIAL / FAIL |
-| Cross-account observability | PASS / PARTIAL / FAIL |
-| Central logging             | PASS / PARTIAL / FAIL |
-| Log retention               | PASS / PARTIAL / FAIL |
+Sprawdź:
+- Security Hub findings volume
+- GuardDuty findings volume
+- Config NON_COMPLIANT volume
 
----
+Podziel findings:
+- actionable
+- noise
+- informational
+- unsuitable for ticketing
 
-## 7. CRITICAL FINDINGS (TOP 10)
+Przygotuj rekomendację:
+CO powinno wpadać do GLPI:
+- tylko CRITICAL?
+- HIGH?
+- wybrane typy findings?
 
-Only high-impact issues:
+CO NIE powinno:
+- LOW/MEDIUM spam
+- transient Config drift
+- informational findings
 
-* Missing OAM links
-* No CloudTrail in account
-* No logs / no metrics
-* No retention
+Output:
+| Source | Severity | Ticket? | Why |
 
----
+========================================
+PHASE 7 — WAZUH INTEGRATION READINESS
+========================================
 
-## 8. SAFE REMEDIATION PLAN
+Oceń:
+czy ma sens integrować:
+- CloudTrail
+- GuardDuty
+- Security Hub
+- VPC Flow Logs
+- ALB logs
+- WAF logs
 
-For each issue:
+Oceń:
+- expected ingest volume
+- expected operational noise
+- cost risk
+- retention implications
 
-* What to fix
-* Where (account / org)
-* Recommended Terraform approach (high-level)
+Podziel:
+- good candidates
+- dangerous/noisy integrations
+- future phase only
 
-DO NOT propose manual console fixes.
+========================================
+PHASE 8 — FINOPS / COST IMPACT
+========================================
 
----
+Oceń:
+obecny koszt:
+- CloudWatch
+- Logs
+- Metrics
+- OAM
+- Security Hub
+- GuardDuty
+- Config
 
-# OUTPUT FORMAT
+Oceń ryzyko kosztowe:
+- log explosion
+- VPC Flow Logs everywhere
+- Security Hub CSPM expansion
+- WAF logging
+- high-cardinality metrics
 
-Strict structure:
+Przygotuj:
+SAFE MINIMAL BASELINE
+dla organizacji tej wielkości.
 
-1. Executive Summary (max 10 lines)
-2. Evidence (tables, per account)
-3. Findings (prioritized)
-4. LLZ compliance matrix
-5. Remediation plan
+========================================
+PHASE 9 — TARGET OPERATING MODEL
+========================================
 
-Separate:
+Przygotuj rekomendowany flow:
 
-* FACTS (observed)
-* ASSUMPTIONS (if any)
+AWS/Wazuh/Nagios
+    ↓
+GLPI intake
+    ↓
+triage / SLA
+    ↓
+Jira only if work required
 
----
+Podziel:
+- CRITICAL
+- HIGH
+- MEDIUM
+- informational
 
-# IMPORTANT RULES
+Zaproponuj:
+- co auto-ticketować
+- co tylko dashboardować
+- co tylko mailować
+- co ignorować
 
-* Read-only only
-* No speculation without marking it
-* No generic AWS advice
-* Focus on THIS organization
-* Prefer completeness over brevity
+========================================
+PHASE 10 — FINAL REPORT
+========================================
+
+Przygotuj:
+
+1. Executive summary
+2. Current maturity
+3. Biggest gaps
+4. Quick wins (<1 dzień)
+5. Medium improvements
+6. Dangerous ideas to avoid
+7. Cost-safe recommendations
+8. Recommended Phase 1 for GLPI integration
+9. Recommended Phase 1 for Wazuh integration
+10. Final architecture recommendation
+
+Wymagania:
+- bardzo konkretnie
+- bez marketingu AWS
+- bez "best practice" bez uzasadnienia
+- pokaż ryzyko operacyjne
+- pokaż ryzyko kosztowe
+- pokaż ryzyko noise
+- pokaż co jest overengineeringiem
+
+Na końcu:
+daj:
+- FINAL VERDICT
+- GO / NO-GO
+- recommended next step
+- czego absolutnie NIE robić teraz
