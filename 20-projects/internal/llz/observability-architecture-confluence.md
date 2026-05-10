@@ -6,7 +6,11 @@
 # Observability & Monitoring Architecture — LLZ AWS Organization
 
 > **Status:** LIVE dokumentacja architektury. Zrodlo prawdy — aktualny Terraform w `platform/monitoring/` i `platform/health-notifications/`.
-> **Ostatnia aktualizacja:** 2026-05-09 | Audyt bazowy: `observability-audit-2026-05-09.md`
+> **Ostatnia aktualizacja:** 2026-05-09 (Phase 1 correction) | Audyt bazowy: `observability-audit-2026-05-09.md`
+
+> **[2026-05-09 KOREKTA Phase 1]** SLO alerts sa **email/dashboard only** do czasu stabilizacji progow.
+> RShop generuje nadmierne SLO latency alerts — routing do GLPI zawieszony do potwierdzenia progow z projektami.
+> GLPI przyjmuje tylko AWS Health events. Security Hub / GuardDuty → GLPI planowane w Phase 2.
 
 ---
 
@@ -54,7 +58,7 @@ Dwa kanaly do GLPI sa aktywne: SLO alerts (CloudWatch → SNS) i AWS Health even
 
 | Zrodlo | Typ | Status |
 |--------|-----|--------|
-| CloudWatch SLO alarms (ALB) | SLO breach | LIVE → GLPI |
+| CloudWatch SLO alarms (ALB) | SLO breach | **Email/dashboard only** (GLPI zawieszone — progi niestabilne) |
 | AWS Health EventBridge | Incydenty i maintenance AWS | LIVE → GLPI |
 | Security Hub | Security findings | Dashboard only |
 | GuardDuty | Threat detection | Dashboard only |
@@ -93,7 +97,7 @@ graph TD
 
 ## 3. Diagram 2 — SLO Alert Flow
 
-Jak breach progu SLO na frontendie (ALB) trafia do ticketu GLPI.
+Breach progu SLO na frontendie (ALB) trafia do emaila operatora. GLPI zawieszone do stabilizacji progow.
 
 ```mermaid
 graph TD
@@ -101,16 +105,17 @@ graph TD
     B --> C[OAM Sink]
     C --> D[CloudWatch Alarm]
     D -->|error rate or latency breach| E[SNS slo-alerts]
-    E --> F[GLPI]
     E --> G[Operator Email]
+    E -.->|ZAWIESZONE — progi niestabilne| F[GLPI]
 ```
 
 **Szczegoly:**
 - 8 alarmow: error rate > 1% (3/5 min) i latency p99 dla RShop, Booking, dacia, planodkupow/bbmt-uat
 - `treat_missing_data = notBreaching` — brak danych nie odpala alarmu (cross-account safe)
 - `datapoints_to_alarm` — minimum 2-3 naruszen przed alarmem, eliminuje spikes
-- SNS `slo-alerts` ma dwoch subskrybentow: `glpi@infra.makolab.pl` i `jaroslaw.golab@makolab.com`
+- SNS `slo-alerts` ma jednego subskrybenta: `jaroslaw.golab@makolab.com` (email operatora)
 - Alarmy definiowane w koncie `monitoring-nagios-bot`, metryki pobierane cross-account przez OAM metric math
+- **[2026-05-09]** `glpi@infra.makolab.pl` usuniete z `slo-alerts` — RShop generuje za duzo SLO latency alerts; GLPI wróci po potwierdzeniu progow z projektami
 
 ---
 
@@ -217,8 +222,8 @@ graph TD
 
 | Zrodlo | Sygnal | Severity | Destynacja | Ticket GLPI | SLA | Status |
 |--------|--------|----------|------------|-------------|-----|--------|
-| CloudWatch / OAM | SLO error rate > 1% | CRITICAL | slo-alerts | Tak | 15 min | LIVE |
-| CloudWatch / OAM | SLO latency p99 | CRITICAL | slo-alerts | Tak | 15 min | LIVE |
+| CloudWatch / OAM | SLO error rate > 1% | CRITICAL | slo-alerts | **NIE** (email only) | — | LIVE — GLPI zawieszone |
+| CloudWatch / OAM | SLO latency p99 | CRITICAL | slo-alerts | **NIE** (email only) | — | LIVE — GLPI zawieszone |
 | AWS Health | issue / investigation | HIGH | health-notifications | Tak | 30 min | LIVE |
 | AWS Health | scheduledChange | MEDIUM | health-notifications | Tak | 24h | LIVE |
 | AWS Health | accountNotification | INFO | health-notifications | Tak | 48h | LIVE |
@@ -267,8 +272,8 @@ Breach wymaga akcji operatora w ciagu godziny. Jasny owner. Actionable.
 
 | Sygnal | Routing | Uzasadnienie |
 |--------|---------|--------------|
-| SLO error rate > 1% na prod ALB | slo-alerts → glpi@ | Uzytkownik koncowy czuje degradacje, SLA naruszone |
-| SLO latency p99 > prog | slo-alerts → glpi@ | j.w. |
+| SLO error rate > 1% na prod ALB | slo-alerts → email operatora (**GLPI zawieszone**) | Progi niestabilne — flood GLPI z RShop latency |
+| SLO latency p99 > prog | slo-alerts → email operatora (**GLPI zawieszone**) | j.w. |
 | AWS Health issue / investigation | health-notifications → glpi@ | Awaria infrastruktury AWS wymaga reakcji |
 | AWS Health scheduledChange | health-notifications → glpi@ | Operator musi zaplanowac maintenance window |
 | GuardDuty HIGH (>= 7.0) | PLANOWANY → glpi@ | Potencjalny kompromis, triage w 1h |
@@ -363,10 +368,25 @@ Baseline kosztowy (po Phase 1):
 
 | Zmiana | Efekt |
 |--------|-------|
-| glpi@ → SNS slo-alerts | SLO breaches → GLPI, nie tylko email osobisty |
+| ~~glpi@ → SNS slo-alerts~~ COFNIETE — patrz nizej | — |
 | AmazonMQ log retention: 90d → 14d | ~30-40 USD/mies oszczednosc |
 | Health event pattern + scheduledChange + accountNotification | Pelne pokrycie Health events |
 | Usunieto dc@makolab.com PENDING subscription | Czyste SNS |
+| **glpi@ usuniete z slo-alerts (2026-05-09 correction)** | Zatrzymano flood GLPI — progi niestabilne |
+
+### Tier 1 — SLO → GLPI (model przyszly, NIEZAIMPLEMENTOWANY)
+
+Warunki powrotu SLO do GLPI — wszystkie muszą byc spelnione:
+
+| Warunek | Odpowiedzialny |
+|---------|----------------|
+| Progi SLO (latency, error rate) potwierdzone z zespolami projektow | Tech lead per workload |
+| Mechanizm dedupu: jeden otwarty ticket per workload per alarm | Tech lead / GLPI admin |
+| Wdrozono `alarm_actions` = tylko ALARM (usunac `ok_actions` z SNS) | Platform team |
+| Definicja "minimum breach duration" — np. 5 min sustained, nie 1 spike | Platform team |
+| Weryfikacja: < 5 GLPI ticketow/dzien w pilotazu | Operacyjnie |
+
+Cel: jeden aktywny ticket per workload/alarm. Brak nowych ticketow jesli poprzedni otwarty. Brak ticketow na `ok_actions` (auto-close zamiast nowego ticketu).
 
 ### Phase 2 — rekomendowane
 

@@ -2,6 +2,38 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-09 — LLZ: Phase 1 correction — GLPI usuniete z slo-alerts
+
+```
+BRANCH: feature/observability-routing-cleanup-phase1 (pushed)
+REPO:   ~/projekty/mako/aws-projects/aws-cloud-platform
+COMMIT: f1d0eb0
+
+CO ZROBIONO:
+  ✅ Usunieto glpi@infra.makolab.pl z slo_notification_emails (terraform.tfvars)
+  ✅ terraform plan: 0 add, 0 change, 1 destroy (subscription glpi@)
+  ✅ Commit f1d0eb0 pushed
+  ✅ Vault: observability-architecture-confluence.md zaktualizowany
+
+STAN SUBS slo-alerts SNS (po apply):
+  jaroslaw.golab@makolab.com  — zostaje
+  glpi@infra.makolab.pl       — USUNIETE (bylo pending_confirmation=true)
+
+APPLY COMMAND:
+  cd ~/projekty/mako/aws-projects/aws-cloud-platform/platform/monitoring
+  AWS_PROFILE=mako-dc terraform apply tfplan.monitoring
+
+WERYFIKACJA:
+  AWS_PROFILE=monitoring-tbd aws sns list-subscriptions-by-topic \
+    --topic-arn arn:aws:sns:eu-central-1:814662658531:slo-alerts \
+    --region eu-central-1 --query "Subscriptions[].Endpoint" --output text
+
+AWS HEALTH → GLPI: bez zmian (health-notifications topic — nie tkniety)
+SLO ALARMY: bez zmian (8 alarmow, tylko routing email)
+```
+
+---
+
 ## Update — 2026-05-09 — MASPEX: load test infra KOMPLETNA, MR pushed (8 commitów) ✅
 
 ```
@@ -3093,4 +3125,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 23:03 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-09 23:13 — sesja aktywna*

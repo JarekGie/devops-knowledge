@@ -4,6 +4,64 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-09 — Phase 1 correction: usunieto GLPI z slo-alerts
+
+**Branch:** `feature/observability-routing-cleanup-phase1` (commit `f1d0eb0`, pushed)
+**Repo:** `~/projekty/mako/aws-projects/aws-cloud-platform`
+
+### Problem
+
+Po dodaniu `glpi@infra.makolab.pl` do SNS `slo-alerts` (Phase 1, commit `81d42fe`) okazalo sie, ze RShop generuje zbyt wiele SLO latency alerts. Routing do GLPI zawieszony do czasu stabilizacji progow.
+
+Dodatkowy kontekst: subskrypcja `glpi@infra.makolab.pl` miala `pending_confirmation = true` — GLPI nigdy nie potwierdzil subskrypcji, wiec faktycznie zadne alerty nie doszly. Niemniej subskrypcja zostala usunieta zeby wyeliminowac ryzyko przypadkowego potwierdzenia.
+
+### Zmiana
+
+**Plik:** `platform/monitoring/terraform.tfvars`
+```
+# przed:
+slo_notification_emails = ["jaroslaw.golab@makolab.com", "glpi@infra.makolab.pl"]
+
+# po:
+slo_notification_emails = ["jaroslaw.golab@makolab.com"]
+```
+
+**Terraform plan:** 0 add, 0 change, 1 destroy (`aws_sns_topic_subscription.slo_alerts_email["glpi@infra.makolab.pl"]`)
+
+### Co zostaje bez zmian
+
+- AWS Health → GLPI: bez zmian (`health-notifications` topic)
+- SLO alarmy w CloudWatch: bez zmian (8 alarmow dla RShop, Booking, dacia, bbmt-uat)
+- Email operatora `jaroslaw.golab@makolab.com`: bez zmian, pozostaje w slo-alerts
+
+### Apply command
+
+```bash
+cd platform/monitoring
+AWS_PROFILE=mako-dc terraform apply tfplan.monitoring
+```
+
+### Weryfikacja po apply
+
+```bash
+AWS_PROFILE=monitoring-tbd aws sns list-subscriptions-by-topic \
+  --topic-arn "arn:aws:sns:eu-central-1:814662658531:slo-alerts" \
+  --region eu-central-1 \
+  --query "Subscriptions[].Endpoint" --output text
+# Oczekiwane: jaroslaw.golab@makolab.com (tylko jeden)
+```
+
+### Model przyszly SLO → GLPI
+
+Warunki powrotu:
+1. Progi SLO (latency, error rate) potwierdzone z projektami
+2. Alarm routing: tylko `alarm_actions` (usunac `ok_actions` z SNS)
+3. Dedup: jeden ticket per workload/alarm (GLPI lub SNS filter Lambda)
+4. Rate limit / minimum breach duration (np. 5 min sustained)
+5. Weryfikacja pilotaz: < 5 ticketow/dzien
+
+---
+
 ## 2026-04-18 — Inicjalizacja projektu LLZ w vault
 
 **Co zrobiono:**
