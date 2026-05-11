@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Claude Code"
+              "title": "Terminal: ✳ Check maxpex contest"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/mako/aws-projects/infra-maspex/scripts"
+              "title": "Terminal: ec2-user@maspex-uat-loadtest:~"
             }
           },
           {
@@ -147,8 +147,7 @@
               "title": "AI4DEVOPS_REFERENCE_MODEL"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -333,7 +332,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "71191a135971ab99",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
     "CLAUDE.md",
