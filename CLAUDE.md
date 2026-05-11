@@ -3,7 +3,7 @@
 ## BOOTSTRAP (mandatory)
 
 Przed wykonaniem jakiejkolwiek operacji zastosuj `_system/AGENT_BOOTSTRAP.md`.
-nigdy nie pracuj na branchu main lub master żadnego repozytorium, przed każdą zmianą plików wykonaj git status - jeśli będzie main, wyrównaj i utwórz nowy branch.
+
 
 Ten plik zawiera instrukcje dla Claude Code (claude.ai/code) podczas pracy z tym repozytorium.
 
