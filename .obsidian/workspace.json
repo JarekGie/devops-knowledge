@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ec2-user@maspex-uat-loadtest:~"
+              "title": "Terminal: ✳ RCA po load teście Maspex UAT 2026-05-11"
             }
           },
           {
@@ -291,6 +291,8 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/instrumentacja-przed-load-testem-prompt.md",
+    "20-projects/clients/mako/maspex/rca-load-test-2026-05-11-prompt.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-11-0000-cest.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
@@ -315,8 +317,6 @@
     "20-projects/clients/mako/aws-cloud-platform/monitoring-dashboards-guide.md",
     "40-runbooks/aws/break-glass-ou-move.md",
     "20-projects/clients/mako/aws-cloud-platform/root-governance-postmortem.md",
-    "20-projects/clients/mako/drp-tfs/session-log.md",
-    "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
