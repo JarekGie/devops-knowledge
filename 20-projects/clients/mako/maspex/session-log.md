@@ -4,6 +4,36 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-11 — Load test analysis + LT docker-compose fix
+
+### Docker Compose fix (Launch Template)
+
+**Problem**: LT v4 nie miał sekcji Docker Compose — `terraform apply` nie był uruchamiany po commitach `ee72c24`/`0f1eead`. Nowe instancje po scale-down/up nie miały docker-compose.
+
+**Fix**:
+- `terraform apply -target=aws_launch_template.loadtest` → LT v5 z docker-compose + symlink + nowy AMI (`ami-021aafe982d496ca8`)
+- SSM install na żywych instancjach `i-0582638efb544461f`, `i-0ae9783517c9b9d03` → Docker Compose v5.1.3 ✅
+
+### Load test analysis 2026-05-11 00:00–01:00 CEST
+
+Pełna analiza: `load-test-analysis-2026-05-11-0000-cest.md`
+
+**Kluczowe wnioski:**
+- BRAK `VOTE_CACHE_WRITETHROUGH_FAIL` — poprawka Redis z 2026-05-08 zadziałała (było 924k błędów w 2026-05-05 19:00)
+- Peak 00:20 CEST: ALB 1.249M req/5min, ECS CPU avg 46.1%, p99 **15.8 s**, 3464 target-5xx
+- Redis zdrowy: CPU max 14.7%, evictions=0, swap=0, hit ratio ~70%
+- **Post-test anomalia**: latencja ALB (health checks) nie wraca do baseline przez >1h (460–520 ms), memory ECS zatrzymuje się na 67% avg
+- Bottleneck: application-level — Node.js event loop saturation lub DB connection pool exhaustion (nie Redis, nie ALB, nie CF)
+- Odkrycie: logi maspex-api trafiają do `/maspex/uat/contest-service` (nie do `/maspex/shared/maspex-api` która jest pusta)
+
+**Otwarte:**
+- [ ] Zbadać przyczynę post-test elevated latency (460ms health checks)
+- [ ] Zbadać memory retencję (67% avg po teście, baseline 13–18%)
+- [ ] Poprawić konfigurację log group w task definition (lub uaktualnić dokumentację)
+- [ ] APM/distributed tracing przed testem produkcyjnym
+
+---
+
 ## 2026-05-09 sesja 5 — Load test: loadtest-ctrl.sh — WAF automation dla macOS
 
 **Commit:** `ae39b3a` (branch: `fix/uat-loadtest-docker-compose-plugin`, pushed)
