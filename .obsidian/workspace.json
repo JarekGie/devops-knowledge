@@ -119,8 +119,7 @@
               "title": "rca-load-test-2026-05-11"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -304,7 +303,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "45aa9f82c1c7d7b5",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/rca-load-test-2026-05-11.md",
     "20-projects/clients/mako/maspex/instrumentacja-przed-load-testem-prompt.md",
