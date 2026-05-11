@@ -46,105 +46,21 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Check maxpex contest"
+              "title": "Terminal: ⠂ Check maxpex contest"
             }
           },
           {
-            "id": "71191a135971ab99",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "terminal:terminal",
-              "state": {
-                "terminal:terminal": {
-                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
-                  "focus": false,
-                  "profile": {
-                    "args": [
-                      "--login"
-                    ],
-                    "executable": "/bin/zsh",
-                    "followTheme": true,
-                    "name": "",
-                    "platforms": {
-                      "darwin": true
-                    },
-                    "pythonExecutable": "python3",
-                    "restoreHistory": false,
-                    "rightClickAction": "copyPaste",
-                    "successExitCodes": [
-                      "0",
-                      "SIGINT",
-                      "SIGTERM"
-                    ],
-                    "terminalOptions": {
-                      "documentOverride": null
-                    },
-                    "type": "integrated",
-                    "useWin32Conhost": true
-                  },
-                  "serial": null
-                }
-              },
-              "pinned": true,
-              "icon": "terminal",
-              "title": "Terminal: ec2-user@maspex-uat-loadtest:~"
-            }
-          },
-          {
-            "id": "95bb0f3e8be30d71",
+            "id": "ae21cca3b83600e0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "20-projects/internal/llz/observability-architecture-confluence.md",
+                "file": "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "observability-architecture-confluence"
-            }
-          },
-          {
-            "id": "06d5af381ae408d7",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "20-projects/internal/llz/observability-audit-2026-05-09.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "observability-audit-2026-05-09"
-            }
-          },
-          {
-            "id": "2b3d6b5501242361",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "CLAUDE.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "CLAUDE"
-            }
-          },
-          {
-            "id": "c4d19470e319740f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "AI4DEVOPS_REFERENCE_MODEL"
+              "title": "load-test-analysis-2026-05-05-1900-cest"
             }
           }
         ]
@@ -334,6 +250,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
     "CLAUDE.md",
     "20-projects/internal/llz/observability-architecture-confluence.md",
@@ -360,7 +277,6 @@
     "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
     "20-projects/clients/mako/anonimizator/session-log.md",
     "20-projects/clients/mako/drp-tfs",
-    "50-patterns/prompts/invocations/cloud-detective-drp-tfs.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",
