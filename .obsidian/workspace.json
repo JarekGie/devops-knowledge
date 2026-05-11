@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Check maxpex contest"
+              "title": "Terminal: ✳ Check maxpex contest"
             }
           },
           {
@@ -278,6 +278,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/load-test-analysis-2026-05-11-0000-cest.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
     "CLAUDE.md",
@@ -303,7 +304,6 @@
     "20-projects/clients/mako/aws-cloud-platform/root-governance-postmortem.md",
     "20-projects/clients/mako/drp-tfs/session-log.md",
     "20-projects/clients/mako/aws-cloud-platform/root-mfa-recovery-plan.md",
-    "20-projects/clients/mako/anonimizator/session-log.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
