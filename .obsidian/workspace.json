@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: make demo"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops"
             }
           },
           {
@@ -148,7 +148,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -205,7 +205,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 519.5
+    "width": 519.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -332,8 +333,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "c4d19470e319740f",
+  "active": "71191a135971ab99",
   "lastOpenFiles": [
+    "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
     "CLAUDE.md",
     "20-projects/internal/llz/observability-architecture-confluence.md",
     "20-projects/internal/llz/observability-audit-2026-05-09.md",
@@ -360,7 +362,6 @@
     "20-projects/clients/mako/anonimizator/session-log.md",
     "20-projects/clients/mako/drp-tfs",
     "50-patterns/prompts/invocations/cloud-detective-drp-tfs.md",
-    "20-projects/internal/secure-ai-anonymizer/adr/ADR-008-uv-vs-poetry.md",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
     "20-projects/internal/secure-ai-anonymizer",
