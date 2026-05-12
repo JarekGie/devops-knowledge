@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: aws sts get-caller-identity"
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/mako/aws-projects/infra-maspex"
             }
           },
           {
@@ -147,8 +147,7 @@
               "title": "CLAUDE"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -332,7 +331,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7edf52c3ec71fe50",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "CLAUDE.md",
     "20-projects/clients/mako/maspex/rca-load-test-2026-05-11.md",
