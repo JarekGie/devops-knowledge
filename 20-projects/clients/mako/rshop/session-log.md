@@ -4,6 +4,26 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-12 — FE dev-scan Jenkinsfile fix (CFN-MUT-001)
+
+**Plik:** `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile` (branch: master, commit: `ef565fb`)
+
+`r-shop-all-dev-scan.jenkinsfile` (pipeline z Trivy/Sonar/OWASP) celował w root stack `dev` — identyczny hazard CFN-MUT-001 jak w `r-shop-all.jenkinsfile`. Fix analogiczny.
+
+**Zmiany:**
+- `CfnStackName = 'dev-ECSStack-1BLAWHL0P6JKO'` dla dev
+- Parametry dev: `frontendimg`/`frontendimg2` (ECSStack scope) + `UsePreviousValue=true`
+- Usunięto hardcoded ALB DNS/TG ARNy (były dev-specific, błędnie w QA path)
+- Preflight gate (sprawdza status ECSStack przed create-change-set)
+- Change-set guard (blokuje execute jeśli denied resource types/logical IDs)
+- `execute-change-set` i `wait` używają `${CfnStackName}`
+- `def changeSetIdFrontend = ''` na poziomie pipeline (fix Groovy warning)
+- QA: bez zmian (root stack params `FrontendImg`/`FrontendImgD`)
+
+**Nie zmieniano:** DC (OWASP), Sonarqube, Trivy, build stages, post/email.
+
+---
+
 ## 2026-05-12 — CFN root stack dev recovery + FE Jenkinsfile fix
 
 ### FE Jenkinsfile — CFN-MUT-001 fix
