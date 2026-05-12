@@ -4,6 +4,73 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-11/12 — Preprod zaslepka v10 + UAT autoscaling + PROD parity + loadtest scripts
+
+### Preprod zaslepka v10 — PDF politykaprywatnosci
+
+**Branch:** `feat/preprod-zaslepka-polityka-prywatnosci`  
+**Commit:** `dc893f5`
+
+- Dockerfile: dodano `COPY --chmod=644 politykaprywatnosci.pdf /usr/share/nginx/html/`
+- `terraform/envs/preprod/main.tf`: `zaslepka-v9` → `zaslepka-v10` (service_admin_panel + service_bot)
+- Image zbudowany: `--platform linux/amd64`, push do ECR jako `zaslepka-v10`
+- Apply preprod: nowa task definition `:9` (admin_panel + bot), service_admin_panel zaktualizowany ✅
+- ⚠️ Bot service preprod **nie zaktualizowany** — pre-existing błąd: `maspex-preprod-bot` TG bez associated load balancer (`InvalidParameterException`). Task def `:9` istnieje, ale service tkwi na `:1`.
+
+### UAT autoscaling — ALBRequestCountPerTarget
+
+**Branch:** `feat/uat-autoscaling-alb-request-count`  
+**Commit:** `ac6f94f`  
+**Status: APPLIED ✅**
+
+- `terraform/envs/uat/autoscaling.tf`: nowa policy `api_alb_request_count`
+  - TargetValue=200, ScaleOut=30s, ScaleIn=300s
+  - ResourceLabel: `${element(split(":loadbalancer/", module.alb.arn), 1)}/${module.alb_routing.api_tg_arn_suffix}`
+- Istniejące policy CPU + memory zachowane jako safety nets
+- Uzasadnienie: Node.js I/O-wait na PostgREST/Supabase — CPU wygląda zdrowo gdy requesty się kolejkują
+
+### PROD parity z UAT
+
+**Branch:** `feat/prod-parity-uat`  
+**Status: VALIDATE ✅ — APPLY ZABLOKOWANY** (oczekiwanie na cert + tagflagi)
+
+Pliki zmienione:
+- `terraform/envs/prod/autoscaling.tf` — identyczna policy `api_alb_request_count` jak UAT
+- `terraform/envs/prod/main.tf` — dodano `/email/*` do `cloudfront_site_api.static_path_origin_request_policy_ids`
+- `terraform/envs/prod/waf.tf` — dodano:
+  - `aws_wafv2_ip_set.public_app_supabase_ipv6` (Supabase pg_net: `2a05:d018:135e:16df:624:8d0e:2886:f540/128`)
+  - rule `allow-supabase-ipv6` (priority=1) w `public_app_allowlist`
+  - `aws_wafv2_ip_set.loadtest_allowlist` (empty, IPv4, CLOUDFRONT scope)
+  - rule `allow-loadtest-fleet` (priority=2) w `public_app_allowlist`
+- `terraform/envs/prod/outputs.tf` — `loadtest_waf_ip_set_id` + `loadtest_waf_ip_set_name`
+- `terraform/envs/prod/terraform.tfvars`:
+  - `cloudfront_domain = "kapsel-prod.makotest.pl"`
+  - `cloudfront_certificate_arn = "arn:aws:acm:us-east-1:969209893152:certificate/369af310-e1da-41db-b91c-4d7c4f1a3822"`
+  - `api_domain = "kapsel-api.prod.makotest.pl"`
+  - `api_cloudfront_certificate_arn = "arn:aws:acm:us-east-1:969209893152:certificate/3247fa27-4cab-476f-a025-a64ab509412c"`
+  - `alb_certificate_arn` = PLACEHOLDER (eu-west-1 cert nie dostarczony)
+
+**Blokery przed apply:**
+- Certy ACM `369af310` i `3247fa27` muszą być ISSUED (CloudFront us-east-1)
+- `alb_certificate_arn` eu-west-1 — nie ma wartości
+- `api_redis_secret_arn` — sufiks `REPLACE` do usunięcia
+- `api_image_tag`, `admin_panel_image_tag`, `bot_image_tag` — ustawić właściwe tagi
+
+### Loadtest fleet scripts
+
+**Branch:** `feat/prod-parity-uat`  
+**Commit:** `a7c6c43`
+
+Nowe skrypty w `scripts/`:
+- `loadtest-fleet-start.sh` — scale ASG do `--desired` (default 2), czeka na public IPs (timeout 300s), aktualizuje WAF `maspex-prod-loadtest-allowlist` (CLOUDFRONT, us-east-1) z /32 CIDRs
+- `loadtest-fleet-stop.sh` — czyści WAF IP set NAJPIERW (przed scale-down), potem ASG desired=0
+- Oba: `--dry-run` mode, `AWS_PROFILE=maspex-cli`
+- WAF empty list przez `--cli-input-json` (bash array z pustą listą jest zawodny)
+
+Terraform header w `uat/loadtest.tf` zaktualizowany — odsyła do skryptów zamiast ręcznych komend.
+
+---
+
 ## 2026-05-11 — Load test analysis + LT docker-compose fix
 
 ### Docker Compose fix (Launch Template)

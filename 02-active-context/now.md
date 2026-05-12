@@ -2,6 +2,45 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-12 — MASPEX: PROD parity + UAT autoscaling + loadtest scripts
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+
+ZROBIONE:
+  ✅ Preprod zaslepka v10 — branch: feat/preprod-zaslepka-polityka-prywatnosci
+     - PDF politykaprywatnosci w nginx container, image ECR zaslepka-v10
+     - service_admin_panel updated ✅; bot NIENAPRAWIONY (pre-existing broken TG)
+  ✅ UAT autoscaling ALBRequestCountPerTarget — APPLIED
+     - branch: feat/uat-autoscaling-alb-request-count (commit: ac6f94f)
+     - TargetValue=200, ScaleOut=30s, ScaleIn=300s
+  ✅ PROD parity — branch: feat/prod-parity-uat
+     - autoscaling ALBRequestCountPerTarget (jak UAT)
+     - Supabase pg_net IPv6 + loadtest-allowlist w WAF
+     - cert ARNs w tfvars: CloudFront admin (369af310) + API (3247fa27)
+     - terraform validate ✅
+  ✅ Loadtest fleet scripts: loadtest-fleet-start.sh + loadtest-fleet-stop.sh
+     - WAF update automatyczny (start: dodaje IPs, stop: czyści przed scale-down)
+
+BLOKERY PROD APPLY:
+  ⛔ ACM certy 369af310 + 3247fa27 muszą być ISSUED (CloudFront us-east-1)
+  ⛔ alb_certificate_arn eu-west-1 — nie dostarczony
+  ⛔ api_redis_secret_arn — sufiks REPLACE do korekty
+  ⛔ api/admin_panel/bot_image_tag — ustawić właściwe tagi
+
+BRANCHES (lokalne, nie pushed):
+  feat/preprod-zaslepka-polityka-prywatnosci
+  feat/uat-autoscaling-alb-request-count
+  feat/prod-parity-uat
+
+OTWARTE (load test):
+  → Post-test latency anomalia (460ms health checks >1h po teście)
+  → Memory retencja 67% avg po teście (baseline 13–18%)
+  → APM/distributed tracing przed testem produkcyjnym
+```
+
+---
+
 ## Update — 2026-05-09 — LLZ: Phase 1 correction — GLPI usuniete z slo-alerts
 
 ```
@@ -3125,4 +3164,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-12 07:20 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-12 09:08 — sesja aktywna*
