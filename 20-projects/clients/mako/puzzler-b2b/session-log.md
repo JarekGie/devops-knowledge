@@ -9,6 +9,30 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-12 — QA notifier fix + config audit (AzureAd + ExternalDashboardApi)
+
+### Config audit — AzureAd + ExternalDashboardApi
+
+**Trigger:** Sebastian Prościński (dev) przekazał zestaw wartości konfiguracyjnych dla DEV i QA.
+
+**Model konfiguracji:**
+- `AzureAd__*` — Secrets Manager (`infra-puzzler-b2b/{env}/azuread`) → ECS secrets injection (env vars nadpisują appsettings). Runtime source = SM.
+- `ExternalDashboardApi__*` — baked w Docker image przez `appsettings.{ENV}.json`. Brak ECS injection.
+
+**Wynik porównania:**
+- AzureAd DEV + QA w SM: zgodne ✅ (zero zmian)
+- ExternalDashboardApi DEV (`appsettings.DEV.json`): zgodne ✅ (zero zmian)
+- ExternalDashboardApi QA: brakowało w `appsettings.QA.json` — QA fallowała do `appsettings.json` (base), wartości identyczne, więc runtime OK; dodano dla explicitness
+
+**Zmiana:**
+- `Core/PBMS.Core.API/appsettings.QA.json` — dodano sekcję `ExternalDashboardApi`
+- Commit: `478d5694` (pbms-backend `dev`), pushed
+- Przy merge: remote miał już zmiany w tym pliku (nowe crony, `TestTokenAuth`, BaseUrl z trailing slash) — rozwiązano konflikt, zachowano remote + BaseUrl bez trailing slash per developer value
+
+**Redeployment:** nie wymagany — wartości były już poprawne przez fallback
+
+---
+
 ## 2026-05-12 — QA notifier down: missing secret key
 
 **Trigger:** sprawdzenie QA środowiska

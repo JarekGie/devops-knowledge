@@ -2,6 +2,40 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-12 — PUZZLER-B2B: QA notifier fix + config audit + RSHOP: FE Jenkinsfiles
+
+```
+PUZZLER-B2B:
+  REPO: ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+  REPO: ~/projekty/mako/pbms-backend (branch: dev)
+
+  ✅ QA notifier DOWN → naprawiony
+     - Root cause: SM secret infra-puzzler-b2b/qa/docdb brakował connection_string_notifier
+     - Task def rev 27 wdrożony 11:15 przez CI/CD (notifier-api-qa-156) — klucz w SM nie istniał
+     - Fix: put-secret-value + force-new-deployment → steady state 1/1
+     - TF był już aktualny (ignore_changes blokowało sync przy initial create bez klucza)
+
+  ✅ Config audit DEV+QA (AzureAd + ExternalDashboardApi):
+     - AzureAd DEV+QA: SM infra-puzzler-b2b/{env}/azuread — zgodne ✅
+     - ExternalDashboardApi DEV: appsettings.DEV.json — zgodne ✅
+     - ExternalDashboardApi QA: MISSING z appsettings.QA.json → dodane
+     - commit: 478d5694 (pbms-backend dev), pushed
+     - Runtime nie wymaga redeploya (wartości były już poprawne przez fallback z base)
+
+RSHOP FE JENKINSFILES:
+  REPO: ~/projekty/mako/eshop-cicd (branch: master)
+
+  ✅ r-shop-all.jenkinsfile — naprawiony (poprzednia sesja, commit: d4c5b77)
+  ✅ r-shop-all-dev-scan.jenkinsfile — naprawiony (commit: ef565fb)
+     - Oba: CfnStackName = dev-ECSStack-1BLAWHL0P6JKO, preflight gate, change-set guard
+
+STAN QA (2026-05-12 ~12:30):
+  8/9 serwisów 1/1, worker 0/0 (intentional) — wszystko OK
+  DocumentDB: available, ALB: healthy
+```
+
+---
+
 ## Update — 2026-05-12 — MASPEX: PROD parity + UAT autoscaling + loadtest scripts
 
 ```
@@ -3164,4 +3198,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-12 12:35 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-12 20:42 — sesja aktywna*
