@@ -63,8 +63,7 @@
               "title": "maspex-loadtest-asg"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -248,7 +247,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "b8175181a6d04652",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "_chatgpt/context-packs/maspex-loadtest-asg.md",
     "CLAUDE.md",
