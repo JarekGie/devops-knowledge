@@ -65,7 +65,8 @@
 | Czas UTC | Czas CEST | Komponent | Zdarzenie | Znaczenie |
 |----------|-----------|-----------|-----------|-----------|
 | ~09:15 | ~11:15 | ECS/ASG | Scale-out: desired → 15 (max) | Pre-test load lub poprzedni test |
-| ~10:11–10:44 | ~12:11–12:44 | ECS/ASG | Scale-in: 15 → 14 → 13 → 12 → 11 → 10 → 9 | Cooldown po poprzednim obciążeniu |
+| **10:11** | **12:11** | **CloudTrail** | **`makolab-ci` (IP 195.117.107.110, macOS arm64, aws-cli/2.33.22) wywołuje `UpdateService forceNewDeployment=True` na `maspex-api`** | **Trigger rolling deployu** |
+| ~10:11–10:44 | ~12:11–12:44 | ECS/ASG | Scale-in: 15 → 14 → 13 → 12 → 11 → 10 → 9 | Cooldown po poprzednim obciążeniu; ECS czeka na stabilność zanim rozpocznie rolling |
 | 12:15 | 14:15 | Test | Początek okna testu; CF: 66 req / 5 min; ALB: 66 req / 5 min | Ruch minimalny |
 | 12:15–12:40 | 14:15–14:40 | Redis | CurrConnections spada z 32 → 12–16, potem wraca do 31 | Odłączenie tasków podczas scale-in |
 | 12:45 | 14:45 | CF/ALB | CF: 30 818 req / 5 min (~103 req/s); ALB: 18 317 req (~61 req/s) | Ramp-up testu |
@@ -427,7 +428,15 @@ Regularny rytm 10 wpisów / 5 min → normalny cron. Skok do 34 w 15:05 CEST —
 
 **Główna przyczyna problemów:** Rolling deployment `maspex-api` (TD :60 → :61, obraz `coreapp-uat-612`) wykonany **w trakcie load testu** pod szczytowym ruchem (6 665 req/s na ALB).
 
-> **Weryfikacja:** TD :61 zarejestrowany przez `makolab-ci` (CI/CD pipeline) dnia 2026-05-13 13:18 CEST. Nie zawiera SUPABASE_JWT_SECRET — **nie był to deployment DevOps**. Wdrożenie na serwis nastąpiło 2026-05-14 o 15:07 CEST — prawdopodobnie ręczne `force-new-deployment` lub opóźniony rollout z poprzedniego dnia. Do ustalenia z dev teamem / właścicielem CI/CD kto i kiedy triggerował aktualizację serwisu.
+> **Weryfikacja (CloudTrail):**
+> - **Obraz ECR:** zarejestrowany przez CI/CD pipeline jako `coreapp-uat-612` dnia **2026-05-13 13:18 CEST**. Przez 26 godzin leżał w ECR bez deployu.
+> - **Trigger deployu:** **2026-05-14 12:11 CEST** — CloudTrail rejestruje `UpdateService` z `forceNewDeployment=True` dla `maspex-api` na klastrze `maspex-uat`.
+>   - User: `makolab-ci` (IAM user używany przez CI/CD i operatorów MakoLab)
+>   - Source IP: `195.117.107.110` (biuro MakoLab — nie AWS/GitLab runner)
+>   - UserAgent: `aws-cli/2.33.22 md/awscrt#0.31.1 ua/2.1 os/macos#25.0.0 md/arch#arm64`
+>   - TaskDefinition: **nie ustawione** (force-new-deployment na bieżącej TD)
+> - **Opóźnienie 2h54min (12:11 → 15:07):** ECS nie mógł natychmiast zrolować tasków, bo autoscaling równolegle skalował w dół (15→9). Rolling update czekał na stabilność desired count — pierwsze nowe kontenery pojawiły się dopiero gdy scale-in zakończył się o 12:44 i ECS miał miejsce na uruchomienie replacements.
+> - **Wniosek:** Ktoś w biurze MakoLab ręcznie wywołał `aws ecs update-service --force-new-deployment` o 12:11 CEST. Nie był to deployment DevOps (TD :61 bez SUPABASE_JWT_SECRET, `terraform apply` na UAT nie był uruchomiony). **Do ustalenia z teamem: kto i dlaczego o 12:11 wywołał force-new-deployment dzień po tym jak CI/CD wgrał obraz?**
 
 Deployment spowodował:
 1. Jednoczesny drain 7 z 9 tasków → redukcja efektywnej pojemności o ~78%
