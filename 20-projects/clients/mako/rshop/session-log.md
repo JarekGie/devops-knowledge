@@ -123,3 +123,75 @@ Naprawiono FE pipeline analogicznie do wcześniejszej poprawki BE. Poprzedni FE 
 - [ ] ECS deploy failure — zbadać przyczynę przed kolejnym deployem
 - [ ] Jenkins: preflight check stanu CFN stacka przed deploy (P0)
 - [ ] Zwiększyć retencję `/ecs/rshop-dev` z 1 dnia na 14+ dni (P0)
+
+---
+
+## 2026-05-14 — rshop dev FE deploy separation / pre-deploy verification
+
+**Zakres:** repo `~/projekty/mako/eshop-cicd`, Jenkinsfile `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile`, env `dev`.
+
+**Problem historyczny:**
+- FE deploy aktualizował parent nested stack `dev-ECSStack-1BLAWHL0P6JKO`.
+- Parent orchestration uruchamiał rollout nested stacków `api` i `backoffice`.
+- ECS próbował pobrać nieistniejące obrazy `rshopapp-dev:api.650` i `rshopapp-dev:backoffice.650`.
+- Skutek: `CannotPullContainerError`, CFN rollback parent stacka, mimo że fronty były poprawne.
+
+**Naprawa Jenkinsfile:**
+- Commit pushed do `origin/master`:
+  - `aff7f1dc675b2a2c532344c4bb3771a95015d618`
+  - message: `fix(rshop-fe): deploy dev frontend via child CloudFormation stacks only`
+- Dev path:
+  - loguje `DEV FE deploy uses child stacks only`
+  - odkrywa fizyczne child stacki przez `describe-stack-resources` na parent stacku
+  - tworzy osobne ChangeSety tylko dla:
+    - `FrontendRenault`
+    - `FrontendDacia`
+  - używa `--stack-name ${cfg.stackName}` przy `create-change-set`
+  - używa `--stack-name ${target.stackName}` przy `execute-change-set`
+  - ma guard przed parent stackiem i przed logical IDs `api` / `backoffice`
+  - blokuje empty/no-op ChangeSet przed execute
+  - polluje child stacki custom pollingiem, timeout 4h
+- Non-dev path nie był celowo refaktorowany; parent `CfnStackName` nadal występuje w ścieżce `else`.
+
+**READ-ONLY verification przed kolejnym deployem FE:**
+- AWS profile: `rshop`
+- Region: `eu-central-1`
+- Parent stack:
+  - `dev-ECSStack-1BLAWHL0P6JKO = UPDATE_ROLLBACK_COMPLETE`
+  - `LastUpdated = 2026-05-12T21:06:54Z`
+- Nested stack resources z parenta:
+  - `FrontendRenault = UPDATE_COMPLETE`
+  - `FrontendDacia = UPDATE_COMPLETE`
+  - `api = UPDATE_COMPLETE`
+  - `backoffice = UPDATE_COMPLETE`
+- Fizyczne FE child stacki:
+  - `dev-ECSStack-1BLAWHL0P6JKO-FrontendRenault-PO8N6MN3IGSI = UPDATE_COMPLETE`
+  - `dev-ECSStack-1BLAWHL0P6JKO-FrontendDacia-1F7C2JWZJFSKZ = UPDATE_COMPLETE`
+- ECS services:
+  - `rshop-dev-frontend-svc1`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-frontend-task:1910`
+  - `rshop-dev-frontend-svc2`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-frontend-task:1911`
+  - `rshop-dev-api-svc`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-api-task:1067`
+  - `rshop-dev-backoffice-svc`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-backoffice-task:1066`
+- ALB target health frontów:
+  - `dev-frontend-ALB-TG`: target `10.0.2.127:3000`, `healthy`
+  - `dev-frontend2-ALB-TG`: target `10.0.1.40:3000`, `healthy`
+- Git remote:
+  - `origin/master = aff7f1dc675b2a2c532344c4bb3771a95015d618`
+  - remote Jenkinsfile zawiera child-stack-only logikę.
+
+**Werdykt:** `GO` dla kolejnego FE deploya, pod warunkiem że Jenkins checkoutuje commit `aff7f1dc675b2a2c532344c4bb3771a95015d618`.
+
+**Warunki GO w Jenkins console:**
+- Checkout revision musi być `aff7f1dc675b2a2c532344c4bb3771a95015d618`.
+- Log musi zawierać `DEV FE deploy uses child stacks only`.
+- ChangeSet names muszą mieć postać:
+  - `changeSet-<build>-FrontendRenault`
+  - `changeSet-<build>-FrontendDacia`
+- Nie może pojawić się:
+  - `create-change-set --stack-name dev-ECSStack-1BLAWHL0P6JKO`
+  - `execute-change-set --stack-name dev-ECSStack-1BLAWHL0P6JKO`
+
+**Pozostałe ryzyka:**
+- Jenkins Replay, job-level script override albo checkout innego commita/brancha może ominąć patch.
+- Jeśli child template nie ma parametru `frontend`, ChangeSet failnie przed execute; nie powinno to dotknąć `api` ani `backoffice`.
+- Historyczne CFN events parenta nadal zawierają rollback z `api/backoffice`, ale aktualny runtime jest terminalny i zdrowy.
