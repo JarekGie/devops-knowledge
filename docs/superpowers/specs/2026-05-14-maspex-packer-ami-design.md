@@ -335,21 +335,36 @@ resource "aws_launch_template" "loadtest" {
 
 ## 11. InfluxDB Version Decision
 
-**Stay on InfluxDB 1.8.** Reasons:
-- k6 native output (`K6_OUT=influxdb=http://...`) uses InfluxDB 1.x line protocol
-- InfluxDB 2.x requires `xk6-output-influxdb` (custom k6 binary rebuild)
-- Grafana dashboard 13719 is designed for InfluxDB 1.x datasource
-- No operational benefit from migration at this stage
+**InfluxDB 2.7** (upgraded from initial 1.8 assumption).
+
+k6 integration: **v1 compatibility API** — no custom k6 binary needed.
+- k6 native output `K6_OUT=influxdb=http://k6user:k6pass@localhost:8086/k6` hits the `/write?db=k6` v1 compat endpoint
+- InfluxDB 2.x maps `db=k6` → bucket `k6` automatically
+- v1 auth (`k6user:k6pass`) created by bootstrap.sh after InfluxDB init via `influx v1 auth create`
+- Grafana dashboard 13719 (InfluxQL) continues to work via v1 compat datasource
+
+**InfluxDB credentials policy:** admin token, admin password, and k6 v1 auth password are fixed internal values baked into docker-compose. Rationale: InfluxDB holds only test metrics (no business data), is accessible only from the office network (SG), and data is ephemeral per instance. These are tooling credentials, not secrets.
+
+**Grafana datasource:** runtime-rendered (needs the admin token to talk to InfluxDB 2.x). A template is baked into AMI; bootstrap.sh renders the final file into `/opt/loadtest/runtime/` and mounts it into the Grafana container via docker-compose volume override.
 
 ---
 
-## 12. Open Items Before Implementation
+## 12. Source Files Location
+
+All needed files are in `infra-maspex/testy-qa/`:
+- `generate-tokens-fn.js` — has hardcoded `JWT_SECRET` + `JWT_KID` (must be fixed before commit)
+- `docker-compose.yaml` — InfluxDB 2.7 base (has placeholder credentials, to be cleaned up)
+- `kapsel.zip` — contains all k6 scripts: `kapsel.js`, `kapsel-clean.js`, `kapsel-main-page.js`, `kapsel-spike.js`, `kapsel-submit.js`, `kapsel-vote.js`, `kapsel-with-fe.js`
+
+## 13. Open Items Before Implementation
 
 | Item | Action | Priority |
 |------|--------|----------|
-| k6 scripts on live instances | Copy to repo under `scripts/loadtest/k6/` | HIGH — blocks Packer build |
-| `generate-tokens-fn.js` | Copy to repo, add env var input support (`JWT_SECRET`, `JWT_KID`), add `package-lock.json` | HIGH — blocks bootstrap |
-| `JWT_KID` in Secrets Manager | Add to `maspex/uat/api` secret | HIGH — blocks bootstrap |
+| Install Packer locally | `brew tap hashicorp/tap && brew install hashicorp/tap/packer` | HIGH — blocks build |
+| Fix `generate-tokens-fn.js` | Replace hardcoded `JWT_SECRET`/`JWT_KID` constants with `process.env.JWT_SECRET` / `process.env.JWT_KID` + guard | HIGH — security blocker |
+| Extract k6 scripts | Unzip `kapsel.zip` → `scripts/loadtest/k6/` (skip `tokens.json` — not baked) | HIGH — blocks Packer build |
+| Move `docker-compose.yaml` | From `testy-qa/` → `scripts/loadtest/`, clean placeholder credentials, add volume for runtime datasource | HIGH |
+| Grafana datasource template | Create `grafana/provisioning/datasources/influxdb-template.yaml` with `${INFLUXDB_ADMIN_TOKEN}` placeholder | HIGH |
+| `JWT_KID` in Secrets Manager | Add `JWT_KID` to `maspex/uat/api` secret | HIGH — blocks bootstrap |
 | CMK on secret? | Check if `maspex/uat/api` uses CMK — if yes, add `kms:Decrypt` to IAM | MEDIUM |
-| Packer install | Install locally (Homebrew or tfenv equivalent) | HIGH — blocks build |
 | S3 bucket for results | Decide: create now or defer | LOW — not blocking |
