@@ -292,6 +292,7 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "docs/superpowers/specs/2026-05-14-maspex-packer-ami-design.md",
     "20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
@@ -317,7 +318,6 @@
     "20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md",
     "20-projects/clients/mako/rshop/rca-ecs-deploy-failure-2026-05-08.md",
     "20-projects/clients/mako/maspex/session-log.md",
-    "20-projects/clients/mako/maspex/redis-connection-change-2026-05-08.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
