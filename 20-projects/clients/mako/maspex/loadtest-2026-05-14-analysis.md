@@ -23,7 +23,7 @@
 | Supabase/DB bottleneck | Brak bezpośrednich danych; pośredni sygnał: `SocketError: other side closed` w /zwycieskie — do weryfikacji |
 
 **Najważniejszy wniosek:** Load test ujawnił dwa niezależne problemy:
-1. Ktoś wdrożył nową wersję aplikacji (`coreapp-uat-612`, TD :61) **w trakcie** load testu. Rolling deployment 7 z 9 tasków pod szczytowym ruchem (6665 req/s) był przyczyną kaskady błędów.
+1. **Deployment CI/CD (`makolab-ci`) kolidował z load testem.** TD :61 (`coreapp-uat-612`) zarejestrowany był przez pipeline 2026-05-13 — wdrożenie na serwis nastąpiło jednak 2026-05-14 o 15:07 CEST, dokładnie w szczycie testu. **Nie był to deployment wywołany przez zespół DevOps** (ani przez tę sesję roboczą). Deployment DevOps (SUPABASE_JWT_SECRET, commit `94218d9`) NIE został jeszcze zaaplikowany — `terraform apply` na UAT nie był uruchomiony.
 2. Autoscaling **nie reaguje** na load tescie przy 9 taskach — bo próg dotyczy średniej CPU (60%), a przy 9 taskach rozproszone obciążenie trzyma średnią poniżej progu, mimo że indywidualne taski biją 100% CPU.
 
 ---
@@ -426,6 +426,8 @@ Regularny rytm 10 wpisów / 5 min → normalny cron. Skok do 34 w 15:05 CEST —
 ### Ocena jednoznaczna
 
 **Główna przyczyna problemów:** Rolling deployment `maspex-api` (TD :60 → :61, obraz `coreapp-uat-612`) wykonany **w trakcie load testu** pod szczytowym ruchem (6 665 req/s na ALB).
+
+> **Weryfikacja:** TD :61 zarejestrowany przez `makolab-ci` (CI/CD pipeline) dnia 2026-05-13 13:18 CEST. Nie zawiera SUPABASE_JWT_SECRET — **nie był to deployment DevOps**. Wdrożenie na serwis nastąpiło 2026-05-14 o 15:07 CEST — prawdopodobnie ręczne `force-new-deployment` lub opóźniony rollout z poprzedniego dnia. Do ustalenia z dev teamem / właścicielem CI/CD kto i kiedy triggerował aktualizację serwisu.
 
 Deployment spowodował:
 1. Jednoczesny drain 7 z 9 tasków → redukcja efektywnej pojemności o ~78%
