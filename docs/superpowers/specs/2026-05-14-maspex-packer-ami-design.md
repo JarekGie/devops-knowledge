@@ -36,8 +36,8 @@ Rejected alternatives:
 |-------|----------|
 | System tools | Docker CE (pinned), Docker Compose plugin (pinned), k6 (pinned version from Grafana RPM repo), jq, htop, nmap-ncat, Node.js (LTS) |
 | Workspace | `/opt/loadtest/` owned by `ec2-user` |
-| Stack | `docker-compose.yml` — InfluxDB `2.7` + Grafana (pinned minor version); internal fixed credentials for InfluxDB init |
-| Grafana provisioning | `datasources/influxdb-template.yaml` (UID: `dfm0hl1zdovswd`, template with `${INFLUXDB_ADMIN_TOKEN}` placeholder) |
+| Stack | `docker-compose.yml` — InfluxDB `1.8` + Grafana (pinned minor version); no auth required |
+| Grafana provisioning | `datasources/influxdb.yaml` (UID: `dfm0hl1zdovswd`, fully baked-in, no runtime override) |
 | Grafana dashboards | `k6-load-testing-by-groups.json` (Grafana Labs ID 13719) |
 | k6 scenarios | `k6/` — kapsel.js, kapsel-spike.js, kapsel-submit.js, kapsel-vote.js, kapsel-main-page.js, kapsel-with-fe.js |
 | Token generator | `token-generator/generate-tokens-fn.js` + `package.json` + `package-lock.json` + `node_modules/` (pre-installed via `npm ci --production`) |
@@ -98,8 +98,6 @@ packer/
 ├── bootstrap.sh
 └── runtime/                               # created by bootstrap.sh, chmod 700
     ├── tokens.json                        # chmod 600 — generated JWT tokens
-    ├── influxdb-datasource.yaml           # chmod 600 — rendered Grafana datasource with token
-    ├── k6-out.env                         # K6_OUT=influxdb=http://k6user:pass@localhost:8086/k6
     └── bootstrap.status                   # "READY 2026-05-14T10:00:00Z"
 ```
 
@@ -128,39 +126,19 @@ Phase 2: Token generation
   chmod 600 /opt/loadtest/runtime/tokens.json
   unset JWT_SECRET JWT_KID
 
-Phase 3: Render Grafana datasource (template baked-in, token from docker-compose env)
-  INFLUXDB_ADMIN_TOKEN="<fixed-value-from-docker-compose>"
-  sed "s|\${INFLUXDB_ADMIN_TOKEN}|$INFLUXDB_ADMIN_TOKEN|g" \
-    /opt/loadtest/grafana/provisioning/datasources/influxdb-template.yaml \
-    > /opt/loadtest/runtime/influxdb-datasource.yaml
-  chmod 600 /opt/loadtest/runtime/influxdb-datasource.yaml
-
-Phase 4: Start stack
+Phase 3: Start stack
   cd /opt/loadtest
   docker compose up -d
-  # docker-compose.yml mounts /opt/loadtest/runtime/influxdb-datasource.yaml
-  # into Grafana as /etc/grafana/provisioning/datasources/influxdb.yaml
+  # Grafana datasource fully baked-in — no runtime rendering needed
 
-Phase 5: InfluxDB v1 compat auth (for k6 native output)
-  wait_for_influx_ready()  # retry loop on http://localhost:8086/health
-  BUCKET_ID=$(docker exec influxdb influx bucket list --name k6 --json \
-    --token "$INFLUXDB_ADMIN_TOKEN" | jq -r '.[0].id')
-  docker exec influxdb influx v1 auth create \
-    --username k6user \
-    --password k6pass-$(openssl rand -hex 8) \
-    --write-bucket "$BUCKET_ID" \
-    --host http://localhost:8086 \
-    --token "$INFLUXDB_ADMIN_TOKEN"
-  # Saves K6_OUT value to runtime/k6-out.env for operator use:
-  echo "K6_OUT=influxdb=http://k6user:$K6_PASS@localhost:8086/k6" \
-    > /opt/loadtest/runtime/k6-out.env
-
-Phase 6: Health checks
+Phase 4: Health checks + InfluxDB database init
   wait_for_healthy() {
     for i in $(seq 20); do curl -sf "$1" && return 0; sleep 3; done; return 1
   }
-  wait_for_healthy http://localhost:8086/health
+  wait_for_healthy http://localhost:8086/ping
   wait_for_healthy http://localhost:3000/api/health
+  docker exec $(docker compose ps -q influxdb) \
+    influx -execute "CREATE DATABASE k6"
 
 Phase 5: Write status
   echo "READY $(date -u +%Y-%m-%dT%H:%M:%SZ)" \
@@ -358,17 +336,16 @@ resource "aws_launch_template" "loadtest" {
 
 ## 11. InfluxDB Version Decision
 
-**InfluxDB 2.7** (upgraded from initial 1.8 assumption).
+**InfluxDB 1.8** — confirmed final decision.
 
-k6 integration: **v1 compatibility API** — no custom k6 binary needed.
-- k6 native output `K6_OUT=influxdb=http://k6user:k6pass@localhost:8086/k6` hits the `/write?db=k6` v1 compat endpoint
-- InfluxDB 2.x maps `db=k6` → bucket `k6` automatically
-- v1 auth (`k6user:k6pass`) created by bootstrap.sh after InfluxDB init via `influx v1 auth create`
-- Grafana dashboard 13719 (InfluxQL) continues to work via v1 compat datasource
+Rationale:
+- k6 native output (`K6_OUT=influxdb=http://localhost:8086/k6`) works without any auth or extra config
+- Grafana datasource (UID `dfm0hl1zdovswd`) fully baked-in — no runtime rendering
+- Grafana dashboard 13719 designed for InfluxDB 1.x — works out of the box
+- No credentials to manage, no v1 compat layer, no bootstrap complexity
+- `testy-qa/docker-compose.yaml` (InfluxDB 2.7) was a draft — discarded
 
-**InfluxDB credentials policy:** admin token, admin password, and k6 v1 auth password are fixed internal values baked into docker-compose. Rationale: InfluxDB holds only test metrics (no business data), is accessible only from the office network (SG), and data is ephemeral per instance. These are tooling credentials, not secrets.
-
-**Grafana datasource:** runtime-rendered (needs the admin token to talk to InfluxDB 2.x). A template is baked into AMI; bootstrap.sh renders the final file into `/opt/loadtest/runtime/` and mounts it into the Grafana container via docker-compose volume override.
+Bootstrap with 1.8 is: `docker compose up -d` → `CREATE DATABASE k6` → done.
 
 ---
 
@@ -386,8 +363,7 @@ All needed files are in `infra-maspex/testy-qa/`:
 | Install Packer locally | `brew tap hashicorp/tap && brew install hashicorp/tap/packer` | HIGH — blocks build |
 | Fix `generate-tokens-fn.js` | Replace hardcoded `JWT_SECRET`/`JWT_KID` constants with `process.env.JWT_SECRET` / `process.env.JWT_KID` + guard | HIGH — security blocker |
 | Extract k6 scripts | Unzip `kapsel.zip` → `scripts/loadtest/k6/` (skip `tokens.json` — not baked) | HIGH — blocks Packer build |
-| Move `docker-compose.yaml` | From `testy-qa/` → `scripts/loadtest/`, clean placeholder credentials, add volume for runtime datasource | HIGH |
-| Grafana datasource template | Create `grafana/provisioning/datasources/influxdb-template.yaml` with `${INFLUXDB_ADMIN_TOKEN}` placeholder | HIGH |
+| `docker-compose.yml` | Already correct in `scripts/loadtest/` (InfluxDB 1.8, no auth). `testy-qa/docker-compose.yaml` discarded. | — |
 | `JWT_KID` in Secrets Manager | Add `JWT_KID` to `maspex/uat/api` secret | HIGH — blocks bootstrap |
 | CMK on secret? | Check if `maspex/uat/api` uses CMK — if yes, add `kms:Decrypt` to IAM | MEDIUM |
 | S3 bucket for results | Decide: create now or defer | LOW — not blocking |
