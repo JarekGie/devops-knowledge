@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Check Mako infrastructure Maspex context"
+              "title": "Terminal: ✳ Check Mako infrastructure Maspex context"
             }
           }
         ]
@@ -236,6 +236,7 @@
   },
   "active": "7c26723e425838d3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
     "20-projects/clients/mako/maspex/loadtest-2026-05-14-analysis-test2.md",
     "20-projects/clients/mako/maspex/loadtest-2026-05-14-analysis.md",
@@ -261,7 +262,6 @@
     "20-projects/clients/mako/maspex/session-log.md",
     "20-projects/clients/mako/maspex/redis-connection-change-2026-05-08.md",
     "20-projects/clients/mako/drp-tfs/drp-tfs-context.md",
-    "20-projects/clients/mako/aws-cloud-platform/break-glass-framework.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
