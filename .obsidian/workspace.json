@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Enable Enhanced Container Insights for Maspex UAT load test diagnostics"
+              "title": "Terminal: ⠂ Enable Enhanced Container Insights for Maspex UAT load test diagnostics"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ⠂ Build Packer AMI for load test generators with runtime bootstrap"
             }
           },
           {
