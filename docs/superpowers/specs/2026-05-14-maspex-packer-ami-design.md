@@ -36,8 +36,8 @@ Rejected alternatives:
 |-------|----------|
 | System tools | Docker CE (pinned), Docker Compose plugin (pinned), k6 (pinned version from Grafana RPM repo), jq, htop, nmap-ncat, Node.js (LTS) |
 | Workspace | `/opt/loadtest/` owned by `ec2-user` |
-| Stack | `docker-compose.yml` — InfluxDB `1.8` + Grafana (pinned minor version) |
-| Grafana provisioning | `datasources/influxdb.yaml` (UID: `dfm0hl1zdovswd`, fully baked-in, no runtime override needed) |
+| Stack | `docker-compose.yml` — InfluxDB `2.7` + Grafana (pinned minor version); internal fixed credentials for InfluxDB init |
+| Grafana provisioning | `datasources/influxdb-template.yaml` (UID: `dfm0hl1zdovswd`, template with `${INFLUXDB_ADMIN_TOKEN}` placeholder) |
 | Grafana dashboards | `k6-load-testing-by-groups.json` (Grafana Labs ID 13719) |
 | k6 scenarios | `k6/` — kapsel.js, kapsel-spike.js, kapsel-submit.js, kapsel-vote.js, kapsel-main-page.js, kapsel-with-fe.js |
 | Token generator | `token-generator/generate-tokens-fn.js` + `package.json` + `package-lock.json` + `node_modules/` (pre-installed via `npm ci --production`) |
@@ -98,6 +98,8 @@ packer/
 ├── bootstrap.sh
 └── runtime/                               # created by bootstrap.sh, chmod 700
     ├── tokens.json                        # chmod 600 — generated JWT tokens
+    ├── influxdb-datasource.yaml           # chmod 600 — rendered Grafana datasource with token
+    ├── k6-out.env                         # K6_OUT=influxdb=http://k6user:pass@localhost:8086/k6
     └── bootstrap.status                   # "READY 2026-05-14T10:00:00Z"
 ```
 
@@ -126,18 +128,39 @@ Phase 2: Token generation
   chmod 600 /opt/loadtest/runtime/tokens.json
   unset JWT_SECRET JWT_KID
 
-Phase 3: Start stack
+Phase 3: Render Grafana datasource (template baked-in, token from docker-compose env)
+  INFLUXDB_ADMIN_TOKEN="<fixed-value-from-docker-compose>"
+  sed "s|\${INFLUXDB_ADMIN_TOKEN}|$INFLUXDB_ADMIN_TOKEN|g" \
+    /opt/loadtest/grafana/provisioning/datasources/influxdb-template.yaml \
+    > /opt/loadtest/runtime/influxdb-datasource.yaml
+  chmod 600 /opt/loadtest/runtime/influxdb-datasource.yaml
+
+Phase 4: Start stack
   cd /opt/loadtest
   docker compose up -d
+  # docker-compose.yml mounts /opt/loadtest/runtime/influxdb-datasource.yaml
+  # into Grafana as /etc/grafana/provisioning/datasources/influxdb.yaml
 
-Phase 4: Health checks (idempotent, retry loop)
+Phase 5: InfluxDB v1 compat auth (for k6 native output)
+  wait_for_influx_ready()  # retry loop on http://localhost:8086/health
+  BUCKET_ID=$(docker exec influxdb influx bucket list --name k6 --json \
+    --token "$INFLUXDB_ADMIN_TOKEN" | jq -r '.[0].id')
+  docker exec influxdb influx v1 auth create \
+    --username k6user \
+    --password k6pass-$(openssl rand -hex 8) \
+    --write-bucket "$BUCKET_ID" \
+    --host http://localhost:8086 \
+    --token "$INFLUXDB_ADMIN_TOKEN"
+  # Saves K6_OUT value to runtime/k6-out.env for operator use:
+  echo "K6_OUT=influxdb=http://k6user:$K6_PASS@localhost:8086/k6" \
+    > /opt/loadtest/runtime/k6-out.env
+
+Phase 6: Health checks
   wait_for_healthy() {
     for i in $(seq 20); do curl -sf "$1" && return 0; sleep 3; done; return 1
   }
-  wait_for_healthy http://localhost:8086/ping
+  wait_for_healthy http://localhost:8086/health
   wait_for_healthy http://localhost:3000/api/health
-  docker exec $(docker compose ps -q influxdb) \
-    influx -execute "CREATE DATABASE IF NOT EXISTS k6"
 
 Phase 5: Write status
   echo "READY $(date -u +%Y-%m-%dT%H:%M:%SZ)" \
