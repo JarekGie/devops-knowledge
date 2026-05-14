@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ⠐ Build Packer AMI for load test generators with runtime bootstrap"
             }
           },
           {
@@ -133,8 +133,7 @@
               "title": "2026-05-14-maspex-packer-ami-design"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -318,7 +317,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "612e6b90b81e68b4",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "docs/superpowers/specs/2026-05-14-maspex-packer-ami-design.md",
     "20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md",
