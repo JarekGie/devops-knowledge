@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Enable Enhanced Container Insights for Maspex UAT load test diagnostics"
+              "title": "Terminal: ✳ Enable Enhanced Container Insights for Maspex UAT load test diagnostics"
             }
           },
           {
@@ -335,6 +335,7 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/enhanced-container-insights-uat.md",
     "docs/superpowers/specs/2026-05-14-maspex-packer-ami-design.md",
     "docs/superpowers/plans/2026-05-14-maspex-packer-ami.md",
     "20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md",
@@ -360,7 +361,6 @@
     "20-projects/clients/mako/rshop/session-log.md",
     "20-projects/clients/mako/rshop/acm-cert-migration-2026-05-08.md",
     "20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md",
-    "20-projects/clients/mako/rshop/rca-ecs-deploy-failure-2026-05-08.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",

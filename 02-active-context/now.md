@@ -36,6 +36,34 @@ STAN QA (2026-05-12 ~12:30):
 
 ---
 
+## Update — 2026-05-14 — MASPEX: Enhanced Container Insights — IaC gotowe, czeka na apply
+
+```
+REPO:  ~/projekty/mako/aws-projects/infra-maspex
+PLIK:  terraform/envs/uat/main.tf
+
+ODKRYCIA:
+  - Standard Container Insights: WŁĄCZONE (value=enabled, potwierdzone --include SETTINGS)
+  - Per-task granularity: BRAK (tylko agregaty serwisowe — to dlatego max=96% ale nie wiemy który task)
+  - Enhanced CI: zmienia to — dodaje dimension TaskId do CpuUtilized/MemoryUtilized
+
+IaC ZMIANA (gotowe, czeka na terraform apply):
+  module "ecs_cluster" { container_insights = "enhanced" }
+  TYLKO UAT — prod i preprod bez zmian
+
+NASTĘPNY KROK:
+  cd ~/projekty/mako/aws-projects/infra-maspex/terraform/envs/uat
+  terraform plan -target=module.ecs_cluster
+  terraform apply -target=module.ecs_cluster
+
+  Weryfikacja po apply:
+  aws ecs describe-clusters --clusters maspex-uat --include SETTINGS --profile maspex-cli --region eu-west-1
+
+VAULT: 20-projects/clients/mako/maspex/enhanced-container-insights-uat.md
+```
+
+---
+
 ## Update — 2026-05-14 — MASPEX: Load test walidacyjny pre-scale — ZAKOŃCZONY
 
 ```
@@ -3243,4 +3271,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-14 23:41 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-15 00:00 — sesja aktywna*

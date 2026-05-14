@@ -4,6 +4,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-14 — Enhanced Container Insights UAT — discovery + IaC change
+
+**Cel:** włączyć per-task metryki CPU/memory, żeby zidentyfikować hotspot z anomalii Memory avg 45% / max 96%.
+
+**Odkrycia:**
+- Standard CI był już włączony (`containerInsights=enabled` na klastrze)
+- `describe-clusters` bez `--include SETTINGS` zwraca `settings: []` — gotcha
+- Namespace `ECS/ContainerInsights` publikuje metryki, ALE tylko na poziomie ServiceName/TaskDefinitionFamily — nie ma TaskId dimension
+- Enhanced CI (`value=enhanced`) doda TaskId dimension → per-task CPU + memory
+
+**Zmiana IaC:**
+- Plik: `terraform/envs/uat/main.tf` — `module "ecs_cluster"`: `container_insights = "enhanced"`
+- Branch: `analysis/maspex-load-test-2026-05-11` (obecny)
+- Tylko UAT, prod/preprod bez zmian
+
+**Status:** czeka na `terraform apply -target=module.ecs_cluster` w UAT env
+
+**Vault:** `enhanced-container-insights-uat.md` — pełna analiza + plan walidacji na kolejny load test
+
+---
+
 ## 2026-05-11/12 — Preprod zaslepka v10 + UAT autoscaling + PROD parity + loadtest scripts
 
 ### Preprod zaslepka v10 — PDF politykaprywatnosci
