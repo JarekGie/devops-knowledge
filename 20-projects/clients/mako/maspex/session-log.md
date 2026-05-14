@@ -500,4 +500,76 @@ Pełna dokumentacja: `redis-connection-change-2026-05-08.md`
 **Następna sesja:**
 - [ ] Zweryfikować logi po obciążeniu — czy VOTE_CACHE_WRITETHROUGH_FAIL zniknęły
 - [ ] Ewentualny load test smoke po zmianie Redis endpoint
+
+---
+
+## 2026-05-14 — Load test observability fix + PROD first terraform apply
+
+### Load test observability pipeline (k6 → InfluxDB → Grafana)
+
+- Docker Compose na EC2 UAT load generators poprawiony: dodano `INFLUXDB_DB=k6`, named volumes
+- Grafana file provisioning: datasource YAML (UID `dfm0hl1zdovswd`), dashboard provider YAML
+- Dashboard JSON (`k6-load-testing-by-groups.json`, 67KB) przeniesiony z EC2 instancji 2 przez gzip+base64 i zapisany do repo
+- Pliki dodane do `scripts/loadtest/` w repo
+- SSM deployment obu instancji ✅
+
+### Port 8086 między generatorami
+
+- Problem: Karol używał publicznego IP → timeout przez IGW (SG self-reference nie działa na publiczne IP)
+- Fix: użyć prywatnego IP `10.44.0.211` (instancja 1) — SG self-reference działa tylko na private routing
+- Brak zmian infrastruktury — tylko operacyjna wiedza
+
+### Skrypty floty — prywatne IP
+
+- `loadtest-ctrl.ps1`: dodano wyświetlanie prywatnych IP i `K6_OUT` hint po uruchomieniu floty
+- `loadtest-fleet-start.sh`: analogicznie dodano `get_instance_private_ips()` i sekcję z K6_OUT hint
+- Branch `feat/prod-parity-uat`, MR !15, merge do main ✅
+
+### GitLab MR operations
+
+- Wypchnięto branch `feat/prod-parity-uat`, MR !15 stworzony i merged ✅
+- MR !12 (Draft by Kmicic) un-drafted i merged ✅
+- Merge conflict `loadtest-ctrl.ps1` (add/add): rozwiązany `--ours` (nasze zmiany to superset)
+- Local sync po merge wykonany
+
+### PROD terraform apply — pierwsze uruchomienie
+
+**Branch:** `analysis/maspex-load-test-2026-05-11` (tylko tfvars + waf.tf fix, nie mergowany do main)
+
+**Problemy podczas apply:**
+1. `terraform init` bez `-backend-config=backend.hcl` → `"key": required field is not set` — fixed
+2. `AWS_PROFILE` potrzebny jako env var dla backend S3 auth
+3. `terraform plan` error: `count` depends on `https_listener_arn` (unknown at plan time) → apply etapami
+4. CloudFront apply error: em dash `—` w WAF IP set description → waf.tf poprawiony (regular dash)
+5. Chicken-and-egg: ElastiCache tworzy się w apply, ale secret Redis potrzebny przed apply
+
+**Sekwencja apply:**
+1. `-target=module.alb` → ALB + HTTPS listener ✅
+2. `-target=module.cloudfront_site -target=module.cloudfront_site_api -target=aws_wafv2_*` → CloudFront + WAF ✅
+3. `-target=aws_wafv2_ip_set.loadtest_allowlist` (po fix em dash) ✅
+4. Pełny `terraform apply` → 85 resources ✅
+
+**Zasoby PROD po apply:**
+- ALB: `maspex-prod-1795571755.eu-west-1.elb.amazonaws.com`
+- CloudFront admin panel: `dfx1ac92hj3uw.cloudfront.net` → `kapsel-prod.makotest.pl`
+- CloudFront API: `d1w5bz7itj42sz.cloudfront.net` → `kapsel-api-prod.makotest.pl`
+- ElastiCache: `maspex-prod.zwowz5.0001.euw1.cache.amazonaws.com:6379`
+- ECS: 9/9 API, 1/1 bot, 1/1 admin-panel running
+- Loadtest WAF IP Set PROD: `maspex-prod-loadtest-allowlist` ID `6aab8ec9-a959-459f-a52a-88638d3ffa41`
+
+**Secret PROD API:**
+- ARN: `arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/prod/api-z6g7eq`
+- Redis URL zaktualizowany z prawdziwym endpointem po apply
+- ECS forced new deployment (zadania pobiorą nowy secret przy restarcie)
+
+**Image tags:**
+- API: `coreapp-uat-612`
+- Admin panel: `zaslepka-v10`
+- Bot: `maspex-worker-uat-17`
+
+**Do zrobienia po sesji:**
+- [ ] PowerDNS CNAME: `kapsel-prod.makotest.pl` → `dfx1ac92hj3uw.cloudfront.net`
+- [ ] PowerDNS CNAME: `kapsel-api-prod.makotest.pl` → `d1w5bz7itj42sz.cloudfront.net`
+- [ ] Zweryfikować health ECS tasks po rolling deployment (Redis secret)
+- [ ] Commitować waf.tf i tfvars fix do main (przez MR)
 - [ ] Bot UAT unhealthy — diagnoza health check config i logów /maspex/uat/bot
