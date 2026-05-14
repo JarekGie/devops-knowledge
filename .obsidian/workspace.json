@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Check Mako infrastructure Maspex context"
+              "title": "Terminal: ⠐ Enable Enhanced Container Insights for Maspex UAT load test diagnostics"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
             }
           },
           {
@@ -121,6 +121,20 @@
           },
           {
             "id": "612e6b90b81e68b4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/superpowers/specs/2026-05-14-maspex-packer-ami-design.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2026-05-14-maspex-packer-ami-design"
+            }
+          },
+          {
+            "id": "733dbf28eb88acda",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -321,6 +335,7 @@
   "active": "901791c00763111e",
   "lastOpenFiles": [
     "docs/superpowers/specs/2026-05-14-maspex-packer-ami-design.md",
+    "docs/superpowers/plans/2026-05-14-maspex-packer-ami.md",
     "20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
@@ -345,7 +360,6 @@
     "20-projects/clients/mako/rshop/acm-cert-migration-2026-05-08.md",
     "20-projects/clients/mako/rshop/acm-cert-renewal-risk-2026-05-08.md",
     "20-projects/clients/mako/rshop/rca-ecs-deploy-failure-2026-05-08.md",
-    "20-projects/clients/mako/maspex/session-log.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
