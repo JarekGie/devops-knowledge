@@ -4,7 +4,7 @@
 > Temat: infrastruktura generatorów obciążenia (EC2 ASG), zarządzanie flotą, skrypty kontrolne.
 
 **Zakres:** EC2 ASG `maspex-uat-loadtest`, fleet scripts, WAF integration, otwarte braki
-**Data:** 2026-05-14
+**Data:** 2026-05-14 (aktualizacja: pipeline k6/InfluxDB/Grafana naprawiony)
 
 ---
 
@@ -95,6 +95,44 @@ Account:       969209893152
 2. **`.ps1` dla fleet scripts** — brak PowerShell odpowiednika `loadtest-fleet-start.sh` i `loadtest-fleet-stop.sh`. Potrzebny dla deweloperów na Windows.
 
 3. **`--ssh` w fleet scripts** — brak helpera SSH w nowych skryptach.
+
+---
+
+## Pipeline k6 / InfluxDB / Grafana — stan po naprawie (2026-05-14)
+
+### Co było zepsute
+- `docker-compose.yml` bez `INFLUXDB_DB=k6` i bez named volumes → dane nie przeżywały restartu
+- k6 uruchamiany bez `K6_OUT` → metryki nie trafiały do InfluxDB
+- Instancja 2 nie miała docker-compose.yml w ogóle
+
+### Stan po naprawie — instancja 1 (3.249.179.8) i instancja 2 (34.242.87.83)
+```
+/home/ec2-user/qa/
+  docker-compose.yml          # poprawiony (env vars + named volumes)
+  grafana/
+    provisioning/
+      datasources/influxdb.yaml   # uid: dfm0hl1zdovswd, db: k6
+      dashboards/default.yaml
+    dashboards/
+      k6-load-testing-by-groups.json
+```
+
+Commited do repo: `feat/prod-parity-uat`, commit `0b0ec3b`.
+
+### Uruchomienie k6 z telemetrią
+```bash
+K6_OUT=influxdb=http://localhost:8086/k6 k6 run scripts/kapsel.js
+```
+
+### Grafana — dostęp przez SSM port forwarding
+```bash
+aws ssm start-session \
+  --target i-0402c9e70c6a86ae3 \
+  --document-name AWS-StartPortForwardingSession \
+  --parameters '{"portNumber":["3000"],"localPortNumber":["3000"]}' \
+  --region eu-west-1 --profile maspex-cli
+# Następnie: http://localhost:3000 (anonymous Admin)
+```
 
 ---
 

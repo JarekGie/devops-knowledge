@@ -36,41 +36,48 @@ STAN QA (2026-05-12 ~12:30):
 
 ---
 
-## Update — 2026-05-12 — MASPEX: PROD parity + UAT autoscaling + loadtest scripts
+## Update — 2026-05-14 — MASPEX: k6/InfluxDB/Grafana pipeline naprawiony + PROD parity
 
 ```
 REPO:   ~/projekty/mako/aws-projects/infra-maspex
+BRANCH: feat/prod-parity-uat, commit: 0b0ec3b
 
 ZROBIONE:
-  ✅ Preprod zaslepka v10 — branch: feat/preprod-zaslepka-polityka-prywatnosci
-     - PDF politykaprywatnosci w nginx container, image ECR zaslepka-v10
-     - service_admin_panel updated ✅; bot NIENAPRAWIONY (pre-existing broken TG)
-  ✅ UAT autoscaling ALBRequestCountPerTarget — APPLIED
-     - branch: feat/uat-autoscaling-alb-request-count (commit: ac6f94f)
-     - TargetValue=200, ScaleOut=30s, ScaleIn=300s
-  ✅ PROD parity — branch: feat/prod-parity-uat
-     - autoscaling ALBRequestCountPerTarget (jak UAT)
-     - Supabase pg_net IPv6 + loadtest-allowlist w WAF
-     - cert ARNs w tfvars: CloudFront admin (369af310) + API (3247fa27)
-     - terraform validate ✅
-  ✅ Loadtest fleet scripts: loadtest-fleet-start.sh + loadtest-fleet-stop.sh
-     - WAF update automatyczny (start: dodaje IPs, stop: czyści przed scale-down)
+  ✅ k6/InfluxDB/Grafana pipeline — naprawiony na obu instancjach
+     - docker-compose.yml: INFLUXDB_DB=k6, named volumes, provisioning mounts
+     - Grafana datasource + dashboard provisjonowane z plików (nie z UI)
+     - Instancja 1 (3.249.179.8): zaktualizowana, data preserved
+     - Instancja 2 (34.242.87.83): zainstalowana od zera (nie miała docker-compose)
+     - Pliki wersjonowane: scripts/loadtest/ w repo (commit 0b0ec3b)
+  ✅ PROD parity — cert ARNs + REDIS_URL + api_domain
+     - alb_certificate_arn: a139f9a4 (kapsel-prod.makotest.pl, ISSUED)
+     - alb_api_certificate_arn: fd2f0c7c (kapsel-api-prod.makotest.pl, ISSUED)
+     - api_domain: kapsel-api-prod.makotest.pl (był kapsel-api.prod — niezgodne z certem)
+     - REDIS_URL zamiast ConnectionStrings__Redis w secrets (jak UAT)
 
-BLOKERY PROD APPLY:
-  ⛔ ACM certy 369af310 + 3247fa27 muszą być ISSUED (CloudFront us-east-1)
-  ⛔ alb_certificate_arn eu-west-1 — nie dostarczony
-  ⛔ api_redis_secret_arn — sufiks REPLACE do korekty
-  ⛔ api/admin_panel/bot_image_tag — ustawić właściwe tagi
+URUCHAMIANIE k6 Z TELEMETRIĄ:
+  K6_OUT=influxdb=http://localhost:8086/k6 k6 run scripts/kapsel.js
+
+GRAFANA (SSM port-forwarding na :3000):
+  aws ssm start-session --target i-0402c9e70c6a86ae3 \
+    --document-name AWS-StartPortForwardingSession \
+    --parameters '{"portNumber":["3000"],"localPortNumber":["3000"]}' \
+    --region eu-west-1 --profile maspex-cli
+  → http://localhost:3000 (anonymous Admin)
+
+BLOKERY PROD APPLY (wciąż otwarte):
+  ⛔ api_redis_secret_arn — secret maspex/prod/api nie istnieje w SM
+  ⛔ api/admin_panel/bot_image_tag — ustawić właściwe tagi prod
 
 BRANCHES (lokalne, nie pushed):
-  feat/preprod-zaslepka-polityka-prywatnosci
-  feat/uat-autoscaling-alb-request-count
-  feat/prod-parity-uat
+  feat/prod-parity-uat  ← aktywny
 
-OTWARTE (load test):
-  → Post-test latency anomalia (460ms health checks >1h po teście)
-  → Memory retencja 67% avg po teście (baseline 13–18%)
-  → APM/distributed tracing przed testem produkcyjnym
+OTWARTE (load test scripts):
+  → loadtest-fleet-clear.sh (CF invalidation + ElastiCache PROD) — do napisania
+  → loadtest-fleet-*.ps1 — brak PowerShell odpowiedników
+  → --ssh w fleet scripts — brak helpera
+
+VAULT: 20-projects/clients/mako/maspex/loadtest-observability.md
 ```
 
 ---
@@ -3198,4 +3205,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-14 08:56 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-14 10:06 — sesja aktywna*
