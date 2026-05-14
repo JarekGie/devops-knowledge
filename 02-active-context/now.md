@@ -36,6 +36,44 @@ STAN QA (2026-05-12 ~12:30):
 
 ---
 
+## Update — 2026-05-14 — MASPEX: Load test walidacyjny pre-scale — ZAKOŃCZONY
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+STATUS: testy zakończone, infrastruktura posprzątana
+
+ZROBIONE (wieczór 21:46–22:24 CEST):
+  ✅ Bug fix: loadtest-ctrl.sh — info()/ok()/warn() → stderr (fix WAF ANSI injection)
+  ✅ Pre-scale ECS: min=9→15, desired=15 (steady w 16s)
+  ✅ Level A (3,000 req/s): 8 min, 0.00% errors, pre-scale=15 → 200 req/s/task (vs 333 bez pre-scale)
+     - Autoscaling: 15→18→19→20 tasks (cascade, 6.5 min opóźnienie)
+  ✅ Level B (4,500 req/s): 8 min, 0.00% errors, pre-scale=20 → 225 req/s/task
+     - 270,000 req/min steady, latencja bez zmiany (~8ms avg)
+  ✅ Fleet stopped, WAF cleared, autoscaling min przywrócony do 9
+
+WYNIKI:
+  Pre-scale POTWIERDZA eliminację incident zone przy 3,000 req/s
+  Pre-scale=15 działa dla 2,500 req/s; dla 3,000+ → pre-scale=18–20
+  System stabilny przy 4,500 req/s z max capacity (20 tasks), 0 błędów
+
+ECS STAN (scale-in w toku ~80-90 min):
+  desired=20, running=20, min=9 → scale-in stopniowy
+
+VAULT: 20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md
+```
+
+---
+
+## Update — 2026-05-14 — MASPEX: Kalibracja autoscalingu (rano)
+
+```
+VAULT: 20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md
+WYNIK: WORKING_BUT_TOO_LATE — mechanizm działa, ALE 5.5 min delay na scale-out
+  Pre-scaling operacyjny KONIECZNY przed spodziewanym ruchem
+```
+
+---
+
 ## Update — 2026-05-14 — MASPEX: k6/InfluxDB/Grafana pipeline naprawiony + PROD parity
 
 ```
@@ -3205,4 +3243,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-14 22:21 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-14 22:26 — sesja aktywna*
