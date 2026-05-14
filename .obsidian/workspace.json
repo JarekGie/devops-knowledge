@@ -63,8 +63,7 @@
               "title": "loadtest-calibration-results-2026-05-14"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -248,7 +247,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "ed04de61f31e7d81",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
