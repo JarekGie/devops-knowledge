@@ -105,8 +105,7 @@
               "title": "loadtest-calibration-results-2026-05-14"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,7 +289,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "901791c00763111e",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md",
