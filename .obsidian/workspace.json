@@ -119,8 +119,7 @@
               "title": "2026-05-14-maspex-packer-ami-design"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -304,7 +303,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "65c68d4c756fe4f7",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "docs/superpowers/specs/2026-05-14-maspex-packer-ami-design.md",
     "20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md",
