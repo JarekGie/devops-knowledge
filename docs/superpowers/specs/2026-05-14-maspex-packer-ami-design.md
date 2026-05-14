@@ -3,7 +3,7 @@
 **Date:** 2026-05-14  
 **Status:** approved  
 **Domain:** client-work / maspex  
-**Author:** Jaroslaw Golab + Claude
+**Author:** Jaroslaw Golab
 
 ---
 

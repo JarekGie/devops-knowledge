@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+**Author:** Jaroslaw Golab
+
 **Goal:** Build a Rich AMI with Packer containing the full load test workshop (Docker, k6, InfluxDB/Grafana stack, k6 scripts, token generator), so ASG generators start in ~90s with only secrets + token generation at runtime.
 
 **Architecture:** Packer builds an AL2023-based AMI from `infra-maspex/` repo. All static artifacts (workspace, scripts, provisioning) are baked in via file+shell provisioners. A systemd unit (`loadtest-bootstrap.service`) runs `bootstrap.sh` on every boot: fetches `JWT_SECRET`+`JWT_KID` from Secrets Manager, generates `tokens.json`, starts `docker compose`, creates InfluxDB `k6` database, writes `bootstrap.status`. Terraform switches Launch Template from dynamic AMI lookup to a pinned `var.loadtest_ami_id`.
