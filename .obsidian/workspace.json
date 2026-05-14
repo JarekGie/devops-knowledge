@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Check Mako infrastructure Maspex context"
+              "title": "Terminal: ⠂ Check Mako infrastructure Maspex context"
             }
           },
           {
@@ -77,8 +77,7 @@
               "title": "loadtest-2026-05-14-analysis-test2"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -262,7 +261,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "0d320757c633d51b",
+  "active": "7c26723e425838d3",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/loadtest-2026-05-14-analysis-test2.md",
     "20-projects/clients/mako/maspex/loadtest-2026-05-14-analysis.md",
