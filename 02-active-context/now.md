@@ -2,6 +2,39 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-15 — MASPEX: PROD parity — plan gotowy, czeka na decyzje operatora
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring)
+PLAN:   /tmp/prod-parity.tfplan (3 add, 7 change, 3 destroy)
+
+ZROBIONE:
+  ✅ moduł ecs-service: nowa var task_definition_name (backward-compat, default "")
+  ✅ prod/main.tf: task_definition_name dla 3 serwisów → maspex-prod-api/admin-panel/bot
+  ✅ terraform fmt + validate OK | plan OK
+  plan NIE apply — blokery poniżej
+
+PLAN EFFEKTY:
+  3× replace aws_ecs_task_definition (family prod-*) — ECS service NIEZMIENIONY (ignore_changes)
+  6× in-place IAM role tag fix (environment: uat→prod)
+  1× in-place IAM exec_secrets policy (UAT→PROD secret ARN)
+
+BLOKERY PRZED apply:
+  ⛔ secret maspex/prod/api: SUPABASE_JWT_SECRET PUSTE → aplikacja PROD nie waliduje tokenów
+     → potrzebna wartość z Supabase PROD dashboard (Project Settings → API → JWT Secret)
+  ❓ certy z zadania (caed9d07 / d4bbfef0) pokrywają test.twojkapsel.pl, NIE kapsel-prod.makotest.pl
+     → decyzja: czy PROD teraz migruje na test.twojkapsel.pl?
+
+PYTANIA DO OPERATORA:
+  1. SUPABASE_JWT_SECRET dla PROD (Supabase PROD project → Settings → API → JWT Secret)
+  2. Czy PROD migruje na test.twojkapsel.pl (nowe certy)?
+  3. Approve plan do apply?
+  4. Opcjonalnie: zsynchronizować image tags w tfvars PROD?
+     (live: coreapp-prod-657, admin-panel-prod-130, maspex-worker-uat-61)
+```
+
+---
+
 ## Update — 2026-05-15 — MASPEX: Zasłepka twojkapsel.pl — wdrożona + przełączamy na PROD
 
 ```
@@ -3339,4 +3372,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-15 15:04 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-15 15:28 — sesja aktywna*
