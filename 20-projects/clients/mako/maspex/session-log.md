@@ -38,7 +38,30 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 - `aws_launch_template.loadtest` — UPDATE (ami-0c683ebe58c6bf4ee) ✅
 - `module.ecs_cluster` — Enhanced Container Insights drift zastosowany przy okazji ✅
 
-**Następny krok:** PR z `feat/packer-ami-loadtest` → main
+**Następny krok:** ~~PR z `feat/packer-ami-loadtest` → main~~ DONE
+
+---
+
+## 2026-05-15 — Prod terraform apply — rename ECS service names
+
+**Problem:** nazwy ECS serwisów zawierały zmienną env (`maspex-prod-api`), wymagana zmiana na `maspex-api`.
+
+**Zmiana:** `terraform/envs/prod/main.tf` — 3 serwisy:
+- `${var.project}-${var.environment}-api` → `${var.project}-api`
+- `${var.project}-${var.environment}-admin-panel` → `${var.project}-admin-panel`
+- `${var.project}-${var.environment}-bot` → `${var.project}-bot`
+
+**Problemy napotkane podczas apply:**
+1. IAM role `maspex-api-task`, `maspex-admin-panel-task`, `maspex-bot-task` już istniały w AWS (stworzone przez CI `makolab-ci`) — `EntityAlreadyExists` → import do state
+2. SG `maspex-api-ecs`, `maspex-admin-panel-ecs`, `maspex-bot-ecs` już istniały w AWS (sierot, stworzone przez CI) — duplikat → state swap: stare SG (`maspex-prod-*-ecs`) usunięte ze state, sieroty zaimportowane (miały już prawidłowe nazwy i opisy) → plan zmienił się z `replace` na `update in-place`
+
+**Import wykonane:**
+- 6 IAM ról (task + execution dla 3 serwisów)
+- 3 SG (po usunięciu starych ze state i zaimportowaniu sierot)
+
+**Wynik apply:** 20 added, 18 changed, 0 destroyed ✅
+
+**Commit:** `3f75a8e` — push do `main`
 
 ---
 
