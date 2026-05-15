@@ -3271,4 +3271,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-15 11:30 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-15 11:48 — sesja aktywna*
