@@ -4,6 +4,41 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-15 — PROD↔UAT drift analysis + fix
+
+**Cel:** pełny discovery driftów UAT vs PROD, minimalne poprawki, walidacja.
+
+**Wynik:** 1 krytyczny drift (CloudFront API alias/cert), 2 DNS blockers. Terraform plan gotowy.
+
+**Stan:**
+- CF API distribution (E33PUJBAQ533K0): live alias `kapsel-api-prod.makotest.pl` / live cert `3247fa27`; TF code: `test.twojkapsel.pl` / cert `caed9d07` — **pending apply**
+- DNS `test.twojkapsel.pl`: wskazuje na zły CF (admin panel `dfx1ac92hj3uw`) — **pending Cloudflare fix**
+- DNS `www.test.twojkapsel.pl`: brak rekordu — **pending Cloudflare**
+- DNS `kapsel-prod.makotest.pl`: ✓ JUŻ USTAWIONE → `dfx1ac92hj3uw.cloudfront.net`
+- ALB routing: ✓ już poprawny (test.twojkapsel.pl + www)
+- ALB certy: ✓ d4bbfef0 (test.twojkapsel.pl) już attached
+- ECS: naming poprawny, api 9/9, admin 1/1; bot 0/1 (health check failure jak UAT)
+
+**Terraform plan:** 0 add, 1 change, 0 destroy — tylko CF alias+cert
+
+**Plan validation:**
+- fmt: ✓ PASS
+- validate: ✓ PASS
+- plan: ✓ 1 change, 0 destroy
+
+**Zmiany kodu:**
+- `terraform/envs/prod/terraform.tfvars` — zaktualizowano comment sekcji api_domain (był outdated z `kapsel-api-prod.makotest.pl`)
+
+**Operacje do wykonania przez operatora:**
+1. `terraform apply` w `envs/prod` (zaakceptować 1 change)
+2. Cloudflare: zmień `test.twojkapsel.pl` CNAME: `dfx1ac92hj3uw` → `d1w5bz7itj42sz.cloudfront.net`
+3. Cloudflare: dodaj `www.test.twojkapsel.pl` CNAME → `d1w5bz7itj42sz.cloudfront.net`
+4. Verify: `curl -vI https://test.twojkapsel.pl/api/health`
+
+**Vault:** [[prod-uat-drift-analysis-2026-05-15]]
+
+---
+
 ## 2026-05-15 — PROD↔UAT parity: rozdzielenie task definition family
 
 **Cel:** wyrównać PROD do runtime UAT i odseparować rodziny task definitions, żeby PROD i UAT nie współdzieliły rewizji `maspex-api`, `maspex-admin-panel`, `maspex-bot` w jednym koncie.
