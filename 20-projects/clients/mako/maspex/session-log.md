@@ -4,6 +4,41 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-15 — PROD↔UAT parity: rozdzielenie task definition family
+
+**Cel:** wyrównać PROD do runtime UAT i odseparować rodziny task definitions, żeby PROD i UAT nie współdzieliły rewizji `maspex-api`, `maspex-admin-panel`, `maspex-bot` w jednym koncie.
+
+**Stan zastany:**
+- ECS service names PROD już zgodne z UAT (`maspex-api`, `maspex-admin-panel`, `maspex-bot`)
+- Task definition family PROD współdzielona z UAT — kolejne rewizje przeplatały się (UAT :65 / PROD :67 dla `maspex-api`)
+- Live PROD obrazy (out-of-band z deploy pipeline): `coreapp-prod-657`, `admin-panel-prod-130`, `maspex-worker-uat-61`
+- IAM tag drift: tagi w `environment` wskazują `uat` zamiast `prod` (legacy)
+- `module.service_api.aws_iam_role_policy.execution_secrets` w state nadal trzymał UAT secret ARN
+
+**Zmiany w kodzie:**
+- `terraform/modules/ecs-service/variables.tf` — dodano `task_definition_name` (default "")
+- `terraform/modules/ecs-service/main.tf` — `local.td_family = var.task_definition_name != "" ? var.task_definition_name : var.name`; `aws_ecs_task_definition.this.family = local.td_family`; tag `Name` na TD też `local.td_family`
+- `terraform/envs/prod/main.tf` — wszystkie trzy serwisy: `task_definition_name = "${var.project}-${var.environment}-{api|admin-panel|bot}"`
+
+**Plan (zapisany w `/tmp/prod-parity.tfplan`):**
+- 3 add, 7 change, 3 destroy
+- 3× replace `aws_ecs_task_definition` (`maspex-api` → `maspex-prod-api`, analogicznie admin-panel i bot)
+- 7× in-place: 6× tag fix `environment uat→prod` na IAM role exec/task + 1× IAM policy resource ARN dla `execution_secrets` (UAT→PROD secret)
+- 0× zmian na `aws_ecs_service` — `lifecycle.ignore_changes = [task_definition, desired_count]` chroni działające serwisy
+
+**Co dalej (do operatora):**
+- Apply nie wykonany — wymaga konsultacji bo:
+  - **BLOCKER**: secret `maspex/prod/api` ma PUSTE `SUPABASE_JWT_SECRET` i brakuje `JWT_SECRET`, `JWT_KID` które są w UAT
+  - **Ostrzeżenie**: nowe certy (us-east-1 `caed9d07-...` i eu-west-1 `d4bbfef0-...`) pokrywają `test.twojkapsel.pl` / `www.test.twojkapsel.pl` — nie pasują do aktualnych domen PROD (`kapsel-prod.makotest.pl`, `kapsel-api-prod.makotest.pl`). Decyzja produktowa: czy PROD ma teraz przejść na `test.twojkapsel.pl`?
+- Po apply: nowy TD `maspex-prod-api:1` itd. powstanie, ale serwis nadal wskaże stary TD (ignore_changes). Deploy pipeline musi wskazać nowy family.
+
+**Pliki zmienione:**
+- `terraform/modules/ecs-service/variables.tf`
+- `terraform/modules/ecs-service/main.tf`
+- `terraform/envs/prod/main.tf`
+
+---
+
 ## 2026-05-15 — Zasłepka twojkapsel.pl — nowy design + cookie banner
 
 **Cel:** podmiana plików zasłepki na twojkapsel.pl (S3 + CloudFront, preprod) zachowując GDPR-compliant cookie banner.
