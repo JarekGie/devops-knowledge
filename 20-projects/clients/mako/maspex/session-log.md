@@ -29,11 +29,16 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 **Zmiany kodu:**
 - `terraform/envs/prod/terraform.tfvars` — zaktualizowano comment sekcji api_domain (był outdated z `kapsel-api-prod.makotest.pl`)
 
-**Operacje do wykonania przez operatora:**
-1. `terraform apply` w `envs/prod` (zaakceptować 1 change)
-2. Cloudflare: zmień `test.twojkapsel.pl` CNAME: `dfx1ac92hj3uw` → `d1w5bz7itj42sz.cloudfront.net`
-3. Cloudflare: dodaj `www.test.twojkapsel.pl` CNAME → `d1w5bz7itj42sz.cloudfront.net`
-4. Verify: `curl -vI https://test.twojkapsel.pl/api/health`
+**Wykonane:**
+1. Commit 4cd3d01 — prod CF alias migration (i 3 kolejne commity — UAT autoscaling, uat/alb fixes, loadtest scripts)
+2. `terraform apply` ✅ — E33PUJBAQ533K0 zaktualizowany: alias test.twojkapsel.pl + www, cert caed9d07
+3. DNS Cloudflare: test.twojkapsel.pl → d1w5bz7itj42sz.cloudfront.net ✅ (operator zmienił przed apply)
+4. Verify: `curl -sI https://test.twojkapsel.pl/api/health` → **HTTP/2 200** ✅
+5. kapsel-prod.makotest.pl → **HTTP/2 200** ✅ (admin panel nienaruszony)
+
+**Uwaga operacyjna:** apply najpierw fail z CNAMEAlreadyExists bo DNS wskazywał na E32. Po zmianie DNS (test.twojkapsel.pl → E33) i retry — przeszedł. Kolejność: DNS first, apply second.
+
+**Remaining:** www.test.twojkapsel.pl — brak CNAME w Cloudflare (alias jest na CF, DNS nie ustawiony)
 
 **Vault:** [[prod-uat-drift-analysis-2026-05-15]]
 
