@@ -4,6 +4,31 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-15 — Campaign Day Monitoring (18 maja)
+
+**Cel:** gotowy operatorski zestaw monitoringu na dzień kampanii.
+
+**Branch:** `feat/campaign-day-monitoring` w `infra-maspex`
+
+**Co zrobiono (additive-only):**
+- `modules/monitoring/main.tf` — 3 nowe alarmy: `redis-high-engine-cpu` (>50% / 3 min), `redis-evictions` (>100/min), `ecs-api-pending-tasks` (>0 / 3 min)
+- `modules/monitoring/main.tf` — Row 13: alarm status widget (24-wide, wszystkie alarmy operacyjne)
+- `modules/monitoring/main.tf` — Row 14: ALBRequestCountPerTarget (z annotacją progu 200) + PendingTaskCount
+- `terraform/envs/prod/main.tf` — Enhanced Container Insights: `container_insights = "enhanced"` (update in-place, zero ryzyka operacyjnego)
+- Vault: `campaign-day-runbook.md` — runbook operatorski z progami, komendami, linkami do dashboardów
+
+**Terraform apply wyniki:**
+- UAT: 3 added, 12 changed, 0 destroyed ✅
+- PROD: 3 added, 13 changed, 0 destroyed ✅ (Enhanced CI + 3 alarmy + dashboard)
+
+**Dashboardy gotowe:**
+- `maspex-prod-overview` — dashboard operatorski PROD (14 wierszy)
+- `maspex-uat-overview` — dashboard UAT (14 wierszy)
+
+**Następny krok:** przed 18 maja — weryfikacja SNS email subscription (sprawdź inbox jaroslaw.golab@makolab.com, potwierdź jeśli był pending)
+
+---
+
 ## 2026-05-14/15 — Packer Rich AMI dla load test generatorów
 
 **Cel:** zastąpienie wolnego user_data bootstrap (~8–12 min) Packer AMI z pełnym workspace — boot ~51s.
