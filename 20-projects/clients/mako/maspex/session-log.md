@@ -4,6 +4,44 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-14/15 — Packer Rich AMI dla load test generatorów
+
+**Cel:** zastąpienie wolnego user_data bootstrap (~8–12 min) Packer AMI z pełnym workspace — boot ~51s.
+
+**Branch:** `feat/packer-ami-loadtest` w `infra-maspex`
+
+**Co zrobiono:**
+- `scripts/loadtest/token-generator/` — generate-tokens-fn.js przeniesiony z testy-qa/, hardcoded secrets zastąpione `process.env.JWT_SECRET/JWT_KID`
+- `scripts/loadtest/k6/` — 7 scenariuszy z kapsel.zip wprowadzone do repo
+- `scripts/loadtest/docker-compose.yml` — pin grafana:10.4.3, influxdb:1.8 bez auth
+- `scripts/loadtest/bootstrap.sh` — 5 faz: SM → tokeny → compose → healthcheck → READY, logi do `/opt/loadtest/runtime/bootstrap.log`
+- `scripts/loadtest/loadtest-bootstrap.service` — systemd oneshot, After=cloud-final.service
+- `packer/` — ami.pkr.hcl + variables.pkr.hcl + 4 provisioner scripts
+- `terraform/envs/uat/loadtest.tf` — IAM policy secretsmanager:GetSecretValue + switch LT na var.loadtest_ami_id
+- `terraform/envs/uat/variables.tf` + `terraform.tfvars` — loadtest_ami_id = "ami-0c683ebe58c6bf4ee"
+- `scripts/loadtest-fleet-start.sh` — fix: logi na stderr, grep-c bez || echo 0
+
+**Bugs napotkane podczas packer build:**
+1. File provisioner: `scp: /tmp/loadtest: Not a directory` → dodano `mkdir -p /tmp/loadtest` jako ec2-user przed upload
+2. SCP permission denied → mkdir musiał być bez sudo (ec2-user musi być ownerem)
+3. `ami_description` zawierał em-dash (—) → AWS akceptuje tylko ASCII, zamieniono na `-`
+
+**Wyniki:**
+- AMI: `ami-0c683ebe58c6bf4ee` (maspex-uat-loadtest-2026-05-15-044939, eu-west-1)
+- Bootstrap na instancji: READY w **~51 sekund**
+- `tokens.json`: 5000 tokenów ✅
+- influxdb:1.8 + grafana:10.4.3 Up ✅
+- PROD WAF zaktualizowany: 34.245.20.14, 18.203.85.84, 3.249.245.237, 54.154.135.106
+
+**Terraform apply:**
+- `aws_iam_role_policy.loadtest_secrets` — CREATE ✅
+- `aws_launch_template.loadtest` — UPDATE (ami-0c683ebe58c6bf4ee) ✅
+- `module.ecs_cluster` — Enhanced Container Insights drift zastosowany przy okazji ✅
+
+**Następny krok:** PR z `feat/packer-ami-loadtest` → main
+
+---
+
 ## 2026-05-14 — Enhanced Container Insights UAT — discovery + IaC change
 
 **Cel:** włączyć per-task metryki CPU/memory, żeby zidentyfikować hotspot z anomalii Memory avg 45% / max 96%.
