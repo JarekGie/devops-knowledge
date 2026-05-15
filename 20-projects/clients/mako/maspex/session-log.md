@@ -67,6 +67,53 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-15 — ECS SG drift fix + UAT recovery + loadtest script fix
+
+### Drift: ECS Security Groups — UAT/PROD collision
+
+**Problem root cause:** po rename ECS service names (usunięcie `${var.environment}`), UAT i PROD próbowały zarządzać identycznymi SG w tym samym VPC. Wczorajszy PROD import sprawił że oba stany "posiadały" te same SG IDs → any apply mógł usunąć regułę drugiego środowiska.
+
+**Stan przed fixem:**
+- UAT SG `maspex-api-ecs` (sg-0037d12b7260521cf) — w stanie UAT ORAZ PROD
+- UAT state: ingress od UAT ALB; PROD state: ingress od PROD ALB
+- Kolejny apply = losowy wynik
+
+**Fix:**
+1. Moduł `ecs-service`: dodano zmienną `sg_name` (override nazwy SG) + `ignore_changes = [description]` (AWS nie pozwala aktualizować description in-place)
+2. PROD main.tf: `sg_name = "${var.project}-${var.environment}-{service}-ecs"` dla 3 serwisów
+3. Usunięto UAT SGs ze stanu PROD; zaimportowano istniejące sieroty `maspex-prod-*-ecs`
+4. PROD apply: 4 changed, 0 destroyed — ECS services przeszły na PROD-specific SGs
+5. UAT apply: 10 changed (tagi `environment=prod→uat`, usunięcie reguły PROD ALB z UAT SGs)
+
+**Stan po fixie:**
+- `maspex-api-ecs` (sg-0037d12b7260521cf): env=uat, tylko UAT ALB
+- `maspex-prod-api-ecs` (sg-04dbc35fd232780ac): env=prod, tylko PROD ALB
+- Analogicznie dla admin-panel i bot
+
+**Commit:** `186890c` — branch `feat/campaign-day-monitoring`
+
+### UAT API recovery (wcześniej tego samego dnia)
+
+**Problem (root cause chain):**
+1. Stare taski UAT API zawiesiły się ~09:29 CEST (event loop zablokowany — CACHE-CRON Supabase call)
+2. Force-new-deployment → nowe taski nie startowały (IAM: execution role bez dostępu do UAT secret)
+3. Secret `maspex/uat/api-STbBy3` był nadpisany dziś rano 06:26 CEST (JWT keys zastąpiły API config)
+4. Po poprawkach IAM + secret → taski startowały ale health check timeout
+5. Przyczyna: SG `maspex-api-ecs` miała w ingress tylko `maspex-prod-alb` (sg-010c012779dbd63c0), nie UAT ALB
+
+**Fixy:**
+- `aws iam put-role-policy` — dodano UAT secret do execution role
+- `aws secretsmanager put-secret-value` — scalono wszystkie 4 klucze (ConnectionStrings__Redis + SUPABASE_JWT_SECRET + JWT_SECRET + JWT_KID)
+- `aws ec2 authorize-security-group-ingress` — dodano UAT ALB SG do 3 ECS SGs
+
+**Wynik:** 14 healthy targets ~11:05 CEST, 12 healthy po apply
+
+### loadtest-fleet-start.sh fix
+
+`WAF_IP_SET_NAME` wskazywał na `maspex-prod-loadtest-allowlist` zamiast `maspex-uat-loadtest-allowlist`. Naprawione w tym samym commicie.
+
+---
+
 ## 2026-05-15 — Prod terraform apply — rename ECS service names
 
 **Problem:** nazwy ECS serwisów zawierały zmienną env (`maspex-prod-api`), wymagana zmiana na `maspex-api`.
