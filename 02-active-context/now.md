@@ -2,6 +2,24 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-15 — MASPEX: Zasłepka twojkapsel.pl — wdrożona + przełączamy na PROD
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring)
+COMMIT: e8230ea
+
+ZROBIONE:
+  ✅ nowy index.html + PDF → S3 maspex-preprod-zaslepka-969209893152
+  ✅ GTM bezwarunkowy usunięty → cookie banner GDPR-compliant (jak v11)
+  ✅ CloudFront invalidation Completed (E17VHHQJ29MVAB)
+  ✅ Fix PDF case: instrukcja (lowercase) + Instrukcja (uppercase) — oba w S3
+  twojkapsel.pl DZIAŁA (200 w logach od 14:06 CEST)
+
+NASTĘPNY KROK: → PROD
+```
+
+---
+
 ## Update — 2026-05-15 — MASPEX: Load test 12:00 CEST — analiza zakończona, P0 otwarte
 
 ```
@@ -3321,4 +3339,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-15 14:42 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-15 15:04 — sesja aktywna*

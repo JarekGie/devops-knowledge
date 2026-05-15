@@ -4,6 +4,25 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-15 — Zasłepka twojkapsel.pl — nowy design + cookie banner
+
+**Cel:** podmiana plików zasłepki na twojkapsel.pl (S3 + CloudFront, preprod) zachowując GDPR-compliant cookie banner.
+
+**Co zrobiono:**
+- `terraform/zaslepka/index.html` — nowy design; usunięto bezwarunkowy GTM ze `<head>` (GDPR), dodano CSS + HTML + JS cookie bannera (identyczny z v11): `localStorage.cookie_consent`, GTM `GTM-T7868733` ładowany warunkowo
+- `terraform/zaslepka/Instrukcja-usuniecia-konta.pdf` — nowy PDF instrukcji usunięcia konta
+- Commit `e8230ea` — branch `feat/campaign-day-monitoring`
+- Upload obu plików do S3 `maspex-preprod-zaslepka-969209893152`
+- CloudFront invalidation `E17VHHQJ29MVAB` (`I9ZUJOOFPTF2YWL7L0NBYCTEAD`) — Completed
+- Fix case mismatch: dodano `instrukcja-usuniecia-konta.pdf` (lowercase) jako kopia — S3 case-sensitive, logi pokazywały 403 dla lowercase URL
+
+**Diagnoza Access Denied Łukasza (14:33):**
+- `twojkapsel.pl/` zwraca 200 w logach CloudFront od 14:06 CEST — strona działa
+- Realny błąd 403 był dla `/instrukcja-usuniecia-konta.pdf` (lowercase) — naprawiony
+- Jeśli Łukasz chce testować UAT (`kapsel.makotest.pl`) — musi podać IP do WAF allowlist
+
+---
+
 ## 2026-05-15 — Campaign Day Monitoring (18 maja)
 
 **Cel:** gotowy operatorski zestaw monitoringu na dzień kampanii.
