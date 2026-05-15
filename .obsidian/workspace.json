@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ⠐ Remove drift between UAT and PROD environments"
             }
           },
           {
@@ -63,8 +63,7 @@
               "title": "maspex"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -248,8 +247,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "b796516d1a3ef485",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/maspex.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-15-1200-cest.md",
     "20-projects/clients/mako/maspex/api-secrets.md",
     "20-projects/clients/mako/maspex/session-log.md.tmp.98910.b4178f2be8f8",
@@ -277,7 +277,6 @@
     "20-projects/internal/llz/observability-audit-2026-05-09.md",
     "50-patterns/prompts/starter-pack/llz-observability-architecture-docs.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
-    "20-projects/clients/mako/puzzler-b2b/puzzler-b2b-context.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
