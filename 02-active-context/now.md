@@ -2,6 +2,56 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-15 — MASPEX: Load test 12:00 CEST — analiza zakończona, P0 otwarte
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+STATUS: test zakończony, infrastruktura posprzątana (fleet stopped, WAF cleared)
+
+WYNIKI TESTU (12:00–12:30 CEST):
+  Verdict: CZĘŚCIOWO PASS — znacząca poprawa vs 14 maja
+  Peak: 8 835 req/s | p99 latency: 1.49 s (poprzednio ~30 s) | ELB 5xx: 160 (vs 722)
+  Autoscaling: 12→30 tasków o 12:24:48 (pierwsza skuteczna reakcja)
+  JWT fix (SUPABASE_JWT_SECRET): 0 błędów autoryzacji podczas testu ✅
+  Redis: stabilny (EngineCPU max 25.6%, 0 Evictions, hit rate 74–75%)
+
+P0 PRZED KOLEJNYM TESTEM:
+  ⛔ synthetic test users nie mają wierszy w Supabase `profiles` → 118 VOTE_RPC_ERROR
+     users: user-test-uat-10001@example.com ... sub: 00000000-...-00010001
+     FIX: seed profiles table w Supabase UAT
+  ⛔ max capacity = 30 (osiągnięte) → przed kampanią podnieść do 50+
+
+DO ZROBIENIA (Łukasz Fuchs / Maspex):
+  ⚠️ Maspex chce testować przed 18 maja — potrzebują IP do WAF allowlist
+     WAF name: maspex-uat-public-uat-allowlist
+     Plik: terraform/envs/uat/terraform.tfvars → public_uat_extra_allowed_ipv4_cidrs
+     Czeka: Maspex podaje swoje IP
+
+VAULT: 20-projects/clients/mako/maspex/load-test-analysis-2026-05-15-1200-cest.md
+```
+
+---
+
+## Update — 2026-05-15 — MASPEX: ECS SG drift fix + UAT recovery + secrets fix
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+BRANCH: feat/campaign-day-monitoring (commit: 186890c)
+
+ZROBIONE:
+  ✅ ECS SG drift fix — PROD ma własne SG (maspex-prod-*-ecs), UAT swoje (maspex-*-ecs)
+     brak ryzyka kolizji przy kolejnym apply z obu środowisk
+  ✅ SUPABASE_JWT_SECRET naprawiony w maspex/uat/api — 0 błędów JWT podczas testu
+  ✅ loadtest-fleet-start.sh — WAF_IP_SET_NAME fix (było prod-, jest uat-)
+  ✅ api-secrets.md — vault: udokumentowane wymagane sekrety z objawami braku
+
+STAN TF:
+  UAT: czysty (sprawdzony po apply o 11:xx CEST)
+  PROD: czysty (Enhanced CI + 3 alarmy + dashboard apply z 2026-05-15 rano)
+```
+
+---
+
 ## Update — 2026-05-12 — PUZZLER-B2B: QA notifier fix + config audit + RSHOP: FE Jenkinsfiles
 
 ```
@@ -3271,4 +3321,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-15 12:57 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-15 13:40 — sesja aktywna*
