@@ -8,48 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "7c26723e425838d3",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "terminal:terminal",
-              "state": {
-                "terminal:terminal": {
-                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
-                  "focus": false,
-                  "profile": {
-                    "args": [
-                      "--login"
-                    ],
-                    "executable": "/bin/zsh",
-                    "followTheme": true,
-                    "name": "",
-                    "platforms": {
-                      "darwin": true
-                    },
-                    "pythonExecutable": "python3",
-                    "restoreHistory": false,
-                    "rightClickAction": "copyPaste",
-                    "successExitCodes": [
-                      "0",
-                      "SIGINT",
-                      "SIGTERM"
-                    ],
-                    "terminalOptions": {
-                      "documentOverride": null
-                    },
-                    "type": "integrated",
-                    "useWin32Conhost": true
-                  },
-                  "serial": null
-                }
-              },
-              "pinned": true,
-              "icon": "terminal",
-              "title": "Terminal: ✳ Enable Enhanced Container Insights for Maspex UAT load test diagnostics"
-            }
-          },
-          {
             "id": "901791c00763111e",
             "type": "leaf",
             "pinned": true,
@@ -88,11 +46,10 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
