@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
             }
           },
           {
@@ -320,6 +320,7 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/api-secrets.md",
     "20-projects/clients/mako/maspex/session-log.md.tmp.98910.b4178f2be8f8",
     "20-projects/clients/mako/maspex/campaign-day-runbook.md",
     "20-projects/clients/mako/maspex/campaign-day-runbook.md.tmp.98910.d834f92ffe58",
@@ -355,7 +356,6 @@
     "85-cloud-practice/partnership/notes",
     "85-cloud-practice/opportunities",
     "85-cloud-practice/competency",
-    "85-cloud-practice/partnership",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

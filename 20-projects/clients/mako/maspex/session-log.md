@@ -108,6 +108,13 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 **Wynik:** 14 healthy targets ~11:05 CEST, 12 healthy po apply
 
+### SUPABASE_JWT_SECRET fix (load test 401 „Nieprawidłowy token")
+
+**Symptom:** k6 dostaje 401 „Nieprawidłowy token" na wszystkich endpointach wymagających auth.
+**Root cause:** `SUPABASE_JWT_SECRET` był pusty w sekrecie `maspex/uat/api`. API (`@supabase/ssr`) waliduje tokeny właśnie przez tę zmienną — gdy pusta, odrzuca każdy token.
+**Fix:** `SUPABASE_JWT_SECRET = JWT_SECRET` (ta sama wartość co w Supabase Dashboard → Project Settings → API → JWT Secret) + force-new-deployment.
+**Dokumentacja:** [[api-secrets]] — pełna lista wymaganych kluczy z objawami braku każdego z nich.
+
 ### loadtest-fleet-start.sh fix
 
 `WAF_IP_SET_NAME` wskazywał na `maspex-prod-loadtest-allowlist` zamiast `maspex-uat-loadtest-allowlist`. Naprawione w tym samym commicie.
