@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Build Packer AMI for load test generators with runtime bootstrap"
+              "title": "Terminal: ⠂ Build Packer AMI for load test generators with runtime bootstrap"
             }
           },
           {
@@ -130,7 +130,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Review Mako packer for load tests"
+              "title": "Terminal: ✳ Review Mako packer for load tests"
             }
           }
         ],
