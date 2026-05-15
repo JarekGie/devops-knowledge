@@ -2,6 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-15 — MASPEX: PROD parity — APPLIED ✅
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring)
+COMMIT: 7511067
+
+WYNIK (3 add, 7 change, 3 destroyed):
+  ✅ TD families PROD: maspex-prod-api:1, maspex-prod-admin-panel:1, maspex-prod-bot:1
+  ✅ IAM role tags fix: environment uat→prod (6 ról)
+  ✅ IAM exec_secrets policy: UAT→PROD secret ARN
+  ✅ SUPABASE_JWT_SECRET ustawiony w maspex/prod/api (88 znaków, PROD JWT)
+  ✅ ECS services PROD NIEZMIENIONE — brak restartu kontenerów
+
+SERWISY PROD teraz wskazują stare TDs — pipeline deploy podepnie maspex-prod-* przy następnym release.
+
+OTWARTE:
+  ❓ Certy caed9d07/d4bbfef0 (test.twojkapsel.pl) — decyzja czy PROD migruje na tę domenę
+  Bot PROD 0/1 — brak tokenu, osobna kwestia
+```
+
+---
+
 ## Update — 2026-05-15 — MASPEX: PROD parity — plan gotowy, czeka na decyzje operatora
 
 ```
@@ -3372,4 +3394,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-15 15:28 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-15 15:33 — sesja aktywna*
