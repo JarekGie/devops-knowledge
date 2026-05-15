@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
+              "title": "Terminal: ⠂ Organize documentation structure and file context"
             }
           }
         ]
@@ -235,6 +235,7 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/vault-llm-governance.md.tmp.31152.33910e07bf97",
     "_chatgpt/context-packs/maspex.md",
     "20-projects/clients/mako/maspex/prod-e2e-test-2026-05-15.md",
     "20-projects/clients/mako/maspex/prod-uat-drift-analysis-2026-05-15.md",
@@ -262,7 +263,6 @@
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "30-research/ai4devops/AI4DEVOPS_REFERENCE_MODEL.md",
     "20-projects/internal/llz/observability-architecture-confluence.md",
-    "20-projects/internal/llz/observability-audit-2026-05-09.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",

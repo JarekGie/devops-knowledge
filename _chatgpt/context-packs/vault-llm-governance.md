@@ -7,13 +7,13 @@ llm_exposure: allowed
 cross_domain_export: allowed
 source_of_truth: vault
 created: 2026-05-01
-updated: 2026-05-06
+updated: 2026-05-15
 tags: [chatgpt, context-pack, vault, llm-governance, agent-contract, audit]
 ---
 
 # Audyt vaultu — Obsidian Knowledge OS
 **Materiał wejściowy dla ChatGPT — dostęp tylko przez ten dokument**
-**Data:** 2026-05-06 | **Przygotował:** Claude Code (analiza 15+ plików _system/)
+**Data:** 2026-05-15 | **Źródło:** analiza 15+ plików _system/ + CLAUDE.md + CODEX.md + 02-active-context
 
 > Wklej całość na początku rozmowy, gdy tematem jest vault, jego organizacja, governance AI, operating model lub sposób pracy użytkownika. Zakres: `shared-concept` — brak ograniczeń domenowych.
 
