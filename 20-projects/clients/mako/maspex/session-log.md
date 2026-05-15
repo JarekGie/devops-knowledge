@@ -734,3 +734,19 @@ Pełna dokumentacja: `redis-connection-change-2026-05-08.md`
 - [ ] Zweryfikować health ECS tasks po rolling deployment (Redis secret)
 - [ ] Commitować waf.tf i tfvars fix do main (przez MR)
 - [ ] Bot UAT unhealthy — diagnoza health check config i logów /maspex/uat/bot
+
+---
+
+## 2026-05-15 — Load Test Analysis (12:00–12:30 CEST)
+
+- Zebrano dane: CloudFront, ALB, ECS ContainerInsights, ElastiCache, CW Logs, autoscaling
+- Raport zapisany: `load-test-analysis-2026-05-15-1200-cest.md`
+- Kluczowe ustalenia:
+  - Autoscaling zadziałał po raz pierwszy (12→30 tasków o 12:24:48)
+  - JWT fix skuteczny (2 fallback events pre-test, 0 podczas testu)
+  - Peak: 8 835 req/s, p99 latency 1.49 s (vs 30 s w poprzednich testach), 160 ELB 5xx (vs 722)
+  - 1 task restarted (vs 6 w poprzednim teście)
+  - Redis stabilny (max EngineCPU 25.6%, brak Evictions)
+  - FK violations dla synthetic test users (brak wierszy w `profiles` Supabase)
+  - VOTE_CACHE_WRITETHROUGH_FAIL 68 szt. (saturacja CPU taska, nie Redis)
+- Open risks: max capacity 30 może być za mało na kampanię; pre-scale wymagany; dane testowe do naprawy
