@@ -88,11 +88,10 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Review Mako packer for load tests"
+              "title": "Terminal: ⠐ Review Mako packer for load tests"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -277,7 +276,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "5f5117d44eae7083",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-15-1200-cest.md",
     "20-projects/clients/mako/maspex/api-secrets.md",
