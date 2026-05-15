@@ -133,7 +133,8 @@
               "title": "Terminal: ✳ Review Mako packer for load tests"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -318,7 +319,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "901791c00763111e",
+  "active": "5f5117d44eae7083",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/api-secrets.md",
     "20-projects/clients/mako/maspex/session-log.md.tmp.98910.b4178f2be8f8",
