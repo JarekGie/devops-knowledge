@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Diagnose CloudFront configuration for Google social auth failure"
+              "title": "Terminal: ⠐ Diagnose CloudFront configuration for Google social auth failure"
             }
           },
           {
@@ -91,7 +91,8 @@
               "title": "Terminal: ✳ Set up neutral email assets domain with S3 and CloudFront"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -275,7 +276,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "901791c00763111e",
+  "active": "53bc6735d82d84c0",
   "lastOpenFiles": [
     "_chatgpt/context-packs/vault-llm-governance.md",
     "_chatgpt/context-packs/vault-llm-governance.md.tmp.31152.33910e07bf97",
