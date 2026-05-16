@@ -2,7 +2,7 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-16 — MASPEX: mail assets CDN — S3 live, CF blokuje cert PENDING_VALIDATION
+## Update — 2026-05-16 — MASPEX: mail assets CDN — LIVE ✅ Czeka na finalny CNAME
 
 ```
 REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring, commit: a6661d0)
@@ -11,26 +11,23 @@ STAN:
   ✅ S3 bucket maspex-mail-assets-969209893152 — LIVE (eu-west-1)
   ✅ OAC maspex-mail-assets (E2RWD7KYG4EO5T) — LIVE
   ✅ 9 assetów w s3://maspex-mail-assets-969209893152/email/
-  ❌ CloudFront — BLOCKED: cert PENDING_VALIDATION
-  ❌ Bucket policy — nie zastosowana (zależy od CF ARN)
+  ✅ CloudFront E34Y0KHR85VIR7 — LIVE (d3muxmyhrve6og.cloudfront.net)
+  ✅ Bucket policy — zastosowana (AllowCloudFrontOAC)
+  ✅ CF invalidation IBBMQ8QFJHR922X6W9P1MVGLOW — /email/* InProgress
+  ⏳ ACM assets.twojkapsel.pl — ISSUED
+  ⏳ ACM auth.twojkapsel.pl — PENDING_VALIDATION
 
-BLOKER — DNS CNAME do dodania u rejestratora twojkapsel.pl:
-  Name:  _b13a910ff40f6d548526f85fb43c12df.assets.twojkapsel.pl.
+NASTĘPNY KROK — DNS CNAME finalny (u rejestratora twojkapsel.pl):
+  Name:  assets.twojkapsel.pl
   Type:  CNAME
-  Value: _54baeccf3f6b8394e0aedd29ba645d25.jkddzztszm.acm-validations.aws.
-
-NASTĘPNY KROK (po cert ISSUED):
-  cd ~/projekty/mako/aws-projects/infra-maspex/terraform/envs/shared
-  AWS_PROFILE=maspex-cli terraform apply \
-    -target=module.cloudfront_mail_assets \
-    -target=aws_s3_bucket_policy.mail_assets \
-    -var-file=terraform.tfvars -auto-approve
+  Value: d3muxmyhrve6og.cloudfront.net
 
 UWAGA — pre-existing issue (niezwiązany z tym PR):
   full plan pokazuje 3 destroys CloudWatch log groups /maspex/shared/*
   Używaj -target dopóki nie rozstrzygniesz log groups issue
 
 OPEN ITEM poza IaC: app templates muszą używać EMAIL_ASSETS_BASE_URL
+  base_url: https://assets.twojkapsel.pl
 ```
 
 ## Update — 2026-05-16 — MASPEX: IaC mail assets CDN — gotowe do apply (poprzedni stan, zastąpiony powyżej)
@@ -3455,4 +3452,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-16 18:04 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-16 18:15 — sesja aktywna*

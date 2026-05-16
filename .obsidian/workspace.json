@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Set up neutral email assets domain with S3 and CloudFront"
+              "title": "Terminal: ✳ Set up neutral email assets domain with S3 and CloudFront"
             }
           }
         ],
@@ -278,6 +278,7 @@
   },
   "active": "53bc6735d82d84c0",
   "lastOpenFiles": [
+    "02-active-context/now.md.tmp.51180.c0b3b01cf521",
     "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md",
     "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md.tmp.39199.529d20ebda1e",
     "02-active-context/now.md.tmp.51180.c9aa8379bc37",
@@ -309,7 +310,6 @@
     "20-projects/clients/mako/maspex/instrumentacja-przed-load-testem-prompt.md",
     "20-projects/clients/mako/maspex/rca-load-test-2026-05-11-prompt.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-11-0000-cest.md",
-    "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "20-projects/clients/mako/drp-tfs",
     "20-projects/internal/secure-ai-anonymizer/research",
     "20-projects/internal/secure-ai-anonymizer/adr",
