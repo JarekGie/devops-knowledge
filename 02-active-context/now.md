@@ -2,6 +2,36 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-16 — MASPEX: IaC mail assets CDN — gotowe do apply
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: analysis/maspex-load-test-2026-05-11)
+ZMIANY: terraform/envs/shared/ (4 modified + 1 new file, niezcommitowane)
+
+CO ZROBIONO (IaC only, bez app code):
+  ✅ shared/providers.tf — dodany provider alias aws.us_east_1
+  ✅ shared/variables.tf — mail_assets_domain + mail_assets_cf_certificate_arn
+  ✅ shared/terraform.tfvars — wartości z placeholderem ARN cert
+  ✅ shared/mail-assets.tf — S3 bucket + OAC + bucket policy + CloudFront module
+  ✅ shared/outputs.tf — mail_assets_bucket_name, cloudfront_domain, distribution_id, base_url
+  ✅ terraform fmt -check: PASS
+  ✅ terraform validate: SUCCESS
+
+PREREQ DO APPLY (blokuje):
+  1. awsume maspex + request-certificate assets.twojkapsel.pl w us-east-1
+  2. Dodaj DNS CNAME walidacyjny, poczekaj na ISSUED
+  3. Podmień mail_assets_cf_certificate_arn w terraform.tfvars
+  4. terraform init -backend-config=backend.hcl
+  5. terraform plan → terraform apply
+
+OPEN ITEM (poza IaC):
+  App code musi dostać EMAIL_ASSETS_BASE_URL — dziś maile nadal używają NEXT_PUBLIC_SITE_URL
+  Pełny plan: 20-projects/clients/mako/maspex/mail-assets-migration-plan.md
+
+TARGET URL: https://assets.twojkapsel.pl/email/<plik>.png
+```
+
+
 ## Update — 2026-05-15 — MASPEX: PROD parity — APPLIED ✅
 
 ```
@@ -3394,4 +3424,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-16 14:19 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-16 14:29 — sesja aktywna*
