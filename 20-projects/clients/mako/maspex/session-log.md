@@ -844,3 +844,23 @@ Pełna dokumentacja: `redis-connection-change-2026-05-08.md`
   - FK violations dla synthetic test users (brak wierszy w `profiles` Supabase)
   - VOTE_CACHE_WRITETHROUGH_FAIL 68 szt. (saturacja CPU taska, nie Redis)
 - Open risks: max capacity 30 może być za mało na kampanię; pre-scale wymagany; dane testowe do naprawy
+
+---
+
+## 2026-05-16 — Diagnoza CloudFront vs Google social auth
+
+**Cel:** sprawdzić czy CloudFront psuje flow logowania Google dla `test.twojkapsel.pl` PROD.
+
+**Wynik:** `CLOUDFRONT_LIKELY_OK` — CF konfiguracja jest poprawna.
+
+**Root cause:** App ma `SITE_URL` = `test.kapsel.makotest.pl` (NXDOMAIN) w sekretach Vault (`bss/maspex-kapsel/coreapp-prod/`). Po OAuth callback redirect idzie na martwą domenę → sesja nie trafia do przeglądarki.
+
+**Dowód:** `GET /auth/callback?code=test` → `307 → https://test.kapsel.makotest.pl/auth/error?error=PKCE%20code%20verifier%20not%20found`
+
+**Fix:**
+1. Vault: zmień SITE_URL na `https://test.twojkapsel.pl` + **rebuild Docker image**
+2. Supabase Console: Site URL + Redirect URL → `test.twojkapsel.pl`
+3. Google Console: dodaj `https://test.twojkapsel.pl/auth/callback` do OAuth redirect URIs
+4. WAF: allowlista 2 IPs blokuje ruch przez Cloudflare klienta — rozważyć managed rules
+
+**Szczegółowy raport:** [[cloudfront-google-auth-diagnosis-2026-05-16]]
