@@ -91,8 +91,7 @@
               "title": "Terminal: ✳ Set up neutral email assets domain with S3 and CloudFront"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -276,7 +275,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "53bc6735d82d84c0",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
     "02-active-context/now.md.tmp.51180.c0b3b01cf521",
     "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md",
