@@ -2,6 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-17 — MFS-ONBOARDING (GCP): context snapshot gotowy
+
+```
+PROJEKT:  mfs-onboarding / rci-orchestration (GCP)
+CONTEXT:  20-projects/clients/mako/mfs-onboarding/mfs-onboarding-context.md
+PEWNOŚĆ:  częściowa (runtime OK, IaC niezweryfikowane — repo lokalne nie znalezione)
+
+KLUCZOWE USTALENIA:
+  ⚠️ Namespace "dev" uruchamia SPRING_PROFILES_ACTIVE=prod — prod workload w dev namespace
+  ⚠️ Namespace rci-onboarding-prod: PUSTY (276d bez zasobów)
+  ⚠️ Brak resource limits/requests i probes na kontenerach
+  ⚠️ Secret Manager API disabled — sekrety w K8s Secrets
+  ⚠️ SSH/RDP firewall otwarte na 0.0.0.0/0 (2 reguły)
+  ⚠️ Fluent-bit DaemonSet disabled — logi przez Cloud Logging sink → GCS, nie przez OpenSearch
+  ✅ GKE rci-cluster: RUNNING, 3/3 pods healthy
+  ✅ HAProxy Ingress: 2/2, external IP 35.189.115.120
+  ✅ OpenSearch VM: RUNNING (35.189.90.45)
+  ✅ Grafana: 1/1 Running (observability ns)
+
+NASTĘPNY KROK:
+  Sklonować repo ~/projekty/mako/mfs-orchestration (IaC niezweryfikowane)
+  Wyjaśnić naming dev/prod namespace z zespołem
+```
+
 ## Update — 2026-05-17 — MASPEX: load test PROD — analiza gotowa, ECS wrócone do normy
 
 ```
@@ -3476,4 +3500,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-17 14:40 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-17 15:00 — sesja aktywna*
