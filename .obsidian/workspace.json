@@ -189,8 +189,7 @@
               "title": "mfs-onboarding-gcp"
             }
           }
-        ],
-        "currentTab": 6
+        ]
       }
     ],
     "direction": "vertical"
@@ -374,7 +373,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f323c3edf3663fab",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
     "_chatgpt/context-packs/mfs-onboarding-gcp.md",
     "_chatgpt/context-packs/mfs-onboarding-gcp.md.tmp.2182.3c1bf4812aa5",
