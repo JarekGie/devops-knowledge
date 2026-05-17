@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Analyze Maspex load test HTTP 500 errors May 16"
+              "title": "Terminal: ⠐ Analyze Maspex load test HTTP 500 errors May 16"
             }
           },
           {
@@ -217,8 +217,7 @@
               "title": "log-analysis-2026-05-17"
             }
           }
-        ],
-        "currentTab": 8
+        ]
       }
     ],
     "direction": "vertical"
@@ -402,7 +401,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "d274c519bb3979f8",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
     "20-projects/clients/mako/mfs-onboarding/log-analysis-2026-05-17.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
