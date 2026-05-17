@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Analyze Maspex load test HTTP 500 errors May 16"
+              "title": "Terminal: ✳ Analyze Maspex load test HTTP 500 errors May 16"
             }
           },
           {
@@ -291,6 +291,7 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/dns-validation-teams-msg.md",
     "20-projects/clients/mako/maspex/session-log.md.tmp.2182.1e0945feffb5",
     "20-projects/clients/mako/maspex/cutover-twojkapsel-2026-05-17.md",
     "20-projects/clients/mako/mfs-onboarding/mfs-onboarding-context.md",
@@ -320,7 +321,6 @@
     "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md",
     "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md.tmp.39199.529d20ebda1e",
     "02-active-context/now.md.tmp.51180.c9aa8379bc37",
-    "20-projects/clients/mako/maspex/mail-assets-migration-plan.md.tmp.51180.1cbc7b07ac72",
     "_chatgpt/context-packs/vault-llm-governance.md",
     "_chatgpt/context-packs/maspex.md",
     "20-projects/clients/mako/maspex/prod-e2e-test-2026-05-15.md",

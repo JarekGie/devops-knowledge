@@ -16,6 +16,22 @@ IaC przygotowane, `terraform validate` czyste, `terraform plan` zakończony sukc
 
 ---
 
+## Status certyfikatu
+
+| ARN (suffix) | SANs | Status |
+|---|---|---|
+| f1370536 | twojkapsel.pl, www.twojkapsel.pl, test.twojkapsel.pl, www.test.twojkapsel.pl | PENDING_VALIDATION |
+
+Walidacja DNS po stronie klienta (Cloudflare). Rekordy CNAME: `dns-validation-teams-msg.md`
+
+Sprawdzenie statusu:
+```bash
+aws acm describe-certificate \
+  --certificate-arn "arn:aws:acm:us-east-1:969209893152:certificate/f1370536-7607-4a75-83f9-f261afce97f2" \
+  --region us-east-1 --profile maspex-cli \
+  --query 'Certificate.Status' --output text
+```
+
 ## B. Discovery
 
 ### CloudFront distributions (prod)
