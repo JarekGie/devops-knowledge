@@ -4,6 +4,35 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-17 — Przygotowanie Terraform: cutover twojkapsel.pl
+
+**Cel:** przygotować IaC do zmiany domeny prod z test.twojkapsel.pl na twojkapsel.pl — bez apply.
+
+**Plik raportu:** `cutover-twojkapsel-2026-05-17.md`
+
+**Co zrobiono:**
+1. Discovery: CF distributions E33PUJBAQ533K0 (api) vs E32AZKJ5SJSDSV (admin), aliasy, certyfiakty us-east-1 i eu-west-1
+2. Zmiany IaC:
+   - `terraform.tfvars`: `api_domain` = twojkapsel.pl, cert = 1e70d4ef
+   - `main.tf`: CF aliases + ALB aliases rozszerzone o twojkapsel.pl, www.twojkapsel.pl; nowy zasób `aws_lb_listener_certificate.twojkapsel_prod`
+   - `waf.tf`: `default_action { block {} }` → `allow {}`
+3. `terraform fmt` ✅ / `terraform validate` ✅ / `terraform plan` ✅ (1 add, 12 change, 0 destroy)
+4. Plan zapisany: `terraform/envs/prod/cutover.tfplan`
+
+**BLOCKER przed apply:** cert `1e70d4ef` pokrywa tylko twojkapsel.pl + www.twojkapsel.pl; nie pokrywa test.*. CF odrzuci apply jeśli alias nie jest w cercie. Potrzebny nowy 4-SAN cert (komenda w raporcie).
+
+**OSTRZEŻENIE:** plan cofa autoscaling (max 30→15, min 5→9) — ręczne zmiany z load testu. Decyzja wymagana.
+
+**Gdzie skończono:** plan gotowy i zapisany. Apply zablokowane certem.
+
+**Następne:**
+1. `aws acm request-certificate` — nowy cert z 4 SANami (us-east-1)
+2. Zaktualizować `api_cloudfront_certificate_arn` w tfvars
+3. Podjąć decyzję o autoscalingu (min/max przed campaign day)
+4. Re-run plan → apply w dniu cutover
+
+---
+
 ## 2026-05-16 — Load test PROD + analiza porównawcza PROD vs UAT
 
 **Cel:** load test PROD (21:30–22:10 CEST), pełna analiza warstwowa, porównanie z baseline UAT (2026-05-15).

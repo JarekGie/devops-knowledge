@@ -2,6 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-17 — MASPEX: Terraform cutover twojkapsel.pl — plan gotowy, BLOCKED-cert
+
+```
+PROJEKT:  maspex / prod
+RAPORT:   20-projects/clients/mako/maspex/cutover-twojkapsel-2026-05-17.md
+PLAN:     terraform/envs/prod/cutover.tfplan  (1 add, 12 change, 0 destroy)
+
+STATUS: ZABLOKOWANY — wymagany nowy ACM cert przed apply
+  - cert 1e70d4ef: pokrywa twojkapsel.pl + www.twojkapsel.pl (us-east-1)
+  - CF aliases: {twojkapsel.pl, www.twojkapsel.pl, test.twojkapsel.pl, www.test.twojkapsel.pl}
+  - CloudFront API odrzuci apply — test.* nie pokryte przez cert
+  - Fix: aws acm request-certificate --domain-name "twojkapsel.pl" --subject-alternative-names
+           "www.twojkapsel.pl" "test.twojkapsel.pl" "www.test.twojkapsel.pl" --region us-east-1
+           --validation-method DNS --profile maspex-cli
+
+OSTRZEŻENIE: plan cofa autoscaling max 30→15, min 5→9 (TF default vs ręczne zmiany z load testu)
+
+NASTĘPNE:
+  1. Request nowy cert → czekaj ISSUED → zaktualizuj tfvars
+  2. Decyzja autoscaling (min/max na campaign day)
+  3. Re-run plan
+  4. W dniu cutover: terraform apply "cutover.tfplan" → klient zmienia DNS
+```
+
 ## Update — 2026-05-17 — MFS-ONBOARDING (GCP): analiza logów 24h — gotowa
 
 ```
@@ -3504,4 +3528,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-17 19:22 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-17 20:10 — sesja aktywna*
