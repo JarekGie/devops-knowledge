@@ -16,10 +16,10 @@ regions:
   - europe-west2
 extra_regions: []
 iac: terraform
-repository: "~/projekty/mako/mfs-orchestration (niezweryfikowane — repo nie znalezione lokalnie)"
-created: "2026-05-17"
-updated: "2026-05-17"
-last_verified: "2026-05-17"
+repository: ~/projekty/mako/mfs-orchesta
+created: 2026-05-17
+updated: 2026-05-17
+last_verified: 2026-05-17
 scan_method: cloud-detective-v2
 last_verified_by: claude-sonnet-4-6
 tags:
