@@ -2,28 +2,32 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-17 — MFS-ONBOARDING (GCP): context snapshot gotowy
+## Update — 2026-05-17 — MFS-ONBOARDING (GCP): analiza logów 24h — gotowa
 
 ```
 PROJEKT:  mfs-onboarding / rci-orchestration (GCP)
 CONTEXT:  20-projects/clients/mako/mfs-onboarding/mfs-onboarding-context.md
-PEWNOŚĆ:  częściowa (runtime OK, IaC niezweryfikowane — repo lokalne nie znalezione)
+LOG ANALYSIS: 20-projects/clients/mako/mfs-onboarding/log-analysis-2026-05-17.md
 
-KLUCZOWE USTALENIA:
-  ⚠️ Namespace "dev" uruchamia SPRING_PROFILES_ACTIVE=prod — prod workload w dev namespace
-  ⚠️ Namespace rci-onboarding-prod: PUSTY (276d bez zasobów)
-  ⚠️ Brak resource limits/requests i probes na kontenerach
-  ⚠️ Secret Manager API disabled — sekrety w K8s Secrets
-  ⚠️ SSH/RDP firewall otwarte na 0.0.0.0/0 (2 reguły)
-  ⚠️ Fluent-bit DaemonSet disabled — logi przez Cloud Logging sink → GCS, nie przez OpenSearch
-  ✅ GKE rci-cluster: RUNNING, 3/3 pods healthy
-  ✅ HAProxy Ingress: 2/2, external IP 35.189.115.120
-  ✅ OpenSearch VM: RUNNING (35.189.90.45)
-  ✅ Grafana: 1/1 Running (observability ns)
+VERDICT: System działa stabilnie (0 restartów, 0 błędów app, 0 OOMKilled).
+         Brak evidence awarii. Krytyczna luka observability: brak HTTP access logów.
 
-NASTĘPNY KROK:
-  Sklonować repo ~/projekty/mako/mfs-orchestration (IaC niezweryfikowane)
-  Wyjaśnić naming dev/prod namespace z zespołem
+USTALENIA Z ANALIZY LOGÓW:
+  🔴 Brak HTTP access logów — HAProxy loguje do syslog (nie stdout), brak sidecar
+  🔴 Aktywne skanowanie exploit (ThinkPHP RCE, PHP pearcmd) dociera do podów
+     — Tomcat odrzuca, ale brak WAF/ACL przed aplikacją
+  🔴 Port 6060 HAProxy (stats) wystawiony na internet — potwierdzone przez TLS scan
+  ✅ 3/3 pody Running, 0 restartów w 27h, CPU 2-3m, Memory 226-255Mi
+  ✅ Ruch aplikacyjny: ~500 "Request logged" / 24h, szczyt 10:00 UTC (100/h)
+  ✅ Brak non-Normal events w klastrze (ostatnie 24h)
+  ✅ Node warnings: NodeSysctlChange (net.netfilter.nf_conntrack_acct) — niekrytyczne
+  ℹ️ OpenSearch VM: RUNNING, ale brak logów OS w Cloud Logging, Fluent-bit disabled
+  ℹ️ RequestFilter loguje tylko "Request logged" bez URL/status/latency
+
+NASTĘPNE KROKI (read-only follow-up):
+  1. gcloud compute target-pools get-health a6b33017894a44e3d88106baaa935ee0 --region europe-west2
+  2. kubectl exec -n haproxy-controller -- cat /etc/haproxy/haproxy.cfg | grep log
+  3. Sklonować repo ~/projekty/mako/mfs-orchestration (IaC niezweryfikowane)
 ```
 
 ## Update — 2026-05-17 — MASPEX: load test PROD — analiza gotowa, ECS wrócone do normy
