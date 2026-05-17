@@ -319,6 +319,8 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "50-patterns/prompts/invocations/cloud-detective-mfs-onboarding.md.tmp.2182.60587504d94b",
+    "50-patterns/prompts/invocations/cloud-detective-mfs-onboarding.md",
     "20-projects/clients/mako/maspex/session-log.md.tmp.2182.d13f88f6a048",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md.tmp.2182.8088d54e138f",
@@ -352,9 +354,7 @@
     "CLAUDE.md",
     "20-projects/clients/mako/maspex/rca-load-test-2026-05-11.md",
     "20-projects/clients/mako/maspex/instrumentacja-przed-load-testem-prompt.md",
-    "20-projects/clients/mako/maspex/rca-load-test-2026-05-11-prompt.md",
     "20-projects/clients/mako/drp-tfs",
-    "20-projects/internal/secure-ai-anonymizer/research",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
