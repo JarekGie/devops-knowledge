@@ -4,6 +4,32 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-16 — Load test PROD + analiza porównawcza PROD vs UAT
+
+**Cel:** load test PROD (21:30–22:10 CEST), pełna analiza warstwowa, porównanie z baseline UAT (2026-05-15).
+
+**Raport:** `load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md`
+
+**Wyniki:**
+- PROD zdał — 0 Target 5xx, 0 błędów app w logach, p99 peak = 0.277s
+- Post-peak tail degradation 21:45 CEST: 67 ELB 5xx, p99 8.7s — connection queue overflow (nie błąd app)
+- Redis: hit rate 47–50% (vs UAT 75%), 0 evictions, EngineCPU max 23.8%
+- ECS: 30 tasków pre-scaled przez cały test; autoscaling nie był potrzebny
+- Naprawiony bug: macOS `date -j` bez `TZ=UTC` generuje złe epochy (traktuje UTC ISO jako CEST)
+
+**Działania po teście:**
+- CF invalidation PROD: E17VHHQJ29MVAB + E34Y0KHR85VIR7 — wykonane ✅
+- ECS maspex-api PROD: desired=5, min=5, max=30 — wykonane ✅
+- Redis FLUSHALL PROD — **NIE wykonano** (czeka na potwierdzenie; Redis VPC-only, wymaga ECS exec)
+
+**Gdzie skończono:** ECS scale-down w toku (z 26 → 5 tasków)
+
+**Następne:**
+- Rozstrzygnąć Redis FLUSHALL (jeśli potrzebny)
+- Przygotować rekomendacje przed kolejnym testem: min capacity pre-scale, ALB connection drain tuning, Redis warm-up
+
+---
+
 ## 2026-05-15 — PROD↔UAT drift analysis + fix
 
 **Cel:** pełny discovery driftów UAT vs PROD, minimalne poprawki, walidacja.

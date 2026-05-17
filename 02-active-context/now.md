@@ -2,6 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-17 — MASPEX: load test PROD — analiza gotowa, ECS wrócone do normy
+
+```
+LOAD TEST PROD — 2026-05-16 21:30–22:10 CEST — WYNIKI
+
+RAPORT: 20-projects/clients/mako/maspex/load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md
+
+WYNIKI:
+  ✅ PROD zdał — 0 Target 5xx, 0 błędów aplikacyjnych w logach
+  ✅ p99 peak = 0.277s (vs UAT 1.493s — 5.4× lepiej)
+  ⚠️ Post-peak tail: 67 ELB 5xx, p99 8.7s o 21:45 CEST (connection queue overflow, nie app)
+  ✅ Redis: 0 evictions, EngineCPU max 23.8%; hit rate 47–50% (niższy niż UAT 75%)
+
+PO TEŚCIE:
+  ✅ CF invalidation PROD E17VHHQJ29MVAB (twojkapsel.pl) — I90YBZJ4VCIWJPZSK6RYT9M90W InProgress
+  ✅ CF invalidation PROD E34Y0KHR85VIR7 (assets.twojkapsel.pl) — IBYMFOBL6JYCUINZRRCQAVJT6F InProgress
+  ✅ ECS maspex-api PROD: desired=5, min=5, max=30 (przywrócono po teście)
+  ⚠️ Redis FLUSHALL PROD — NIE wykonano (czeka na potwierdzenie; Redis VPC-only, wymaga ECS exec)
+
+REDIS FLUSHALL — jeśli potrzebny:
+  Cluster: maspex-prod.zwowz5.0001.euw1.cache.amazonaws.com:6379
+  Dostęp: ECS exec na running maspex-api task
+```
+
 ## Update — 2026-05-16 — MASPEX: mail assets CDN — LIVE ✅ Czeka na finalny CNAME
 
 ```
@@ -3452,4 +3476,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-16 22:33 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-17 13:55 — sesja aktywna*
