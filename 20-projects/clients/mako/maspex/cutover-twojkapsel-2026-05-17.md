@@ -20,7 +20,7 @@ IaC przygotowane, `terraform validate` czyste, `terraform plan` zakończony sukc
 
 | ARN (suffix) | SANs | Status |
 |---|---|---|
-| f1370536 | twojkapsel.pl, www.twojkapsel.pl, test.twojkapsel.pl, www.test.twojkapsel.pl | PENDING_VALIDATION |
+| f1370536 | twojkapsel.pl, www.twojkapsel.pl, test.twojkapsel.pl, www.test.twojkapsel.pl | **ISSUED** ✅ |
 
 Walidacja DNS po stronie klienta (Cloudflare). Rekordy CNAME: `dns-validation-teams-msg.md`
 
