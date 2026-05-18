@@ -105,8 +105,7 @@
               "title": "process-queue-investigation-2026-05-18"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -163,7 +162,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 451.5
+    "width": 451.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -290,8 +290,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "efdb52cad16eb98f",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/session-log.md.tmp.45222.b5a2b1ee6484",
     "20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md",
     "20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md.tmp.45222.3808090974fb",
     "_chatgpt/context-packs/maspex-full-context.md",
@@ -327,7 +328,6 @@
     "20-projects/clients/mako/maspex/maspex-context.md",
     "50-patterns/prompts/invocations/cloud-detective-mfs-onboarding.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md",
-    "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

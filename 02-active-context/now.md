@@ -2,6 +2,34 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-18 — MASPEX: process-queue investigation DONE ✅
+
+```
+RAPORT: 20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md
+
+ROOT CAUSE (FAKT):
+  OpenAI 429 billing quota exhaustion → infinite requeue loop (brak max_retries)
+  20 UUID-ów × 224-228 requeue w 2h | storm aktywny od ~16:20 UTC
+
+ALB: peak 109 Target 5xx @ 16:26 UTC | Redis: niezatknięty | ECS: 30/30 stable
+
+OSOBNY (LOW): PostgreSQL 22P05 null byte — 5 zdarzeń, brak kaskady
+
+KRYTYCZNA AKCJA (P1 — wykonać PRZED odnowieniem OpenAI):
+  Naprawić klasyfikację HTTP 429 w process-queue:
+  - 429 billing quota → dead-letter / stop (NIE requeue)
+  - 429 rate limit → retry z backoff + max_retries cap
+  Bez naprawy: nowe quota zostaną wyczerpane w minuty po odnowieniu
+```
+
+OTWARTE — MASPEX:
+  - ⚠️ CRITICAL: fix process-queue before OpenAI quota renewal
+  - WAF admin panel PROD tymczasowo otwarty (rollback po kampanii)
+  - REDIS_URL w prod Secrets Manager do weryfikacji
+  - maspex-bot unhealthy (PROD + UAT) — niezależny problem
+
+---
+
 ## Update — 2026-05-18 — MASPEX: context pack + repo wyrównane ✅
 
 ```
@@ -3616,4 +3644,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 20:27 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 20:40 — sesja aktywna*

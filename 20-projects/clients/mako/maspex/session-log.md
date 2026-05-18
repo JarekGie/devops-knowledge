@@ -4,6 +4,28 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — INVESTIGATION: /api/cron/process-queue — requeue storm ✅ (raport)
+
+**Tryb:** READ-ONLY — zero zmian w środowisku
+
+**Root cause (FAKT):** OpenAI HTTP 429 billing quota exhaustion → `process-queue` klasyfikuje jako "transient AI failure" → infinite requeue bez górnego limitu prób.
+
+**Skala:** 20 UUID-ów × 224–228 requeue w ciągu 2h. Storm aktywny od ~16:20 UTC.
+
+**ALB peak:** 109 Target 5xx w 5-minutowym oknie o 16:26 UTC.
+
+**Osobny problem (LOW):** PostgreSQL 22P05 null byte — 5 izolowanych zdarzeń (13:37–15:52 UTC), batch kontynuuje normalnie.
+
+**ECS:** 30/30 stable; 4 task stop+replace w oknie 15:58–16:30 (stop reason nieznany — GC'd).
+
+**Redis:** niezatknięty (CPU avg 0.42%).
+
+**Raport:** `20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md`
+
+**P1 przed odnowieniem OpenAI:** naprawić klasyfikację 429 + max_retries per UUID — bez tego pętla wznowi się natychmiast.
+
+---
+
 ## 2026-05-18 — IAM drift fix UAT + WAF admin panel open ✅
 
 **IAM drift — maspex-api-execution-secrets:**
