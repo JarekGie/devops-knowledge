@@ -4,6 +4,33 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — BE dev-scan Jenkinsfile fix (CFN-MUT-001 BE)
+
+**Plik:** `jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile` (repo: eshop-cicd, branch: master)
+
+**Problem:** dev path tworzył ChangeSet na parent stacku `dev-ECSStack-1BLAWHL0P6JKO`, co cascadeowało na wszystkie nested stacki łącznie z FrontendRenault i FrontendDacia. Guard (`allowedStacks`) błędnie dopuszczał te stacki. `aws cloudformation wait stack-update-complete` timeoutował po ~15 min.
+
+**Zmiany (minimalne, tylko dev path):**
+- Dodano `def changeSetIdsBackend = []` na poziomie globalnym pipeline
+- Dev path: **nie** tworzy ChangeSet na parent stacku — zamiast tego:
+  - Preflight: sprawdza status parent + child stacków
+  - `describe-stack-resources` → odkrywa fizyczne nazwy `api` i `backoffice` child stacków
+  - `parentStackId` guard: ChangeSet StackId != parent ARN
+  - Parametry child stacków: `api` / `backoffice` (potwierdzone z `api-dev.yml` i `backoffice-dev.yml`)
+    - paramety obrazu: `api` w api child stack, `backoffice` w backoffice child stack
+    - Pozostałe params: `UsePreviousValue=true` (odkryte dynamicznie przez `describe-stacks`)
+  - ChangeSet per child: `changeSet-${BUILD_NUMBER}-api` / `changeSet-${BUILD_NUMBER}-backoffice`
+  - Guard: denied resource types (EC2, RDS, IAM, S3, ELB)
+  - `changeSetIdBackend = null` (sentinel — deploy stage używa `changeSetIdsBackend`)
+- Non-dev path: bez zmian (ChangeSet na parent, `aws cloudformation wait` zachowany)
+- Deploy stage: dev używa `changeSetIdsBackend.each` + `waitUntil(initialRecurrencePeriod: 60000)` + `timeout(4h)` + post-deploy parent status check
+
+**Stan:** patch zastosowany lokalnie, nie committowany. Nie uruchamiano żadnego Jenkins joba.
+
+**Następny krok:** code review + commit + weryfikacja przez uruchomienie dev pipeline.
+
+---
+
 ## 2026-05-12 — FE dev-scan Jenkinsfile fix (CFN-MUT-001)
 
 **Plik:** `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile` (branch: master, commit: `ef565fb`)
