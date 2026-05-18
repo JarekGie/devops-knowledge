@@ -42,6 +42,28 @@ POMINIĘTE CELOWO:
 NASTĘPNE: merge feature/vault-sync-model do main (gdy gotowe)
 ```
 
+## Update — 2026-05-18 — RSHOP: aktywny kontekst ⬅️
+
+```
+PROJEKT:  rshop (Renault/Dacia e-commerce)
+PROFIL:   rshop / account 943111679945 / eu-central-1
+REPO:     ~/projekty/mako/aws-projects/infra-rshop (CloudFormation)
+CONTEXT:  20-projects/clients/mako/rshop/rshop-context.md
+
+OSTATNIA SESJA (2026-05-14):
+  - FE Jenkinsfile naprawiony: dev deploy celuje w child CFN stacks (FrontendRenault/FrontendDacia)
+  - Commit: aff7f1dc (fix(rshop-fe): deploy dev frontend via child CloudFormation stacks only)
+  - Stan dev ECS: wszystkie 4 serwisy 1/1/0, healthy ✅
+  - Dev stack root: UPDATE_ROLLBACK_COMPLETE (od 2026-04-28, nie blokuje ECS)
+
+BACKLOG (z session-log):
+  - [ ] Cleanup: usuń stary cert 3be77743 (po 2026-05-23)
+  - [ ] Cleanup: usuń orphaned cert dev.eshoprenault.lt (EXPIRED 2024-08-08)
+  - [ ] CloudWatch alarm DaysToExpiry < 30 dla nowych certów
+  - [ ] Zwiększyć retencję /ecs/rshop-dev z 1d na 14+ dni
+  - [ ] Zbadać przyczynę ECS deploy failure przed kolejnym deployem
+```
+
 ## Update — 2026-05-18 — MASPEX: twojkapsel.pl LIVE ✅
 
 ```
@@ -3557,4 +3579,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 17:35 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 18:02 — sesja aktywna*

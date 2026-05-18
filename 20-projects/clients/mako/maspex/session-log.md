@@ -4,6 +4,26 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — IAM drift fix UAT + WAF admin panel open ✅
+
+**IAM drift — maspex-api-execution-secrets:**
+- Problem: execution role `maspex-api-execution` miała ARN `maspex/prod/api` zamiast `maspex/uat/api` → `ResourceInitializationError` w UAT
+- Fix: `terraform apply -target='module.service_api.aws_iam_role_policy.execution_secrets[0]'`
+- Weryfikacja: force-new-deployment → desired=2, running=2, failedTasks=0 ✅
+- KMS: AWS managed key, `kms:Decrypt` nie był potrzebny
+- Pozostałe drifty z pełnego planu (autoscaling min 2→12, WAF IP, tagi): **nie zastosowane** — czekają na decyzję
+
+**WAF admin panel — kapsel-prod.makotest.pl:**
+- Otwarcie z `0.0.0.0/0` → `default_action: allow`
+- Stare IPs zachowane w `local.admin_panel_allowed_ipv4_cidrs` do rollbacku
+- Notatka: `waf-admin-panel-open-2026-05-18.md`
+- Apply: `admin-panel-open.tfplan` ✅
+
+**Gdzie skończono:** UAT maspex-api działa, prod admin panel otwarty
+**Następne (maspex):** zdecydować o 9 pozostałych driftach z pełnego planu UAT
+
+---
+
 ## 2026-05-18 — CUTOVER twojkapsel.pl — LIVE ✅
 
 **Cel:** przełączenie produkcji na twojkapsel.pl.
