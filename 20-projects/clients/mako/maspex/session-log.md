@@ -4,6 +4,29 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — TF FIX UAT: secret_arns stabilizacja shared policy ✅
+
+**Problem:** Terraform UAT zarządzał `maspex-api-execution-secrets` tylko z UAT ARN → każdy `tf apply` z envs/uat usuwał PROD ARN.
+
+**Fix:** `terraform/envs/uat/main.tf` — dodano PROD ARN do `secret_arns` module `service_api`:
+```diff
+-  secret_arns = [var.api_redis_secret_arn]
++  secret_arns = [
++    var.api_redis_secret_arn,
++    "arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/prod/api-z6g7eq",
++  ]
+```
+
+**`terraform plan` wynik:** `No changes` — TF code i AWS resource w pełnej synchronizacji.
+
+**Commit:** `334353c` na `feat/campaign-day-monitoring`, pushed do MR #16.
+
+**Stan:** PROD 30/30, UAT 2/2, policy oba ARN-y. Drift usunięty.
+
+**Remaining risk:** envs/prod nadal zarządza policy z [prod only]. `tf apply` z envs/prod usunie UAT ARN. Follow-up wymagany po kampanii.
+
+---
+
 ## 2026-05-18 — IAM HOTFIX: maspex-api-execution-secrets — PROD restored ✅
 
 **Problem:** ECS PROD nie mogło startować nowych tasków — `AccessDeniedException: secretsmanager:GetSecretValue` na `maspex/prod/api-z6g7eq`. Inline policy `maspex-api-execution-secrets` zawierała tylko UAT ARN po wcześniejszym TF apply z envs/uat.
