@@ -134,7 +134,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -318,7 +318,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "0579f3db4b8d095f",
+  "active": "9cb6c3606152b5aa",
   "lastOpenFiles": [
     "02-active-context/now.md.tmp.2182.6af38a923320",
     "20-projects/clients/mako/maspex/session-log.md.tmp.2182.700195b37cb3",
