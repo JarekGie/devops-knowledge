@@ -4,6 +4,20 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — TF FIX PROD+UAT: secret_arns stabilizacja shared policy ✅
+
+**Zmiany:**
+- `terraform/envs/uat/main.tf` (commit `334353c`) — dodano PROD ARN do UAT `secret_arns`
+- `terraform/envs/prod/main.tf` (commit `a2bcd3a`) — dodano UAT ARN do PROD `secret_arns`
+
+**Apply:** POMINIĘTY ŚWIADOMIE w obu przypadkach — AWS policy już w sync (oba ARN-y z hotfixu).
+
+**Efekt:** oba envsy są teraz zabezpieczone — `tf apply` z żadnego nie usunie ARN drugiego.
+
+**Pozostały drift:** tag `environment=uat` na shared role `maspex-api-execution` — pominięty świadomie, nie wpływa na ECS runtime. Docelowy fix: rozdzielenie execution role per env.
+
+---
+
 ## 2026-05-18 — TF FIX UAT: secret_arns stabilizacja shared policy ✅
 
 **Problem:** Terraform UAT zarządzał `maspex-api-execution-secrets` tylko z UAT ARN → każdy `tf apply` z envs/uat usuwał PROD ARN.
