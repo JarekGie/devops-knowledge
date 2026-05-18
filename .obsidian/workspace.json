@@ -91,7 +91,8 @@
               "title": "Terminal: ⠂ Investigate Supabase cron access to twojkapsel.pl API endpoint"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -275,7 +276,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "901791c00763111e",
+  "active": "0579f3db4b8d095f",
   "lastOpenFiles": [
     "_chatgpt/context-packs/maspex-full-context.md",
     "02-active-context/now.md.tmp.45222.b17afbff7106",
