@@ -1,0 +1,102 @@
+{
+    "queryLanguage": "CWLI",
+    "results": [
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-05-18 15:17:36.884"
+            },
+            {
+                "field": "@message",
+                "value": "2026-05-18 15:17:36: [process-queue] Error processing slogan {"
+            },
+            {
+                "field": "@logStream",
+                "value": "maspex-api/maspex-api/efe42420904d4b77863f8504c77111cc"
+            },
+            {
+                "field": "@ingestionTime",
+                "value": "2026-05-18 15:17:39.647"
+            },
+            {
+                "field": "@ptr",
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIC759zjMxDnn8Pe4zMSNxoYAgagcUosAAAAAGZmll0ABqCy0pAAAALCIAEo+42i3eMzMM7pqN3jMziiBkDE2QZI2SdQjh8gAhCIBRgB"
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-05-18 15:17:36.884"
+            },
+            {
+                "field": "@message",
+                "value": "2026-05-18 15:17:36: [process-queue] Error processing slogan {"
+            },
+            {
+                "field": "@logStream",
+                "value": "maspex-api/maspex-api/efe42420904d4b77863f8504c77111cc"
+            },
+            {
+                "field": "@ingestionTime",
+                "value": "2026-05-18 15:17:39.647"
+            },
+            {
+                "field": "@ptr",
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIC759zjMxDnn8Pe4zMSNxoYAgagcUosAAAAAGZmll0ABqCy0pAAAALCIAEo+42i3eMzMM7pqN3jMziiBkDE2QZI2SdQjh8gAhCVBRgB"
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-05-18 15:52:37.444"
+            },
+            {
+                "field": "@message",
+                "value": "2026-05-18 15:52:37: [process-queue] Error processing slogan {"
+            },
+            {
+                "field": "@logStream",
+                "value": "maspex-api/maspex-api/588c059358f547579a474cdca08fc1c3"
+            },
+            {
+                "field": "@ingestionTime",
+                "value": "2026-05-18 15:52:38.311"
+            },
+            {
+                "field": "@ptr",
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIC759zjMxDnn8Pe4zMSNxoYAgagSYneAAAABp3pjW8ABqCzWHAAAAHiIAEo07+k3uMzMMHZqt7jMzjiBkCSmQdI3CZQkR4gAhDNBBgB"
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-05-18 15:52:37.444"
+            },
+            {
+                "field": "@message",
+                "value": "2026-05-18 15:52:37: [process-queue] Error processing slogan {"
+            },
+            {
+                "field": "@logStream",
+                "value": "maspex-api/maspex-api/588c059358f547579a474cdca08fc1c3"
+            },
+            {
+                "field": "@ingestionTime",
+                "value": "2026-05-18 15:52:38.311"
+            },
+            {
+                "field": "@ptr",
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIC759zjMxDnn8Pe4zMSNxoYAgagSYneAAAABp3pjW8ABqCzWHAAAAHiIAEo07+k3uMzMMHZqt7jMzjiBkCSmQdI3CZQkR4gAhDABBgB"
+            }
+        ]
+    ],
+    "statistics": {
+        "recordsMatched": 4.0,
+        "recordsScanned": 201097.0,
+        "estimatedRecordsSkipped": 0.0,
+        "bytesScanned": 27843798.0,
+        "estimatedBytesSkipped": 0.0,
+        "logGroupsScanned": 1.0
+    },
+    "status": "Complete"
+}
