@@ -2,18 +2,28 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-18 — KONTEKST: przełączenie na MASPEX
+## Update — 2026-05-18 — MASPEX: context pack + repo wyrównane ✅
 
 ```
-POPRZEDNIE ZADANIA (rshop + superpowers):
+WYKONANE:
+  ✅ maspex ChatGPT context pack: _chatgpt/context-packs/maspex-full-context.md
+  ✅ infra-maspex: 3 commity (cutover IaC, redis rotation script, testy-qa)
+  ✅ push → origin/feat/campaign-day-monitoring
+  ✅ MR #16: https://gitlab.makolab.net/admin-makolab/dc/aws-projects/infra-maspex-kapsel/-/merge_requests/16
+
+POPRZEDNIE (też gotowe):
   ✅ dc-devops-team-vault: scripts/ + 50-patterns/prompts/ dosynchronizowane
   ✅ superpowers vault layer: plan gotowy (docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md)
   ✅ rshop ChatGPT context pack: _chatgpt/context-packs/rshop-full-context.md
 
-AKTYWNE ZADANIE: maspex
-  - przygotowanie pełnego ChatGPT context pack
-  - wyrównanie repo + push do GitLab + MR
-  - repo lokalne: ~/projekty/mako/aws-projects/infra-maspex
+OTWARTE — MASPEX:
+  - WAF admin panel PROD tymczasowo otwarty (rollback po kampanii: block {} w waf.tf)
+  - REDIS_URL w prod Secrets Manager do weryfikacji
+  - Monitoring 24h po cutoverze
+  - maspex-bot unhealthy (PROD + UAT) — niezależny problem
+
+OTWARTE — superpowers plan:
+  - wykonanie planu: subagent-driven lub executing-plans (15 tasków)
 ```
 
 ## Update — 2026-05-18 — SUPERPOWERS VAULT LAYER: plan gotowy
@@ -3606,4 +3616,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 19:56 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 20:05 — sesja aktywna*
