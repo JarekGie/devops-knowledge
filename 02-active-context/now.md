@@ -2,6 +2,19 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-18 — SUPERPOWERS VAULT LAYER: plan gotowy
+
+```
+PLAN:  docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md
+CEL:   _system/superpowers/ — execution/bootstrap layer dla Claude Code i Codex
+
+15 tasków: scaffold → 5 kontraktów → SKILL-TEMPLATE → 4 bootstrapy → 10 category READMEs → 4 przykłady → integracja AGENT_BOOTSTRAP
+
+KLUCZOWE: vault = jedyny SoT | domyślnie read-only | blast radius w frontmatter | Operator Gate (HIGH/CRITICAL) | evidence-first format
+
+NASTĘPNE: wykonanie planu (subagent-driven lub executing-plans)
+```
+
 ## Update — 2026-05-18 — dc-devops-team-vault: prompt library i scripts dosynchronizowane
 
 ```
@@ -3544,4 +3557,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 13:45 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 14:24 — sesja aktywna*
