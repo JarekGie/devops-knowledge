@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Move scripts and prompt generator to shared vault"
+              "title": "Terminal: ⠂ Move scripts and prompt generator to shared vault"
             }
           },
           {
@@ -149,7 +149,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 451.5
+    "width": 451.5,
+    "collapsed": true
   },
   "right": {
     "id": "689956fbc2be7514",
