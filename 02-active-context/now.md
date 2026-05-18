@@ -2,6 +2,22 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-18 — MASPEX: IAM hotfix DONE — PROD 30/30 ✅
+
+```
+HOTFIX: maspex-api-execution-secrets — dodano PROD ARN do policy (19:34 UTC)
+PROD: 30/30 running (rev 24), steady state 21:36 CEST
+UAT:  2/2 running — nienaruszone
+
+⚠️  KRYTYCZNY DRIFT: policy poza TF state
+  Kolejny terraform apply z envs/prod lub envs/uat NADPISZE policy i problem wróci
+  Wymagany follow-up przed kolejnym TF apply:
+    A) Jeden env zarządza policy z obu ARN-ami (minimalna zmiana kodu)
+    B) Rozdziel var.name: maspex-prod-api / maspex-uat-api (docelowe, wymaga recreation)
+```
+
+---
+
 ## Update — 2026-05-18 — MASPEX: process-queue investigation DONE ✅
 
 ```
@@ -3644,4 +3660,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 21:30 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 21:40 — sesja aktywna*

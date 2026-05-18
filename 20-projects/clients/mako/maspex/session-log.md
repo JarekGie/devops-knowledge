@@ -4,6 +4,25 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — IAM HOTFIX: maspex-api-execution-secrets — PROD restored ✅
+
+**Problem:** ECS PROD nie mogło startować nowych tasków — `AccessDeniedException: secretsmanager:GetSecretValue` na `maspex/prod/api-z6g7eq`. Inline policy `maspex-api-execution-secrets` zawierała tylko UAT ARN po wcześniejszym TF apply z envs/uat.
+
+**Root cause:** PROD i UAT współdzielą rolę `maspex-api-execution`. TF module `ecs-service` tworzy policy z `Resource = var.secret_arns` — apply z UAT env nadpisuje policy do `[uat ARN]` i odwrotnie.
+
+**Hotfix (19:34 UTC):**
+```bash
+aws iam put-role-policy --role-name maspex-api-execution \
+  --policy-name maspex-api-execution-secrets --profile maspex-cli \
+  --policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["secretsmanager:GetSecretValue"],"Resource":["arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/prod/api-z6g7eq","arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/uat/api-STbBy3"]}]}'
+```
+
+**Wynik:** PROD 30/30 running na rev 24, steady state 21:36 CEST. UAT 2/2 nienaruszone.
+
+**⚠️ DRIFT:** policy jest teraz POZA TF state. Kolejny `tf apply` z envs/prod lub envs/uat nadpisze policy i problem wróci. Wymagany osobny follow-up — rozdzielenie ról lub wspólny state.
+
+---
+
 ## 2026-05-18 — INVESTIGATION: /api/cron/process-queue — requeue storm ✅ (raport)
 
 **Tryb:** READ-ONLY — zero zmian w środowisku
