@@ -2,6 +2,33 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-18 — dc-devops-team-vault: prompt library i scripts dosynchronizowane
+
+```
+REPO:    ~/projekty/mako/dc-devops-team-vault
+BRANCH:  feature/vault-sync-model
+COMMIT:  ddf5276
+
+CO DODANO (pominięte w poprzednim sync z 2026-05-18):
+  scripts/new-cloud-detective-invocation.sh
+    — generator plików invocation dla nowych projektów
+    — SAVE_PATH zaadaptowany: 20-projects/makolab/<project>/
+
+  50-patterns/prompts/README.md
+  50-patterns/prompts/TEMPLATES/prompt_template.md
+  50-patterns/prompts/starter-pack/  (15 prompt templates)
+    — cloud-detective-v2.md, ecs-alb-debug, terraform-safe-review, itp.
+
+PRZENIESIONE (fix ścieżki):
+  50-patterns/invocations/ → 50-patterns/prompts/invocations/
+  (ujednolicenie z oczekiwaną ścieżką skryptu)
+
+POMINIĘTE CELOWO:
+  new-chatgpt-context.sh — prywatny (_chatgpt/ nie istnieje w team vault)
+
+NASTĘPNE: merge feature/vault-sync-model do main (gdy gotowe)
+```
+
 ## Update — 2026-05-18 — MASPEX: twojkapsel.pl LIVE ✅
 
 ```
@@ -3517,4 +3544,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 13:21 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 13:35 — sesja aktywna*
