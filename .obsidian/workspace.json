@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Move scripts and prompt generator to shared vault"
+              "title": "Terminal: ⠐ Move scripts and prompt generator to shared vault"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "rshop-full-context"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,8 +289,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "e2617e4f332ee079",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
+    "02-active-context/now.md.tmp.45222.b17afbff7106",
     "_chatgpt/context-packs/rshop-full-context.md",
     "20-projects/clients/mako/rshop/session-log.md.tmp.55054.6b9e40051b8e",
     "20-projects/clients/mako/maspex/session-log.md.tmp.55054.f132730d6479",
@@ -327,7 +327,6 @@
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md",
     "20-projects/clients/mako/maspex/cloudfront-google-auth-diagnosis-2026-05-16.md",
     "_chatgpt/context-packs/vault-llm-governance.md",
-    "_chatgpt/context-packs/maspex.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]

@@ -2,6 +2,20 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-18 — KONTEKST: przełączenie na MASPEX
+
+```
+POPRZEDNIE ZADANIA (rshop + superpowers):
+  ✅ dc-devops-team-vault: scripts/ + 50-patterns/prompts/ dosynchronizowane
+  ✅ superpowers vault layer: plan gotowy (docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md)
+  ✅ rshop ChatGPT context pack: _chatgpt/context-packs/rshop-full-context.md
+
+AKTYWNE ZADANIE: maspex
+  - przygotowanie pełnego ChatGPT context pack
+  - wyrównanie repo + push do GitLab + MR
+  - repo lokalne: ~/projekty/mako/aws-projects/infra-maspex
+```
+
 ## Update — 2026-05-18 — SUPERPOWERS VAULT LAYER: plan gotowy
 
 ```
