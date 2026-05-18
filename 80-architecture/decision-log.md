@@ -66,4 +66,16 @@ AWS Health → GLPI Problems (dogfooding przez Cloud Support Team).
 
 ---
 
+### ADR-004 — 2026-05-18 — rshop: BE dev deploy używa bezpośrednich ChangeSetów na child stackach
+**Status:** accepted  
+**Kontekst:** `eshop-dev-aws-scan-2.jenkinsfile` (BE pipeline) tworzył ChangeSet na parent stacku `dev-ECSStack-1BLAWHL0P6JKO`, co powodowało cascade update do wszystkich nested stacków (FrontendRenault, FrontendDacia, DBStack itd.). Guard (`allowedStacks`) błędnie dopuszczał FE stacki. `aws cloudformation wait` timeoutował po ~15 min.  
+**Decyzja:** Dev backend deploy tworzy ChangeSety bezpośrednio na child stackach `api` i `backoffice` (odkrytych przez `describe-stack-resources`), nigdy na parent stacku. Parametr obrazu: `api` i `backoffice` (potwierdzone z CFN templates). Pozostałe parametry: `UsePreviousValue=true` (odkryte dynamicznie). Polling przez `waitUntil(initialRecurrencePeriod: 60000) + timeout(4h)` zamiast `aws cloudformation wait`.  
+**Guardrails:** (1) abort jeśli odkryty physical stack == parent; (2) abort jeśli ChangeSet StackId == parent ARN; (3) denied resource types: EC2, RDS, IAM, S3, ELB; (4) abort jeśli changeSet empty/FAILED; (5) abort jeśli stack IN_PROGRESS przed execute.  
+**Konsekwencje:** BE dev deploy dotyka wyłącznie `api` i `backoffice` child stacków. FE stacki i infrastruktura są nienaruszalne przez BE pipeline. 4h timeout eliminuje Jenkins abort przy wolnych ECS rolling deployach.  
+**Alternatywy odrzucone:** ChangeSet na parent z `--no-execute-changeset` (nie istnieje); ChangeSet na parent z filtetem guard (guard nie może zatrzymać cascade przed create — ryzyko race condition); `aws cloudformation wait` (Max attempts exceeded po ~15 min).  
+**Implementacja:** `jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile`, analogia do `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile` (FE fix z 2026-05-12).  
+**Uwaga:** Non-dev path (qa/uat) bez zmian — ChangeSet na parent stack pozostaje.
+
+---
+
 <!-- Dodawaj kolejne decyzje poniżej -->

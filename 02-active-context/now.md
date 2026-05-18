@@ -56,19 +56,32 @@ POMINIĘTE CELOWO:
 NASTĘPNE: merge feature/vault-sync-model do main (gdy gotowe)
 ```
 
-## Update — 2026-05-18 — RSHOP: aktywny kontekst ⬅️
+## Update — 2026-05-18 — RSHOP: BE Jenkinsfile fix ✅ ⬅️
 
 ```
 PROJEKT:  rshop (Renault/Dacia e-commerce)
 PROFIL:   rshop / account 943111679945 / eu-central-1
-REPO:     ~/projekty/mako/aws-projects/infra-rshop (CloudFormation)
+REPO:     ~/projekty/mako/eshop-cicd (Jenkins pipelines)
 CONTEXT:  20-projects/clients/mako/rshop/rshop-context.md
 
-OSTATNIA SESJA (2026-05-14):
-  - FE Jenkinsfile naprawiony: dev deploy celuje w child CFN stacks (FrontendRenault/FrontendDacia)
-  - Commit: aff7f1dc (fix(rshop-fe): deploy dev frontend via child CloudFormation stacks only)
-  - Stan dev ECS: wszystkie 4 serwisy 1/1/0, healthy ✅
-  - Dev stack root: UPDATE_ROLLBACK_COMPLETE (od 2026-04-28, nie blokuje ECS)
+OSTATNIA SESJA (2026-05-18):
+  ✅ BE Jenkinsfile fix (CFN-MUT-001 BE)
+     Plik: jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile
+     Dev path → per-child ChangeSety (api, backoffice) zamiast parent stack
+     Params obrazu: api / backoffice (potwierdzone z api-dev.yml + backoffice-dev.yml)
+     Polling: waitUntil(60s) + timeout(4h) zamiast aws cloudformation wait
+     Guards: parentStackId, denied resource types, empty changeSet, IN_PROGRESS
+     ADR: decision-log.md ADR-004
+     Stan: patch lokalny, NIEZCOMMITTOWANY, nieprzetestowany przez Jenkins
+
+  W SESJI WCZEŚNIEJ (maspex):
+  ✅ WAF kapsel-prod.makotest.pl: default_action: allow (tymczasowo)
+  ✅ ECS UAT IAM drift fix: execution role miała ARN prod, naprawione terraform apply -target
+  ✅ Supabase cron investigation: zapisane supabase-cron-connectivity-2026-05-18.md
+
+NASTĘPNY KROK (rshop BE):
+  git commit eshop-dev-aws-scan-2.jenkinsfile
+  uruchomić dev BE pipeline → weryfikacja
 
 BACKLOG (z session-log):
   - [ ] Cleanup: usuń stary cert 3be77743 (po 2026-05-23)
@@ -3593,4 +3606,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 18:33 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 18:58 — sesja aktywna*
