@@ -3517,4 +3517,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 11:34 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 11:41 — sesja aktywna*
