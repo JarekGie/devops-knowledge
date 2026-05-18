@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Investigate Supabase cron access to twojkapsel.pl API endpoint"
+              "title": "Terminal: ⠐ Investigate Supabase cron access to twojkapsel.pl API endpoint"
             }
           }
         ],
@@ -278,6 +278,7 @@
   },
   "active": "0579f3db4b8d095f",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/waf-admin-panel-open-2026-05-18.md",
     "20-projects/clients/mako/maspex/supabase-cron-connectivity-2026-05-18.md",
     "20-projects/clients/mako/maspex/supabase-cron-connectivity-2026-05-18.md.tmp.55054.409eb3db48d5",
     "docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md",
@@ -313,7 +314,6 @@
     "_chatgpt/context-packs/vault-llm-governance.md",
     "_chatgpt/context-packs/maspex.md",
     "20-projects/clients/mako/maspex/prod-e2e-test-2026-05-15.md",
-    "20-projects/clients/mako/maspex/prod-uat-drift-analysis-2026-05-15.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
