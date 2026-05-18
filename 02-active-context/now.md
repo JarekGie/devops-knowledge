@@ -2,21 +2,17 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-17 — MASPEX: Terraform cutover twojkapsel.pl — GOTOWE DO APPLY
+## Update — 2026-05-18 — MASPEX: twojkapsel.pl LIVE ✅
 
 ```
 PROJEKT:  maspex / prod
-RAPORT:   20-projects/clients/mako/maspex/cutover-twojkapsel-2026-05-17.md
-PLAN:     terraform/envs/prod/cutover.tfplan  (1 add, 11 change, 0 destroy)
+STATUS:   LIVE od ~10:50 CEST 2026-05-18
 
-STATUS: GOTOWE DO APPLY ✅
-  - Cert f1370536 (4-SAN: twojkapsel.pl + www + test.*): ISSUED
-  - autoscaling min=5 max=30 zsynchronizowane z IaC
-  - WAF: default_action block → allow (gotowe)
-  - CF aliases: twojkapsel.pl, www.twojkapsel.pl, test.twojkapsel.pl, www.test.twojkapsel.pl
-  - ALB: nowy cert ddced1bc (twojkapsel.pl eu-west-1) do podpięcia
+twojkapsel.pl      → HTTP 200 ✅
+www.twojkapsel.pl  → HTTP 200 ✅
+test.twojkapsel.pl → HTTP 200 ✅
 
-TRIGGER: wpisz "maspex go live" → skill wykona cert check → plan → apply → weryfikację
+NASTĘPNE: monitoring 24h, opcjonalnie cleanup E17VHHQJ29MVAB (landing bez aliasow)
 ```
 
 ## Update — 2026-05-17 — MFS-ONBOARDING (GCP): analiza logów 24h — gotowa
@@ -3521,4 +3517,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-18 10:46 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-18 11:06 — sesja aktywna*

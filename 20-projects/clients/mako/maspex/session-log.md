@@ -4,6 +4,32 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-18 — CUTOVER twojkapsel.pl — LIVE ✅
+
+**Cel:** przełączenie produkcji na twojkapsel.pl.
+
+**Godzina apply:** ~10:50 CEST
+
+**Co wykonano:**
+1. DNS przepięty przez klienta (Cloudflare): twojkapsel.pl + www.twojkapsel.pl → d1w5bz7itj42sz.cloudfront.net
+2. `terraform apply` — WAF open, ALB cert, ALB routing, CF aliases, CF cert swap
+3. Hotfix: WAF description zawierał em dash (—) — zamieniony na `-` przed re-apply
+4. Hotfix: CF E17VHHQJ29MVAB miał już aliasy twojkapsel.pl/www — usunięte przez CLI przed CF update
+5. CF E33PUJBAQ533K0: cert f1370536 (4-SAN), aliasy {twojkapsel.pl, www.twojkapsel.pl, test.twojkapsel.pl, www.test.twojkapsel.pl}
+
+**Weryfikacja:**
+- twojkapsel.pl → HTTP 200 ✅
+- www.twojkapsel.pl → HTTP 200 ✅
+- test.twojkapsel.pl → HTTP 200 ✅
+
+**Gdzie skończono:** produkcja live na twojkapsel.pl
+
+**Następne:**
+- Monitoring przez 24h (alerty CloudWatch, CF 5xx, ECS CPU/memory)
+- Opcjonalnie: usunąć/przekierować E17VHHQJ29MVAB (landing bez aliasów)
+
+---
+
 ## 2026-05-17 — Przygotowanie Terraform: cutover twojkapsel.pl
 
 **Cel:** przygotować IaC do zmiany domeny prod z test.twojkapsel.pl na twojkapsel.pl — bez apply.
