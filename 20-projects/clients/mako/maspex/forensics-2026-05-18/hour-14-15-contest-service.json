@@ -4,53 +4,97 @@
         [
             {
                 "field": "@timestamp",
-                "value": "2026-05-18 13:37:12.460"
+                "value": "2026-05-18 14:11:11.415"
             },
             {
                 "field": "@message",
-                "value": "2026-05-18 13:37:12: [process-queue] Error processing slogan {"
+                "value": "2026-05-18 14:11:11: [process-queue] Error processing slogan {"
             },
             {
                 "field": "@logStream",
-                "value": "maspex-api/maspex-api/8e0f9804dbb145b0b47fb26411b2b0a1"
+                "value": "maspex-api/maspex-api/0494f588d65c47e784b5bf379f87f05c"
             },
             {
                 "field": "@ingestionTime",
-                "value": "2026-05-18 13:37:14.140"
+                "value": "2026-05-18 14:11:14.331"
             },
             {
                 "field": "@ptr",
-                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCICBsNnjMxDn5Yvb4zMSNxoYAgagSYneAAAABp2EjgQABqCxWTAAAAHiIAEorJqx2uMzMIyiuNrjMzjIC0CCugxIujFQ7CggAhDuChgB"
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIDei9vjMxDnwufc4zMSNxoYAgagNL3TAAAAAB41Mk4ABqCx23AAAAUyIAEo2tCx2+MzMJ+btdvjMzjcBUCghgZIkCRQxBsgAhDCBBgB"
             }
         ],
         [
             {
                 "field": "@timestamp",
-                "value": "2026-05-18 13:37:12.460"
+                "value": "2026-05-18 14:11:11.416"
             },
             {
                 "field": "@message",
-                "value": "2026-05-18 13:37:12: [process-queue] Error processing slogan {"
+                "value": "2026-05-18 14:11:11: [process-queue] Error processing slogan {"
             },
             {
                 "field": "@logStream",
-                "value": "maspex-api/maspex-api/8e0f9804dbb145b0b47fb26411b2b0a1"
+                "value": "maspex-api/maspex-api/0494f588d65c47e784b5bf379f87f05c"
             },
             {
                 "field": "@ingestionTime",
-                "value": "2026-05-18 13:37:14.140"
+                "value": "2026-05-18 14:11:14.331"
             },
             {
                 "field": "@ptr",
-                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCICBsNnjMxDn5Yvb4zMSNxoYAgagSYneAAAABp2EjgQABqCxWTAAAAHiIAEorJqx2uMzMIyiuNrjMzjIC0CCugxIujFQ7CggAhD7ChgB"
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIDei9vjMxDnwufc4zMSNxoYAgagNL3TAAAAAB41Mk4ABqCx23AAAAUyIAEo2tCx2+MzMJ+btdvjMzjcBUCghgZIkCRQxBsgAhDPBBgB"
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-05-18 14:33:59.279"
+            },
+            {
+                "field": "@message",
+                "value": "2026-05-18 14:33:59: [process-queue] Error processing slogan {"
+            },
+            {
+                "field": "@logStream",
+                "value": "maspex-api/maspex-api/a6cf9e35a376475f8ed5fbcb3c55b8fb"
+            },
+            {
+                "field": "@ingestionTime",
+                "value": "2026-05-18 14:34:03.704"
+            },
+            {
+                "field": "@ptr",
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIDei9vjMxDnwufc4zMSNxoYAgagcUosAAAAAGY8P+8ABqCyL3AAAALCIAEoyuqC3OMzMJGuidzjMzj0BUDotgZIxStQ+SIgAhDWBRgB"
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-05-18 14:33:59.279"
+            },
+            {
+                "field": "@message",
+                "value": "2026-05-18 14:33:59: [process-queue] Error processing slogan {"
+            },
+            {
+                "field": "@logStream",
+                "value": "maspex-api/maspex-api/a6cf9e35a376475f8ed5fbcb3c55b8fb"
+            },
+            {
+                "field": "@ingestionTime",
+                "value": "2026-05-18 14:34:03.704"
+            },
+            {
+                "field": "@ptr",
+                "value": "CqABCmMKKTk2OTIwOTg5MzE1MjovbWFzcGV4L3Byb2QvY29udGVzdC1zZXJ2aWNlEAAaJDRmY2FjZTZjLWM2NTUtNGQ3Ny05OWI3LTY5ZWVkOWE2ZjgxNiIOCIDei9vjMxDnwufc4zMSNxoYAgagcUosAAAAAGY8P+8ABqCyL3AAAALCIAEoyuqC3OMzMJGuidzjMzj0BUDotgZIxStQ+SIgAhDjBRgB"
             }
         ]
     ],
     "statistics": {
-        "recordsMatched": 2.0,
-        "recordsScanned": 214413.0,
+        "recordsMatched": 4.0,
+        "recordsScanned": 220715.0,
         "estimatedRecordsSkipped": 0.0,
-        "bytesScanned": 29908048.0,
+        "bytesScanned": 30461116.0,
         "estimatedBytesSkipped": 0.0,
         "logGroupsScanned": 1.0
     },

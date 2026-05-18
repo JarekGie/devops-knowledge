@@ -162,8 +162,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 451.5,
-    "collapsed": true
+    "width": 451.5
   },
   "right": {
     "id": "689956fbc2be7514",
@@ -292,18 +291,18 @@
   },
   "active": "901791c00763111e",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/raw-process-queue-2026-05-18.txt",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/raw-process-queue-2026-05-18.json",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1750-1760-contest-service.json",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1740-1750-contest-service.json",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1730-1740-contest-service.json",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1720-1730-contest-service.json",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1710-1720-contest-service.json",
+    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1700-1710-contest-service.json",
     "20-projects/clients/mako/maspex/forensics-2026-05-18/hour-16-17-contest-service.json",
     "20-projects/clients/mako/maspex/forensics-2026-05-18/hour-15-16-contest-service.json",
     "20-projects/clients/mako/maspex/forensics-2026-05-18/hour-14-15-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/hour-13-14-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/q4-maspex-api-cron-url.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/q3-contest-service-cron-url.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/q2-maspex-api-process-queue.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/q1-contest-service-process-queue.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18",
-    "20-projects/clients/mako/maspex/session-log.md.tmp.45222.b5a2b1ee6484",
     "20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md",
-    "20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md.tmp.45222.3808090974fb",
     "_chatgpt/context-packs/maspex-full-context.md",
     "_chatgpt/context-packs/rshop-full-context.md",
     "20-projects/clients/mako/maspex/waf-admin-panel-open-2026-05-18.md",
