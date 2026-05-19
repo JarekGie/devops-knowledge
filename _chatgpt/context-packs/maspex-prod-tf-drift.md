@@ -25,7 +25,19 @@ Projekt: Kapsel (platforma konkursowa Maspex) — aplikacja live od 2026-05-17 (
 
 ## Aktualny drift — 4 pozycje
 
-### D1 — WAF admin panel otwarty (rollback wymagany) 🔴
+### D1 — WAF admin panel ✅ ZAMKNIĘTY
+
+**Aktualny IP set `maspex-prod-admin-panel-allowlist` (6 adresów, stan 2026-05-19):**
+- `195.117.107.110/32` MakoLab office
+- `91.233.19.251/32` Maspex office
+- `89.228.178.218/32` Moderia (partner Maspex)
+- `46.205.203.81/32` moderatorzy
+- `176.111.123.182/32` moderatorzy
+- `109.173.163.18/32` moderatorzy
+
+---
+
+### ~~D1 — WAF admin panel otwarty (rollback wymagany)~~ 🔴
 
 **Plik:** `terraform/envs/prod/waf.tf`  
 **TF stan (obecny):**

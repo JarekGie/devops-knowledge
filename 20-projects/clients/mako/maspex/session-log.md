@@ -4,6 +4,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-19 — WAF: dodano moderatorów do allowlisty PROD ✅
+
+**Zmiana:** `terraform/envs/prod/waf.tf` — dodano 3 IP moderatorów do `admin_panel_allowed_ipv4_cidrs`
+
+**Dodane IPs:**
+- `46.205.203.81/32` — moderatorzy
+- `176.111.123.182/32` — moderatorzy
+- `109.173.163.18/32` — moderatorzy
+
+**Aktualny IP set (6 adresów):**
+- `195.117.107.110/32` MakoLab office
+- `91.233.19.251/32` Maspex office
+- `89.228.178.218/32` Moderia (partner Maspex)
+- `46.205.203.81/32` moderatorzy
+- `176.111.123.182/32` moderatorzy
+- `109.173.163.18/32` moderatorzy
+
+**Commit:** `45deb68` → push → MR #16
+
+---
+
 ## 2026-05-19 — WAF admin panel rollback PROD ✅
 
 **Zmiana:** `terraform/envs/prod/waf.tf` — rollback tymczasowego otwarcia admin panelu po kampanii
