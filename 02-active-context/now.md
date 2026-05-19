@@ -2,14 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-19 — MASPEX: FinOps analysis DONE ✅
+## Update — 2026-05-19 — MASPEX: WAF rollback + FinOps DONE ✅
 
 ```
+WAF ADMIN PANEL ROLLBACK: ZAMKNIĘTY
+  commit ca12875 → push → MR #16
+  default_action: allow → block
+  Allowlist: MakoLab 195.117.107.110/32 + Maspex 91.233.19.251/32 + Moderia 89.228.178.218/32
+  D4 drift (IAM tag uat→prod) zamknięty przy okazji
+
 FINOPS CAPACITY ANALYSIS: ZAMKNIĘTY
   Raport: 20-projects/clients/mako/maspex/finops-capacity-analysis-2026-05-19.md
   Werdykt: CONDITIONAL GO — min=30→8, max=45→30
   Oszczędności: ~$2 190/mies. (−49%)
   Warunki: alarm RunningTaskCount<6, alarm p99>500ms, 7 dni monitoringu
+  AKTUALNY STAN AWS: min=30, max=45, desired=30 (P1 jeszcze nie wdrożone)
+
+OTWARTE DRIFTY:
+  D2 — image tag w tfvars (coreapp-uat-612 ≠ running coreapp-prod-805) — bezpieczne, ignore_changes
+  D3 — orphaned ACM cert w TF state (terraform state rm przed next apply)
+  P1 — autoscaling min=30→8, max=45→30 (CONDITIONAL GO, nie wdrożone)
+  P2 — confirm terraform plan = 0 zmian dla secret_arns fix
 ```
 
 ---
@@ -70,7 +83,7 @@ POZOSTAŁY DRIFT (niski priorytet, nie blokuje):
 OTWARTE — MASPEX:
   - ⚠️ CRITICAL: fix process-queue PRZED odnowieniem OpenAI quota
       (OpenAI 429 billing → infinite requeue loop, raport: process-queue-investigation-2026-05-18.md)
-  - WAF admin panel PROD tymczasowo otwarty — rollback po kampanii (waf.tf: allow → block)
+  - ✅ WAF admin panel PROD — ZAMKNIĘTY (commit ca12875)
   - REDIS_URL w prod Secrets Manager — do weryfikacji
   - maspex-bot unhealthy PROD + UAT — niezależny problem, >25 dni
 
@@ -3718,4 +3731,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-19 13:59 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-19 14:04 — sesja aktywna*
