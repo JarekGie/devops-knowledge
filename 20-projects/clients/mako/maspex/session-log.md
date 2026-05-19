@@ -4,6 +4,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-19 — WAF admin panel rollback PROD ✅
+
+**Zmiana:** `terraform/envs/prod/waf.tf` — rollback tymczasowego otwarcia admin panelu po kampanii
+
+**Co zrobiono:**
+- `default_action: allow {} → block {}` w `aws_wafv2_web_acl.admin_panel_allowlist`
+- Dodano Moderię: `89.228.178.218/32` do IP setu
+- Opisano właścicieli IP: MakoLab / Maspex / Moderia
+- Przy okazji: tag `environment=uat → prod` na `maspex-api-execution` (D4 drift)
+
+**Allowlist po zmianie:**
+- `195.117.107.110/32` MakoLab office
+- `91.233.19.251/32` Maspex office
+- `89.228.178.218/32` Moderia (partner Maspex)
+
+**Commit:** `ca12875` → push → MR #16 (`feat/campaign-day-monitoring`)
+
+**Weryfikacja live:** `DefaultAction: Block {}` ✅ | IP set: 3 adresy ✅
+
+---
+
 ## 2026-05-19 — FinOps & Capacity Analysis PROD ✅
 
 **Okno:** 2026-05-18 12:00 CEST — 2026-05-19 12:00 CEST (24h po kampanii)

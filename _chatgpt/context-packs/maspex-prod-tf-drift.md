@@ -116,12 +116,12 @@ Commity `334353c` i `a2bcd3a` dodały ARN-y do `secret_arns` w modułach ECS. Ap
 
 | ID | Pozycja | Priorytet | Ryzyko jeśli nie zrobione |
 |----|---------|-----------|---------------------------|
-| D1 | WAF admin panel otwarty | **HIGH — teraz** | panel admina publiczny |
+| ~~D1~~ | ~~WAF admin panel otwarty~~ | ~~**HIGH — teraz**~~ | ✅ ZAMKNIĘTY — commit ca12875 (2026-05-19) |
 | P1 | Autoscaling min=8/max=30 | MEDIUM — ten tydzień | $2k/mies. przepalane |
 | D3 | Orphaned ACM cert state | MEDIUM — przed next apply | plan może failować |
 | P2 | Potwierdzenie apply secret_arns | LOW — przy okazji | cosmetic |
 | D2 | image tag w tfvars | LOW — przy okazji | confusing ale bezpieczne |
-| D4 | IAM role tag | LOW | zero funkcjonalne |
+| ~~D4~~ | ~~IAM role tag~~ | ~~LOW~~ | ✅ ZAMKNIĘTY — commit ca12875 (2026-05-19) |
 
 ---
 
