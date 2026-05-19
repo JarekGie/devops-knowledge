@@ -2,9 +2,15 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-19 — MASPEX (aktywny kontekst)
+## Update — 2026-05-19 — MASPEX: FinOps analysis DONE ✅
 
-Kontekst przełączony z rshop → maspex (09:46 UTC)
+```
+FINOPS CAPACITY ANALYSIS: ZAMKNIĘTY
+  Raport: 20-projects/clients/mako/maspex/finops-capacity-analysis-2026-05-19.md
+  Werdykt: CONDITIONAL GO — min=30→8, max=45→30
+  Oszczędności: ~$2 190/mies. (−49%)
+  Warunki: alarm RunningTaskCount<6, alarm p99>500ms, 7 dni monitoringu
+```
 
 ---
 
@@ -3712,4 +3718,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-19 12:19 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-19 13:00 — sesja aktywna*

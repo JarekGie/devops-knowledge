@@ -4,6 +4,27 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-19 — FinOps & Capacity Analysis PROD ✅
+
+**Okno:** 2026-05-18 12:00 CEST — 2026-05-19 12:00 CEST (24h po kampanii)
+
+**Zebrane dane:** ECS CPU/Mem/Tasks, ALB req/s/latency, CloudFront dist metrics, Redis, autoscaling activities, koszt Fargate
+
+**Kluczowe wnioski:**
+- Peak ALB: 123.4 req/s (5-min), avg: 48.4 req/s — 52× poniżej load-test (6 483 req/s)
+- ECS CPU avg 0.3–1.24%, Memory avg 3–7% — masowe przewymiarowanie
+- Autoscaling: 30→41 tasków podczas 13:49–15:23 CEST, powrót do 30 o 18:30 CEST
+- Nocne okno (23:00–09:00 CEST): 2–40 req/s przy 30 taskach = $1 778/mies. nocne marnotrawstwo
+- Redis: 86.6% hit rate, 0 evictions, CPU 0.55%, ~33 MB aktywnych danych na 6.37 GB RAM
+
+**Rekomendacja:** CONDITIONAL GO — min=30→8, max=45→30  
+Oszczędności: ~$2 190/mies. (−49%)  
+Warunki: alarm RunningTaskCount <6, alarm p99 >500ms, 7 dni monitoringu po wdrożeniu
+
+**Raport:** [[finops-capacity-analysis-2026-05-19]]
+
+---
+
 ## 2026-05-18 — TF FIX PROD+UAT: secret_arns stabilizacja shared policy ✅
 
 **Zmiany:**
