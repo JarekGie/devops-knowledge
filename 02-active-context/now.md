@@ -7,19 +7,34 @@
 ```
 PROJEKT:  rshop — e-commerce Renault/Dacia
 ACCOUNT:  943111679945 | eu-central-1 | profile: cd-rshop
-REPO:     ~/projekty/mako/aws-projects/infra-rshop
+REPO:     ~/projekty/mako/aws-projects/infra-rshop (IaC)
+          ~/projekty/mako/eshop-cicd (Jenkins pipelines)
 IaC:      CloudFormation
 
-GDZIE SKOŃCZYŁEM:
-  Patch lokalny — jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile (repo: eshop-cicd)
-  Fix CFN-MUT-001 BE: dev path nie tworzy ChangeSet na parent stack;
-  zamiast tego ChangeSet per child stack (api + backoffice).
-  Status: patch zastosowany lokalnie, NIE committowany, NIE uruchamiany.
+ROOT CAUSE (zdiagnozowany 2026-05-19):
+  Stare obrazy frontend w parametrach parent stacka:
+    frontendd.1364 + frontendr.1364 → nie istnieją w ECR
+    Ostatnie dostępne: frontendd.1379 + frontendr.1379 (2026-05-13)
+  Stary Jenkinsfile tworzył ChangeSet na parent stack → cascade FrontendDacia/FrontendRenault
+  3 poprzednie próby (build #1285, #1286, #1287) fail z NotStabilized po ~3h każda
+  api.1287 + backoffice.1287 wgrane poprawnie ✅
+
+STAN (07:35 UTC):
+  dev-ECSStack-1BLAWHL0P6JKO: UPDATE_IN_PROGRESS (build #1287, auto-rollback nieuchronny)
+  FrontendDacia: 18 failed tasks, stary task 1911 (frontendd.1379) RUNNING ✅
+  FrontendRenault: 17 failed tasks, stary task 1910 (frontendr.1379) RUNNING ✅
+  api + backoffice: UPDATE_COMPLETE ✅
+
+PATCH (gotowy, NIE committowany):
+  File: ~/projekty/mako/eshop-cicd/jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile
+  Patch: dev path → ChangeSet tylko na api + backoffice child stackach
+  Weryfikacja: diff przejrzany, logika poprawna, FE stacki nie tykane
 
 NASTĘPNY KROK:
-  1. Code review patcha BE dev-scan Jenkinsfile
-  2. Commit na master (eshop-cicd repo)
-  3. Uruchomić dev pipeline jako weryfikacja
+  1. Poczekać na auto-rollback → UPDATE_ROLLBACK_COMPLETE (ETA: ~10-60 min)
+  2. git commit + git push (repo: eshop-cicd, branch: master)
+  3. Trigger Jenkins build #1288 — DEV deploy z nowym Jenkinsfile
+  4. Weryfikacja: api + backoffice child stacks → UPDATE_COMPLETE, frontend NIE tknięty
 ```
 
 ---
@@ -3699,4 +3714,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-19 10:22 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-19 10:57 — sesja aktywna*

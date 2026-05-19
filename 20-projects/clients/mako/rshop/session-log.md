@@ -4,6 +4,44 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-19 — BE dev-scan: Root cause CFN loop + Jenkinsfile patch review
+
+**Diagnoza (2026-05-19 07:17–07:35 UTC, READ-ONLY):**
+
+Jenkins build #1287 (i poprzednie #1285, #1286) uruchamiał STARY Jenkinsfile → ChangeSet na parent stacku `dev-ECSStack-1BLAWHL0P6JKO` → CASCADE na wszystkie 4 child stacki.
+
+**Root cause:** Brakujące obrazy ECR `frontendd.1364` + `frontendr.1364` — nigdy nie istniały w ECR.
+- Ostatnie dostępne obrazy frontend: `frontendd.1379` + `frontendr.1379` (2026-05-13)
+- Build #1285/#1286/#1287 pushował tylko `api.*` i `backoffice.*` (nie budował frontendów)
+- Parent stack miał stale parametry frontend = 1364 (wartości sprzed ostatniego aktywnego FE deploy'a które nie dotarły do ECR)
+- `UsePreviousValue=true` w starym Jenkinsfile kontynuował reużywanie `.1364`
+
+**Efekt (powtarzany 4× od 2026-05-18 16:32 UTC):**
+- `api` + `backoffice`: UPDATE_COMPLETE ✓ (api.1287, backoffice.1287 wgrane)
+- `FrontendDacia` / `FrontendRenault`: `CannotPullContainerError: not found` → 18 failed tasks → NotStabilized → CFN rollback (~3h każda próba)
+- Stare taski (dev-frontend-task:1910/1911 z obrazem 1379) **nadal działają** — usługi frontend żyją
+
+**Stan parent stacka (07:17 UTC build #1287):** `UPDATE_IN_PROGRESS` → auto-rollback do `UPDATE_ROLLBACK_COMPLETE` — **nie wymaga akcji**
+
+**Patched Jenkinsfile — weryfikacja (READ-ONLY):**
+`jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile` — uncommitted diff zweryfikowany:
+- ✅ Dev path: ChangeSet tylko na `api` + `backoffice` child stackach (nie parent)
+- ✅ Preflight: parent + child status check (blokuje `*_IN_PROGRESS`)
+- ✅ Guard: `cfg.stackName != parent` + denied resource types (EC2/RDS/IAM/S3/ELB)
+- ✅ Wait: `waitUntil` polling zamiast `cloudformation wait` (nie wiesza procesu)
+- ✅ FrontendDacia/FrontendRenault: nie tykane w dev BE deploy
+- ✅ Non-dev path: bez zmian
+
+**Następny krok:**
+1. Poczekać na auto-rollback parent stacka → `UPDATE_ROLLBACK_COMPLETE`
+2. `git commit + git push` patcha (repo eshop-cicd, branch master)
+3. Jenkins załaduje nowy Jenkinsfile automatycznie przy kolejnym build
+4. Build #1288 zadeploy tylko `api` + `backoffice` child stacki → powinien zadziałać
+
+**WAŻNE:** Preflight w nowym Jenkinsfile zablokuje build jeśli parent jest w `UPDATE_IN_PROGRESS` lub `UPDATE_ROLLBACK_IN_PROGRESS`. Nie triggerować nowego builda dopóki parent nie osiągnie `UPDATE_ROLLBACK_COMPLETE`.
+
+---
+
 ## 2026-05-18 — BE dev-scan Jenkinsfile fix (CFN-MUT-001 BE)
 
 **Plik:** `jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile` (repo: eshop-cicd, branch: master)
