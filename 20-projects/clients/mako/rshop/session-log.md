@@ -69,6 +69,25 @@ Jenkins build #1287 (i poprzednie #1285, #1286) uruchamiał STARY Jenkinsfile �
 
 ---
 
+## 2026-05-19 — Commit + push patcha (9464f6c) + WAIT state
+
+**Commit:** `9464f6c fix(BE/dev): deploy backend child stacks only`  
+**Push:** `aff7f1d..9464f6c` na `origin master` ✅  
+**Czas:** 09:40 UTC
+
+**Stan AWS (09:46 UTC):**
+- Parent `dev-ECSStack-1BLAWHL0P6JKO`: `UPDATE_IN_PROGRESS` — trwa od 07:17 UTC (build #1287)
+- FrontendDacia/FrontendRenault: `UPDATE_IN_PROGRESS` — ECS backoff, stare taski (1910/1911) żyją
+- api/backoffice: `UPDATE_COMPLETE` ✅ (api.1287, backoffice.1287)
+- Frontend runtime: svc1/svc2 running=1, ruch serwowany ✅
+
+**Jenkins deploy:** ZABLOKOWANY do `UPDATE_ROLLBACK_COMPLETE`.  
+**ETA auto-rollback:** ~10:17–10:35 UTC (wzorzec 3h potwierdzony 3× wcześniej).
+
+**Następny krok:** trigger Jenkins build #1288 po `UPDATE_ROLLBACK_COMPLETE`.
+
+---
+
 ## 2026-05-12 — FE dev-scan Jenkinsfile fix (CFN-MUT-001)
 
 **Plik:** `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile` (branch: master, commit: `ef565fb`)

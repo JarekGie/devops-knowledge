@@ -2,39 +2,37 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-19 — RSHOP (aktywny kontekst)
+## Update — 2026-05-19 — MASPEX (aktywny kontekst)
+
+Kontekst przełączony z rshop → maspex (09:46 UTC)
+
+---
+
+## RSHOP — stan zawieszony (wróć po ~10:35 UTC)
 
 ```
 PROJEKT:  rshop — e-commerce Renault/Dacia
 ACCOUNT:  943111679945 | eu-central-1 | profile: cd-rshop
-REPO:     ~/projekty/mako/aws-projects/infra-rshop (IaC)
-          ~/projekty/mako/eshop-cicd (Jenkins pipelines)
-IaC:      CloudFormation
+REPO:     ~/projekty/mako/eshop-cicd (Jenkins pipelines)
 
-ROOT CAUSE (zdiagnozowany 2026-05-19):
-  Stare obrazy frontend w parametrach parent stacka:
-    frontendd.1364 + frontendr.1364 → nie istnieją w ECR
-    Ostatnie dostępne: frontendd.1379 + frontendr.1379 (2026-05-13)
-  Stary Jenkinsfile tworzył ChangeSet na parent stack → cascade FrontendDacia/FrontendRenault
-  3 poprzednie próby (build #1285, #1286, #1287) fail z NotStabilized po ~3h każda
-  api.1287 + backoffice.1287 wgrane poprawnie ✅
+ROOT CAUSE: stary Jenkinsfile → ChangeSet na parent stack → cascade FrontendDacia/FrontendRenault
+  Obrazy frontendd.1364 + frontendr.1364 nie istnieją w ECR → NotStabilized po ~3h
 
-STAN (07:35 UTC):
-  dev-ECSStack-1BLAWHL0P6JKO: UPDATE_IN_PROGRESS (build #1287, auto-rollback nieuchronny)
-  FrontendDacia: 18 failed tasks, stary task 1911 (frontendd.1379) RUNNING ✅
-  FrontendRenault: 17 failed tasks, stary task 1910 (frontendr.1379) RUNNING ✅
+STAN (09:46 UTC):
+  dev-ECSStack-1BLAWHL0P6JKO: UPDATE_IN_PROGRESS (od 07:17 UTC)
+  FrontendDacia/FrontendRenault: UPDATE_IN_PROGRESS — ECS backoff loop, stare taski żyją ✅
   api + backoffice: UPDATE_COMPLETE ✅
+  Frontend ECS runtime: svc1/svc2 running=1, ruch serwowany ✅
 
-PATCH (gotowy, NIE committowany):
-  File: ~/projekty/mako/eshop-cicd/jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile
-  Patch: dev path → ChangeSet tylko na api + backoffice child stackach
-  Weryfikacja: diff przejrzany, logika poprawna, FE stacki nie tykane
+WYKONANO:
+  ✅ commit 9464f6c "fix(BE/dev): deploy backend child stacks only"
+  ✅ push → origin master (aff7f1d..9464f6c)
 
-NASTĘPNY KROK:
-  1. Poczekać na auto-rollback → UPDATE_ROLLBACK_COMPLETE (ETA: ~10-60 min)
-  2. git commit + git push (repo: eshop-cicd, branch: master)
-  3. Trigger Jenkins build #1288 — DEV deploy z nowym Jenkinsfile
-  4. Weryfikacja: api + backoffice child stacks → UPDATE_COMPLETE, frontend NIE tknięty
+CZEKA NA:
+  dev-ECSStack-1BLAWHL0P6JKO → UPDATE_ROLLBACK_COMPLETE (ETA ~10:17–10:35 UTC)
+
+NASTĘPNY KROK (po rollbacku):
+  Trigger Jenkins build #1288 → weryfikacja: api+backoffice UPDATE_COMPLETE, parent/frontend NIE tknięte
 ```
 
 ---
@@ -3714,4 +3712,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-19 11:46 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-19 12:19 — sesja aktywna*
