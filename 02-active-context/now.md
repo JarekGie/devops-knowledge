@@ -2,19 +2,58 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-18 — MASPEX: IAM hotfix DONE — PROD 30/30 ✅
+## Update — 2026-05-19 — RSHOP (aktywny kontekst)
 
 ```
-HOTFIX: maspex-api-execution-secrets — dodano PROD ARN do policy (19:34 UTC)
-PROD: 30/30 running (rev 24), steady state 21:36 CEST
-UAT:  2/2 running — nienaruszone
+PROJEKT:  rshop — e-commerce Renault/Dacia
+ACCOUNT:  943111679945 | eu-central-1 | profile: cd-rshop
+REPO:     ~/projekty/mako/aws-projects/infra-rshop
+IaC:      CloudFormation
 
-⚠️  KRYTYCZNY DRIFT: policy poza TF state
-  Kolejny terraform apply z envs/prod lub envs/uat NADPISZE policy i problem wróci
-  Wymagany follow-up przed kolejnym TF apply:
-    A) Jeden env zarządza policy z obu ARN-ami (minimalna zmiana kodu)
-    B) Rozdziel var.name: maspex-prod-api / maspex-uat-api (docelowe, wymaga recreation)
+GDZIE SKOŃCZYŁEM:
+  Patch lokalny — jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile (repo: eshop-cicd)
+  Fix CFN-MUT-001 BE: dev path nie tworzy ChangeSet na parent stack;
+  zamiast tego ChangeSet per child stack (api + backoffice).
+  Status: patch zastosowany lokalnie, NIE committowany, NIE uruchamiany.
+
+NASTĘPNY KROK:
+  1. Code review patcha BE dev-scan Jenkinsfile
+  2. Commit na master (eshop-cicd repo)
+  3. Uruchomić dev pipeline jako weryfikacja
 ```
+
+---
+
+## Update — 2026-05-19 — MASPEX: incydent IAM ZAMKNIĘTY ✅
+
+```
+STAN: stabilny
+  PROD: 30/30 running (rev 25), steady state
+  UAT:  2/2 running, steady state
+  IAM policy maspex-api-execution-secrets: oba ARN-y ✅
+
+WYKONANO (2026-05-18):
+  ✅ IAM hotfix: put-role-policy → dodano PROD ARN (19:34 UTC)
+  ✅ TF UAT fix: envs/uat/main.tf secret_arns + PROD ARN (commit 334353c)
+  ✅ TF PROD fix: envs/prod/main.tf secret_arns + UAT ARN (commit a2bcd3a)
+  ✅ oba commity na feat/campaign-day-monitoring → MR #16
+
+ZABEZPIECZENIE:
+  terraform apply z envs/prod nie usunie UAT ARN ✅
+  terraform apply z envs/uat nie usunie PROD ARN ✅
+
+POZOSTAŁY DRIFT (niski priorytet, nie blokuje):
+  tag environment=uat na shared role maspex-api-execution
+  → nie wpływa na ECS runtime
+  → docelowy fix: rozdzielenie execution role per env (po kampanii)
+```
+
+OTWARTE — MASPEX:
+  - ⚠️ CRITICAL: fix process-queue PRZED odnowieniem OpenAI quota
+      (OpenAI 429 billing → infinite requeue loop, raport: process-queue-investigation-2026-05-18.md)
+  - WAF admin panel PROD tymczasowo otwarty — rollback po kampanii (waf.tf: allow → block)
+  - REDIS_URL w prod Secrets Manager — do weryfikacji
+  - maspex-bot unhealthy PROD + UAT — niezależny problem, >25 dni
 
 ---
 
@@ -3660,4 +3699,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-19 09:44 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-19 10:22 — sesja aktywna*
