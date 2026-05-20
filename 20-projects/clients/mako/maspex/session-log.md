@@ -4,6 +4,14 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-20 — WAF: próba dodania moderatora — IP już istnieje
+
+**Żądanie:** dodaj 46.205.201.198/32 jako nowego moderatora  
+**Wynik:** IP już obecne w allowliście — brak zmian, brak commitu  
+**Aktualna lista moderatorów:** 194.15.120.193/32 | 46.205.197.124/32 | 46.205.201.198/32
+
+---
+
 ## 2026-05-20 — WAF: zmiana IP moderatorów PROD ✅
 
 **Zmiana:** `terraform/envs/prod/waf.tf` — rotacja IP moderatorów
