@@ -66,6 +66,16 @@
 5. `50-patterns/` — wzorce i playbooki
 6. `90-reference/` — komendy i snippety
 
+## Project Bootstrap (jeśli dotyczy projektu)
+
+Gdy sesja dotyczy konkretnego projektu klienta lub wewnętrznego:
+
+1. Sprawdź `50-patterns/prompts/invocations/cloud-detective-<projekt>.md`
+2. Manifest dostarcza: cloud provider, repo path, safety mode, open items, session log path
+3. Safety constraints z manifestu są wiążące — `safety.requires_go` = lista akcji wymagających GO
+4. Branch zawsze pobieraj LIVE: `git branch --show-current` — nie z manifestu
+5. Runtime state (ECS, koszty, metryki) pobieraj LIVE z cloud/API — manifest nie zawiera live data
+
 ## Triggery zapisu (wykonaj natychmiast)
 
 | Zdarzenie | Gdzie zapisać |

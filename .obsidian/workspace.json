@@ -92,6 +92,48 @@
             }
           },
           {
+            "id": "b02ef1ffc750cfb4",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
+                  "focus": false,
+                  "profile": {
+                    "args": [
+                      "--login"
+                    ],
+                    "executable": "/bin/zsh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
+            }
+          },
+          {
             "id": "ad8d777bfde9afd9",
             "type": "leaf",
             "state": {
@@ -134,7 +176,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -318,8 +360,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f2e116b5d3631dd3",
+  "active": "b02ef1ffc750cfb4",
   "lastOpenFiles": [
+    "_system/AGENTS.md.tmp.64587.92b3de25564f",
     "docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md",
     "docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md.tmp.64587.961987b8ce0f",
     "_chatgpt/context-packs/vault-structure-current.md",
@@ -355,7 +398,6 @@
     "20-projects/clients/mako/maspex/cutover-twojkapsel-2026-05-17.md",
     "20-projects/clients/mako/mfs-onboarding/session-log.md",
     "20-projects/clients/mako/mfs-onboarding/log-analysis-2026-05-17.md",
-    "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
