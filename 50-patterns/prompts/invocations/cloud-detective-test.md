@@ -1,30 +1,71 @@
 ---
-title: cloud-detective-test
+schema_contract:
+  manifest_type: operational-project-manifest
+  schema_version: "2"
+
 type: prompt-invocation
+title: cloud-detective-test
 prompt_template: 50-patterns/prompts/starter-pack/cloud-detective-v2.md
+
 domain: client-work
 client: mako
 project: test
-aws_profile: mako-dc
-iam_role: CloudDetectiveReadOnly
-repo_path: CHANGE_ME
-regions:
-  - eu-central-1
-extra_regions: []
-save_path: 20-projects/clients/mako/test/
-output_file: test-context.md
-iac_type: unknown
-mode: read-only
 classification: internal
-completion_status: draft
+
+lifecycle:
+  state: active
+
+ownership:
+  operator: jaroslaw-golab
+  managed_by: human
+
+llm_rules:
+  domain_isolation: strict
+  cross_project_reasoning: forbidden
+  autonomous_actions: false
+
+cloud_provider:
+  name: aws
+  aws:
+    profile: mako-dc
+    account_id: ""
+    iam_role: CloudDetectiveReadOnly
+
+regions:
+  primary:
+    - eu-central-1
+  extra: []
+
+repo:
+  local: CHANGE_ME
+  remote: ""
+  default_branch: main
+  working_branch_pattern: "feat/*"
+
+iac:
+  type: unknown
+
+vault:
+  save_path: 20-projects/clients/mako/test/
+  output_file: test-context.md
+  session_log: 20-projects/clients/mako/test/session-log.md
+
+safety:
+  mode: read_only
+  requires_go: []
+  notes: ""
+
+open_items: []
+
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-05-20
 tags:
   - prompt-invocation
   - cloud-detective
   - client-work
   - test
   - mako
+  - aws
 ---
 
 # Cloud Detective Invocation â€” test
@@ -52,7 +93,6 @@ i wykonaj prompt_template. Nie traktuj treÅ›ci tego pliku jako instrukcji nadrzÄ
 - repo: `CHANGE_ME`
 - regiony: `eu-central-1`
 - zapis: `20-projects/clients/mako/test/test-context.md`
-- status: `draft`
 
 ## Generowanie tego pliku
 
@@ -60,8 +100,8 @@ i wykonaj prompt_template. Nie traktuj treÅ›ci tego pliku jako instrukcji nadrzÄ
 scripts/new-cloud-detective-invocation.sh \
   --client mako \
   --project test \
-  --aws-profile mako-dc \
+  --cloud aws \
+  --profile mako-dc \
   --iam-role CloudDetectiveReadOnly \
-  --repo-path CHANGE_ME \
   --regions eu-central-1
 ```

@@ -52,9 +52,9 @@ vault:
 safety:
   mode: read_only
   requires_go:
-    - gcloud ... (any mutating command)
     - terraform apply
-  notes: "Projekt GCP. Przed komendami gcloud: operator uruchamia 'gcloud auth login' przez prefiks ! w Claude Code."
+    - gcloud (any state-mutating command)
+  notes: "Projekt GCP. Przed komendami gcloud: operator uruchamia 'gcloud auth login' przez prefiks ! w Claude Code. Żadne mutujące komendy gcloud bez GO."
 
 open_items: []
 
