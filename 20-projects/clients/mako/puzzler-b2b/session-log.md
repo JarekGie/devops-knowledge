@@ -9,6 +9,51 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-20 — UAT environment IaC build + terraform plan
+
+### Kontekst
+Zbudowanie pełnego środowiska UAT w Terraform (`infra-puzzler-b2b-final`) od podstaw na branchu `feat/uat-environment`.
+
+### Wykonane
+
+**IaC (envs/uat/):**
+- `backend.tf` — S3 backend `698220459519-terraform-state`, key `infra-puzzler-b2b/uat/terraform.tfstate`, region `eu-central-1`
+- `variables.tf` + `terraform.tfvars` — pełny zestaw zmiennych (region: `eu-west-2`, VPC: `10.2.0.0/16`, AZ: `eu-west-2a/b`); sekrety wyłącznie przez `TF_VAR_*`
+- `acm.tf` — dwa certyfikaty DNS: `pbms-api-uat.makotest.pl` (gateway), `pbms-uat.makotest.pl` (frontend)
+- `iam.tf` — dedykowane role UAT (moduł `ecs-iam`), osobna polityka inline dla secretsmanager; 5 reguł SG dla DocDB (gateway/core/delivery/notifier/worker)
+- `secrets.tf` — 4 secrety SM: `docdb`, `azuread`, `jumphost_ssh`, `external_dashboard`; wszystkie z `ignore_changes = [secret_string]`
+- `main.tf` — moduł `app-stack` + ECR repos (app + worker)
+- `services.tf` — 9 serwisów ECS: gateway, core, delivery, notifier, worker, frontend, sync, builder, jumphost
+- `service_discovery.tf` — Cloud Map namespace `pbms.local` + 7 serwisów
+- `schedulers.tf` — AppAutoScaling start 07:00 / stop 19:00 MON-FRI dla 4 serwisów
+- `cloudwatch.tf` — dashboard + 6 alarmów
+- `alb_frontend.tf` — dodatkowy cert na HTTPS listenerze dla frontend
+- `output.tf` — ALB DNS, DocDB endpoints, SQS, IAM ARNs, service names, ACM validation options
+
+**Fix modułu core/alb:**
+- `modules/core/alb/locals.tf` — zmieniono `create_https_listener = var.enable_https && var.certificate_arn != null` → `create_https_listener = var.enable_https`
+- Powód: `count` zależny od `certificate_arn != null` blokuje `terraform plan` gdy cert jest `known after apply`
+- Bezpieczna zmiana — precondition w `app-stack` chroni przed `enable_https=true && cert_arn=null`
+
+**Wynik:**
+- `terraform init` — OK (provider aws 6.45.0)
+- `terraform plan` — **139 to add, 0 to change, 0 to destroy** ✅
+- Deprecation warnings (`data.aws_region.current.name`) — kosmetyczne, nie blokują
+
+**Następne kroki (kolejność):**
+1. `terraform apply` → ACM ceryfikaty tworzone automatycznie → wyciągnij CNAME z outputu
+2. Dodaj rekordy CNAME do `makotest.pl` (admin DNS)
+3. Poczekaj na status ISSUED (5–30 min)
+4. Wymień obrazy nginx:latest na docelowe URI ECR
+5. `terraform apply` bez targetów — pełny deploy
+
+**Ważne:**
+- `jumphost_image` wymaga zbudowania obrazu ECR po pierwszym apply (BLOCKER)
+- `external_dashboard` secret: BaseUrl `https://syndication-dev.makodev.pl`, Username `tony`
+- CNAME po apply: `terraform output -json acm_gateway_validation_options acm_frontend_validation_options`
+
+---
+
 ## 2026-05-12 — QA notifier fix + config audit (AzureAd + ExternalDashboardApi)
 
 ### Config audit — AzureAd + ExternalDashboardApi
