@@ -161,8 +161,7 @@
               "title": "operational-platform-foundation-proposal"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -346,8 +345,17 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "a6d2752d22e66974",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
+    "profiles/maspex/bootstrap.md",
+    "profiles/maspex/profile.yaml",
+    "profiles/_template/bootstrap.md",
+    "profiles/_template/profile.yaml",
+    "profiles/maspex",
+    "profiles/_template",
+    "profiles",
+    "artifacts/planodkupow/vpc-endpoints-dev-before-tags-20260424-221906.json",
+    "artifacts/planodkupow",
     "80-architecture/operational-platform-foundation-proposal.md",
     "20-projects/clients/mako/planodkupow/planodkupow-finops-delta-2026-05-20.md",
     "_chatgpt/INDEX.md.tmp.80649.05f294870734",
@@ -357,13 +365,6 @@
     "20-projects/clients/mako/maspex/finops-capacity-analysis-2026-05-19.md",
     "02-active-context/now.md.tmp.45222.cf369a5df52d",
     "20-projects/clients/mako/maspex/forensics-2026-05-18/raw-process-queue-2026-05-18.txt",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/raw-process-queue-2026-05-18.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1750-1760-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1740-1750-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1730-1740-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1720-1730-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1710-1720-contest-service.json",
-    "20-projects/clients/mako/maspex/forensics-2026-05-18/min-1700-1710-contest-service.json",
     "20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md",
     "_chatgpt/context-packs/maspex-full-context.md",
     "_chatgpt/context-packs/rshop-full-context.md",
@@ -382,8 +383,6 @@
     "50-patterns/prompts/invocations/cloud-detective-test.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-04-28-1730-cest.md",
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1200-cest.md",
-    "20-projects/clients/mako/maspex/loadtest-observability.md",
-    "20-projects/clients/mako/maspex/loadtest-2026-05-14-analysis-test2.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
