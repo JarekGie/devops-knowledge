@@ -66,6 +66,24 @@ Jeśli prompt miesza domeny:
 
 ---
 
+### Krok 2.5 — załadowanie manifestu projektu (jeśli dotyczy)
+
+Jeśli sesja dotyczy konkretnego projektu:
+
+1. Sprawdź `50-patterns/prompts/invocations/cloud-detective-<projekt>.md`
+2. Jeśli manifest istnieje — załaduj frontmatter: `cloud_provider`, `repo`, `safety`, `open_items`, `vault`
+3. Wykonaj `startup checklist` z body manifestu (open_items → session_log → now.md → branch LIVE)
+4. NIE wykonuj akcji z `safety.requires_go` bez osobnego GO operatora
+
+Jeśli manifest nie istnieje → postępuj jak dotychczas (czytaj notatki projektu w `20-projects/`).
+
+**Runtime vs Persistent:**
+- Manifest zawiera: identity, governance, safety, routing — dane trwałe
+- Manifest NIE zawiera: live ECS state, koszty, metryki, runtime task counts
+- Live state pobieraj LIVE z cloud/API w trakcie sesji
+
+---
+
 ### Krok 3 — walidacja granic kontekstu
 
 Sprawdź:

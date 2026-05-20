@@ -133,7 +133,8 @@
               "title": "vault-structure-current"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -317,7 +318,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "989a157ca01d6fbc",
+  "active": "f2e116b5d3631dd3",
   "lastOpenFiles": [
     "docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md",
     "docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md.tmp.64587.961987b8ce0f",
