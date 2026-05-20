@@ -174,7 +174,12 @@ Zasady: minimalizuj kontekst, preferuj diffy i linki nad pełnymi rewrite'ami.
 ### 4.2 Przepływ Claude Code
 
 ```
-Start sesji → AGENT_BOOTSTRAP.md (5 kroków) → czytaj now.md
+Start sesji → AGENT_BOOTSTRAP.md → identyfikacja domeny
+  ↓ (jeśli praca nad projektem)
+Manifest: 50-patterns/prompts/invocations/cloud-detective-<projekt>.md
+  → cloud_provider, repo, safety.mode, open_items, vault.session_log
+  ↓
+Czytaj last 2 wpisy session_log + now.md
   ↓
 Praca operacyjna (IaC, git, AWS CLI, edycja plików)
   ↓

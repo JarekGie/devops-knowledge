@@ -320,6 +320,7 @@
   },
   "active": "f2e116b5d3631dd3",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/vault-llm-governance.md.tmp.64587.253e0c8d4064",
     "_chatgpt/context-packs/vault-llm-governance.md.tmp.64587.7bffd458bd49",
     "00-start-here/how-to-use-this-vault.md.tmp.64587.96d7c65b788c",
     "20-projects/clients/mako/maspex/maspex-context.md",
@@ -340,7 +341,6 @@
     "profiles/_template",
     "profiles",
     "artifacts/planodkupow/vpc-endpoints-dev-before-tags-20260424-221906.json",
-    "artifacts/planodkupow",
     "_chatgpt/context-packs/puzzler-b2b-full-context.md",
     "_chatgpt/context-packs/maspex-prod-tf-drift.md",
     "20-projects/clients/mako/maspex/finops-analysis-prompt-template.md",
