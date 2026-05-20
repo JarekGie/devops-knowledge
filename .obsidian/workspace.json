@@ -92,48 +92,6 @@
             }
           },
           {
-            "id": "b02ef1ffc750cfb4",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "terminal:terminal",
-              "state": {
-                "terminal:terminal": {
-                  "cwd": "/Users/jaroslaw.golab/projekty/devops/devops-knowledge",
-                  "focus": false,
-                  "profile": {
-                    "args": [
-                      "--login"
-                    ],
-                    "executable": "/bin/zsh",
-                    "followTheme": true,
-                    "name": "",
-                    "platforms": {
-                      "darwin": true
-                    },
-                    "pythonExecutable": "python3",
-                    "restoreHistory": false,
-                    "rightClickAction": "copyPaste",
-                    "successExitCodes": [
-                      "0",
-                      "SIGINT",
-                      "SIGTERM"
-                    ],
-                    "terminalOptions": {
-                      "documentOverride": null
-                    },
-                    "type": "integrated",
-                    "useWin32Conhost": true
-                  },
-                  "serial": null
-                }
-              },
-              "pinned": true,
-              "icon": "terminal",
-              "title": "Terminal: jaroslaw.golab@s004928:~/projekty/devops/devops-knowledge"
-            }
-          },
-          {
             "id": "ad8d777bfde9afd9",
             "type": "leaf",
             "state": {
@@ -176,7 +134,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -360,15 +318,17 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "b02ef1ffc750cfb4",
+  "active": "f2e116b5d3631dd3",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/vault-llm-governance.md.tmp.64587.7bffd458bd49",
+    "00-start-here/how-to-use-this-vault.md.tmp.64587.96d7c65b788c",
+    "20-projects/clients/mako/maspex/maspex-context.md",
     "_system/AGENTS.md.tmp.64587.92b3de25564f",
     "docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md",
     "docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md.tmp.64587.961987b8ce0f",
     "_chatgpt/context-packs/vault-structure-current.md",
     "02-active-context/current-focus.md",
     "02-active-context/now.md",
-    "20-projects/clients/mako/maspex/maspex-context.md",
     "50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md",
     "80-architecture/operational-platform-foundation-proposal.md",
     "20-projects/clients/mako/planodkupow/planodkupow-finops-delta-2026-05-20.md",
@@ -381,12 +341,10 @@
     "profiles",
     "artifacts/planodkupow/vpc-endpoints-dev-before-tags-20260424-221906.json",
     "artifacts/planodkupow",
-    "_chatgpt/INDEX.md.tmp.80649.05f294870734",
     "_chatgpt/context-packs/puzzler-b2b-full-context.md",
     "_chatgpt/context-packs/maspex-prod-tf-drift.md",
     "20-projects/clients/mako/maspex/finops-analysis-prompt-template.md",
     "20-projects/clients/mako/maspex/finops-capacity-analysis-2026-05-19.md",
-    "02-active-context/now.md.tmp.45222.cf369a5df52d",
     "20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md",
     "_chatgpt/context-packs/maspex-full-context.md",
     "_chatgpt/context-packs/rshop-full-context.md",

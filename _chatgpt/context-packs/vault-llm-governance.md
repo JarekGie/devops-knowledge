@@ -7,7 +7,7 @@ llm_exposure: allowed
 cross_domain_export: allowed
 source_of_truth: vault
 created: 2026-05-01
-updated: 2026-05-15
+updated: 2026-05-20
 tags: [chatgpt, context-pack, vault, llm-governance, agent-contract, audit]
 ---
 

@@ -3,6 +3,7 @@
 ## Zasady nawigacji
 
 **Szybki start pracy:** otwórz [[now]] albo [[current-focus]]  
+**Wejście do projektu:** sprawdź `50-patterns/prompts/invocations/cloud-detective-<projekt>.md` → załaduj manifest → startup checklist  
 **Niespodziewany problem:** `40-runbooks/` → wybierz folder → README → konkretny runbook  
 **Coś do zapamiętania, ale nie wiadomo gdzie:** wrzuć do `01-inbox/quick-capture.md`  
 **Nowy projekt:** skopiuj `templates/project-note-template.md` do `20-projects/`  
