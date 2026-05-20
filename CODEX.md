@@ -77,7 +77,8 @@ Zasady:
 
 ## Praca z repozytoriami projektów
 
-- Zacznij od notatki projektu w `20-projects/` i ustal lokalną ścieżkę repo
+- Najpierw sprawdź `50-patterns/prompts/invocations/cloud-detective-<projekt>.md` — jeśli manifest istnieje, ścieżka repo jest w `repo.local`
+- Jeśli manifestu nie ma: zacznij od notatki projektu w `20-projects/` i ustal lokalną ścieżkę repo
 - Sama nazwa projektu lub URL do remote nie wystarcza, jeśli repo nie jest znane lokalnie
 - Jeśli ścieżka nie jest zapisana, zapytaj użytkownika zamiast zgadywać
 - Po wykonaniu pracy w repo wróć z wynikiem do vaulta: `session-log.md`, `now.md`, runbook lub standard
@@ -144,6 +145,31 @@ Szablon: `templates/runbook-template.md`
 ## Kontekst użytkownika
 
 Użytkownik jest doświadczonym DevOps/SRE, działa w środowisku z częstymi przerwaniami, głównie AWS, ale też GCP/Azure. Vault ma redukować koszt przełączania kontekstu. Priorytet ma konkret, nawigacja i szybki powrót do pracy, nie estetyka dokumentacji.
+
+## Project Bootstrap
+
+Jeśli istnieje `50-patterns/prompts/invocations/cloud-detective-<projekt>.md` — wczytaj go **zamiast** pytać o kontekst projektu.
+
+Zasady:
+- Na początku rozmowy dotyczącej konkretnego projektu — sprawdź `50-patterns/prompts/invocations/`
+- Jeśli manifest istnieje: wczytaj frontmatter (`cloud_provider`, `repo`, `safety`, `open_items`, `vault`) i `startup checklist` z body manifestu
+- Jeśli manifestu nie ma: postępuj jak dotychczas (czytaj notatki projektu w `20-projects/`, pytaj o ścieżkę repo)
+
+**Priorytety bezpieczeństwa z manifestu:**
+- `safety.mode: read_only` → tylko `describe*`, `get*`, `list*`; każdy write wymaga GO
+- `safety.mode: conditional_go` → plan wolny; apply i write ops wymagają osobnego GO
+- `safety.mode: manual_execution_only` → żadnych automatycznych akcji; tylko analiza
+- `safety.requires_go` lista jest wiążąca — nie wykonuj tych akcji bez potwierdzenia
+
+**Aktywny branch:** pobieraj LIVE przez `git branch --show-current` w `repo.local` — nie z manifestu
+
+**Runtime vs Persistent:**
+- Manifest zawiera: identity, governance, safety, routing, constraints
+- Manifest NIE zawiera: live ECS state, koszty, metryki, runtime task counts — pobieraj LIVE z cloud/API
+
+**Dostępne manifesty (schema v2):** maspex, rshop, booking-online, puzzler-b2b, drp-tfs, aws-cloud-platform, mfs-onboarding (GCP)
+**Generator:** `scripts/new-cloud-detective-invocation.sh`
+**Szablon:** `50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md`
 
 ## Powiązane
 

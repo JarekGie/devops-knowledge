@@ -67,7 +67,8 @@ Operacyjna baza wiedzy DevOps/SRE — narzędzie pracy, nie wiki. Właściciel: 
 20-projects/      — internal/ (LLZ, toolkit, exam) + clients/mako/
 30-standards/     — tagging, IaC, CI/CD, naming, dokumentacja
 40-runbooks/      — aws/, ecs/, kubernetes/, terraform/, incidents/
-50-patterns/      — debugging, migration, incident-analysis, finops, prompts
+50-patterns/      — debugging, migration, finops, prompts
+  invocations/    ← ★ operational project manifests (schema v2) — bootstrap per projekt
 60-toolkit/       — devops-toolkit CLI (architektura, kontrakty, komendy)
 70-finops/        — przeglądy kosztów, optymalizacja
 80-architecture/  — ADR, mapy systemów, zasady platformy
@@ -80,7 +81,7 @@ _chatgpt/         — eksporty konwersacji dla ChatGPT
 
 1. Wejście po przerwie → czytaj `02-active-context/now.md`
 2. Szukasz runbooka → `40-runbooks/<technologia>/`
-3. Nowy projekt → utwórz katalog w `20-projects/` z plikami: context.md, session-log.md
+3. Praca nad projektem → sprawdź `50-patterns/prompts/invocations/cloud-detective-<projekt>.md`; jeśli brak → utwórz katalog w `20-projects/`
 4. Nowa decyzja arch. → `80-architecture/decision-log.md`
 5. Szybka notatka → `01-inbox/` (przenieś w ciągu tygodnia)
 
