@@ -99,10 +99,10 @@ Maj 2026 = pierwszy pełny miesiąc w post-chaos reżimie.
 
 ### Brokery (live runtime)
 
-| Broker | BrokerId | Type | Engine | Created | Tags | CFN | Cost proj/mo |
-|--------|---------|------|--------|---------|------|-----|-------------|
-| planodkupow-uat-RabbitMQ | b-2d26b881 | mq.t3.micro | 3.13.7 | 2021-08-11 | 7 (EN+PL mix) | ✓ UAT stack | ~$21 |
-| planodkupow-qa-rabbitmq-cheap | b-f231815d | **mq.m7g.medium** | 3.13.7 | **2026-04-21** | **ZERO** | **✗ manual** | **~$109+** |
+| Broker                        | BrokerId   | Type              | Engine | Created        | Tags          | CFN          | Cost proj/mo |
+| ----------------------------- | ---------- | ----------------- | ------ | -------------- | ------------- | ------------ | ------------ |
+| planodkupow-uat-RabbitMQ      | b-2d26b881 | mq.t3.micro       | 3.13.7 | 2021-08-11     | 7 (EN+PL mix) | ✓ UAT stack  | ~$21         |
+| planodkupow-qa-rabbitmq-cheap | b-f231815d | **mq.m7g.medium** | 3.13.7 | **2026-04-21** | **ZERO**      | **✗ manual** | **~$109+**   |
 
 ### Usage types April vs May (billing evidence)
 
