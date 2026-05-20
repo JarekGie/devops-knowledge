@@ -2,26 +2,38 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-20 — PLANODKUPOW (aktywny kontekst)
+## Update — 2026-05-20 — PLANODKUPOW: FinOps Delta Audit DONE ✅
 
 ```
 PROJEKT:  PlanOdkupow
 ACCOUNT:  333320664022 | eu-central-1 | profile: plan
 VAULT:    20-projects/clients/mako/planodkupow/
+RAPORT:   planodkupow-finops-delta-2026-05-20.md
 
-OSTATNI STAN (2026-04-26):
-  Przeprowadzony full audit read-only: ECS, MQ, CloudWatch, VPC, ECR, WAF, Global Accelerator
-  Zidentyfikowane waste: ~$432/mies.
-  Kluczowe znaleziska:
-    - ECS PropagateTags=NONE na 26/28 serwisach → $267/mies. untagged w CE
-    - MQ orphan broker QA (mq.m7g.medium, poza CFN, zero tagów) → $21/mies.
-    - CW log retention: UAT broker NEVER_EXPIRES, 164+ GB → $97/mies.
-    - Unassociated EIP → $3.60/mies.
-    - 4 VPC endpoints w starym QA VPC (orphan) → $28.80/mies.
-    - Global Accelerator $14.98/mies., health Unknown
+ANALIZA kwiecień→maj 2026 zakończona (READ ONLY):
 
-CO DALEJ (ustal z użytkownikiem):
-  Czego teraz potrzeba od projektu planodkupow?
+POPRAWA:
+  - CloudWatch: −$32/mies. (retention fix zadziałał — 164 GB → 3.11 GB)
+
+POGORSZENIE:
+  - MQ m7g.medium permanentny: +$52/mies. vs pre-chaos (t3.micro → m7g.medium)
+  - AWS Config org recorder (nowy 2026-05-03): +$14/mies.
+  - MQ TimedStorage rośnie: +86% per-day rate vs kwiecień → będzie drozsze
+
+NOWE KRYTYCZNE ODKRYCIA:
+  1. QA Redis 5.0.6 — odtworzony 2026-04-19 z IDENTYCZNYM EOL który wywołał chaos!
+     AutoMinorVersionUpgrade=true, SnapshotRetention=0, CFN stack UPDATE_ROLLBACK_COMPLETE
+  2. SFTP stack UPDATE_ROLLBACK_COMPLETE od CZERWCA 2025 — Transfer Server aktywny
+  3. 5 QA nested stacks w UPDATE_ROLLBACK_COMPLETE (bez zmian od kwiecień)
+  4. planodkupow-dev aktualizowany 24h przed chaos day (2026-04-18)
+
+ORPHAN WASTE bez zmian: ~$91/mies. (NAT + 4 endpoints + EIP + GA + SFTP)
+
+CO DALEJ (priorytety):
+  P1: MQ downgrade m7g.medium → t3.micro ($83/mies. oszczędność)
+  P2: Zbadaj SFTP stack co to jest i czy używane
+  P3: Plan migracji QA Redis 5.0.6 (ryzyko kolejnego chaosu)
+  P4: Orphan cleanup po weryfikacji GA traffic
 ```
 
 ---
@@ -3755,4 +3767,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-20 10:54 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-20 11:06 — sesja aktywna*
