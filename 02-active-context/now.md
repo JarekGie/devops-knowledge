@@ -2,25 +2,715 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-09 — MASPEX: load test infra kompletna, MR na GitLabie ✅
+## Update — 2026-05-20 — MASPEX (aktywny kontekst) ←
 
 ```
-BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 4 commity)
+PROJEKT:  Maspex / Kapsel
+ACCOUNT:  969209893152 | eu-west-1 | profile: maspex-cli
+REPO:     ~/projekty/mako/aws-projects/infra-maspex/
+BRANCH:   feat/campaign-day-monitoring
+VAULT:    20-projects/clients/mako/maspex/
+
+OTWARTE DRIFTY I ZADANIA:
+  D2 — image tag w tfvars (coreapp-uat-612 ≠ running coreapp-prod-805) — bezpieczne
+  D3 — orphaned ACM cert w TF state: terraform state rm przed next apply
+  P1 — autoscaling min=30→8, max=45→30 (CONDITIONAL GO, nie wdrożone)
+       wymaga: alarm RunningTaskCount<6 + alarm p99>500ms + 7 dni monitoringu
+  P2 — confirm terraform plan = 0 zmian dla secret_arns fix
+  PUSH — commit 6a14525 (WAF moderatorzy) niepushowany (VPN korporacyjny)
+
+STAN AWS PROD:
+  ECS: min=30, max=45, desired=30
+  WAF: DefaultAction=Block, 6 IP w allowliście (MakoLab+Maspex+Moderia+3×moderatorzy)
+  AlbRequestCount target=200 (konserwatywny — trigger przy 123 req/s)
+```
+
+---
+
+## Update — 2026-05-20 — PLANODKUPOW: FinOps Delta Audit DONE ✅
+
+```
+PROJEKT:  PlanOdkupow
+RAPORT:   planodkupow-finops-delta-2026-05-20.md
+
+KLUCZOWE: CloudWatch −$32/mies. (retention fix), MQ +$52/mies. (m7g.medium permanentny)
+KRYTYCZNE: QA Redis 5.0.6 EOL — odtworzony z tym samym silnikiem co chaos. Zero snapshots.
+ORPHAN WASTE: ~$91/mies. (NAT + 4 endpoints + EIP + GA + SFTP)
+
+CO DALEJ:
+  P1: MQ downgrade m7g.medium → t3.micro ($83/mies.)
+  P2: SFTP stack zbadaj i resolve
+  P3: QA Redis 5.0.6 → upgrade plan
+```
+
+---
+
+## Update — 2026-05-19 — MASPEX: WAF rollback + FinOps DONE ✅
+
+```
+WAF ADMIN PANEL ROLLBACK: ZAMKNIĘTY
+  commit ca12875 → push → MR #16
+  default_action: allow → block
+  Allowlist: MakoLab 195.117.107.110/32 + Maspex 91.233.19.251/32 + Moderia 89.228.178.218/32
+  D4 drift (IAM tag uat→prod) zamknięty przy okazji
+
+FINOPS CAPACITY ANALYSIS: ZAMKNIĘTY
+  Raport: 20-projects/clients/mako/maspex/finops-capacity-analysis-2026-05-19.md
+  Werdykt: CONDITIONAL GO — min=30→8, max=45→30
+  Oszczędności: ~$2 190/mies. (−49%)
+  Warunki: alarm RunningTaskCount<6, alarm p99>500ms, 7 dni monitoringu
+  AKTUALNY STAN AWS: min=30, max=45, desired=30 (P1 jeszcze nie wdrożone)
+
+OTWARTE DRIFTY:
+  D2 — image tag w tfvars (coreapp-uat-612 ≠ running coreapp-prod-805) — bezpieczne, ignore_changes
+  D3 — orphaned ACM cert w TF state (terraform state rm przed next apply)
+  P1 — autoscaling min=30→8, max=45→30 (CONDITIONAL GO, nie wdrożone)
+  P2 — confirm terraform plan = 0 zmian dla secret_arns fix
+```
+
+---
+
+## RSHOP — stan zawieszony (wróć po ~10:35 UTC)
+
+```
+PROJEKT:  rshop — e-commerce Renault/Dacia
+ACCOUNT:  943111679945 | eu-central-1 | profile: cd-rshop
+REPO:     ~/projekty/mako/eshop-cicd (Jenkins pipelines)
+
+ROOT CAUSE: stary Jenkinsfile → ChangeSet na parent stack → cascade FrontendDacia/FrontendRenault
+  Obrazy frontendd.1364 + frontendr.1364 nie istnieją w ECR → NotStabilized po ~3h
+
+STAN (09:46 UTC):
+  dev-ECSStack-1BLAWHL0P6JKO: UPDATE_IN_PROGRESS (od 07:17 UTC)
+  FrontendDacia/FrontendRenault: UPDATE_IN_PROGRESS — ECS backoff loop, stare taski żyją ✅
+  api + backoffice: UPDATE_COMPLETE ✅
+  Frontend ECS runtime: svc1/svc2 running=1, ruch serwowany ✅
+
+WYKONANO:
+  ✅ commit 9464f6c "fix(BE/dev): deploy backend child stacks only"
+  ✅ push → origin master (aff7f1d..9464f6c)
+
+CZEKA NA:
+  dev-ECSStack-1BLAWHL0P6JKO → UPDATE_ROLLBACK_COMPLETE (ETA ~10:17–10:35 UTC)
+
+NASTĘPNY KROK (po rollbacku):
+  Trigger Jenkins build #1288 → weryfikacja: api+backoffice UPDATE_COMPLETE, parent/frontend NIE tknięte
+```
+
+---
+
+## Update — 2026-05-19 — MASPEX: incydent IAM ZAMKNIĘTY ✅
+
+```
+STAN: stabilny
+  PROD: 30/30 running (rev 25), steady state
+  UAT:  2/2 running, steady state
+  IAM policy maspex-api-execution-secrets: oba ARN-y ✅
+
+WYKONANO (2026-05-18):
+  ✅ IAM hotfix: put-role-policy → dodano PROD ARN (19:34 UTC)
+  ✅ TF UAT fix: envs/uat/main.tf secret_arns + PROD ARN (commit 334353c)
+  ✅ TF PROD fix: envs/prod/main.tf secret_arns + UAT ARN (commit a2bcd3a)
+  ✅ oba commity na feat/campaign-day-monitoring → MR #16
+
+ZABEZPIECZENIE:
+  terraform apply z envs/prod nie usunie UAT ARN ✅
+  terraform apply z envs/uat nie usunie PROD ARN ✅
+
+POZOSTAŁY DRIFT (niski priorytet, nie blokuje):
+  tag environment=uat na shared role maspex-api-execution
+  → nie wpływa na ECS runtime
+  → docelowy fix: rozdzielenie execution role per env (po kampanii)
+```
+
+OTWARTE — MASPEX:
+  - ⚠️ CRITICAL: fix process-queue PRZED odnowieniem OpenAI quota
+      (OpenAI 429 billing → infinite requeue loop, raport: process-queue-investigation-2026-05-18.md)
+  - ✅ WAF admin panel PROD — ZAMKNIĘTY (commit ca12875)
+  - REDIS_URL w prod Secrets Manager — do weryfikacji
+  - maspex-bot unhealthy PROD + UAT — niezależny problem, >25 dni
+
+---
+
+## Update — 2026-05-18 — MASPEX: process-queue investigation DONE ✅
+
+```
+RAPORT: 20-projects/clients/mako/maspex/process-queue-investigation-2026-05-18.md
+
+ROOT CAUSE (FAKT):
+  OpenAI 429 billing quota exhaustion → infinite requeue loop (brak max_retries)
+  20 UUID-ów × 224-228 requeue w 2h | storm aktywny od ~16:20 UTC
+
+ALB: peak 109 Target 5xx @ 16:26 UTC | Redis: niezatknięty | ECS: 30/30 stable
+
+OSOBNY (LOW): PostgreSQL 22P05 null byte — 5 zdarzeń, brak kaskady
+
+KRYTYCZNA AKCJA (P1 — wykonać PRZED odnowieniem OpenAI):
+  Naprawić klasyfikację HTTP 429 w process-queue:
+  - 429 billing quota → dead-letter / stop (NIE requeue)
+  - 429 rate limit → retry z backoff + max_retries cap
+  Bez naprawy: nowe quota zostaną wyczerpane w minuty po odnowieniu
+```
+
+OTWARTE — MASPEX:
+  - ⚠️ CRITICAL: fix process-queue before OpenAI quota renewal
+  - WAF admin panel PROD tymczasowo otwarty (rollback po kampanii)
+  - REDIS_URL w prod Secrets Manager do weryfikacji
+  - maspex-bot unhealthy (PROD + UAT) — niezależny problem
+
+---
+
+## Update — 2026-05-18 — MASPEX: context pack + repo wyrównane ✅
+
+```
+WYKONANE:
+  ✅ maspex ChatGPT context pack: _chatgpt/context-packs/maspex-full-context.md
+  ✅ infra-maspex: 3 commity (cutover IaC, redis rotation script, testy-qa)
+  ✅ push → origin/feat/campaign-day-monitoring
+  ✅ MR #16: https://gitlab.makolab.net/admin-makolab/dc/aws-projects/infra-maspex-kapsel/-/merge_requests/16
+
+POPRZEDNIE (też gotowe):
+  ✅ dc-devops-team-vault: scripts/ + 50-patterns/prompts/ dosynchronizowane
+  ✅ superpowers vault layer: plan gotowy (docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md)
+  ✅ rshop ChatGPT context pack: _chatgpt/context-packs/rshop-full-context.md
+
+OTWARTE — MASPEX:
+  - WAF admin panel PROD tymczasowo otwarty (rollback po kampanii: block {} w waf.tf)
+  - REDIS_URL w prod Secrets Manager do weryfikacji
+  - Monitoring 24h po cutoverze
+  - maspex-bot unhealthy (PROD + UAT) — niezależny problem
+
+OTWARTE — superpowers plan:
+  - wykonanie planu: subagent-driven lub executing-plans (15 tasków)
+```
+
+## Update — 2026-05-18 — SUPERPOWERS VAULT LAYER: plan gotowy
+
+```
+PLAN:  docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md
+CEL:   _system/superpowers/ — execution/bootstrap layer dla Claude Code i Codex
+
+15 tasków: scaffold → 5 kontraktów → SKILL-TEMPLATE → 4 bootstrapy → 10 category READMEs → 4 przykłady → integracja AGENT_BOOTSTRAP
+
+KLUCZOWE: vault = jedyny SoT | domyślnie read-only | blast radius w frontmatter | Operator Gate (HIGH/CRITICAL) | evidence-first format
+
+NASTĘPNE: wykonanie planu (subagent-driven lub executing-plans)
+```
+
+## Update — 2026-05-18 — dc-devops-team-vault: prompt library i scripts dosynchronizowane
+
+```
+REPO:    ~/projekty/mako/dc-devops-team-vault
+BRANCH:  feature/vault-sync-model
+COMMIT:  ddf5276
+
+CO DODANO (pominięte w poprzednim sync z 2026-05-18):
+  scripts/new-cloud-detective-invocation.sh
+    — generator plików invocation dla nowych projektów
+    — SAVE_PATH zaadaptowany: 20-projects/makolab/<project>/
+
+  50-patterns/prompts/README.md
+  50-patterns/prompts/TEMPLATES/prompt_template.md
+  50-patterns/prompts/starter-pack/  (15 prompt templates)
+    — cloud-detective-v2.md, ecs-alb-debug, terraform-safe-review, itp.
+
+PRZENIESIONE (fix ścieżki):
+  50-patterns/invocations/ → 50-patterns/prompts/invocations/
+  (ujednolicenie z oczekiwaną ścieżką skryptu)
+
+POMINIĘTE CELOWO:
+  new-chatgpt-context.sh — prywatny (_chatgpt/ nie istnieje w team vault)
+
+NASTĘPNE: merge feature/vault-sync-model do main (gdy gotowe)
+```
+
+## Update — 2026-05-18 — RSHOP: BE Jenkinsfile fix ✅ ⬅️
+
+```
+PROJEKT:  rshop (Renault/Dacia e-commerce)
+PROFIL:   rshop / account 943111679945 / eu-central-1
+REPO:     ~/projekty/mako/eshop-cicd (Jenkins pipelines)
+CONTEXT:  20-projects/clients/mako/rshop/rshop-context.md
+
+OSTATNIA SESJA (2026-05-18):
+  ✅ BE Jenkinsfile fix (CFN-MUT-001 BE)
+     Plik: jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile
+     Dev path → per-child ChangeSety (api, backoffice) zamiast parent stack
+     Params obrazu: api / backoffice (potwierdzone z api-dev.yml + backoffice-dev.yml)
+     Polling: waitUntil(60s) + timeout(4h) zamiast aws cloudformation wait
+     Guards: parentStackId, denied resource types, empty changeSet, IN_PROGRESS
+     ADR: decision-log.md ADR-004
+     Stan: patch lokalny, NIEZCOMMITTOWANY, nieprzetestowany przez Jenkins
+
+  W SESJI WCZEŚNIEJ (maspex):
+  ✅ WAF kapsel-prod.makotest.pl: default_action: allow (tymczasowo)
+  ✅ ECS UAT IAM drift fix: execution role miała ARN prod, naprawione terraform apply -target
+  ✅ Supabase cron investigation: zapisane supabase-cron-connectivity-2026-05-18.md
+
+NASTĘPNY KROK (rshop BE):
+  git commit eshop-dev-aws-scan-2.jenkinsfile
+  uruchomić dev BE pipeline → weryfikacja
+
+BACKLOG (z session-log):
+  - [ ] Cleanup: usuń stary cert 3be77743 (po 2026-05-23)
+  - [ ] Cleanup: usuń orphaned cert dev.eshoprenault.lt (EXPIRED 2024-08-08)
+  - [ ] CloudWatch alarm DaysToExpiry < 30 dla nowych certów
+  - [ ] Zwiększyć retencję /ecs/rshop-dev z 1d na 14+ dni
+  - [ ] Zbadać przyczynę ECS deploy failure przed kolejnym deployem
+```
+
+## Update — 2026-05-18 — MASPEX: twojkapsel.pl LIVE ✅
+
+```
+PROJEKT:  maspex / prod
+STATUS:   LIVE od ~10:50 CEST 2026-05-18
+
+twojkapsel.pl      → HTTP 200 ✅
+www.twojkapsel.pl  → HTTP 200 ✅
+test.twojkapsel.pl → HTTP 200 ✅
+
+NASTĘPNE: monitoring 24h, opcjonalnie cleanup E17VHHQJ29MVAB (landing bez aliasow)
+```
+
+## Update — 2026-05-17 — MFS-ONBOARDING (GCP): analiza logów 24h — gotowa
+
+```
+PROJEKT:  mfs-onboarding / rci-orchestration (GCP)
+CONTEXT:  20-projects/clients/mako/mfs-onboarding/mfs-onboarding-context.md
+LOG ANALYSIS: 20-projects/clients/mako/mfs-onboarding/log-analysis-2026-05-17.md
+
+VERDICT: System działa stabilnie (0 restartów, 0 błędów app, 0 OOMKilled).
+         Brak evidence awarii. Krytyczna luka observability: brak HTTP access logów.
+
+USTALENIA Z ANALIZY LOGÓW:
+  🔴 Brak HTTP access logów — HAProxy loguje do syslog (nie stdout), brak sidecar
+  🔴 Aktywne skanowanie exploit (ThinkPHP RCE, PHP pearcmd) dociera do podów
+     — Tomcat odrzuca, ale brak WAF/ACL przed aplikacją
+  🔴 Port 6060 HAProxy (stats) wystawiony na internet — potwierdzone przez TLS scan
+  ✅ 3/3 pody Running, 0 restartów w 27h, CPU 2-3m, Memory 226-255Mi
+  ✅ Ruch aplikacyjny: ~500 "Request logged" / 24h, szczyt 10:00 UTC (100/h)
+  ✅ Brak non-Normal events w klastrze (ostatnie 24h)
+  ✅ Node warnings: NodeSysctlChange (net.netfilter.nf_conntrack_acct) — niekrytyczne
+  ℹ️ OpenSearch VM: RUNNING, ale brak logów OS w Cloud Logging, Fluent-bit disabled
+  ℹ️ RequestFilter loguje tylko "Request logged" bez URL/status/latency
+
+NASTĘPNE KROKI (read-only follow-up):
+  1. gcloud compute target-pools get-health a6b33017894a44e3d88106baaa935ee0 --region europe-west2
+  2. kubectl exec -n haproxy-controller -- cat /etc/haproxy/haproxy.cfg | grep log
+  3. Sklonować repo ~/projekty/mako/mfs-orchestration (IaC niezweryfikowane)
+```
+
+## Update — 2026-05-17 — MASPEX: load test PROD — analiza gotowa, ECS wrócone do normy
+
+```
+LOAD TEST PROD — 2026-05-16 21:30–22:10 CEST — WYNIKI
+
+RAPORT: 20-projects/clients/mako/maspex/load-test-analysis-2026-05-16-2130-cest-prod-vs-uat.md
+
+WYNIKI:
+  ✅ PROD zdał — 0 Target 5xx, 0 błędów aplikacyjnych w logach
+  ✅ p99 peak = 0.277s (vs UAT 1.493s — 5.4× lepiej)
+  ⚠️ Post-peak tail: 67 ELB 5xx, p99 8.7s o 21:45 CEST (connection queue overflow, nie app)
+  ✅ Redis: 0 evictions, EngineCPU max 23.8%; hit rate 47–50% (niższy niż UAT 75%)
+
+PO TEŚCIE:
+  ✅ CF invalidation PROD E17VHHQJ29MVAB (twojkapsel.pl) — I90YBZJ4VCIWJPZSK6RYT9M90W InProgress
+  ✅ CF invalidation PROD E34Y0KHR85VIR7 (assets.twojkapsel.pl) — IBYMFOBL6JYCUINZRRCQAVJT6F InProgress
+  ✅ ECS maspex-api PROD: desired=5, min=5, max=30 (przywrócono po teście)
+  ⚠️ Redis FLUSHALL PROD — NIE wykonano (czeka na potwierdzenie; Redis VPC-only, wymaga ECS exec)
+
+REDIS FLUSHALL — jeśli potrzebny:
+  Cluster: maspex-prod.zwowz5.0001.euw1.cache.amazonaws.com:6379
+  Dostęp: ECS exec na running maspex-api task
+```
+
+## Update — 2026-05-16 — MASPEX: mail assets CDN — LIVE ✅ Czeka na finalny CNAME
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring, commit: a6661d0)
+
+STAN:
+  ✅ S3 bucket maspex-mail-assets-969209893152 — LIVE (eu-west-1)
+  ✅ OAC maspex-mail-assets (E2RWD7KYG4EO5T) — LIVE
+  ✅ 9 assetów w s3://maspex-mail-assets-969209893152/email/
+  ✅ CloudFront E34Y0KHR85VIR7 — LIVE (d3muxmyhrve6og.cloudfront.net)
+  ✅ Bucket policy — zastosowana (AllowCloudFrontOAC)
+  ✅ CF invalidation IBBMQ8QFJHR922X6W9P1MVGLOW — /email/* InProgress
+  ⏳ ACM assets.twojkapsel.pl — ISSUED
+  ⏳ ACM auth.twojkapsel.pl — PENDING_VALIDATION
+
+NASTĘPNY KROK — DNS CNAME finalny (u rejestratora twojkapsel.pl):
+  Name:  assets.twojkapsel.pl
+  Type:  CNAME
+  Value: d3muxmyhrve6og.cloudfront.net
+
+UWAGA — pre-existing issue (niezwiązany z tym PR):
+  full plan pokazuje 3 destroys CloudWatch log groups /maspex/shared/*
+  Używaj -target dopóki nie rozstrzygniesz log groups issue
+
+OPEN ITEM poza IaC: app templates muszą używać EMAIL_ASSETS_BASE_URL
+  base_url: https://assets.twojkapsel.pl
+```
+
+## Update — 2026-05-16 — MASPEX: IaC mail assets CDN — gotowe do apply (poprzedni stan, zastąpiony powyżej)
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: analysis/maspex-load-test-2026-05-11)
+ZMIANY: terraform/envs/shared/ (4 modified + 1 new file, niezcommitowane)
+
+CO ZROBIONO (IaC only, bez app code):
+  ✅ shared/providers.tf — dodany provider alias aws.us_east_1
+  ✅ shared/variables.tf — mail_assets_domain + mail_assets_cf_certificate_arn
+  ✅ shared/terraform.tfvars — wartości z placeholderem ARN cert
+  ✅ shared/mail-assets.tf — S3 bucket + OAC + bucket policy + CloudFront module
+  ✅ shared/outputs.tf — mail_assets_bucket_name, cloudfront_domain, distribution_id, base_url
+  ✅ terraform fmt -check: PASS
+  ✅ terraform validate: SUCCESS
+
+PREREQ DO APPLY (blokuje):
+  1. awsume maspex + request-certificate assets.twojkapsel.pl w us-east-1
+  2. Dodaj DNS CNAME walidacyjny, poczekaj na ISSUED
+  3. Podmień mail_assets_cf_certificate_arn w terraform.tfvars
+  4. terraform init -backend-config=backend.hcl
+  5. terraform plan → terraform apply
+
+OPEN ITEM (poza IaC):
+  App code musi dostać EMAIL_ASSETS_BASE_URL — dziś maile nadal używają NEXT_PUBLIC_SITE_URL
+  Pełny plan: 20-projects/clients/mako/maspex/mail-assets-migration-plan.md
+
+TARGET URL: https://assets.twojkapsel.pl/email/<plik>.png
+```
+
+
+## Update — 2026-05-15 — MASPEX: PROD parity — APPLIED ✅
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring)
+COMMIT: 7511067
+
+WYNIK (3 add, 7 change, 3 destroyed):
+  ✅ TD families PROD: maspex-prod-api:1, maspex-prod-admin-panel:1, maspex-prod-bot:1
+  ✅ IAM role tags fix: environment uat→prod (6 ról)
+  ✅ IAM exec_secrets policy: UAT→PROD secret ARN
+  ✅ SUPABASE_JWT_SECRET ustawiony w maspex/prod/api (88 znaków, PROD JWT)
+  ✅ ECS services PROD NIEZMIENIONE — brak restartu kontenerów
+
+SERWISY PROD teraz wskazują stare TDs — pipeline deploy podepnie maspex-prod-* przy następnym release.
+
+OTWARTE:
+  ❓ Certy caed9d07/d4bbfef0 (test.twojkapsel.pl) — decyzja czy PROD migruje na tę domenę
+  Bot PROD 0/1 — brak tokenu, osobna kwestia
+```
+
+---
+
+## Update — 2026-05-15 — MASPEX: PROD parity — plan gotowy, czeka na decyzje operatora
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring)
+PLAN:   /tmp/prod-parity.tfplan (3 add, 7 change, 3 destroy)
+
+ZROBIONE:
+  ✅ moduł ecs-service: nowa var task_definition_name (backward-compat, default "")
+  ✅ prod/main.tf: task_definition_name dla 3 serwisów → maspex-prod-api/admin-panel/bot
+  ✅ terraform fmt + validate OK | plan OK
+  plan NIE apply — blokery poniżej
+
+PLAN EFFEKTY:
+  3× replace aws_ecs_task_definition (family prod-*) — ECS service NIEZMIENIONY (ignore_changes)
+  6× in-place IAM role tag fix (environment: uat→prod)
+  1× in-place IAM exec_secrets policy (UAT→PROD secret ARN)
+
+BLOKERY PRZED apply:
+  ⛔ secret maspex/prod/api: SUPABASE_JWT_SECRET PUSTE → aplikacja PROD nie waliduje tokenów
+     → potrzebna wartość z Supabase PROD dashboard (Project Settings → API → JWT Secret)
+  ❓ certy z zadania (caed9d07 / d4bbfef0) pokrywają test.twojkapsel.pl, NIE kapsel-prod.makotest.pl
+     → decyzja: czy PROD teraz migruje na test.twojkapsel.pl?
+
+PYTANIA DO OPERATORA:
+  1. SUPABASE_JWT_SECRET dla PROD (Supabase PROD project → Settings → API → JWT Secret)
+  2. Czy PROD migruje na test.twojkapsel.pl (nowe certy)?
+  3. Approve plan do apply?
+  4. Opcjonalnie: zsynchronizować image tags w tfvars PROD?
+     (live: coreapp-prod-657, admin-panel-prod-130, maspex-worker-uat-61)
+```
+
+---
+
+## Update — 2026-05-15 — MASPEX: Zasłepka twojkapsel.pl — wdrożona + przełączamy na PROD
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex (branch: feat/campaign-day-monitoring)
+COMMIT: e8230ea
+
+ZROBIONE:
+  ✅ nowy index.html + PDF → S3 maspex-preprod-zaslepka-969209893152
+  ✅ GTM bezwarunkowy usunięty → cookie banner GDPR-compliant (jak v11)
+  ✅ CloudFront invalidation Completed (E17VHHQJ29MVAB)
+  ✅ Fix PDF case: instrukcja (lowercase) + Instrukcja (uppercase) — oba w S3
+  twojkapsel.pl DZIAŁA (200 w logach od 14:06 CEST)
+
+NASTĘPNY KROK: → PROD
+```
+
+---
+
+## Update — 2026-05-15 — MASPEX: Load test 12:00 CEST — analiza zakończona, P0 otwarte
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+STATUS: test zakończony, infrastruktura posprzątana (fleet stopped, WAF cleared)
+
+WYNIKI TESTU (12:00–12:30 CEST):
+  Verdict: CZĘŚCIOWO PASS — znacząca poprawa vs 14 maja
+  Peak: 8 835 req/s | p99 latency: 1.49 s (poprzednio ~30 s) | ELB 5xx: 160 (vs 722)
+  Autoscaling: 12→30 tasków o 12:24:48 (pierwsza skuteczna reakcja)
+  JWT fix (SUPABASE_JWT_SECRET): 0 błędów autoryzacji podczas testu ✅
+  Redis: stabilny (EngineCPU max 25.6%, 0 Evictions, hit rate 74–75%)
+
+P0 PRZED KOLEJNYM TESTEM:
+  ⛔ synthetic test users nie mają wierszy w Supabase `profiles` → 118 VOTE_RPC_ERROR
+     users: user-test-uat-10001@example.com ... sub: 00000000-...-00010001
+     FIX: seed profiles table w Supabase UAT
+  ⛔ max capacity = 30 (osiągnięte) → przed kampanią podnieść do 50+
+
+DO ZROBIENIA (Łukasz Fuchs / Maspex):
+  ⚠️ Maspex chce testować przed 18 maja — potrzebują IP do WAF allowlist
+     WAF name: maspex-uat-public-uat-allowlist
+     Plik: terraform/envs/uat/terraform.tfvars → public_uat_extra_allowed_ipv4_cidrs
+     Czeka: Maspex podaje swoje IP
+
+VAULT: 20-projects/clients/mako/maspex/load-test-analysis-2026-05-15-1200-cest.md
+```
+
+---
+
+## Update — 2026-05-15 — MASPEX: ECS SG drift fix + UAT recovery + secrets fix
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+BRANCH: feat/campaign-day-monitoring (commit: 186890c)
+
+ZROBIONE:
+  ✅ ECS SG drift fix — PROD ma własne SG (maspex-prod-*-ecs), UAT swoje (maspex-*-ecs)
+     brak ryzyka kolizji przy kolejnym apply z obu środowisk
+  ✅ SUPABASE_JWT_SECRET naprawiony w maspex/uat/api — 0 błędów JWT podczas testu
+  ✅ loadtest-fleet-start.sh — WAF_IP_SET_NAME fix (było prod-, jest uat-)
+  ✅ api-secrets.md — vault: udokumentowane wymagane sekrety z objawami braku
+
+STAN TF:
+  UAT: czysty (sprawdzony po apply o 11:xx CEST)
+  PROD: czysty (Enhanced CI + 3 alarmy + dashboard apply z 2026-05-15 rano)
+```
+
+---
+
+## Update — 2026-05-12 — PUZZLER-B2B: QA notifier fix + config audit + RSHOP: FE Jenkinsfiles
+
+```
+PUZZLER-B2B:
+  REPO: ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
+  REPO: ~/projekty/mako/pbms-backend (branch: dev)
+
+  ✅ QA notifier DOWN → naprawiony
+     - Root cause: SM secret infra-puzzler-b2b/qa/docdb brakował connection_string_notifier
+     - Task def rev 27 wdrożony 11:15 przez CI/CD (notifier-api-qa-156) — klucz w SM nie istniał
+     - Fix: put-secret-value + force-new-deployment → steady state 1/1
+     - TF był już aktualny (ignore_changes blokowało sync przy initial create bez klucza)
+
+  ✅ Config audit DEV+QA (AzureAd + ExternalDashboardApi):
+     - AzureAd DEV+QA: SM infra-puzzler-b2b/{env}/azuread — zgodne ✅
+     - ExternalDashboardApi DEV: appsettings.DEV.json — zgodne ✅
+     - ExternalDashboardApi QA: MISSING z appsettings.QA.json → dodane
+     - commit: 478d5694 (pbms-backend dev), pushed
+     - Runtime nie wymaga redeploya (wartości były już poprawne przez fallback z base)
+
+RSHOP FE JENKINSFILES:
+  REPO: ~/projekty/mako/eshop-cicd (branch: master)
+
+  ✅ r-shop-all.jenkinsfile — naprawiony (poprzednia sesja, commit: d4c5b77)
+  ✅ r-shop-all-dev-scan.jenkinsfile — naprawiony (commit: ef565fb)
+     - Oba: CfnStackName = dev-ECSStack-1BLAWHL0P6JKO, preflight gate, change-set guard
+
+STAN QA (2026-05-12 ~12:30):
+  8/9 serwisów 1/1, worker 0/0 (intentional) — wszystko OK
+  DocumentDB: available, ALB: healthy
+```
+
+---
+
+## Update — 2026-05-14 — MASPEX: Enhanced Container Insights — IaC gotowe, czeka na apply
+
+```
+REPO:  ~/projekty/mako/aws-projects/infra-maspex
+PLIK:  terraform/envs/uat/main.tf
+
+ODKRYCIA:
+  - Standard Container Insights: WŁĄCZONE (value=enabled, potwierdzone --include SETTINGS)
+  - Per-task granularity: BRAK (tylko agregaty serwisowe — to dlatego max=96% ale nie wiemy który task)
+  - Enhanced CI: zmienia to — dodaje dimension TaskId do CpuUtilized/MemoryUtilized
+
+IaC ZMIANA (gotowe, czeka na terraform apply):
+  module "ecs_cluster" { container_insights = "enhanced" }
+  TYLKO UAT — prod i preprod bez zmian
+
+NASTĘPNY KROK:
+  cd ~/projekty/mako/aws-projects/infra-maspex/terraform/envs/uat
+  terraform plan -target=module.ecs_cluster
+  terraform apply -target=module.ecs_cluster
+
+  Weryfikacja po apply:
+  aws ecs describe-clusters --clusters maspex-uat --include SETTINGS --profile maspex-cli --region eu-west-1
+
+VAULT: 20-projects/clients/mako/maspex/enhanced-container-insights-uat.md
+```
+
+---
+
+## Update — 2026-05-14 — MASPEX: Load test walidacyjny pre-scale — ZAKOŃCZONY
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+STATUS: testy zakończone, infrastruktura posprzątana
+
+ZROBIONE (wieczór 21:46–22:24 CEST):
+  ✅ Bug fix: loadtest-ctrl.sh — info()/ok()/warn() → stderr (fix WAF ANSI injection)
+  ✅ Pre-scale ECS: min=9→15, desired=15 (steady w 16s)
+  ✅ Level A (3,000 req/s): 8 min, 0.00% errors, pre-scale=15 → 200 req/s/task (vs 333 bez pre-scale)
+     - Autoscaling: 15→18→19→20 tasks (cascade, 6.5 min opóźnienie)
+  ✅ Level B (4,500 req/s): 8 min, 0.00% errors, pre-scale=20 → 225 req/s/task
+     - 270,000 req/min steady, latencja bez zmiany (~8ms avg)
+  ✅ Fleet stopped, WAF cleared, autoscaling min przywrócony do 9
+
+WYNIKI:
+  Pre-scale POTWIERDZA eliminację incident zone przy 3,000 req/s
+  Pre-scale=15 działa dla 2,500 req/s; dla 3,000+ → pre-scale=18–20
+  System stabilny przy 4,500 req/s z max capacity (20 tasks), 0 błędów
+
+ECS STAN (scale-in w toku ~80-90 min):
+  desired=20, running=20, min=9 → scale-in stopniowy
+
+VAULT: 20-projects/clients/mako/maspex/loadtest-prescale-validation-2026-05-14.md
+```
+
+---
+
+## Update — 2026-05-14 — MASPEX: Kalibracja autoscalingu (rano)
+
+```
+VAULT: 20-projects/clients/mako/maspex/loadtest-calibration-results-2026-05-14.md
+WYNIK: WORKING_BUT_TOO_LATE — mechanizm działa, ALE 5.5 min delay na scale-out
+  Pre-scaling operacyjny KONIECZNY przed spodziewanym ruchem
+```
+
+---
+
+## Update — 2026-05-14 — MASPEX: k6/InfluxDB/Grafana pipeline naprawiony + PROD parity
+
+```
+REPO:   ~/projekty/mako/aws-projects/infra-maspex
+BRANCH: feat/prod-parity-uat, commit: 0b0ec3b
+
+ZROBIONE:
+  ✅ k6/InfluxDB/Grafana pipeline — naprawiony na obu instancjach
+     - docker-compose.yml: INFLUXDB_DB=k6, named volumes, provisioning mounts
+     - Grafana datasource + dashboard provisjonowane z plików (nie z UI)
+     - Instancja 1 (3.249.179.8): zaktualizowana, data preserved
+     - Instancja 2 (34.242.87.83): zainstalowana od zera (nie miała docker-compose)
+     - Pliki wersjonowane: scripts/loadtest/ w repo (commit 0b0ec3b)
+  ✅ PROD parity — cert ARNs + REDIS_URL + api_domain
+     - alb_certificate_arn: a139f9a4 (kapsel-prod.makotest.pl, ISSUED)
+     - alb_api_certificate_arn: fd2f0c7c (kapsel-api-prod.makotest.pl, ISSUED)
+     - api_domain: kapsel-api-prod.makotest.pl (był kapsel-api.prod — niezgodne z certem)
+     - REDIS_URL zamiast ConnectionStrings__Redis w secrets (jak UAT)
+
+URUCHAMIANIE k6 Z TELEMETRIĄ:
+  K6_OUT=influxdb=http://localhost:8086/k6 k6 run scripts/kapsel.js
+
+GRAFANA (SSM port-forwarding na :3000):
+  aws ssm start-session --target i-0402c9e70c6a86ae3 \
+    --document-name AWS-StartPortForwardingSession \
+    --parameters '{"portNumber":["3000"],"localPortNumber":["3000"]}' \
+    --region eu-west-1 --profile maspex-cli
+  → http://localhost:3000 (anonymous Admin)
+
+BLOKERY PROD APPLY (wciąż otwarte):
+  ⛔ api_redis_secret_arn — secret maspex/prod/api nie istnieje w SM
+  ⛔ api/admin_panel/bot_image_tag — ustawić właściwe tagi prod
+
+BRANCHES (lokalne, nie pushed):
+  feat/prod-parity-uat  ← aktywny
+
+OTWARTE (load test scripts):
+  → loadtest-fleet-clear.sh (CF invalidation + ElastiCache PROD) — do napisania
+  → loadtest-fleet-*.ps1 — brak PowerShell odpowiedników
+  → --ssh w fleet scripts — brak helpera
+
+VAULT: 20-projects/clients/mako/maspex/loadtest-observability.md
+```
+
+---
+
+## Update — 2026-05-09 — LLZ: Phase 1 correction — GLPI usuniete z slo-alerts
+
+```
+BRANCH: feature/observability-routing-cleanup-phase1 (pushed)
+REPO:   ~/projekty/mako/aws-projects/aws-cloud-platform
+COMMIT: f1d0eb0
+
+CO ZROBIONO:
+  ✅ Usunieto glpi@infra.makolab.pl z slo_notification_emails (terraform.tfvars)
+  ✅ terraform plan: 0 add, 0 change, 1 destroy (subscription glpi@)
+  ✅ Commit f1d0eb0 pushed
+  ✅ Vault: observability-architecture-confluence.md zaktualizowany
+
+STAN SUBS slo-alerts SNS (po apply):
+  jaroslaw.golab@makolab.com  — zostaje
+  glpi@infra.makolab.pl       — USUNIETE (bylo pending_confirmation=true)
+
+APPLY COMMAND:
+  cd ~/projekty/mako/aws-projects/aws-cloud-platform/platform/monitoring
+  AWS_PROFILE=mako-dc terraform apply tfplan.monitoring
+
+WERYFIKACJA:
+  AWS_PROFILE=monitoring-tbd aws sns list-subscriptions-by-topic \
+    --topic-arn arn:aws:sns:eu-central-1:814662658531:slo-alerts \
+    --region eu-central-1 --query "Subscriptions[].Endpoint" --output text
+
+AWS HEALTH → GLPI: bez zmian (health-notifications topic — nie tkniety)
+SLO ALARMY: bez zmian (8 alarmow, tylko routing email)
+```
+
+---
+
+## Update — 2026-05-09 — MASPEX: load test infra KOMPLETNA, MR pushed (8 commitów) ✅
+
+```
+BRANCH: fix/uat-loadtest-docker-compose-plugin (pushed, MR otwarty, 8 commitów)
 REPO:   ~/projekty/mako/aws-projects/infra-maspex
 
 CO ZROBIONO (cała sesja):
   ✅ Docker Compose v2 plugin — naprawiony w IaC + na żywych instancjach (SSM)
+  ✅ Symlink /usr/local/bin/docker-compose → v2 plugin (legacy docker-compose działa)
   ✅ Discovery WAF: blokada kapsel.makotest.pl = WAFv2 CloudFront IP Set, NIE Security Group
   ✅ Nowy WAF IP Set maspex-uat-loadtest-allowlist — Terraform applied
   ✅ loadtest-ctrl.ps1: --run dopisuje IP do WAF, --stop czyści (Clear niezależny od instancji)
-  ✅ PS5.1 syntax fix: )) parser bug + node'a apostrof
+  ✅ PS5.1 syntax fix: )) parser bug + apostrof
   ✅ Scheduler fix: Clear-LoadTestAllowList działa też gdy maszyny ubite o 19:00
   ✅ IAM fix: makolab-qa dostał wafv2:GetIPSet + UpdateIPSet — applied + IAM Simulator ✅
-  ✅ MR: gitlab.makolab.net/.../infra-maspex-kapsel/-/merge_requests
+  ✅ JSON quoting fix: ConvertTo-Json → ręczny join (PS5.1 + aws CLI quote stripping)
+  ✅ SG: otwarto port 3000 (Grafana) + 8086 (InfluxDB) z biurowych IP — applied
+  ✅ loadtest-ctrl.sh: macOS bash — pełna paryteta z PS1 (WAF automation, jq JSON)
+  ✅ Commit ae39b3a pushed
+
+SKALOWANIE FLOTY (trzy miejsca — muszą być spójne):
+  loadtest.tf:       max_size + desired_capacity w aws_autoscaling_group
+  loadtest-ctrl.ps1: $DesiredCapacityRun + $MaxSizeRun
+  loadtest-ctrl.sh:  DESIRED_CAPACITY_RUN + MAX_SIZE_RUN
 
 NASTĘPNE KROKI:
-  → Test end-to-end przez dewelopera: --run → curl kapsel.makotest.pl → 200, --stop → 403
-  → Merge MR
+  → Merge MR po weryfikacji dewelopera
+  → Test end-to-end: --run → curl kapsel.makotest.pl → 200, --stop → 403
 ```
 
 ---
@@ -3084,4 +3774,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-09 22:05 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-20 11:58 — sesja aktywna*

@@ -9,6 +9,71 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-12 — QA notifier fix + config audit (AzureAd + ExternalDashboardApi)
+
+### Config audit — AzureAd + ExternalDashboardApi
+
+**Trigger:** Sebastian Prościński (dev) przekazał zestaw wartości konfiguracyjnych dla DEV i QA.
+
+**Model konfiguracji:**
+- `AzureAd__*` — Secrets Manager (`infra-puzzler-b2b/{env}/azuread`) → ECS secrets injection (env vars nadpisują appsettings). Runtime source = SM.
+- `ExternalDashboardApi__*` — baked w Docker image przez `appsettings.{ENV}.json`. Brak ECS injection.
+
+**Wynik porównania:**
+- AzureAd DEV + QA w SM: zgodne ✅ (zero zmian)
+- ExternalDashboardApi DEV (`appsettings.DEV.json`): zgodne ✅ (zero zmian)
+- ExternalDashboardApi QA: brakowało w `appsettings.QA.json` — QA fallowała do `appsettings.json` (base), wartości identyczne, więc runtime OK; dodano dla explicitness
+
+**Zmiana:**
+- `Core/PBMS.Core.API/appsettings.QA.json` — dodano sekcję `ExternalDashboardApi`
+- Commit: `478d5694` (pbms-backend `dev`), pushed
+- Przy merge: remote miał już zmiany w tym pliku (nowe crony, `TestTokenAuth`, BaseUrl z trailing slash) — rozwiązano konflikt, zachowano remote + BaseUrl bez trailing slash per developer value
+
+**Redeployment:** nie wymagany — wartości były już poprawne przez fallback
+
+---
+
+## 2026-05-12 — QA notifier down: missing secret key
+
+**Trigger:** sprawdzenie QA środowiska
+
+### Stan QA na 2026-05-12
+
+| Serwis | desired | running | uwagi |
+|--------|---------|---------|-------|
+| gateway | 1 | 1 | ✅ |
+| core | 1 | 1 | ✅ |
+| delivery | 1 | 1 | ✅ |
+| notifier | 1 | 0 | ❌ → naprawiony |
+| front | 1 | 1 | ✅ |
+| builder | 1 | 1 | ✅ |
+| sync | 1 | 1 | ✅ |
+| jumphost | 1 | 1 | ✅ |
+| worker | 0 | 0 | ✅ intentional |
+
+DocumentDB: `available`. ALB: gateway-tg i front-tg `healthy`.
+
+### Notifier — RCA
+
+- 11:15 — CI/CD wdrożył task def rev 27 (image `notifier-api-qa-156`)
+- 11:16 — Michał Grzywacz (dev) na Slacku: prosił o dodanie `PBMS_DB_notifier` i connection stringów do DEV i QA
+- Task def rev 27 referencjonuje klucz `connection_string_notifier` w `infra-puzzler-b2b/qa/docdb`
+- Klucz nie istniał w live sekrecie — failedTasks=12, crash loop co ~5 min
+
+**Root cause:** secret `infra-puzzler-b2b/qa/docdb` był stworzony zanim dodano klucze notifier do `envs/qa/secrets.tf`. `ignore_changes = [secret_string]` w lifecycle blokuje automatyczną synchronizację przy `terraform apply`. DEV był aktualny, QA nie.
+
+### Fix zastosowany
+
+1. `aws secretsmanager put-secret-value` — dodano `connection_string_notifier` i `database_notifier` do `infra-puzzler-b2b/qa/docdb`
+2. `aws ecs update-service --force-new-deployment` — wymuszono nowe deployment
+3. Notifier wstał: running=1/1
+
+**Terraform:** `envs/qa/secrets.tf` i `envs/dev/secrets.tf` były już aktualne (oba mają `connection_string_notifier`). Żadna zmiana kodu nie była potrzebna.
+
+**Lekcja:** przy dodawaniu nowych kluczy do `aws_secretsmanager_secret_version` z `ignore_changes = [secret_string]` — live sekrety w istniejących środowiskach trzeba zaktualizować ręcznie (`put-secret-value`).
+
+---
+
 ## 2026-05-07 — CI/CD pipeline audit + deployment ownership analysis
 
 **Repo:** `~/projekty/mako/aws-projects/infra-puzzler-b2b-final` + `~/projekty/mako/pbms-backend`

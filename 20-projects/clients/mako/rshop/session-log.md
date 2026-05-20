@@ -4,6 +4,165 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-19 — BE dev-scan: Root cause CFN loop + Jenkinsfile patch review
+
+**Diagnoza (2026-05-19 07:17–07:35 UTC, READ-ONLY):**
+
+Jenkins build #1287 (i poprzednie #1285, #1286) uruchamiał STARY Jenkinsfile → ChangeSet na parent stacku `dev-ECSStack-1BLAWHL0P6JKO` → CASCADE na wszystkie 4 child stacki.
+
+**Root cause:** Brakujące obrazy ECR `frontendd.1364` + `frontendr.1364` — nigdy nie istniały w ECR.
+- Ostatnie dostępne obrazy frontend: `frontendd.1379` + `frontendr.1379` (2026-05-13)
+- Build #1285/#1286/#1287 pushował tylko `api.*` i `backoffice.*` (nie budował frontendów)
+- Parent stack miał stale parametry frontend = 1364 (wartości sprzed ostatniego aktywnego FE deploy'a które nie dotarły do ECR)
+- `UsePreviousValue=true` w starym Jenkinsfile kontynuował reużywanie `.1364`
+
+**Efekt (powtarzany 4× od 2026-05-18 16:32 UTC):**
+- `api` + `backoffice`: UPDATE_COMPLETE ✓ (api.1287, backoffice.1287 wgrane)
+- `FrontendDacia` / `FrontendRenault`: `CannotPullContainerError: not found` → 18 failed tasks → NotStabilized → CFN rollback (~3h każda próba)
+- Stare taski (dev-frontend-task:1910/1911 z obrazem 1379) **nadal działają** — usługi frontend żyją
+
+**Stan parent stacka (07:17 UTC build #1287):** `UPDATE_IN_PROGRESS` → auto-rollback do `UPDATE_ROLLBACK_COMPLETE` — **nie wymaga akcji**
+
+**Patched Jenkinsfile — weryfikacja (READ-ONLY):**
+`jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile` — uncommitted diff zweryfikowany:
+- ✅ Dev path: ChangeSet tylko na `api` + `backoffice` child stackach (nie parent)
+- ✅ Preflight: parent + child status check (blokuje `*_IN_PROGRESS`)
+- ✅ Guard: `cfg.stackName != parent` + denied resource types (EC2/RDS/IAM/S3/ELB)
+- ✅ Wait: `waitUntil` polling zamiast `cloudformation wait` (nie wiesza procesu)
+- ✅ FrontendDacia/FrontendRenault: nie tykane w dev BE deploy
+- ✅ Non-dev path: bez zmian
+
+**Następny krok:**
+1. Poczekać na auto-rollback parent stacka → `UPDATE_ROLLBACK_COMPLETE`
+2. `git commit + git push` patcha (repo eshop-cicd, branch master)
+3. Jenkins załaduje nowy Jenkinsfile automatycznie przy kolejnym build
+4. Build #1288 zadeploy tylko `api` + `backoffice` child stacki → powinien zadziałać
+
+**WAŻNE:** Preflight w nowym Jenkinsfile zablokuje build jeśli parent jest w `UPDATE_IN_PROGRESS` lub `UPDATE_ROLLBACK_IN_PROGRESS`. Nie triggerować nowego builda dopóki parent nie osiągnie `UPDATE_ROLLBACK_COMPLETE`.
+
+---
+
+## 2026-05-18 — BE dev-scan Jenkinsfile fix (CFN-MUT-001 BE)
+
+**Plik:** `jenkinsfiles/BE/eshop-dev-aws-scan-2.jenkinsfile` (repo: eshop-cicd, branch: master)
+
+**Problem:** dev path tworzył ChangeSet na parent stacku `dev-ECSStack-1BLAWHL0P6JKO`, co cascadeowało na wszystkie nested stacki łącznie z FrontendRenault i FrontendDacia. Guard (`allowedStacks`) błędnie dopuszczał te stacki. `aws cloudformation wait stack-update-complete` timeoutował po ~15 min.
+
+**Zmiany (minimalne, tylko dev path):**
+- Dodano `def changeSetIdsBackend = []` na poziomie globalnym pipeline
+- Dev path: **nie** tworzy ChangeSet na parent stacku — zamiast tego:
+  - Preflight: sprawdza status parent + child stacków
+  - `describe-stack-resources` → odkrywa fizyczne nazwy `api` i `backoffice` child stacków
+  - `parentStackId` guard: ChangeSet StackId != parent ARN
+  - Parametry child stacków: `api` / `backoffice` (potwierdzone z `api-dev.yml` i `backoffice-dev.yml`)
+    - paramety obrazu: `api` w api child stack, `backoffice` w backoffice child stack
+    - Pozostałe params: `UsePreviousValue=true` (odkryte dynamicznie przez `describe-stacks`)
+  - ChangeSet per child: `changeSet-${BUILD_NUMBER}-api` / `changeSet-${BUILD_NUMBER}-backoffice`
+  - Guard: denied resource types (EC2, RDS, IAM, S3, ELB)
+  - `changeSetIdBackend = null` (sentinel — deploy stage używa `changeSetIdsBackend`)
+- Non-dev path: bez zmian (ChangeSet na parent, `aws cloudformation wait` zachowany)
+- Deploy stage: dev używa `changeSetIdsBackend.each` + `waitUntil(initialRecurrencePeriod: 60000)` + `timeout(4h)` + post-deploy parent status check
+
+**Stan:** patch zastosowany lokalnie, nie committowany. Nie uruchamiano żadnego Jenkins joba.
+
+**Następny krok:** code review + commit + weryfikacja przez uruchomienie dev pipeline.
+
+---
+
+## 2026-05-19 — Commit + push patcha (9464f6c) + WAIT state
+
+**Commit:** `9464f6c fix(BE/dev): deploy backend child stacks only`  
+**Push:** `aff7f1d..9464f6c` na `origin master` ✅  
+**Czas:** 09:40 UTC
+
+**Stan AWS (09:46 UTC):**
+- Parent `dev-ECSStack-1BLAWHL0P6JKO`: `UPDATE_IN_PROGRESS` — trwa od 07:17 UTC (build #1287)
+- FrontendDacia/FrontendRenault: `UPDATE_IN_PROGRESS` — ECS backoff, stare taski (1910/1911) żyją
+- api/backoffice: `UPDATE_COMPLETE` ✅ (api.1287, backoffice.1287)
+- Frontend runtime: svc1/svc2 running=1, ruch serwowany ✅
+
+**Jenkins deploy:** ZABLOKOWANY do `UPDATE_ROLLBACK_COMPLETE`.  
+**ETA auto-rollback:** ~10:17–10:35 UTC (wzorzec 3h potwierdzony 3× wcześniej).
+
+**Następny krok:** trigger Jenkins build #1288 po `UPDATE_ROLLBACK_COMPLETE`.
+
+---
+
+## 2026-05-12 — FE dev-scan Jenkinsfile fix (CFN-MUT-001)
+
+**Plik:** `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile` (branch: master, commit: `ef565fb`)
+
+`r-shop-all-dev-scan.jenkinsfile` (pipeline z Trivy/Sonar/OWASP) celował w root stack `dev` — identyczny hazard CFN-MUT-001 jak w `r-shop-all.jenkinsfile`. Fix analogiczny.
+
+**Zmiany:**
+- `CfnStackName = 'dev-ECSStack-1BLAWHL0P6JKO'` dla dev
+- Parametry dev: `frontendimg`/`frontendimg2` (ECSStack scope) + `UsePreviousValue=true`
+- Usunięto hardcoded ALB DNS/TG ARNy (były dev-specific, błędnie w QA path)
+- Preflight gate (sprawdza status ECSStack przed create-change-set)
+- Change-set guard (blokuje execute jeśli denied resource types/logical IDs)
+- `execute-change-set` i `wait` używają `${CfnStackName}`
+- `def changeSetIdFrontend = ''` na poziomie pipeline (fix Groovy warning)
+- QA: bez zmian (root stack params `FrontendImg`/`FrontendImgD`)
+
+**Nie zmieniano:** DC (OWASP), Sonarqube, Trivy, build stages, post/email.
+
+---
+
+## 2026-05-12 — CFN root stack dev recovery + FE Jenkinsfile fix
+
+### FE Jenkinsfile — CFN-MUT-001 fix
+
+**Plik:** `jenkinsfiles/FE/r-shop-all.jenkinsfile` (branch: master)
+
+Naprawiono FE pipeline analogicznie do wcześniejszej poprawki BE. Poprzedni FE deploy celował w root stack `dev` → change set modyfikował wszystkie nested stacks (VPC/DB/ECS/IAM...) → hazard CFN-MUT-001.
+
+**Zmiany:**
+- Dodano `CfnStackName = dev ? 'dev-ECSStack-1BLAWHL0P6JKO' : UpEnv`
+- Dev: parametry `frontendimg`/`frontendimg2` (ECSStack scope), nie root `FrontendImg`/`FrontendImgD`
+- Dev: preflight gate (describe-stacks → status check, blokuje `*_IN_PROGRESS`/`FAILED`)
+- Dev: change-set guard (tokenize + denied list: VPCStack/DBStack/SGStack/IAMStack/S3Stack/CFStack + `AWS::EC2::`/`AWS::RDS::`/`AWS::IAM::`/`AWS::S3::`/`AWS::ElasticLoadBalancingV2::`)
+- `execute-change-set` i `wait stack-update-complete` → `${CfnStackName}` we wszystkich envach
+- QA/UAT: zachowanie bez zmian
+
+### CFN dev stack recovery — UPDATE_ROLLBACK_FAILED odblokowany
+
+**Przyczyna wejścia w ROLLBACK_FAILED:** Poprzedni FE deploy uruchomił root stack update → VPCStack → SiecDB (DBSubnetGroup) → `rds:ModifyDBSubnetGroup` denied dla `jenkinsit`
+
+**Historia problemu:** Trwał od 2026-04-28 (wielokrotne nieudane próby continue-update-rollback).
+
+**Diagnostyka:**
+- Root: `UPDATE_ROLLBACK_FAILED` — 4 nested stacks failed
+- VPCStack: `UPDATE_ROLLBACK_FAILED` — `SiecDB` (RDS DBSubnetGroup) = real blocker
+- SiecDB error: `User jenkinsit not authorized to perform rds:ModifyDBSubnetGroup`
+- IAMStack, S3Stack, ECSStack: `Resource update cancelled` = cascade noise (już w CLEANUP)
+
+**CFN limitacje napotkane podczas recovery:**
+- `VPCStack.SiecDB` w `--resources-to-skip` → `Stack [VPCStack] does not exist` — bug CFN gdy nested stack sam jest w `UPDATE_ROLLBACK_FAILED`
+- `continue-update-rollback` na child stacks → `RollbackUpdatedStack cannot be invoked on child stacks` — twarde ograniczenie CFN
+- Skip całego `VPCStack` = irrecoverable (VPCStack zostaje na zawsze w FAILED, brak możliwości naprawy potem)
+
+**Zastosowane rozwiązanie:**
+1. Dodano temporary inline policy do `jenkinsit`: `rds:ModifyDBSubnetGroup`, `Resource: *`
+   - Policy name: `cfn-rollback-temp-rds-fix`
+2. `continue-update-rollback --stack-name dev` (bez skip)
+3. Root → `UPDATE_ROLLBACK_COMPLETE` w ~34s
+4. **Usunięto inline policy natychmiast po recovery** → `jenkinsit` wróciło do oryginalnych uprawnień
+
+**Wynik:**
+- Root `dev`: `UPDATE_ROLLBACK_COMPLETE` ✅
+- VPCStack: `UPDATE_ROLLBACK_COMPLETE` ✅ — wszystkie zasoby `UPDATE_COMPLETE` / `CREATE_COMPLETE`
+- SiecDB (DBSubnetGroup): `UPDATE_COMPLETE` ✅ — prawidłowo rollbackowany (zero drift)
+- `jenkinsit` inline policies: `[]` (puste — cleanup done)
+
+**Drift:** ZERO — wszystkie zasoby w stanie sprzed failed update.
+
+**Trwałe działania prewencyjne (niezbędne):**
+- FE Jenkinsfile poprawiony — deploy celuje w ECSStack, nie root
+- Root stack `dev` NIE powinien być aktualizowany przez żaden CI/CD pipeline
+- Rozważyć dodanie `rds:ModifyDBSubnetGroup` do `Rshop-dev-policy` (lub dedykowanej roli CFN) — brak tej akcji zablokuje każdy przyszły CFN update zawierający VPCStack
+
+---
+
 ## 2026-05-08 — ECS deploy RCA + ACM cert migration
 
 **Co zrobiono:**
@@ -48,3 +207,75 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 - [ ] ECS deploy failure — zbadać przyczynę przed kolejnym deployem
 - [ ] Jenkins: preflight check stanu CFN stacka przed deploy (P0)
 - [ ] Zwiększyć retencję `/ecs/rshop-dev` z 1 dnia na 14+ dni (P0)
+
+---
+
+## 2026-05-14 — rshop dev FE deploy separation / pre-deploy verification
+
+**Zakres:** repo `~/projekty/mako/eshop-cicd`, Jenkinsfile `jenkinsfiles/FE/r-shop-all-dev-scan.jenkinsfile`, env `dev`.
+
+**Problem historyczny:**
+- FE deploy aktualizował parent nested stack `dev-ECSStack-1BLAWHL0P6JKO`.
+- Parent orchestration uruchamiał rollout nested stacków `api` i `backoffice`.
+- ECS próbował pobrać nieistniejące obrazy `rshopapp-dev:api.650` i `rshopapp-dev:backoffice.650`.
+- Skutek: `CannotPullContainerError`, CFN rollback parent stacka, mimo że fronty były poprawne.
+
+**Naprawa Jenkinsfile:**
+- Commit pushed do `origin/master`:
+  - `aff7f1dc675b2a2c532344c4bb3771a95015d618`
+  - message: `fix(rshop-fe): deploy dev frontend via child CloudFormation stacks only`
+- Dev path:
+  - loguje `DEV FE deploy uses child stacks only`
+  - odkrywa fizyczne child stacki przez `describe-stack-resources` na parent stacku
+  - tworzy osobne ChangeSety tylko dla:
+    - `FrontendRenault`
+    - `FrontendDacia`
+  - używa `--stack-name ${cfg.stackName}` przy `create-change-set`
+  - używa `--stack-name ${target.stackName}` przy `execute-change-set`
+  - ma guard przed parent stackiem i przed logical IDs `api` / `backoffice`
+  - blokuje empty/no-op ChangeSet przed execute
+  - polluje child stacki custom pollingiem, timeout 4h
+- Non-dev path nie był celowo refaktorowany; parent `CfnStackName` nadal występuje w ścieżce `else`.
+
+**READ-ONLY verification przed kolejnym deployem FE:**
+- AWS profile: `rshop`
+- Region: `eu-central-1`
+- Parent stack:
+  - `dev-ECSStack-1BLAWHL0P6JKO = UPDATE_ROLLBACK_COMPLETE`
+  - `LastUpdated = 2026-05-12T21:06:54Z`
+- Nested stack resources z parenta:
+  - `FrontendRenault = UPDATE_COMPLETE`
+  - `FrontendDacia = UPDATE_COMPLETE`
+  - `api = UPDATE_COMPLETE`
+  - `backoffice = UPDATE_COMPLETE`
+- Fizyczne FE child stacki:
+  - `dev-ECSStack-1BLAWHL0P6JKO-FrontendRenault-PO8N6MN3IGSI = UPDATE_COMPLETE`
+  - `dev-ECSStack-1BLAWHL0P6JKO-FrontendDacia-1F7C2JWZJFSKZ = UPDATE_COMPLETE`
+- ECS services:
+  - `rshop-dev-frontend-svc1`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-frontend-task:1910`
+  - `rshop-dev-frontend-svc2`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-frontend-task:1911`
+  - `rshop-dev-api-svc`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-api-task:1067`
+  - `rshop-dev-backoffice-svc`: rollout `COMPLETED`, desired/running/pending `1/1/0`, task `dev-backoffice-task:1066`
+- ALB target health frontów:
+  - `dev-frontend-ALB-TG`: target `10.0.2.127:3000`, `healthy`
+  - `dev-frontend2-ALB-TG`: target `10.0.1.40:3000`, `healthy`
+- Git remote:
+  - `origin/master = aff7f1dc675b2a2c532344c4bb3771a95015d618`
+  - remote Jenkinsfile zawiera child-stack-only logikę.
+
+**Werdykt:** `GO` dla kolejnego FE deploya, pod warunkiem że Jenkins checkoutuje commit `aff7f1dc675b2a2c532344c4bb3771a95015d618`.
+
+**Warunki GO w Jenkins console:**
+- Checkout revision musi być `aff7f1dc675b2a2c532344c4bb3771a95015d618`.
+- Log musi zawierać `DEV FE deploy uses child stacks only`.
+- ChangeSet names muszą mieć postać:
+  - `changeSet-<build>-FrontendRenault`
+  - `changeSet-<build>-FrontendDacia`
+- Nie może pojawić się:
+  - `create-change-set --stack-name dev-ECSStack-1BLAWHL0P6JKO`
+  - `execute-change-set --stack-name dev-ECSStack-1BLAWHL0P6JKO`
+
+**Pozostałe ryzyka:**
+- Jenkins Replay, job-level script override albo checkout innego commita/brancha może ominąć patch.
+- Jeśli child template nie ma parametru `frontend`, ChangeSet failnie przed execute; nie powinno to dotknąć `api` ani `backoffice`.
+- Historyczne CFN events parenta nadal zawierają rollback z `api/backoffice`, ale aktualny runtime jest terminalny i zdrowy.

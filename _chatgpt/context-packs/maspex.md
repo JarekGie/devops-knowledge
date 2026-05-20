@@ -1,7 +1,7 @@
-# Context Pack — maspex (stan: 2026-04-26)
+# Context Pack — maspex (stan live: 2026-05-15)
 
 > Wklej na początku sesji dotyczącej projektu maspex. Standalone.
-> Aktualizuj po każdej sesji implementacyjnej.
+> Dane zweryfikowane live z AWS.
 
 ---
 
@@ -9,228 +9,221 @@
 
 **Projekt:** maspex — platforma konkursowa dla klientów Maspex (polskie FMCG)
 **Ja:** Senior DevOps/SRE MakoLab — właściciel infrastruktury AWS
-**Klient:** aplikacja Next.js + .NET API, zarządzana przez dev team MakoLab
+**Klient:** aplikacja Next.js (frontend/API coreapp) + bot worker (.NET), zarządzana przez dev team MakoLab
 **IaC:** Terraform, repo lokalne `~/projekty/mako/aws-projects/infra-maspex`
 **Profil AWS:** `maspex-cli` (IAM user + MFA, `awsume maspex-cli`)
 **Region:** eu-west-1 | **Konto:** 969209893152
 
 ---
 
-## Środowiska
+## Środowiska — przegląd
 
-| Env | Domena | CloudFront ID | ECS Cluster | Terraform env |
-|-----|--------|--------------|-------------|---------------|
-| UAT | `kapsel.makotest.pl` (API) | `E3J76RNXIE2YIG` | `maspex-uat` | `envs/uat` |
-| UAT admin | `kapsel-admin-uat.makotest.pl` | `E3R9U1TWNUJZ11` | `maspex-uat` | `envs/uat` |
-| Preprod | `twojkapsel.pl` + `www.twojkapsel.pl` | `E17VHHQJ29MVAB` | — | `envs/preprod` |
-| Shared | — | — | — | `envs/shared` (ECR) |
-
-VPC:
-- UAT: 10.44.0.0/16
-- Preprod: 10.45.0.0/16
+| Env | Cluster ECS | Terraform env | VPC CIDR |
+|-----|-------------|---------------|----------|
+| UAT | `maspex-uat` | `envs/uat` | 10.44.0.0/16 |
+| PROD | `maspex-prod` | `envs/prod` | 10.44.0.0/16 |
+| Preprod (zasłepka) | — | `envs/preprod` | 10.45.0.0/16 |
 
 ---
 
-## Architektura UAT (aktualny stan wdrożony)
+## UAT — pełna konfiguracja
+
+### CloudFront (UAT)
+
+| ID | Domena CF | Alias (CNAME) | DNS → CF | WAF |
+|----|-----------|---------------|----------|-----|
+| `E3J76RNXIE2YIG` | `d3p408gzqcntg6.cloudfront.net` | `kapsel.makotest.pl` | ✅ OK | `maspex-uat-public-uat-allowlist` |
+| `E3R9U1TWNUJZ11` | `dglmraezzepmo.cloudfront.net` | `kapsel-admin-uat.makotest.pl` | ✅ OK | `maspex-uat-admin-panel-allowlist` |
+
+Obie dystrybucje: origin = ALB `maspex-uat`, protocol `https-only`, `AllViewer` origin request policy (forward Host header).
+
+### ALB (UAT)
+
+- Nazwa: `maspex-uat`
+- DNS: `maspex-uat-1361582173.eu-west-1.elb.amazonaws.com`
+- ARN: `arn:aws:elasticloadbalancing:eu-west-1:969209893152:loadbalancer/app/maspex-uat/68317764a66425bd`
+
+**HTTPS listener certy (SNI):**
+
+| Short ID | Pokrywa domeny | Rola |
+|----------|----------------|------|
+| `33c1a772` | `kapsel-admin-uat.makotest.pl`, `www.kapsel-admin-uat.makotest.pl` | DEFAULT |
+| `99e64abc` | `kapsel.makotest.pl`, `www.kapsel.makotest.pl` | SNI |
+
+**Listener rules (HTTPS, priority order):**
+
+| Priority | Warunek | Target Group |
+|----------|---------|-------------|
+| 20 | `host=kapsel.makotest.pl` AND `path=/bots/*` | `maspex-uat-bot` |
+| 100 | `host=kapsel.makotest.pl` | `maspex-uat-api-3000` |
+| 200 | `host=kapsel-admin-uat.makotest.pl` | `maspex-uat-admin-3000` |
+| default | — | 503 fixed response |
+
+### ECS Services (UAT)
+
+| Serwis | Task Definition | Desired | Running | Status |
+|--------|----------------|---------|---------|--------|
+| `maspex-api` | `maspex-api:65` | 12 | 12 | ✅ healthy |
+| `maspex-admin-panel` | `maspex-admin-panel:27` | 1 | 1 | ✅ healthy |
+| `maspex-bot` | `maspex-bot:10` | 1 | 1 | ✅ running |
+| `maspex-redis` | `maspex-redis:2` | 1 | 1 | ✅ running |
+
+Target group health: api 12/12, admin 1/1, bot 0/2 (⚠️ bot TG unhealthy — znany issue).
+
+### ElastiCache (UAT)
+
+- Cluster ID: `maspex-uat`
+- Node type: `cache.t3.medium`
+- Engine: Redis 7.1.0
+- Status: `available`
+
+### Sekrety UAT
+
+Secret name: `maspex/uat/api` (ARN suffix `-STbBy3`)
+
+| Klucz | Opis |
+|-------|------|
+| `ConnectionStrings__Redis` | Redis connection string → injektowany jako `REDIS_URL` |
+| `SUPABASE_JWT_SECRET` | JWT secret Supabase — walidacja tokenów w `@supabase/ssr` |
+| `JWT_SECRET` | Generowanie tokenów w load test fleet (= `SUPABASE_JWT_SECRET`) |
+| `JWT_KID` | Key ID w headerze `kid` tokenów JWT (stała arbitralna wartość) |
+
+---
+
+## PROD — pełna konfiguracja
+
+### CloudFront (PROD)
+
+| ID | Domena CF | Alias (CNAME) | DNS → CF | Rola | WAF |
+|----|-----------|---------------|----------|------|-----|
+| `E33PUJBAQ533K0` | `d1w5bz7itj42sz.cloudfront.net` | **docelowo:** `test.twojkapsel.pl` + `www.test.twojkapsel.pl` | ⚠️ DNS wskazuje na złą dystrybucję (patrz niżej) | API / coreapp | `maspex-prod-public-app-allowlist` |
+| `E32AZKJ5SJSDSV` | `dfx1ac92hj3uw.cloudfront.net` | `kapsel-prod.makotest.pl` | ❌ brak rekordu DNS | Admin panel | `maspex-prod-admin-panel-allowlist` |
+
+**Stan DNS (live 2026-05-15):**
+
+| Domena | Aktualny CNAME | Powinno być |
+|--------|----------------|-------------|
+| `test.twojkapsel.pl` | `dfx1ac92hj3uw.cloudfront.net` (admin panel E32) | `d1w5bz7itj42sz.cloudfront.net` (API E33) |
+| `www.test.twojkapsel.pl` | brak rekordu | `d1w5bz7itj42sz.cloudfront.net` |
+| `kapsel-prod.makotest.pl` | brak rekordu DNS | `dfx1ac92hj3uw.cloudfront.net` |
+
+**Pending Terraform apply:** CF distribution `E33PUJBAQ533K0` czeka na aktualizację aliasów → `test.twojkapsel.pl` + `www.test.twojkapsel.pl` (blokowane przez błędny DNS — `CNAMEAlreadyExists`). Po zmianie DNS w Cloudflare wymagany `terraform apply` w `envs/prod`.
+
+Obie dystrybucje: origin = ALB `maspex-prod`, protocol `https-only`, `AllViewer` origin request policy.
+
+### ALB (PROD)
+
+- Nazwa: `maspex-prod`
+- DNS: `maspex-prod-1795571755.eu-west-1.elb.amazonaws.com`
+- ARN: `arn:aws:elasticloadbalancing:eu-west-1:969209893152:loadbalancer/app/maspex-prod/e90292a1ad614fc5`
+
+**HTTPS listener certy (SNI):**
+
+| Short ID | Pokrywa domeny | Rola |
+|----------|----------------|------|
+| `a139f9a4` | `kapsel-prod.makotest.pl`, `www.kapsel-prod.makotest.pl` | DEFAULT |
+| `d4bbfef0` | `test.twojkapsel.pl`, `www.test.twojkapsel.pl` | SNI |
+| `fd2f0c7c` | `kapsel-api-prod.makotest.pl`, `www.kapsel-api-prod.makotest.pl` | SNI (legacy) |
+
+**Listener rules (HTTPS, priority order):**
+
+| Priority | Warunek | Target Group |
+|----------|---------|-------------|
+| 20 | `host=[test.twojkapsel.pl, www.test.twojkapsel.pl]` AND `path=/bots/*` | `maspex-prod-bot` |
+| 100 | `host=[test.twojkapsel.pl, www.test.twojkapsel.pl]` | `maspex-prod-api-3000` |
+| 200 | `host=kapsel-prod.makotest.pl` | `maspex-prod-admin-3000` |
+| default | — | 503 fixed response |
+
+### ECS Services (PROD)
+
+| Serwis | Task Definition | Desired | Running | Status |
+|--------|----------------|---------|---------|--------|
+| `maspex-api` | `maspex-prod-api:4` | 9 | 9 | ✅ healthy |
+| `maspex-admin-panel` | `maspex-prod-admin-panel:3` | 1 | 1 | ✅ healthy |
+| `maspex-bot` | `maspex-prod-bot:2` | 1 | 2 | ⚠️ running=2 (rolling, TG 0/2) |
+
+Target group health: api 9/9, admin 1/1, bot 0/2 (⚠️).
+
+**Konwencja nazewnicza ECS:**
+- Nazwa serwisu: bez sufixu `prod` (np. `maspex-api`) — identycznie jak UAT
+- Nazwa task definition family: z sufiksem `prod` (np. `maspex-prod-api`) — oddziela rewizje UAT/PROD
+
+### ElastiCache (PROD)
+
+- Cluster ID: `maspex-prod`
+- Node type: `cache.t3.medium`
+- Engine: Redis 7.1.0
+- Status: `available`
+
+### Sekrety PROD
+
+Secret name: `maspex/prod/api` (ARN suffix `-z6g7eq`)
+Full ARN: `arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/prod/api-z6g7eq`
+
+| Klucz | Opis |
+|-------|------|
+| `ConnectionStrings__Redis` | Redis connection string → injektowany jako `REDIS_URL` |
+| `SUPABASE_JWT_SECRET` | JWT secret Supabase — walidacja tokenów w `@supabase/ssr` |
+
+PROD nie ma `JWT_SECRET` / `JWT_KID` — load testy uruchamiane są przez UAT.
+
+---
+
+## Zasłepka / preprod
+
+| CF ID | Alias | DNS | Opis |
+|-------|-------|-----|------|
+| `E17VHHQJ29MVAB` | `twojkapsel.pl`, `www.twojkapsel.pl` | ✅ OK | Static S3, cookie banner GDPR |
+
+S3 bucket: `s3://maspex-preprod-static-...` (OAC), `index.html` + `instrukcja-usuniecia-konta.pdf`.
+
+---
+
+## ACM Certyfikaty
+
+| Short ID | Region | Pokrywa |
+|----------|--------|---------|
+| `caed9d07` | us-east-1 | `test.twojkapsel.pl`, `www.test.twojkapsel.pl` — dla CF API (E33) |
+| `369af310` | us-east-1 | `kapsel-prod.makotest.pl`, `www.kapsel-prod.makotest.pl` — dla CF admin (E32) |
+| `3247fa27` | us-east-1 | `kapsel-api-prod.makotest.pl` — legacy, już nieużywany przez CF |
+| `d4bbfef0` | eu-west-1 | `test.twojkapsel.pl`, `www.test.twojkapsel.pl` — na ALB PROD (SNI) |
+| `a139f9a4` | eu-west-1 | `kapsel-prod.makotest.pl` — DEFAULT cert ALB PROD |
+| `fd2f0c7c` | eu-west-1 | `kapsel-api-prod.makotest.pl` — legacy SNI na ALB PROD |
+
+---
+
+## Pending actions (2026-05-15)
+
+1. **Cloudflare DNS (twojkapsel.pl):**
+   - Zmień `test.twojkapsel.pl` CNAME: `dfx1ac92hj3uw.cloudfront.net` → `d1w5bz7itj42sz.cloudfront.net`
+   - Dodaj `www.test.twojkapsel.pl` CNAME → `d1w5bz7itj42sz.cloudfront.net`
+
+2. **PowerDNS (makotest.pl):**
+   - Dodaj `kapsel-prod.makotest.pl` CNAME → `dfx1ac92hj3uw.cloudfront.net`
+
+3. **Terraform apply (envs/prod):**
+   - Po zmianie DNS: `AWS_PROFILE=maspex-cli terraform plan -out=/tmp/cf-api-domain.tfplan && terraform apply /tmp/cf-api-domain.tfplan`
+   - Zmiana: CF `E33PUJBAQ533K0` aliasy → `test.twojkapsel.pl` + `www.test.twojkapsel.pl`, cert → `caed9d07`
+
+---
+
+## Architektura przepływu żądania (PROD docelowa)
 
 ```
-Internet → CloudFront → ALB → ECS Fargate (maspex-uat cluster)
-                                  ↓
-                     Redis (ElastiCache) + Supabase/PostgREST (zewnętrzny)
+Użytkownik → test.twojkapsel.pl
+  → Cloudflare DNS → d1w5bz7itj42sz.cloudfront.net (CF E33PUJBAQ533K0)
+  → WAF: maspex-prod-public-app-allowlist
+  → Origin: ALB maspex-prod (HTTPS, Host: test.twojkapsel.pl)
+  → ALB rule prio 100: host=test.twojkapsel.pl → TG maspex-prod-api-3000
+  → ECS maspex-api (task def maspex-prod-api:4, 9 tasków)
+  → ElastiCache maspex-prod (Redis 7.1, t3.medium)
+  → Secrets: maspex/prod/api (REDIS_URL + SUPABASE_JWT_SECRET)
+
+Bot webhook → test.twojkapsel.pl/bots/*
+  → ALB rule prio 20: host=test.twojkapsel.pl AND path=/bots/* → TG maspex-prod-bot
+  → ECS maspex-bot (task def maspex-prod-bot:2)
+
+Admin panel → kapsel-prod.makotest.pl  [DNS pending]
+  → CF E32AZKJ5SJSDSV → ALB rule prio 200 → TG maspex-prod-admin-3000
+  → ECS maspex-admin-panel (task def maspex-prod-admin-panel:3)
 ```
-
-**ECS services (UAT):**
-
-| Service | Tasks | CPU | RAM | Uwagi |
-|---------|-------|-----|-----|-------|
-| `maspex-api` | 3 desired | 4096* | 8192* | Next.js contest API |
-| `maspex-admin-panel` | 1 | — | — | panel admina |
-| `maspex-bot` | 1 | — | — | bot |
-
-*TF code: 4096/8192, live może być 1024/2048 — wymaga weryfikacji (ECS task definition drift)
-
-**Redis (UAT):**
-- Endpoint: `maspex-uat.zwowz5.0001.euw1.cache.amazonaws.com:6379`
-
-**SNS alarms:** `arn:aws:sns:eu-west-1:969209893152:maspex-uat-alarms` → `jaroslaw.golab@makolab.com`
-
----
-
-## CloudFront behaviors (UAT API — E3J76RNXIE2YIG)
-
-| Path | Cache Policy | QS w cache key | Uwagi |
-|------|-------------|----------------|-------|
-| `/_next/static/*` | static_assets (min_ttl=86400) | none | OK |
-| `/landing/*` | static_assets (min_ttl=86400) | none | OK |
-| `/favicon.ico` | static_assets (min_ttl=86400) | none | wdrożono 2026-04-24 |
-| `/_next/image*` | image_optimizer (query_string=all) | all | wdrożono 2026-04-24 |
-| default | CachingDisabled | n/d | OK — dynamika |
-
-**Krytyczne:** `/_next/image` musi mieć `query_string_behavior = "all"` — inaczej różne URL→w→q otrzymują ten sam obraz z cache.
-
----
-
-## Co jest wdrożone (terraform apply wykonany)
-
-- Preprod: VPC + ALB + Redis + ECS + CloudFront + HTTP→HTTPS redirect
-- UAT CloudFront static caching: `/_next/static/*`, `/landing/*`, `/favicon.ico`, `/_next/image*`
-- UAT admin CloudFront fix: `origin_request_policy_id` na ordered behaviors dla statyków
-- UAT monitoring: SNS + CW alarms (11) + dashboard `maspex-uat-overview`
-- CloudWatch Redis Circuit Open metric filter + alarm
-- Dashboard Row 11-12: CF CacheHitRate + Redis Circuit Open
-- Logs Insights: `top-request-paths`, `next-image-and-favicon-origin-hits`
-
----
-
-## CloudFront cache /api/slogan — GOTOWE DO APPLY (2026-04-26)
-
-MR: `feat/preprod-zaslepka` → main na GitLab infra-maspex-kapsel
-Plan: `2 to add, 1 to change, 0 to destroy` — validate OK
-
-Nowy behavior na E3J76RNXIE2YIG:
-- path: `/api/slogan` (exact, bez wildcard — `/api/slogan/vote` nadal CachingDisabled)
-- cache policy: QS whitelist `[page, sortBy, search]`, no cookies, no auth headers
-- origin request policy: te same whitelisted QS do originu
-- TTL: min=0 (respektuj `s-maxage` z aplikacji), default=60s, max=600s
-
-Po apply zweryfikuj:
-```bash
-# Miss (cold)
-curl -sI "https://kapsel.makotest.pl/api/slogan?page=1&sortBy=votes_desc" | grep x-cache
-# Hit (warm)
-curl -sI "https://kapsel.makotest.pl/api/slogan?page=1&sortBy=votes_desc" | grep x-cache
-# /vote — zawsze Miss
-curl -sI "https://kapsel.makotest.pl/api/slogan/vote" | grep x-cache
-```
-
-⚠️ ECS lifecycle zmiana (desired_count wyszedł z ignore_changes) — sprawdź tfvars przed apply.
-
----
-
-## Co jest przygotowane ale NIE wdrożone (terraform plan OK, apply pending)
-
-### Patch monitoring — load test readiness (przygotowany 2026-04-23/24)
-
-`terraform plan`: 12 to add, 1 to change, 0 to destroy — wyłącznie monitoring/alarmy
-
-Nowe zasoby:
-- 6 log metric filters na `/maspex/uat/contest-service`:
-  - `timeout`, `aborted`, `502`, `Timed out acquiring connection from connection pool`, `statement timeout`, `[GET_SLOGANS_COUNT]`
-- Alarmy:
-  - `maspex-uat-alb-api-target-response-time-high` — ALB p99
-  - `maspex-uat-alb-api-target-connection-errors`
-  - `maspex-uat-alb-elb-5xx`
-  - `maspex-uat-ecs-api-running-below-desired`
-  - `maspex-uat-cloudfront-api-5xx-rate`
-  - `maspex-uat-api-downstream-log-errors`
-- Dashboard rozszerzony o: ECS task count, ALB p99, CF API, API log signals, Redis CPU/memory/connections/evictions
-
-**Jak wdrożyć:**
-```bash
-AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color
-AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat apply
-```
-
-**Uwaga:** `terraform/envs/uat/main.tf` ma już dirty state z poprzedniej sesji (`maspex-api:coreapp-uat-387`, `cpu = 4096`, `memory = 8192`) — sprawdź historię przed apply.
-
----
-
-## Patch aplikacyjny (lokalny, niecommitowany)
-
-**Repo:** `~/projekty/mako/next-core-app`
-**Plik:** `app/api/slogan/route.ts`
-
-**Cel:** redukcja request amplification na hot path `GET /api/slogan?page=1&sortBy=votes_desc`
-
-**Zmiana:** `resolveCount()` — dla requestów bez `search`:
-- Redis-only best-effort (nie Supabase exact count)
-- jeśli Redis null lub błąd → zwróć null (kod już obsługuje `totalPages: null`)
-
-**Logging:** `[GET_SLOGANS_COUNT]` z `isSearch`, `countSource`, `durationMs`
-
-**Status:** nie commitowane, wymaga `npm run typecheck` w CI przed mergem.
-
----
-
-## Znane problemy i otwarte kwestie
-
-| Problem | Stan | Priorytet |
-|---------|------|-----------|
-| ECS task definition drift (api v31 vs TF v24) | open — decyzja CI/CD vs TF | medium |
-| ECS Auto Scaling brak | open — known gap | high (przed prod) |
-| `/_next/image` min_ttl=0 | wdrożone bezpiecznie; rozważyć 86400 po confirm app team | low |
-| Redis endpoint do Secrets Manager preprod | TODO | medium |
-| Warning `modules/alb/main.tf:65` | niekrytyczny | low |
-| CloudFront additional metrics wyłączone? | sprawdzić czy CacheHitRate widgety działają | low |
-
----
-
-## Kluczowe komendy operacyjne
-
-```bash
-# Status ECS
-AWS_PROFILE=maspex-cli aws ecs describe-services \
-  --cluster maspex-uat \
-  --services maspex-api \
-  --query 'services[0].{taskDef:taskDefinition,running:runningCount,desired:desiredCount}' \
-  --region eu-west-1
-
-# Terraform plan (bez apply)
-AWS_PROFILE=maspex-cli terraform -chdir=terraform/envs/uat plan -no-color
-
-# CF cache headers
-curl -sI "https://kapsel.makotest.pl/favicon.ico" | grep -i "x-cache\|cache-control\|age"
-
-# Redis przez ECS Exec
-aws ecs execute-command \
-  --cluster maspex-uat \
-  --task <TASK_ID> \
-  --container api \
-  --command "/bin/sh" \
-  --interactive \
-  --region eu-west-1
-```
-
----
-
-## Dostęp lukasz.fuchs
-
-- Policy `maspex-uat-redis-ssm-access` (v2) przypisana do `lukasz.fuchs@makolab.com`
-- Uprawnienia: ECS Exec + SSM + cloudshell:*
-- Wymaga: MFA skonfigurowane w IAM
-
----
-
-## Load testing
-
-Kontekst testów obciążeniowych w osobnym pliku: `maspex-load-testing.md`
-
-Skrót:
-- Narzędzie: AWS Distributed Load Testing (SO0062), CFN stack `maspex-load-testing`
-- Status wdrożenia: **NIE wdrożone** — plan gotowy, ~1h pracy inżyniera
-- Błąd z testu Łukasza: 7.53% błędów na `/api/slogan/vote` — hipoteza: Redis/DB pool exhaustion lub brak Auto Scaling
-- Target środowisko testów: UAT `kapsel.makotest.pl`
-
----
-
-## Preprod — TODO przed go-live
-
-```bash
-# Wpisać Redis endpoint do Secrets Manager
-aws secretsmanager put-secret-value \
-  --secret-id arn:aws:secretsmanager:eu-west-1:969209893152:secret:maspex/preprod/api-STbBy3 \
-  --secret-string '{"ConnectionStrings__Redis":"redis://maspex-preprod.zwowz5.0001.euw1.cache.amazonaws.com:6379"}' \
-  --profile maspex-cli --region eu-west-1
-```
-
-DNS klienta (wysłać / potwierdzić):
-```
-twojkapsel.pl       CNAME   d1epwako2iigq8.cloudfront.net
-www.twojkapsel.pl   CNAME   d1epwako2iigq8.cloudfront.net
-```
-
----
-
-## Wzorzec CloudFront + ALB host-based routing (lekcja operacyjna)
-
-Jeśli CloudFront ma ordered behavior dla statycznych ścieżek do ALB — każdy ordered behavior musi mieć `origin_request_policy_id = Managed-AllViewer` (216adef6-5c7f-47e4-b989-5492eafa07d3), nie tylko default behavior. Brak tego → 502 Error from cloudfront na statykach mimo że dynamiczne ścieżki działają.
