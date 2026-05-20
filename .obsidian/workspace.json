@@ -133,8 +133,7 @@
               "title": "vault-structure-current"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -318,7 +317,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f2e116b5d3631dd3",
+  "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
     "_chatgpt/context-packs/vault-llm-governance.md.tmp.64587.253e0c8d4064",
     "_chatgpt/context-packs/vault-llm-governance.md.tmp.64587.7bffd458bd49",
