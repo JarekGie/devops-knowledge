@@ -186,18 +186,21 @@ Użytkownik: doświadczony DevOps/SRE, AWS-primary (też GCP/Azure), ADHD. Syste
 
 ## Project Bootstrap
 
-Jeśli istnieje `profiles/<projekt>/profile.yaml` — wczytaj go **zamiast** pytać o kontekst projektu.
+Jeśli istnieje `50-patterns/prompts/invocations/cloud-detective-<projekt>.md` — wczytaj go **zamiast** pytać o kontekst projektu.
 
 **Kiedy stosować:**
-- Na początku rozmowy dotyczącej konkretnego projektu — sprawdź `profiles/<projekt>/`
-- Jeśli profil istnieje: wczytaj `profile.yaml` (AWS, repo, open_items, safety) i `bootstrap.md` (stan operacyjny)
-- Jeśli profilu nie ma: postępuj jak dotychczas (czytaj notatki projektu, pytaj o ścieżkę repo)
+- Na początku rozmowy dotyczącej konkretnego projektu — sprawdź `50-patterns/prompts/invocations/`
+- Jeśli manifest istnieje: wczytaj frontmatter (`cloud_provider`, `repo`, `safety`, `open_items`, `vault`) i `startup checklist` z body
+- Jeśli manifestu nie ma: postępuj jak dotychczas (czytaj notatki projektu w `20-projects/`, pytaj o ścieżkę repo)
 
-**Priorytety bezpieczeństwa z profilu:**
-- `safety_mode: read_only` → tylko `describe*`, `get*`, `list*`; każdy write wymaga GO
-- `safety_mode: conditional_go` → plan wolny; apply i write ops wymagają osobnego GO
-- `requires_go` lista w profilu jest wiążąca — nie wykonuj tych akcji bez potwierdzenia
+**Priorytety bezpieczeństwa z manifestu:**
+- `safety.mode: read_only` → tylko `describe*`, `get*`, `list*`; każdy write wymaga GO
+- `safety.mode: conditional_go` → plan wolny; apply i write ops wymagają osobnego GO
+- `safety.mode: manual_execution_only` → żadnych automatycznych akcji; tylko analiza i rekomendacje
+- `safety.requires_go` lista jest wiążąca — nie wykonuj tych akcji bez potwierdzenia
 
-**Lokalizacja:** `profiles/<projekt>/profile.yaml` + `profiles/<projekt>/bootstrap.md`  
-**Szablon:** `profiles/_template/`  
-**Dostępne profile:** maspex
+**Aktywny branch:** pobieraj live przez `git branch --show-current` w `repo.local` — nie z manifestu
+
+**Dostępne manifesty (schema v2):** maspex, rshop, booking-online, puzzler-b2b, drp-tfs, aws-cloud-platform, mfs-onboarding (GCP)  
+**Generator:** `scripts/new-cloud-detective-invocation.sh`  
+**Szablon:** `50-patterns/prompts/invocations/templates/cloud-detective-invocation-template.md`

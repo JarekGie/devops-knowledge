@@ -1,25 +1,65 @@
 ---
-title: cloud-detective-mfs-onboarding
+schema_contract:
+  manifest_type: operational-project-manifest
+  schema_version: "2"
+
 type: prompt-invocation
+title: cloud-detective-mfs-onboarding
 prompt_template: 50-patterns/prompts/starter-pack/cloud-detective-v2.md
+
 domain: client-work
 client: mako
 project: mfs-onboarding
-cloud: gcp
-gcp_project_id: rci-orchestration
-auth_method: gcloud_interactive
-repo_path: /Users/jaroslaw.golab/projekty/mako/mfs-orchestration
-regions:
-  - europe-west2
-extra_regions: []
-save_path: 20-projects/clients/mako/mfs-onboarding/
-output_file: mfs-onboarding-context.md
-iac_type: terraform
-mode: read-only
 classification: internal
-completion_status: draft
+
+lifecycle:
+  state: active
+
+ownership:
+  operator: jaroslaw-golab
+  managed_by: human
+
+llm_rules:
+  domain_isolation: strict
+  cross_project_reasoning: forbidden
+  autonomous_actions: false
+
+cloud_provider:
+  name: gcp
+  gcp:
+    project_id: rci-orchestration
+    auth_method: gcloud_interactive
+
+regions:
+  primary:
+    - europe-west2
+  extra: []
+
+repo:
+  local: /Users/jaroslaw.golab/projekty/mako/mfs-orchestration
+  remote: ""
+  default_branch: main
+  working_branch_pattern: "feat/*"
+
+iac:
+  type: terraform
+
+vault:
+  save_path: 20-projects/clients/mako/mfs-onboarding/
+  output_file: mfs-onboarding-context.md
+  session_log: 20-projects/clients/mako/mfs-onboarding/session-log.md
+
+safety:
+  mode: read_only
+  requires_go:
+    - gcloud ... (any mutating command)
+    - terraform apply
+  notes: "Projekt GCP. Przed komendami gcloud: operator uruchamia 'gcloud auth login' przez prefiks ! w Claude Code."
+
+open_items: []
+
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-05-20
 tags:
   - prompt-invocation
   - cloud-detective
@@ -65,7 +105,7 @@ Operator uruchamia `gcloud auth login` przez prefiks `!` w Claude Code, co uruch
 - region: `europe-west2`
 - IaC: Terraform
 - zapis: `20-projects/clients/mako/mfs-onboarding/mfs-onboarding-context.md`
-- status: `draft`
+- status: `active`
 
 ## Generowanie tego pliku
 
@@ -73,9 +113,10 @@ Operator uruchamia `gcloud auth login` przez prefiks `!` w Claude Code, co uruch
 scripts/new-cloud-detective-invocation.sh \
   --client mako \
   --project mfs-onboarding \
-  --aws-profile gcloud \
+  --cloud gcp \
+  --gcp-project-id rci-orchestration \
+  --auth-method gcloud_interactive \
   --repo-path /Users/jaroslaw.golab/projekty/mako/mfs-orchestration \
   --regions europe-west2 \
   --iac-type terraform
-# Po wygenerowaniu: ręcznie podmień aws_profile → cloud/gcp_project_id/auth_method
 ```
