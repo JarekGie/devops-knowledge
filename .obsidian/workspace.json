@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Move scripts and prompt generator to shared vault"
+              "title": "Terminal: ✳ Move scripts and prompt generator to shared vault"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Prepare Puzzler B2B context for ChatGPT"
+              "title": "Terminal: ✳ Prepare Puzzler B2B context for ChatGPT"
             }
           },
           {
@@ -147,7 +147,8 @@
               "title": "planodkupow-finops-delta-2026-05-20"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -331,8 +332,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "901791c00763111e",
+  "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
+    "80-architecture/operational-platform-foundation-proposal.md",
     "20-projects/clients/mako/planodkupow/planodkupow-finops-delta-2026-05-20.md",
     "_chatgpt/INDEX.md.tmp.80649.05f294870734",
     "_chatgpt/context-packs/puzzler-b2b-full-context.md",
@@ -368,7 +370,6 @@
     "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1200-cest.md",
     "20-projects/clients/mako/maspex/loadtest-observability.md",
     "20-projects/clients/mako/maspex/loadtest-2026-05-14-analysis-test2.md",
-    "20-projects/clients/mako/maspex/load-test-analysis-2026-05-05-1900-cest.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
