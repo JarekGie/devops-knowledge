@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Prepare ChatGPT context for vault structure"
+              "title": "Terminal: ✳ Prepare ChatGPT context for vault structure"
             }
           },
           {
@@ -304,8 +304,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f2e116b5d3631dd3",
+  "active": "d274c519bb3979f8",
   "lastOpenFiles": [
+    "_chatgpt/context-packs/vault-structure-current.md",
     "02-active-context/current-focus.md",
     "02-active-context/now.md",
     "20-projects/clients/mako/maspex/maspex-context.md",
@@ -341,7 +342,6 @@
     "20-projects/clients/mako/mfs-onboarding/log-analysis-2026-05-17.md",
     "20-projects/clients/mako/maspex/loadtest-calibration-runbook.md",
     "20-projects/clients/mako/maspex/mail-assets-migration-plan.md",
-    "_chatgpt/context-packs/maspex-load-testing.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
