@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Prepare Puzzler B2B context for ChatGPT"
+              "title": "Terminal: ⠐ Prepare Puzzler B2B context for ChatGPT"
             }
           },
           {
@@ -91,8 +91,7 @@
               "title": "Terminal: ✳ Prepare ChatGPT context for vault structure"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -276,7 +275,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f2e116b5d3631dd3",
+  "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/maspex-context.md",
     "02-active-context/current-focus.md",
