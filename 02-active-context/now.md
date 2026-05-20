@@ -2,7 +2,29 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-20 — MASPEX (aktywny kontekst) ←
+## Update — 2026-05-20 — VAULT DOC SYNC: manifest schema v2 ✅ → przełączenie na MASPEX ←
+
+```
+SESJA:    feat/operational-platform-foundation
+ZADANIE:  synchronizacja dokumentacji z Operational Project Manifest schema v2
+
+ZROBIONE:
+  ✅ _system/AGENT_BOOTSTRAP.md — Krok 2.5: manifest loading step
+  ✅ CODEX.md — sekcja Project Bootstrap (mirror CLAUDE.md)
+  ✅ _system/LLM_CONTEXT_GLOBAL.md — invocations/ w strukturze + manifest-first entry flow
+  ✅ _system/AGENTS.md — sekcja Project Bootstrap
+  ✅ 00-start-here/how-to-use-this-vault.md — "Wejście do projektu" w nawigacji
+  ✅ _chatgpt/context-packs/vault-llm-governance.md — flow 4.2, hierarchia 5.1, count 5.3, sekcja 9.3
+  ✅ _chatgpt/context-packs/vault-structure-current.md — nowy pack (pełny kontekst vault + dzisiejsze zmiany)
+  ✅ docs/superpowers/plans/2026-05-20-manifest-schema-v2-doc-sync.md — plan wykonany
+
+WALIDACJA: 0 stale references do profiles/ w plikach operacyjnych
+NASTĘPNY KROK: → MASPEX
+```
+
+---
+
+## Update — 2026-05-20 — MASPEX (aktywny kontekst)
 
 ```
 PROJEKT:  Maspex / Kapsel
@@ -3774,4 +3796,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-20 18:07 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-20 18:29 — sesja aktywna*

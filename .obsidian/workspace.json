@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Prepare Puzzler B2B context for ChatGPT"
+              "title": "Terminal: ✳ Prepare Puzzler B2B context for ChatGPT"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Prepare ChatGPT context for vault structure"
+              "title": "Terminal: ⠐ Prepare ChatGPT context for vault structure"
             }
           }
         ]
