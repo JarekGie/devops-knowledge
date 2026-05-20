@@ -1,0 +1,36 @@
+project: maspex
+client: mako
+aws:
+  account_id: "969209893152"
+  region: eu-west-1
+  profile: maspex-cli
+  safety_mode: conditional_go    # apply wymaga GO; read_only nie wymaga
+
+repo:
+  local: "~/projekty/mako/aws-projects/infra-maspex/"
+  remote: "https://gitlab.makolab.com/..."   # GitLab, dostępny przez VPN korporacyjny
+  main_branch: main
+  active_branch: feat/campaign-day-monitoring
+
+vault:
+  notes_dir: "20-projects/clients/mako/maspex/"
+  session_log: "20-projects/clients/mako/maspex/session-log.md"
+
+open_items:
+  - "D2 — image tag w tfvars (coreapp-uat-612 ≠ running coreapp-prod-805) — bezpieczne (ignore_changes) — open"
+  - "D3 — orphaned ACM cert w TF state: terraform state rm przed next apply — open"
+  - "P1 — autoscaling min=30→8, max=45→30 — conditional_go (wymaga: RunningTaskCount<6 alarm + p99>500ms alarm + 7 dni monitoringu)"
+  - "P2 — confirm terraform plan = 0 zmian dla secret_arns fix — open"
+  - "PUSH — commit 6a14525 (WAF moderatorzy) niepushowany — pending_push (wymaga VPN korporacyjny)"
+
+safety:
+  requires_go:
+    - "terraform apply"
+    - "aws ecs update-service"
+    - "aws application-autoscaling put-scaling-policy"
+    - "aws wafv2 update-*"
+    - "git push --force"
+  notes: >
+    PROD ECS: min=30, max=45, desired=30 — nie zmieniaj bez GO.
+    WAF: DefaultAction=Block — nie otwieraj bez GO.
+    GitLab push wymaga VPN korporacyjnego.

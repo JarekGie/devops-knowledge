@@ -183,3 +183,21 @@ AI jest wyłącznie narzędziem roboczym. Autorami i ownerami wszystkich artefak
 ## Kontekst persony
 
 Użytkownik: doświadczony DevOps/SRE, AWS-primary (też GCP/Azure), ADHD. System musi redukować obciążenie pamięci. Modularne notatki z szybkim dostępem działają dobrze; linearne checklisty i długie sekwencyjne dokumenty — nie. Zobacz [[persona]] dla pełnego profilu.
+
+## Project Bootstrap
+
+Jeśli istnieje `profiles/<projekt>/profile.yaml` — wczytaj go **zamiast** pytać o kontekst projektu.
+
+**Kiedy stosować:**
+- Na początku rozmowy dotyczącej konkretnego projektu — sprawdź `profiles/<projekt>/`
+- Jeśli profil istnieje: wczytaj `profile.yaml` (AWS, repo, open_items, safety) i `bootstrap.md` (stan operacyjny)
+- Jeśli profilu nie ma: postępuj jak dotychczas (czytaj notatki projektu, pytaj o ścieżkę repo)
+
+**Priorytety bezpieczeństwa z profilu:**
+- `safety_mode: read_only` → tylko `describe*`, `get*`, `list*`; każdy write wymaga GO
+- `safety_mode: conditional_go` → plan wolny; apply i write ops wymagają osobnego GO
+- `requires_go` lista w profilu jest wiążąca — nie wykonuj tych akcji bez potwierdzenia
+
+**Lokalizacja:** `profiles/<projekt>/profile.yaml` + `profiles/<projekt>/bootstrap.md`  
+**Szablon:** `profiles/_template/`  
+**Dostępne profile:** maspex
