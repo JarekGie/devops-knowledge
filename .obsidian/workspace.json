@@ -106,7 +106,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -290,7 +290,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "975148620338ebb7",
+  "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
     "20-projects/clients/mako/planodkupow/planodkupow-finops-delta-2026-05-20.md",
     "_chatgpt/INDEX.md.tmp.80649.05f294870734",
