@@ -241,7 +241,7 @@ Notatka projektu w `20-projects/` zawiera lokalną ścieżkę do repo (`~/projek
 
 1. **Po przerwie:** `02-active-context/now.md`
 2. **Domena techniczna:** `10-areas/<domena>/LLM_CONTEXT.md`
-3. **Projekt:** `20-projects/<klient>/<projekt>/context.md` + ostatni `session-log.md`
+3. **Projekt:** `50-patterns/prompts/invocations/cloud-detective-<projekt>.md` (manifest); fallback → `20-projects/<klient>/<projekt>/context.md`
 4. **Globalny vault:** `_system/LLM_CONTEXT_GLOBAL.md`
 
 ### 5.2 Format context pack dla ChatGPT (11 obowiązkowych sekcji)
@@ -250,7 +250,7 @@ Kim jestem → Opis systemu → Zakres (scope boundaries) → Źródła prawdy �
 
 Wymagania: konkretny (ARNy, account IDs), aktualny (odzwierciedla AWS/IaC), standalone.
 
-### 5.3 Aktywne context packs (14 tematów)
+### 5.3 Aktywne context packs (20+ tematów)
 
 - `cloud-practice.md` — Cloud Practice Lead (AWS Technical Leader role)
 - `llz.md`, `devops-toolkit.md`, `vault-llm-governance.md` — internal
@@ -407,7 +407,16 @@ Otwarte blokery: brak dostępu do AWS Partner Central, brak formalnego sign-off 
 - Ścieżki: weryfikuj przez `ls` przed zapisem; koryguj błędne ścieżki i informuj
 - ChatGPT context packs: sprawdź `_chatgpt/context-packs/<temat>.md` → aktualizuj jeśli istnieje; nie generuj w odpowiedzi
 
-### 9.3 Autorstwo (non-negotiable — obie platformy)
+### 9.3 Project Bootstrap (od 2026-05-20)
+
+Oba agenty (Claude Code i Codex) mają identyczny Project Bootstrap:
+- Entry point: `50-patterns/prompts/invocations/cloud-detective-<projekt>.md`
+- Schema v2: `schema_contract`, `lifecycle`, `llm_rules`, `cloud_provider` (cloud-agnostic: aws/gcp/azure/ovh), `safety.mode`, `open_items`
+- `open_items` = wyłącznie aktywne ryzyka i safety constraints — NIE todo/backlog
+- Runtime state pobierany LIVE — manifest zawiera tylko persistent identity + governance
+- `profiles/` usunięty 2026-05-20 — zastąpiony przez manifest schema v2
+
+### 9.4 Autorstwo (non-negotiable — obie platformy)
 
 Zakaz we wszystkich artefaktach vault, repo, commitach, PR, ADR:
 - `Co-Authored-By: Claude` / `Author: Claude`
