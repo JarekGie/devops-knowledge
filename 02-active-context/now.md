@@ -2,6 +2,30 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-20 — PLANODKUPOW (aktywny kontekst)
+
+```
+PROJEKT:  PlanOdkupow
+ACCOUNT:  333320664022 | eu-central-1 | profile: plan
+VAULT:    20-projects/clients/mako/planodkupow/
+
+OSTATNI STAN (2026-04-26):
+  Przeprowadzony full audit read-only: ECS, MQ, CloudWatch, VPC, ECR, WAF, Global Accelerator
+  Zidentyfikowane waste: ~$432/mies.
+  Kluczowe znaleziska:
+    - ECS PropagateTags=NONE na 26/28 serwisach → $267/mies. untagged w CE
+    - MQ orphan broker QA (mq.m7g.medium, poza CFN, zero tagów) → $21/mies.
+    - CW log retention: UAT broker NEVER_EXPIRES, 164+ GB → $97/mies.
+    - Unassociated EIP → $3.60/mies.
+    - 4 VPC endpoints w starym QA VPC (orphan) → $28.80/mies.
+    - Global Accelerator $14.98/mies., health Unknown
+
+CO DALEJ (ustal z użytkownikiem):
+  Czego teraz potrzeba od projektu planodkupow?
+```
+
+---
+
 ## Update — 2026-05-19 — MASPEX: WAF rollback + FinOps DONE ✅
 
 ```
@@ -3731,4 +3755,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-20 10:36 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-20 10:39 — sesja aktywna*

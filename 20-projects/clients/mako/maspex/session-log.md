@@ -4,6 +4,19 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-20 — WAF: zmiana IP moderatorów PROD ✅
+
+**Zmiana:** `terraform/envs/prod/waf.tf` — rotacja IP moderatorów
+
+**Stare IPs (usunięte):** 46.205.203.81/32, 176.111.123.182/32, 109.173.163.18/32
+**Nowe IPs:** 194.15.120.193/32, 46.205.197.124/32, 46.205.201.198/32
+
+**Commit:** `6a14525` — push PENDING (GitLab niedostępny bez VPN korporacyjnego)
+
+**Skill:** `waf-moderators` zarejestrowany jako `maspex-ops@local-plugins` — gotowy do użycia w kolejnych sesjach
+
+---
+
 ## 2026-05-19 — WAF: dodano moderatorów do allowlisty PROD ✅
 
 **Zmiana:** `terraform/envs/prod/waf.tf` — dodano 3 IP moderatorów do `admin_panel_allowed_ipv4_cidrs`
