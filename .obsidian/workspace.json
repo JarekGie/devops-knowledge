@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Move scripts and prompt generator to shared vault"
+              "title": "Terminal: ⠐ Move scripts and prompt generator to shared vault"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "planodkupow-finops-delta-2026-05-20"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,7 +289,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "989a157ca01d6fbc",
+  "active": "901791c00763111e",
   "lastOpenFiles": [
     "20-projects/clients/mako/planodkupow/planodkupow-finops-delta-2026-05-20.md",
     "_chatgpt/INDEX.md.tmp.80649.05f294870734",

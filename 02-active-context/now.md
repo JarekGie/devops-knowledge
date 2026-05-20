@@ -2,38 +2,45 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-20 — MASPEX (aktywny kontekst) ←
+
+```
+PROJEKT:  Maspex / Kapsel
+ACCOUNT:  969209893152 | eu-west-1 | profile: maspex-cli
+REPO:     ~/projekty/mako/aws-projects/infra-maspex/
+BRANCH:   feat/campaign-day-monitoring
+VAULT:    20-projects/clients/mako/maspex/
+
+OTWARTE DRIFTY I ZADANIA:
+  D2 — image tag w tfvars (coreapp-uat-612 ≠ running coreapp-prod-805) — bezpieczne
+  D3 — orphaned ACM cert w TF state: terraform state rm przed next apply
+  P1 — autoscaling min=30→8, max=45→30 (CONDITIONAL GO, nie wdrożone)
+       wymaga: alarm RunningTaskCount<6 + alarm p99>500ms + 7 dni monitoringu
+  P2 — confirm terraform plan = 0 zmian dla secret_arns fix
+  PUSH — commit 6a14525 (WAF moderatorzy) niepushowany (VPN korporacyjny)
+
+STAN AWS PROD:
+  ECS: min=30, max=45, desired=30
+  WAF: DefaultAction=Block, 6 IP w allowliście (MakoLab+Maspex+Moderia+3×moderatorzy)
+  AlbRequestCount target=200 (konserwatywny — trigger przy 123 req/s)
+```
+
+---
+
 ## Update — 2026-05-20 — PLANODKUPOW: FinOps Delta Audit DONE ✅
 
 ```
 PROJEKT:  PlanOdkupow
-ACCOUNT:  333320664022 | eu-central-1 | profile: plan
-VAULT:    20-projects/clients/mako/planodkupow/
 RAPORT:   planodkupow-finops-delta-2026-05-20.md
 
-ANALIZA kwiecień→maj 2026 zakończona (READ ONLY):
+KLUCZOWE: CloudWatch −$32/mies. (retention fix), MQ +$52/mies. (m7g.medium permanentny)
+KRYTYCZNE: QA Redis 5.0.6 EOL — odtworzony z tym samym silnikiem co chaos. Zero snapshots.
+ORPHAN WASTE: ~$91/mies. (NAT + 4 endpoints + EIP + GA + SFTP)
 
-POPRAWA:
-  - CloudWatch: −$32/mies. (retention fix zadziałał — 164 GB → 3.11 GB)
-
-POGORSZENIE:
-  - MQ m7g.medium permanentny: +$52/mies. vs pre-chaos (t3.micro → m7g.medium)
-  - AWS Config org recorder (nowy 2026-05-03): +$14/mies.
-  - MQ TimedStorage rośnie: +86% per-day rate vs kwiecień → będzie drozsze
-
-NOWE KRYTYCZNE ODKRYCIA:
-  1. QA Redis 5.0.6 — odtworzony 2026-04-19 z IDENTYCZNYM EOL który wywołał chaos!
-     AutoMinorVersionUpgrade=true, SnapshotRetention=0, CFN stack UPDATE_ROLLBACK_COMPLETE
-  2. SFTP stack UPDATE_ROLLBACK_COMPLETE od CZERWCA 2025 — Transfer Server aktywny
-  3. 5 QA nested stacks w UPDATE_ROLLBACK_COMPLETE (bez zmian od kwiecień)
-  4. planodkupow-dev aktualizowany 24h przed chaos day (2026-04-18)
-
-ORPHAN WASTE bez zmian: ~$91/mies. (NAT + 4 endpoints + EIP + GA + SFTP)
-
-CO DALEJ (priorytety):
-  P1: MQ downgrade m7g.medium → t3.micro ($83/mies. oszczędność)
-  P2: Zbadaj SFTP stack co to jest i czy używane
-  P3: Plan migracji QA Redis 5.0.6 (ryzyko kolejnego chaosu)
-  P4: Orphan cleanup po weryfikacji GA traffic
+CO DALEJ:
+  P1: MQ downgrade m7g.medium → t3.micro ($83/mies.)
+  P2: SFTP stack zbadaj i resolve
+  P3: QA Redis 5.0.6 → upgrade plan
 ```
 
 ---
@@ -3767,4 +3774,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-20 11:06 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-20 11:22 — sesja aktywna*
