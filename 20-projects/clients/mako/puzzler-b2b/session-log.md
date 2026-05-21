@@ -9,6 +9,59 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-21 — Jumphost CI/CD pipeline + ECS fix
+
+### Kontekst
+DEV i QA jumphosty nie startowały z powodu `CannotPullContainerError` — obraz `jumphost-v11` miał inny digest w ECR niż cached przez ECS. Naprawiono i zbudowano kompletny CI/CD pipeline dla jumphostów.
+
+### Wykonane
+
+**ECS fix:**
+- Zbudowano nowy obraz `jumphost-v11` lokalnie (colima) dla `linux/amd64`
+- Pushnięto do ECR dev i qa
+- DEV nadal failował (ECS cache digest `sha256:4cd031...`) mimo nowego push
+- Fix: zarejestrowano nową rewizję TD (`infra-puzzler-b2b-dev-jumphost:12`) — to czyści cache digestu w ECS
+- Wynik: DEV running=1, QA running=1 (QA naprawiło się samo przy force-new-deployment)
+
+**Publiczne IP po naprawie:**
+- DEV: `35.179.105.33`
+- QA: `13.41.69.251`
+- UAT: `18.134.142.38` (był już running)
+
+**CI/CD pipeline — nowe pliki w `infra-puzzler-b2b-final`:**
+- `.gitlab-ci.yml` — 3 stages: build (docker), deploy (ECS), notify (email)
+  - matrix dla [dev, qa, uat, prod]
+  - build: auto gdy Dockerfile/entrypoint/.gitlab-ci.yml zmienią się na main, lub manual
+  - deploy: zawsze manual (osobny przycisk per env)
+  - notify: auto po deploy
+  - IMAGE_TAG: `jumphost-v${CI_PIPELINE_IID}`
+- `scripts/ecs-update-image.sh` — generic ECS image updater:
+  - pobiera live TD z ECS (source of truth)
+  - zmienia wyłącznie `containerDefinitions[0].image`
+  - stripuje read-only fields, rejestruje nową rewizję
+  - `aws ecs wait services-stable` (do 10 min)
+  - pobiera ENI → public IP, zapisuje do `deploy.env` (GitLab dotenv artifact)
+- `scripts/send-notification.py` — profesjonalny email HTML+text przez SMTP
+  - zawiera środowisko, public IP, komendę SSH tunnel
+- `docs/jumphost-pipeline.md` — operator README (jak uruchomić, debug, failure scenarios)
+
+**Dockerfile — zaktualizowany:**
+- Dodano `ARG JUMPHOST_USER=devuser` (konfigurowalne)
+- Dodano `ARG JUMPHOST_PUBLIC_KEY_B64=""` — klucze baked w image podczas buildu
+- base64 encoding dla bezpiecznego przesyłania multiline content przez docker build-arg
+- SSH hardening: sed pattern dla istniejących dyrektyw + echo dla brakujących
+- AllowTcpForwarding YES (sed + fallback)
+
+**docker-entrypoint.sh — zaktualizowany:**
+- Dynamiczny `JUMPHOST_USER` (przez ENV var z Dockerfile)
+- Priority: runtime `AUTHORIZED_KEYS` env var > klucze baked w image
+
+### GitLab variables wymagane
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `JUMPHOST_PUBLIC_KEY[_DEV|_QA|_UAT|_PROD]`, `JUMPHOST_USER`, `SMTP_*`, `DEVELOPERS_EMAILS`, `DOCDB_ENDPOINT_<ENV>`
+
+### Kluczowy pattern (ECS guardrail)
+Pipeline NIGDY nie generuje TD od zera. Live TD = source of truth. Zmiana tylko image, reseta secrets/env/roles/cpu-memory.
+
 ## 2026-05-20 — UAT environment IaC build + terraform plan
 
 ### Kontekst
