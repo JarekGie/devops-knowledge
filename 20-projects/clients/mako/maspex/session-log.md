@@ -4,6 +4,16 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-21 — WAF: dodano moderatora PROD ✅
+
+**Zmiana:** `terraform/envs/prod/waf.tf` — dodano moderatora  
+**Nowe IP:** 5.173.150.92/32  
+**Commit:** `a366c37` — push PENDING (GitLab niedostępny bez VPN korporacyjnego)
+
+**Aktualna lista moderatorów:** 194.15.120.193/32 | 46.205.197.124/32 | 46.205.201.198/32 | 5.173.150.92/32
+
+---
+
 ## 2026-05-20 — WAF: próba dodania moderatora — IP już istnieje
 
 **Żądanie:** dodaj 46.205.201.198/32 jako nowego moderatora  
