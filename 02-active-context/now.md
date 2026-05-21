@@ -2,6 +2,27 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
+## Update — 2026-05-21 — MASPEX: bot ALB detach + autoscaling ✅ → przełączenie na PUZZLER ←
+
+```
+SESJA:    feat/operational-platform-foundation
+REPO:     infra-maspex
+BRANCH:   feat/campaign-day-monitoring (live)
+
+ZROBIONE:
+  ✅ maspex-bot odłączony od ALB (UAT + PROD) — TG, listener rule, alarm usunięte
+  ✅ container health check (exit 0) dodany do modułu ecs-service
+  ✅ maspex-bot: standalone Fargate background worker (loadBalancers: [])
+  ✅ maspex-api PROD: autoscaling min=20, max=45, desired=20
+  ✅ maspex-api UAT: autoscaling min=2, max=2, desired=2
+  ✅ Twitch "Missing auth token": problem w Supabase bot_auth (nie infra)
+
+NASTĘPNY KROK:
+  → puzzler-pbms / puzzler-b2b
+```
+
+---
+
 ## Update — 2026-05-20 — VAULT DOC SYNC: manifest schema v2 ✅ → przełączenie na MASPEX ←
 
 ```
@@ -3796,4 +3817,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-21 06:53 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-21 08:50 — sesja aktywna*
