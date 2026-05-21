@@ -92,6 +92,7 @@ Maj 2026 = pierwszy pełny miesiąc w post-chaos reżimie.
 | qa                | $184.36   | $78.84    | $3.94   |
 | uat               | $179.43   | $110.74   | $5.54   |
 | dev               | $0.0015   | ~$0.0003  | ~$0     |
+|                   |           |           |         |
 
 ---
 
