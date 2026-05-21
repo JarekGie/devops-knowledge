@@ -105,8 +105,7 @@
               "title": "session-log"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,8 +289,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "5d3b73ccdad7678d",
+  "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
+    "20-projects/clients/mako/anonimizator/session-log.md",
     "20-projects/clients/mako/planodkupow/planodkupow-finops-delta-2026-05-20.md",
     "20-projects/clients/mako/planodkupow/Bez nazwy.md",
     "20-projects/clients/mako/maspex/session-log.md.tmp.83812.1eabc1655fce",
@@ -327,7 +327,6 @@
     "20-projects/clients/mako/maspex/supabase-cron-connectivity-2026-05-18.md",
     "docs/superpowers/plans/2026-05-18-superpowers-vault-layer.md",
     "20-projects/clients/mako/maspex/dns-validation-teams-msg.md",
-    "20-projects/clients/mako/maspex/cutover-twojkapsel-2026-05-17.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
