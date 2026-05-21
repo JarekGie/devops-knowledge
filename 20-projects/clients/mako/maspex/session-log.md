@@ -4,6 +4,16 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
+## 2026-05-21 — Traffic analysis W1+W2 PROD ✅
+
+**W1:** `traffic-analysis-2026-05-19-1200-to-2026-05-20-1200.md`  
+**W2:** `traffic-analysis-2026-05-20-1200-to-2026-05-21-1200.md`  
+**Kluczowe ustalenia:**
+- W1: autoscaling frozen min=30, zero scale-out, peak 89.7 req/s ALB, Redis hit 89%, 1 501 Target 5xx anomalia (WAF terraform apply)
+- W2: pierwsze okno z min=20 — scale-in 30→20 @ 22:27 CEST 20.05; cold-start cascade rano 21.05; Redis hit degradacja 89%→73%; 13 zdarzeń autoscaling; bot/CF nocny spike 376k req/h bez impact na backend
+
+---
+
 ## 2026-05-21 — WAF: dodano moderatora PROD ✅
 
 **Zmiana:** `terraform/envs/prod/waf.tf` — dodano moderatora  
