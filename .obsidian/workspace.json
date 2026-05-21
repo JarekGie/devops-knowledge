@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Prepare ChatGPT context for vault structure"
+              "title": "Terminal: ✳ Claude Code"
             }
           },
           {
@@ -133,7 +133,8 @@
               "title": "puzzler-b2b-full-context"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -317,7 +318,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "989a157ca01d6fbc",
+  "active": "f2e116b5d3631dd3",
   "lastOpenFiles": [
     "20-projects/clients/mako/maspex/session-log.md.tmp.83812.1eabc1655fce",
     "_chatgpt/context-packs/puzzler-b2b-full-context.md",
