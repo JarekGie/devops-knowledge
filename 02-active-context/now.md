@@ -3848,4 +3848,4 @@ Następne możliwe kroki read-only:
 
 ---
 
-*Ostatnia aktualizacja: 2026-05-22 09:16 — sesja aktywna*
+*Ostatnia aktualizacja: 2026-05-22 09:18 — sesja aktywna*

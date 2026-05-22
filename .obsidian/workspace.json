@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Switch to Maspex"
+              "title": "Terminal: ✳ Switch to Maspex"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠂ Puzzler B2B project setup"
+              "title": "Terminal: ✳ Puzzler B2B project setup"
             }
           },
           {
@@ -291,6 +291,7 @@
   },
   "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
+    "20-projects/clients/mako/maspex/session-log.md.tmp.83812.9c2e5230acfe",
     "20-projects/clients/mako/puzzler-b2b/session-log.md.tmp.10514.8c509bb69c12",
     "20-projects/clients/mako/puzzler-b2b/alph-communication-check-2026-05-22.md",
     "20-projects/clients/mako/maspex/traffic-analysis-2026-05-20-1200-to-2026-05-21-1200.md",
@@ -320,7 +321,6 @@
     "profiles/_template/bootstrap.md",
     "profiles/_template/profile.yaml",
     "profiles/maspex",
-    "profiles/_template",
     "_chatgpt/context-packs/maspex-prod-tf-drift.md",
     "20-projects/clients/mako/maspex/finops-analysis-prompt-template.md",
     "20-projects/clients/mako/maspex/finops-capacity-analysis-2026-05-19.md",

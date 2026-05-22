@@ -9,6 +9,22 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-22 — Per-env Alph BaseUrl + deployment
+
+### Wykonane
+- `services.tf` DEV: `AlphApiSettings__BaseUrl = https://alph-api-dev.makolab.net`
+- `services.tf` QA:  `AlphApiSettings__BaseUrl = https://alph-api-qa.makolab.net`
+- Commit `6dfb4f5` na `feat/uat-environment`
+- DEV TD:61 → TD:62 (zarejestrowany ręcznie, `ignore_changes` blokuje plan)
+- QA  TD:34 → TD:35 (zarejestrowany ręcznie)
+- `update-service` DEV + QA — nowe taski running ✅
+
+### Stan po wdrożeniu
+- DEV: `infra-puzzler-b2b-dev-sync:62` PRIMARY, running=1
+- QA:  `infra-puzzler-b2b-qa-sync:35` PRIMARY, running=1
+
+---
+
 ## 2026-05-22 — Alph API Secrets Manager (DEV + QA)
 
 ### Wykonane
@@ -21,10 +37,6 @@ Chronologicznie, najnowszy na górze.
 - Terraform apply QA:  2 added, 1 changed ✅
 - `put-secret-value` DEV + QA: rzeczywiste credentials ustawione ✅
 - Commit `f081d26` na `feat/uat-environment`
-
-### Następne kroki (sync service)
-- Nowy deployment sync (DEV + QA) żeby ECS pobrał sekrety z SM — wymagany nowy TD (ignore_changes blokuje plan)
-- Weryfikacja: logi auth po żądaniu do `GET /AlphGeneratorSettings`
 
 ---
 

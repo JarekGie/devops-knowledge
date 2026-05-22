@@ -14,11 +14,12 @@ Format: data, co zrobiono, gdzie skończono, co następne.
 
 ---
 
-## 2026-05-21 — WAF: dodano moderatora PROD ✅
+## 2026-05-22 — WAF: dodano maspex-mobile-vpn PROD ✅ (apply wykonany)
 
-**Zmiana:** `terraform/envs/prod/waf.tf` — dodano moderatora  
-**Nowe IP:** 5.173.150.92/32  
-**Commit:** `a366c37` — push PENDING (GitLab niedostępny bez VPN korporacyjnego)
+**Zmiana:** `terraform/envs/prod/waf.tf` — dodano IP, oznaczono jako maspex-mobile-vpn  
+**Nowe IP:** 5.173.150.92/32 (maspex-mobile-vpn)  
+**Commit:** `a366c37` — push PENDING (GitLab)  
+**Apply:** wykonany lokalnie z `-target=aws_wafv2_ip_set.admin_panel_allowlist` — efekt natychmiastowy w AWS WAF
 
 **Aktualna lista moderatorów:** 194.15.120.193/32 | 46.205.197.124/32 | 46.205.201.198/32 | 5.173.150.92/32
 
