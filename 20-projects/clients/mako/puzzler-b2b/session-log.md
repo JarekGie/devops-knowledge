@@ -9,6 +9,21 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-22 — IAM fix: external-dashboard-api (core DEV+QA)
+
+### Objaw
+- `core` DEV i QA crashowały w pętli z `ResourceInitializationError: AccessDeniedException`
+- Secret `infra-puzzler-b2b/{env}/external-dashboard-api` był w TD core-a (dodany przez CI/CD), ale nie w polityce IAM execution role
+
+### Wykonane
+- `put-role-policy` DEV + QA — dodano ARN `external-dashboard-api` (live fix, natychmiastowy efekt)
+- `force-new-deployment` core DEV + QA → steady state running=1 ✅
+- `secrets.tf` DEV + QA — `data "aws_secretsmanager_secret" "external_dashboard_api"` (secret zarządzany poza TF)
+- `iam.tf` DEV + QA — `data.aws_secretsmanager_secret.external_dashboard_api.arn` w resource list
+- Commit `3f560f1` + push na `feat/uat-environment`
+
+---
+
 ## 2026-05-22 — Per-env Alph BaseUrl + deployment
 
 ### Wykonane
