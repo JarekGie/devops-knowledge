@@ -9,6 +9,32 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-22 — Alph API communication fix (DEV sync)
+
+### Kontekst
+Serwis `infra-puzzler-b2b-dev-sync` nie mógł połączyć się z Alph API — DNS failure na `alph-api-qa.makolab.net` (prywatna domena MakoLab, niedostępna z AWS VPC).
+
+### Root cause
+- Obraz DEV zbudowany ze starego kodu → `alph-api-qa.makolab.net` baked w image
+- Aktualny source code ma `alph-api-uat.makodev.pl` w `appsettings.json`, ale żaden env-specific override nie istniał
+- `AlphApiSettings` nie był konfigurowalny przez env vars — wyłącznie w obrazie
+- `ignore_changes = [container_definitions]` na TD blokuje Terraform plan
+
+### Fix zastosowany
+1. `envs/dev/services.tf` — dodano `AlphApiSettings__BaseUrl = "https://alph-api-uat.makodev.pl"` do sync_service
+2. AWS CLI: zarejestrowano nową revision TD (`infra-puzzler-b2b-dev-sync:60`) z env varem
+3. `aws ecs update-service --task-definition infra-puzzler-b2b-dev-sync:60`
+4. Rollout COMPLETED, running=1/desired=1 ✅
+5. Commit `aba8998` na `feat/uat-environment`
+
+### Uwagi
+- Alph jest lazy-loaded (tylko przy wywołaniu endpointu, nie na starcie)
+- Weryfikacja komunikacji możliwa dopiero przy żywym żądaniu do `GET /AlphGeneratorSettings`
+- Dług: Login/Password Alph w plain text w `appsettings.json` → przenieść do SM
+- Vault: `20-projects/clients/mako/puzzler-b2b/alph-communication-check-2026-05-22.md`
+
+---
+
 ## 2026-05-21 — Jumphost CI/CD pipeline + ECS fix
 
 ### Kontekst
