@@ -2,36 +2,44 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-21 — PUZZLER-B2B: aktywny kontekst ←
+## Update — 2026-05-22 — PUZZLER-B2B: Alph per-env BaseUrl wdrożony ←
 
 ```
 PROJEKT:  puzzler-b2b / PBMS
 ACCOUNT:  698220459519 | eu-west-2 | profile: puzzler-pbms
 REPO:     ~/projekty/mako/aws-projects/infra-puzzler-b2b-final
-BRANCH:   feat/uat-environment (live)
+BRANCH:   feat/uat-environment (live, pushed)
 VAULT:    20-projects/clients/mako/puzzler-b2b/
 
-OSTATNIA PRACA (2026-05-21):
-  ✅ Jumphost CI/CD pipeline (.gitlab-ci.yml, scripts/ecs-update-image.sh, send-notification.py)
-  ✅ DEV jumphost running=1, QA running=1, UAT running=1
-  ✅ commit f70b0a2 feat(jumphost): add CI/CD pipeline and parametric SSH key injection
+OSTATNIA PRACA (2026-05-22):
+  ✅ infra-puzzler-b2b/{dev,qa}/alph SM secret — login+password z ignore_changes
+  ✅ IAM execution role — alph.arn dodany do GetSecretValue policy (dev+qa)
+  ✅ services.tf dev+qa — AlphApiSettings__Login/Password z SM, reszta env vars
+  ✅ AlphApiSettings__BaseUrl: DEV=alph-api-dev.makolab.net, QA=alph-api-qa.makolab.net
+  ✅ DEV sync TD:61→:62, QA sync TD:34→:35 (ręcznie, ignore_changes blokuje plan)
+  ✅ update-service DEV+QA — nowe taski PRIMARY, running=1
+  ✅ commit 6dfb4f5 feat(alph): per-environment BaseUrl for Alph API integration
+
+STAN ECS:
+  DEV: infra-puzzler-b2b-dev-sync:62 PRIMARY running=1
+  QA:  infra-puzzler-b2b-qa-sync:35 PRIMARY running=1
 
 REPO STATE:
-  untracked: docs/db-access.md (bez decyzji, persists od dawna)
-  untracked: scripts/azure_ad_secret_rotation.sh (nowy, niewidziany poprzednio)
+  untracked: docs/db-access.md (bez decyzji)
+  untracked: scripts/azure_ad_secret_rotation.sh (bez decyzji)
   staged:    brak
 
 OTWARTE — UAT environment (z 2026-05-20):
   terraform plan: 139 to add ✅ (plan czysty)
   KOLEJNOŚĆ APPLY:
-  1. terraform apply → ACM ceryfikaty → CNAME z outputu
+  1. terraform apply → ACM certyfikaty → CNAME z outputu
   2. Dodaj CNAME do makotest.pl (admin DNS)
   3. Poczekaj na ISSUED (5-30 min)
   4. Wymień nginx:latest na docelowe ECR image URIs
   5. terraform apply bez targetów — pełny deploy
   BLOCKER: jumphost_image wymaga obrazu ECR po pierwszym apply
 
-NASTĘPNY KROK: do ustalenia z operatorem
+NASTĘPNY KROK: weryfikacja komunikacji Alph (logi sync), opcjonalnie UAT deploy
 ```
 
 ---
