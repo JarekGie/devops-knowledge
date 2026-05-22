@@ -46,7 +46,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Switch to Maspex"
+              "title": "Terminal: ⠂ Switch to Maspex"
             }
           },
           {
@@ -88,7 +88,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ⠐ Puzzler B2B project setup"
+              "title": "Terminal: ⠂ Puzzler B2B project setup"
             }
           },
           {
@@ -105,8 +105,7 @@
               "title": "session-log"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -290,7 +289,7 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f2e116b5d3631dd3",
+  "active": "989a157ca01d6fbc",
   "lastOpenFiles": [
     "20-projects/clients/mako/puzzler-b2b/session-log.md.tmp.10514.8c509bb69c12",
     "20-projects/clients/mako/puzzler-b2b/alph-communication-check-2026-05-22.md",
