@@ -9,6 +9,25 @@ tags: [#terraform, #aws, #ecs, #alb]
 
 Chronologicznie, najnowszy na górze.
 
+## 2026-05-22 — Alph API Secrets Manager (DEV + QA)
+
+### Wykonane
+- `infra-puzzler-b2b/{dev,qa}/alph` — SM secret z `login` i `password` (Terraform-managed)
+- `iam.tf` DEV + QA — dodano `alph.arn` do polityki `GetSecretValue` execution role
+- `services.tf` DEV + QA — sync_service:
+  - `secrets`: `AlphApiSettings__{Login,Password}` z SM
+  - `environment_variables`: `AlphApiSettings__{BaseUrl,TimeoutSeconds,RetryCount,RetryDelayMilliseconds,EnableDetailedLogging}`
+- Terraform apply DEV: 2 added, 1 changed ✅
+- Terraform apply QA:  2 added, 1 changed ✅
+- `put-secret-value` DEV + QA: rzeczywiste credentials ustawione ✅
+- Commit `f081d26` na `feat/uat-environment`
+
+### Następne kroki (sync service)
+- Nowy deployment sync (DEV + QA) żeby ECS pobrał sekrety z SM — wymagany nowy TD (ignore_changes blokuje plan)
+- Weryfikacja: logi auth po żądaniu do `GET /AlphGeneratorSettings`
+
+---
+
 ## 2026-05-22 — Alph API communication fix (DEV sync)
 
 ### Kontekst
