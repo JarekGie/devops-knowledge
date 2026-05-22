@@ -105,7 +105,8 @@
               "title": "session-log"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -289,8 +290,9 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "989a157ca01d6fbc",
+  "active": "f2e116b5d3631dd3",
   "lastOpenFiles": [
+    "20-projects/clients/mako/puzzler-b2b/alph-communication-check-2026-05-22.md",
     "20-projects/clients/mako/maspex/traffic-analysis-2026-05-20-1200-to-2026-05-21-1200.md",
     "20-projects/clients/mako/maspex/traffic-analysis-2026-05-19-1200-to-2026-05-20-1200.md",
     "20-projects/clients/mako/anonimizator/session-log.md",
@@ -326,7 +328,6 @@
     "_chatgpt/context-packs/maspex-full-context.md",
     "_chatgpt/context-packs/rshop-full-context.md",
     "20-projects/clients/mako/maspex/waf-admin-panel-open-2026-05-18.md",
-    "20-projects/clients/mako/maspex/supabase-cron-connectivity-2026-05-18.md",
     "pkm-stack-infographic.png",
     "Bez nazwy.canvas"
   ]
