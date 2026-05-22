@@ -2,7 +2,7 @@
 
 > Aktualizuj przy każdej zmianie kontekstu. To jest twój punkt wejścia po przerwie.
 
-## Update — 2026-05-22 — PUZZLER-B2B: Alph per-env BaseUrl wdrożony ←
+## Update — 2026-05-22 — PUZZLER-B2B: IAM fix core + Alph deployment ←
 
 ```
 PROJEKT:  puzzler-b2b / PBMS
@@ -12,17 +12,17 @@ BRANCH:   feat/uat-environment (live, pushed)
 VAULT:    20-projects/clients/mako/puzzler-b2b/
 
 OSTATNIA PRACA (2026-05-22):
-  ✅ infra-puzzler-b2b/{dev,qa}/alph SM secret — login+password z ignore_changes
-  ✅ IAM execution role — alph.arn dodany do GetSecretValue policy (dev+qa)
-  ✅ services.tf dev+qa — AlphApiSettings__Login/Password z SM, reszta env vars
-  ✅ AlphApiSettings__BaseUrl: DEV=alph-api-dev.makolab.net, QA=alph-api-qa.makolab.net
-  ✅ DEV sync TD:61→:62, QA sync TD:34→:35 (ręcznie, ignore_changes blokuje plan)
-  ✅ update-service DEV+QA — nowe taski PRIMARY, running=1
-  ✅ commit 6dfb4f5 feat(alph): per-environment BaseUrl for Alph API integration
+  ✅ external-dashboard-api IAM fix — core DEV+QA crashowało z AccessDeniedException
+     put-role-policy na execution role + force-new-deployment → steady state
+     iam.tf + secrets.tf DEV+QA zaktualizowane, commit 3f560f1 pushed
+  ✅ Alph per-env BaseUrl: DEV=alph-api-dev.makolab.net, QA=alph-api-qa.makolab.net
+     sync TD:62 (DEV), TD:37 (QA) — CI/CD zadeploy nowe TDy z zachowanymi Alph secrets
+  ✅ Alph SM: infra-puzzler-b2b/{dev,qa}/alph — login+password
+  ✅ Jumphost skill: ~/.claude/skills/puzzler-b2b-jumphost/SKILL.md
 
-STAN ECS:
-  DEV: infra-puzzler-b2b-dev-sync:62 PRIMARY running=1
-  QA:  infra-puzzler-b2b-qa-sync:35 PRIMARY running=1
+STAN ECS (wszystkie serwisy):
+  DEV: 8/8 running=1 ✅ (worker 0/0 intentional)
+  QA:  8/8 running=1 ✅ (worker 0/0 intentional)
 
 REPO STATE:
   untracked: docs/db-access.md (bez decyzji)
